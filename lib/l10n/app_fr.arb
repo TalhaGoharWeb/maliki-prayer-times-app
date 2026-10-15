@@ -1,0 +1,263 @@
+{
+  "@@locale": "fr",
+  "navHome": "Accueil",
+  "navMonthly": "Mensuel",
+  "navQibla": "Qibla",
+  "navProfiles": "Profils",
+  "navSettings": "Réglages",
+  "chooseLocationTitle": "Choisissez votre lieu",
+  "chooseLocationBody": "Les horaires de prière sont calculés pour un lieu précis. Choisissez votre lieu pour continuer.",
+  "homePromptBody": "Les horaires de prière sont calculés pour un lieu précis. Choisissez votre lieu pour voir l’horaire du jour.",
+  "setLocation": "Définir le lieu",
+  "hijriDateLine": "Hégire : {monthName} · {note}",
+  "nextPrayerIn": "{prayer} dans {countdown}",
+  "nextPrayerAt": "Prochaine prière à {time}",
+  "todaysTimes": "Horaires du jour",
+  "prayerFajr": "Fajr",
+  "prayerSunrise": "Lever du soleil",
+  "prayerDhuhr": "Dhuhr",
+  "prayerAsr": "Asr",
+  "prayerMaghrib": "Maghrib",
+  "prayerIsha": "Isha",
+  "nextPrayerBadge": "Prochaine prière",
+  "timetableMarkerNote": "Repère d’horaire — pas une prière",
+  "bandsTitle": "Temps de choix et de nécessité (malikite)",
+  "preferredLabel": "Choix : {text}",
+  "necessityLabel": "Fin absolue : {text}",
+  "calculationProfileProposed": "Profil de calcul : PROPOSÉ — en attente d’examen par des savants",
+  "proposedStatus": "PROPOSÉ — en attente d’examen par des savants",
+  "aboutProfile": "À propos de ce profil",
+  "aboutProfileText": "Les angles utilisés pour calculer ces horaires (par exemple l’angle de 18° pour le Fajr et de 17° pour l’Isha) sont des conventions astronomiques qui approchent les signes légaux décrits dans les sources de fiqh. Ce ne sont pas des règles de fiqh en elles-mêmes. Aucun savant n’a examiné ce profil ; c’est un point de départ proposé, et rien sur cet écran ne doit être considéré comme une décision savante.",
+  "bandNameSubh": "Subh",
+  "bandNameDhuhr": "Dhuhr",
+  "bandNameAsr": "Asr",
+  "bandNameMaghrib": "Maghrib",
+  "bandNameIsha": "Isha",
+  "subhPreferredInfo": "Temps de choix jusqu’à l’isfar (éclaircissement net de l’horizon) — bande informative ; aucune heure n’y est assignée.",
+  "subhNecessityEnd": "Fin absolue (pour les personnes excusées) : lever du soleil, {time}.",
+  "dhuhrPreferred": "Temps de choix jusqu’au début de l’Asr (premier mithl), {time}.",
+  "dhuhrNecessityEnd": "Fin absolue (pour les personnes excusées) : coucher du soleil, {time}.",
+  "asrPreferredInfo": "Temps de choix jusqu’à l’isfirar (jaunissement du soleil) — bande informative ; approximatif, jamais une heure d’adhan.",
+  "asrNecessityEnd": "Fin absolue (pour les personnes excusées) : coucher du soleil, {time}.",
+  "maghribPreferred": "Fenêtre de choix étroite — environ 15 à 20 minutes après le coucher du soleil (jusqu’à {time}). Bande informative ; pas une heure d’adhan.",
+  "maghribNecessityInfo": "Fin absolue (pour les personnes excusées) : l’aube véritable — non calculée sur cet écran.",
+  "ishaPreferred": "Temps de choix jusqu’au premier tiers de la nuit, {third}. Avis alternatif nommé : selon Ibn Habib, le temps de choix s’étend jusqu’à minuit, {midnight}.",
+  "ishaNecessityInfo": "Fin absolue (pour les personnes excusées) : l’aube véritable — non calculée sur cet écran.",
+  "hijriCalendarNote": "Calendrier islamique tabulaire (arithmétique) — approximation de calcul ; le début réel des mois dépend de l’observation lunaire.",
+  "hijriDateFormat": "{day} {monthName} {year} AH",
+  "monthSubtitle": "{hijri} · Dates hégiriennes : calendrier tabulaire",
+  "previousMonth": "Mois précédent",
+  "nextMonth": "Mois suivant",
+  "highLatitudeNote": "Certains horaires de ce jour sont estimés : le soleil n’atteint pas les angles configurés ici, une approximation haute latitude a donc été utilisée.",
+  "bandsInfoNote": "Bandes informatives décrivant les fenêtres de choix et de nécessité — ce ne sont pas des heures d’adhan et elles ne déclenchent jamais de compte à rebours.",
+  "preferredWord": "Choix",
+  "necessityWord": "Fin absolue",
+  "computedChip": "calculé",
+  "informationalChip": "informatif",
+  "estimatedMarker": "est.",
+  "estimatedTooltip": "Horaires estimés (approximation haute latitude)",
+  "dayCellFajr": "F {time}",
+  "dayCellMaghrib": "M {time}",
+  "qiblaTitle": "Direction de la Qibla",
+  "qiblaBearing": "{degrees}° dans le sens horaire depuis le nord vrai",
+  "qiblaAlignNote": "Alignez-vous avec n’importe quelle application de boussole ou une boussole physique — cet écran n’utilise pas le capteur de boussole de votre téléphone.",
+  "qiblaLabel": "Qibla",
+  "profilesTitle": "Profils de calcul",
+  "proposedBanner": "PROPOSÉ — en attente d’examen par des savants. Les angles sont des conventions astronomiques, pas des règles de fiqh. Aucun savant n’a examiné ces profils.",
+  "selectProfile": "Choisir un profil",
+  "profileAngles": "Angle Fajr {fajr}°  ·  Angle Isha {isha}°  ·  Facteur Asr {asr}",
+  "compareProfiles": "Comparer les profils",
+  "compareSubtitle": "Horaires calculés du jour côte à côte (valeurs du moteur, avant vos ajustements par prière).",
+  "profileALabel": "Profil A",
+  "profileBLabel": "Profil B",
+  "tablePrayer": "Prière",
+  "tableDiffHeader": "B − A",
+  "diffSame": "identique",
+  "diffMinutes": "{value} min",
+  "sunriseMarkerRow": "Lever du soleil (repère)",
+  "compareFootnote": "Les différences viennent des angles Fajr/Isha utilisés par chaque profil ; les profils eux-mêmes sont PROPOSÉS — en attente d’examen par des savants.",
+  "settingsTitle": "Réglages",
+  "calculationProfileSection": "Profil de calcul",
+  "adjustmentsSection": "Ajustements des horaires de prière",
+  "sunriseNoAdjustmentNote": "Le lever du soleil est un repère d’horaire, pas une prière : aucun ajustement.",
+  "ihtiyatSection": "Délai de précaution (ihtiyat)",
+  "applyIhtiyat": "Appliquer les délais de précaution",
+  "ihtiyatSubtitle": "Ajoute un léger délai après le midi solaire (Dhuhr) et après le coucher du soleil (Maghrib), par précaution. C’est une convention, pas un élément de la définition fiqh.",
+  "resetAdjustments": "Réinitialiser les ajustements",
+  "adjustmentsReset": "Tous les ajustements des horaires de prière ont été réinitialisés.",
+  "tooltipEarlier": "Une minute plus tôt",
+  "tooltipLater": "Une minute plus tard",
+  "adjustmentValue": "{value} min",
+  "adjustmentExplanation": "Avance ou retarde l’heure affichée de {prayer}. Utilisez-le pour correspondre à l’horaire de votre mosquée locale ; cela ne change pas le calcul sous-jacent.",
+  "languageSection": "Langue",
+  "systemDefault": "Défaut du système",
+  "fontsSection": "Polices",
+  "fontsNote": "Le texte ourdou utilise actuellement la police système de l’appareil. L’intégration de la police Jameel Noori Nastaleeq est un point connu en attente : les droits de redistribution ne sont pas vérifiés, donc aucun fichier de police n’est intégré à l’application.",
+  "locationTitle": "Lieu",
+  "currentLocation": "Lieu actuel",
+  "noLocationChosen": "Aucun lieu choisi pour le moment.",
+  "currentLocationValue": "{name}\n{coordinates}{deviceNote}",
+  "deviceLocationSuffix": " (de l’appareil)",
+  "deviceLocationSection": "Position de l’appareil",
+  "useDeviceLocation": "Utiliser la position de l’appareil",
+  "openSystemSettings": "Ouvrir les réglages système",
+  "enterManually": "Saisir manuellement",
+  "fieldName": "Nom",
+  "hintName": "p. ex. Nouakchott",
+  "fieldLatitude": "Latitude",
+  "hintLatitude": "-90 à 90",
+  "fieldLongitude": "Longitude",
+  "hintLongitude": "-180 à 180",
+  "saveLocation": "Enregistrer ce lieu",
+  "validateName": "Veuillez saisir un nom pour ce lieu.",
+  "validateNumberExample": "Veuillez saisir un nombre, p. ex. 18,09.",
+  "validateLatitudeRange": "La latitude doit être comprise entre -90 et 90.",
+  "validateLongitudeRange": "La longitude doit être comprise entre -180 et 180.",
+  "deviceLocationName": "Position de l’appareil",
+  "errorServiceDisabled": "Les services de localisation sont désactivés. Activez-les dans les réglages de l’appareil, ou saisissez votre lieu manuellement ci-dessous.",
+  "errorDeniedForever": "L’autorisation de localisation est définitivement refusée. Ouvrez les réglages système pour autoriser l’accès à la position, ou saisissez votre lieu manuellement ci-dessous.",
+  "errorDenied": "L’autorisation de localisation a été refusée. Vous pouvez réessayer, ou saisir votre lieu manuellement ci-dessous.",
+  "errorPositionUnknown": "Impossible de déterminer votre position. Veuillez réessayer, ou saisir votre lieu manuellement ci-dessous.",
+  "errorReauthorize": "L’autorisation de localisation n’est plus disponible. Utilisez à nouveau la position de l’appareil pour réautoriser, ou saisissez votre lieu manuellement.",
+  "errorRefreshPositionUnknown": "Impossible de déterminer votre position. Veuillez réessayer, ou saisir votre lieu manuellement.",
+  "errorUnexpectedUse": "Impossible d’utiliser la position de l’appareil ({detail}). Vous pouvez réessayer, ou saisir votre lieu manuellement ci-dessous.",
+  "errorUnexpectedRefresh": "Impossible d’actualiser la position de l’appareil ({detail}).",
+  "hijriMonth1": "Mouharram",
+  "hijriMonth2": "Safar",
+  "hijriMonth3": "Rabiʿ al-awwal",
+  "hijriMonth4": "Rabiʿ al-thani",
+  "hijriMonth5": "Joumada al-oula",
+  "hijriMonth6": "Joumada al-akhira",
+  "hijriMonth7": "Rajab",
+  "hijriMonth8": "Chaabane",
+  "hijriMonth9": "Ramadan",
+  "hijriMonth10": "Chawwal",
+  "hijriMonth11": "Dhou al-Qaʿda",
+  "hijriMonth12": "Dhou al-Hijja",
+  "profileNameMwlWestAfrica": "Malikite — MWL Afrique de l’Ouest",
+  "profileBasisMwlWestAfrica": "Conseil de jurisprudence islamique de la MWL 1986 : Fajr 18 degrés, Isha 17 degrés (crépuscule rouge) ; facteur Asr 1 = premier mithl malikite (Moukhtassar Khalil). Les angles sont des conventions astronomiques, pas des règles de fiqh.",
+  "profileNameEgyptian": "Malikite — Égyptien (19,5/17,5)",
+  "profileBasisEgyptian": "Convention de l’Autorité égyptienne de topographie : Fajr 19,5 degrés, Isha 17,5 degrés ; facteur Asr 1 (malikite). Alternative nommée.",
+  "profileNameUoif": "Malikite — UOIF (12/12)",
+  "profileBasisUoif": "Convention de l’UOIF (France) : Fajr 12 degrés, Isha 12 degrés ; facteur Asr 1 (malikite). Alternative nommée.",
+  "notificationsSection": "Notifications de prière",
+  "@notificationsSection": {
+    "description": "Settings section: prayer notifications"
+  },
+  "notificationsIntro": "Recevez une notification à l’heure de chaque prière. Les horaires sont calculés avec le même profil de calcul et les mêmes ajustements que ceux affichés sur l’écran d’accueil.",
+  "@notificationsIntro": {
+    "description": "Intro text for the notifications section"
+  },
+  "notifyPrayerLabel": "Notifier pour {prayer}",
+  "@notifyPrayerLabel": {
+    "description": "Per-prayer notification toggle label",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderOffsetLabel": "Rappel avant l’heure de la prière",
+  "@reminderOffsetLabel": {
+    "description": "Label for the pre-prayer reminder offset picker"
+  },
+  "reminderOffsetOptionNone": "À l’heure de la prière (pas de rappel anticipé)",
+  "@reminderOffsetOptionNone": {
+    "description": "Reminder offset option: no early reminder"
+  },
+  "reminderOffsetOptionMinutes": "{minutes} minutes avant",
+  "@reminderOffsetOptionMinutes": {
+    "description": "Reminder offset option with minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPermissionTitle": "Autorisation de notifications",
+  "@notificationPermissionTitle": {
+    "description": "Row title: notification permission status"
+  },
+  "permissionGranted": "Accordée",
+  "@permissionGranted": {
+    "description": "Permission status: granted"
+  },
+  "permissionNotGranted": "Non accordée",
+  "@permissionNotGranted": {
+    "description": "Permission status: not granted"
+  },
+  "requestPermissionButton": "Autoriser les notifications",
+  "@requestPermissionButton": {
+    "description": "Button: request notification permission"
+  },
+  "exactAlarmTitle": "Alarmes à heure exacte",
+  "@exactAlarmTitle": {
+    "description": "Row title: Android exact-alarm status"
+  },
+  "exactAlarmGranted": "Autorisé — les notifications peuvent arriver à l’heure exacte de la prière.",
+  "@exactAlarmGranted": {
+    "description": "Exact alarms allowed explanation"
+  },
+  "exactAlarmDenied": "Non autorisé — les notifications peuvent arriver en retard, quelques minutes après l’heure de la prière.",
+  "@exactAlarmDenied": {
+    "description": "Exact alarms denied explanation (honest)"
+  },
+  "openExactAlarmSettingsButton": "Autoriser les alarmes exactes",
+  "@openExactAlarmSettingsButton": {
+    "description": "Button: open Android exact-alarm settings"
+  },
+  "androidDeliveryNote": "Note honnête : sur certains téléphones Android, l’optimisation de la batterie ou le mode Doze peut retarder ou bloquer les notifications, surtout quand le téléphone est verrouillé ou que l’application n’a pas été ouverte depuis un moment. Les notifications sont programmées à l’avance, mais leur livraison dépend finalement du système. Si elles arrivent en retard, essayez de désactiver l’optimisation de la batterie pour cette application. Ouvrir l’application chaque jour garde le programme à jour.",
+  "@androidDeliveryNote": {
+    "description": "Honest Android delivery-limits note"
+  },
+  "iosDeliveryNote": "Note honnête : sur iOS, les notifications sont programmées à l’avance et livrées par le système. Ouvrir l’application chaque jour garde le programme à jour ; les limites d’arrière-plan d’iOS peuvent retarder les mises à jour.",
+  "@iosDeliveryNote": {
+    "description": "Honest iOS background-limits note"
+  },
+  "notificationScheduleError": "Impossible de mettre à jour les notifications. Veuillez réessayer.",
+  "@notificationScheduleError": {
+    "description": "Error when rescheduling notifications fails"
+  },
+  "notifTitle": "Heure de {prayer}",
+  "@notifTitle": {
+    "description": "Notification title at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifBody": "C’est maintenant l’heure de {prayer}.",
+  "@notifBody": {
+    "description": "Notification body at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderTitle": "{prayer} dans {minutes} minutes",
+  "@notifReminderTitle": {
+    "description": "Reminder notification title",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderBody": "{prayer} commence dans {minutes} minutes.",
+  "@notifReminderBody": {
+    "description": "Reminder notification body",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  }
+}

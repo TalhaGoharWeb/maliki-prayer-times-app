@@ -67,3 +67,23 @@ this app is presented as scholar-reviewed.
   via multiple independent license listings (pub.dev metadata for
   `shared_preferences_ios`, plus independent third-party attribution files
   all listing BSD-3-Clause).
+
+## Track A runtime dependencies (notifications)
+
+- **flutter_local_notifications** — BSD-3-Clause — 22.3.2 —
+  MaikuBui/flutter_local_notifications
+  (https://github.com/MaikuBui/flutter_local_notifications) — used for
+  prayer-time and pre-prayer reminder notifications (Android channel
+  `prayer_times`, iOS via the plugin's permission flow). License verified
+  2026-10-15 by reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.2/LICENSE`):
+  full BSD-3-Clause text, "Copyright 2018 Michael Bui".
+- **timezone** — BSD-3-Clause — 0.11.2 — srawlins/timezone
+  (https://github.com/srawlins/timezone) — used to initialize the tz database
+  and build absolute `TZDateTime` fire times for `zonedSchedule`. License
+  verified 2026-10-15 by reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/timezone-0.11.2/LICENSE`): full
+  BSD-3-Clause text, "Copyright (c) 2014, timezone project authors".
+
+Both passed the license gate (permissive: MIT/Apache-2.0/BSD — no
+copyleft, no proprietary terms, LICENSE files present and read).

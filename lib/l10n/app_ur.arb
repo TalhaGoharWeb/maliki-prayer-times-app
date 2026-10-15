@@ -1,0 +1,263 @@
+{
+  "@@locale": "ur",
+  "navHome": "ہوم",
+  "navMonthly": "ماہانہ",
+  "navQibla": "قبلہ",
+  "navProfiles": "پروفائل",
+  "navSettings": "ترتیبات",
+  "chooseLocationTitle": "اپنا مقام منتخب کریں",
+  "chooseLocationBody": "نماز کے اوقات ایک خاص مقام کے لیے حساب کیے جاتے ہیں۔ جاری رکھنے کے لیے اپنا مقام منتخب کریں۔",
+  "homePromptBody": "نماز کے اوقات ایک خاص مقام کے لیے حساب کیے جاتے ہیں۔ آج کا ٹائم ٹیبل دیکھنے کے لیے اپنا مقام منتخب کریں۔",
+  "setLocation": "مقام طے کریں",
+  "hijriDateLine": "ہجری: {monthName} · {note}",
+  "nextPrayerIn": "{prayer} میں {countdown}",
+  "nextPrayerAt": "اگلی نماز {time} پر",
+  "todaysTimes": "آج کے اوقات",
+  "prayerFajr": "فجر",
+  "prayerSunrise": "طلوعِ آفتاب",
+  "prayerDhuhr": "ظہر",
+  "prayerAsr": "عصر",
+  "prayerMaghrib": "مغرب",
+  "prayerIsha": "عشاء",
+  "nextPrayerBadge": "اگلی نماز",
+  "timetableMarkerNote": "ٹائم ٹیبل کی علامت — نماز نہیں",
+  "bandsTitle": "اختیاری اور اضطراری اوقات (مالکی)",
+  "preferredLabel": "اختیاری: {text}",
+  "necessityLabel": "انتہائی حد: {text}",
+  "calculationProfileProposed": "حسابی پروفائل: مجوزہ — علمی جائزے کا منتظر",
+  "proposedStatus": "مجوزہ — علمی جائزے کا منتظر",
+  "aboutProfile": "اس پروفائل کے بارے میں",
+  "aboutProfileText": "ان اوقات کے حساب میں استعمال ہونے والے زاویے (مثلاً فجر کا 18° زاویہ اور عشاء کا 17° زاویہ) فلکیاتی روایتیں ہیں جو فقہی ذرائع میں مذکور شرعی علامات کا تقریب ہیں؛ یہ خود فقہی احکام نہیں۔ کسی عالم نے اس پروفائل کا جائزہ نہیں لیا۔ یہ ایک مجوزہ نقطۂ آغاز ہے، اور اس اسکرین کی کوئی بات علمی فیصلہ نہ سمجھی جائے۔",
+  "bandNameSubh": "صبح",
+  "bandNameDhuhr": "ظہر",
+  "bandNameAsr": "عصر",
+  "bandNameMaghrib": "مغرب",
+  "bandNameIsha": "عشاء",
+  "subhPreferredInfo": "اختیاری وقت اسفار (افق کی واضح روشنی) تک ہے — معلوماتی پٹی؛ اس کے لیے گھڑی کا کوئی وقت مقرر نہیں۔",
+  "subhNecessityEnd": "معذوروں کے لیے انتہائی حد: طلوعِ آفتاب، {time}۔",
+  "dhuhrPreferred": "اختیاری وقت عصر کے آغاز (پہلی مثل) تک، {time}۔",
+  "dhuhrNecessityEnd": "معذوروں کے لیے انتہائی حد: غروبِ آفتاب، {time}۔",
+  "asrPreferredInfo": "اختیاری وقت اصفرار (سورج کے پیلے پڑنے) تک — معلوماتی پٹی؛ تقریبی ہے، اذان کا وقت کبھی نہیں۔",
+  "asrNecessityEnd": "معذوروں کے لیے انتہائی حد: غروبِ آفتاب، {time}۔",
+  "maghribPreferred": "اختیاری وقت تنگ ہے — غروب کے بعد تقریباً 15 تا 20 منٹ ({time} تک)۔ معلوماتی پٹی؛ اذان کا وقت نہیں۔",
+  "maghribNecessityInfo": "معذوروں کے لیے انتہائی حد: فجرِ صادق — اس اسکرین پر حساب نہیں کیا گیا۔",
+  "ishaPreferred": "اختیاری وقت رات کے پہلے تہائی تک، {third}۔ متبادل مذکور قول: ابن حبیب کے نزدیک اختیاری وقت نصف شب تک ہے، {midnight}۔",
+  "ishaNecessityInfo": "معذوروں کے لیے انتہائی حد: فجرِ صادق — اس اسکرین پر حساب نہیں کیا گیا۔",
+  "hijriCalendarNote": "حسابی (ریاضیاتی) اسلامی کیلنڈر — ایک حسابی تخمینہ؛ مہینوں کا اصل آغاز چاند دیکھنے پر منحصر ہے۔",
+  "hijriDateFormat": "{day} {monthName} {year}ھ",
+  "monthSubtitle": "{hijri} · ہجری تاریخیں: حسابی کیلنڈر",
+  "previousMonth": "پچھلا مہینہ",
+  "nextMonth": "اگلا مہینہ",
+  "highLatitudeNote": "اس دن کے بعض اوقات تخمینی ہیں: سورج یہاں مقررہ زاویوں تک نہیں پہنچتا، اس لیے عرضِ بلدِ بلند کا تخمینہ استعمال کیا گیا۔",
+  "bandsInfoNote": "اختیاری اور اضطراری اوقات کی معلوماتی پٹیاں — یہ اذان کے اوقات نہیں اور کبھی الٹی گنتی نہیں چلاتیں۔",
+  "preferredWord": "اختیاری",
+  "necessityWord": "انتہائی حد",
+  "computedChip": "حساب شدہ",
+  "informationalChip": "معلوماتی",
+  "estimatedMarker": "تخمینی",
+  "estimatedTooltip": "تخمینی اوقات (عرضِ بلدِ بلند کا تخمینہ)",
+  "dayCellFajr": "ف {time}",
+  "dayCellMaghrib": "م {time}",
+  "qiblaTitle": "قبلے کی سمت",
+  "qiblaBearing": "{degrees}° شمالِ حقیقی سے گھڑی کی سمت میں",
+  "qiblaAlignNote": "کسی بھی کمپاس ایپ یا اصلی کمپاس سے سمت درست کریں — یہ اسکرین آپ کے فون کے کمپاس سینسر کو استعمال نہیں کرتی۔",
+  "qiblaLabel": "قبلہ",
+  "profilesTitle": "حسابی پروفائلز",
+  "proposedBanner": "مجوزہ — علمی جائزے کا منتظر۔ زاویے فلکیاتی روایتیں ہیں، فقہی احکام نہیں۔ کسی عالم نے ان پروفائلز کا جائزہ نہیں لیا۔",
+  "selectProfile": "پروفائل منتخب کریں",
+  "profileAngles": "فجر کا زاویہ {fajr}°  ·  عشاء کا زاویہ {isha}°  ·  عصر کا عامل {asr}",
+  "compareProfiles": "پروفائلز کا موازنہ",
+  "compareSubtitle": "آج کے حسابی اوقات بالمقابل (انجن کی قدریں، آپ کی فی نماز ترامیم سے پہلے)۔",
+  "profileALabel": "پروفائل اے",
+  "profileBLabel": "پروفائل بی",
+  "tablePrayer": "نماز",
+  "tableDiffHeader": "B − A",
+  "diffSame": "یکساں",
+  "diffMinutes": "{value} منٹ",
+  "sunriseMarkerRow": "طلوعِ آفتاب (علامت)",
+  "compareFootnote": "فرق ہر پروفائل کے فجر/عشاء کے زاویوں سے آتا ہے؛ پروفائلز خود مجوزہ ہیں — علمی جائزے کے منتظر۔",
+  "settingsTitle": "ترتیبات",
+  "calculationProfileSection": "حسابی پروفائل",
+  "adjustmentsSection": "نماز کے اوقات میں ترامیم",
+  "sunriseNoAdjustmentNote": "طلوعِ آفتاب ٹائم ٹیبل کی علامت ہے، نماز نہیں، اس لیے اس میں کوئی ترمیم نہیں۔",
+  "ihtiyatSection": "احتیاطی تاخیر (احتیاط)",
+  "applyIhtiyat": "احتیاطی تاخیر لاگو کریں",
+  "ihtiyatSubtitle": "احتیاط کے طور پر نصف النہارِ شمسی (ظہر) کے بعد اور غروبِ آفتاب (مغرب) کے بعد معمولی تاخیر شامل کرتا ہے۔ یہ ایک روایت ہے، فقہی تعریف کا حصہ نہیں۔",
+  "resetAdjustments": "ترامیم صفر کریں",
+  "adjustmentsReset": "نماز کے اوقات کی تمام ترامیم صفر کر دی گئیں۔",
+  "tooltipEarlier": "ایک منٹ پہلے",
+  "tooltipLater": "ایک منٹ بعد",
+  "adjustmentValue": "{value} منٹ",
+  "adjustmentExplanation": "ظاہر کردہ {prayer} کے وقت کو پہلے یا بعد میں کرتا ہے۔ اپنی مقامی مسجد کے ٹائم ٹیبل سے ملانے کے لیے استعمال کریں؛ اس سے بنیادی حساب نہیں بدلتا۔",
+  "languageSection": "زبان",
+  "systemDefault": "سسٹم کی طے شدہ",
+  "fontsSection": "فونٹس",
+  "fontsNote": "اردو متن فی الحال آلے کا سسٹم فونٹ استعمال کرتا ہے۔ جمیل نوری نستعلیق فونٹ شامل کرنا ایک معلوم التوا شدہ معاملہ ہے: دوبارہ تقسیم کے حقوق کی تصدیق نہیں ہوئی، اس لیے ایپ کے ساتھ کوئی فونٹ فائل شامل نہیں کی گئی۔",
+  "locationTitle": "مقام",
+  "currentLocation": "موجودہ مقام",
+  "noLocationChosen": "ابھی کوئی مقام منتخب نہیں ہوا۔",
+  "currentLocationValue": "{name}\n{coordinates}{deviceNote}",
+  "deviceLocationSuffix": " (آلے سے)",
+  "deviceLocationSection": "آلے کا مقام",
+  "useDeviceLocation": "آلے کا مقام استعمال کریں",
+  "openSystemSettings": "سسٹم کی ترتیبات کھولیں",
+  "enterManually": "دستی درج کریں",
+  "fieldName": "نام",
+  "hintName": "مثلاً نواکشوط",
+  "fieldLatitude": "عرضِ بلد",
+  "hintLatitude": "-90 تا 90",
+  "fieldLongitude": "طولِ بلد",
+  "hintLongitude": "-180 تا 180",
+  "saveLocation": "یہ مقام محفوظ کریں",
+  "validateName": "براہ کرم اس مقام کے لیے نام درج کریں۔",
+  "validateNumberExample": "براہ کرم عدد درج کریں، مثلاً 18.09۔",
+  "validateLatitudeRange": "عرضِ بلد -90 تا 90 کے درمیان ہونا چاہیے۔",
+  "validateLongitudeRange": "طولِ بلد -180 تا 180 کے درمیان ہونا چاہیے۔",
+  "deviceLocationName": "آلے کا مقام",
+  "errorServiceDisabled": "مقام کی خدمات بند ہیں۔ انہیں آلے کی ترتیبات میں آن کریں، یا اپنا مقام نیچے دستی درج کریں۔",
+  "errorDeniedForever": "مقام کی اجازت مستقل طور پر مسترد ہے۔ مقام تک رسائی کے لیے سسٹم کی ترتیبات کھولیں، یا اپنا مقام نیچے دستی درج کریں۔",
+  "errorDenied": "مقام کی اجازت مسترد کر دی گئی۔ آپ دوبارہ کوشش کر سکتے ہیں، یا اپنا مقام نیچے دستی درج کریں۔",
+  "errorPositionUnknown": "آپ کی پوزیشن معلوم نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں، یا اپنا مقام نیچے دستی درج کریں۔",
+  "errorReauthorize": "مقام کی اجازت اب دستیاب نہیں۔ دوبارہ اجازت کے لیے آلے کا مقام دوبارہ استعمال کریں، یا اپنا مقام دستی درج کریں۔",
+  "errorRefreshPositionUnknown": "آپ کی پوزیشن معلوم نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں، یا اپنا مقام دستی درج کریں۔",
+  "errorUnexpectedUse": "آلے کا مقام استعمال نہ ہو سکا ({detail})۔ آپ دوبارہ کوشش کر سکتے ہیں، یا اپنا مقام نیچے دستی درج کریں۔",
+  "errorUnexpectedRefresh": "آلے کے مقام کی تجدید نہ ہو سکی ({detail})۔",
+  "hijriMonth1": "محرم",
+  "hijriMonth2": "صفر",
+  "hijriMonth3": "ربیع الاول",
+  "hijriMonth4": "ربیع الثانی",
+  "hijriMonth5": "جمادی الاول",
+  "hijriMonth6": "جمادی الثانی",
+  "hijriMonth7": "رجب",
+  "hijriMonth8": "شعبان",
+  "hijriMonth9": "رمضان",
+  "hijriMonth10": "شوال",
+  "hijriMonth11": "ذوالقعدہ",
+  "hijriMonth12": "ذوالحجہ",
+  "profileNameMwlWestAfrica": "مالکی — مسلم ورلڈ لیگ، مغربی افریقہ",
+  "profileBasisMwlWestAfrica": "مسلم ورلڈ لیگ فقہ کونسل 1986ء: فجر 18 درجے، عشاء 17 درجے (سرخ شفق)؛ عصر کا عامل 1 = مالکی پہلی مثل (مختصرِ خلیل)۔ زاویے فلکیاتی روایتیں ہیں، فقہی احکام نہیں۔",
+  "profileNameEgyptian": "مالکی — مصری (19.5/17.5)",
+  "profileBasisEgyptian": "مصری محکمۂ سروے عام کی روایت: فجر 19.5 درجے، عشاء 17.5 درجے؛ عصر کا عامل 1 (مالکی)۔ نامزد متبادل۔",
+  "profileNameUoif": "مالکی — یو آئی او ایف (12/12)",
+  "profileBasisUoif": "یو آئی او ایف (فرانس) کی روایت: فجر 12 درجے، عشاء 12 درجے؛ عصر کا عامل 1 (مالکی)۔ نامزد متبادل۔",
+  "notificationsSection": "نمازوں کی اطلاعات",
+  "@notificationsSection": {
+    "description": "Settings section: prayer notifications"
+  },
+  "notificationsIntro": "ہر نماز کے وقت اطلاع حاصل کریں۔ اوقات اسی حسابی خاکے اور ترامیم کے مطابق نکالے جاتے ہیں جو ہوم اسکرین پر دکھائے جاتے ہیں۔",
+  "@notificationsIntro": {
+    "description": "Intro text for the notifications section"
+  },
+  "notifyPrayerLabel": "{prayer} کی اطلاع",
+  "@notifyPrayerLabel": {
+    "description": "Per-prayer notification toggle label",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderOffsetLabel": "نماز کے وقت سے پہلے یاد دہانی",
+  "@reminderOffsetLabel": {
+    "description": "Label for the pre-prayer reminder offset picker"
+  },
+  "reminderOffsetOptionNone": "نماز کے وقت پر (پہلے سے یاد دہانی نہیں)",
+  "@reminderOffsetOptionNone": {
+    "description": "Reminder offset option: no early reminder"
+  },
+  "reminderOffsetOptionMinutes": "{minutes} منٹ پہلے",
+  "@reminderOffsetOptionMinutes": {
+    "description": "Reminder offset option with minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPermissionTitle": "اطلاعات کی اجازت",
+  "@notificationPermissionTitle": {
+    "description": "Row title: notification permission status"
+  },
+  "permissionGranted": "اجازت ہے",
+  "@permissionGranted": {
+    "description": "Permission status: granted"
+  },
+  "permissionNotGranted": "اجازت نہیں ہے",
+  "@permissionNotGranted": {
+    "description": "Permission status: not granted"
+  },
+  "requestPermissionButton": "اطلاعات کی اجازت دیں",
+  "@requestPermissionButton": {
+    "description": "Button: request notification permission"
+  },
+  "exactAlarmTitle": "عین وقت کے الارم",
+  "@exactAlarmTitle": {
+    "description": "Row title: Android exact-alarm status"
+  },
+  "exactAlarmGranted": "اجازت ہے — اطلاعات نماز کے عین وقت پر آسکتی ہیں۔",
+  "@exactAlarmGranted": {
+    "description": "Exact alarms allowed explanation"
+  },
+  "exactAlarmDenied": "اجازت نہیں — اطلاعات دیر سے آسکتی ہیں، نماز کے وقت کے کچھ منٹ بعد۔",
+  "@exactAlarmDenied": {
+    "description": "Exact alarms denied explanation (honest)"
+  },
+  "openExactAlarmSettingsButton": "عین وقت کے الارم کی اجازت دیں",
+  "@openExactAlarmSettingsButton": {
+    "description": "Button: open Android exact-alarm settings"
+  },
+  "androidDeliveryNote": "واضح بات: کچھ اینڈرائیڈ فونز پر بیٹری آپٹیمائزیشن یا ڈوز موڈ اطلاعات میں تاخیر کر سکتا ہے یا انہیں روک سکتا ہے، خاص طور پر جب فون لاک ہو یا ایپ کافی عرصے سے نہ کھولی گئی ہو۔ اطلاعات پہلے سے شیڈول کی جاتی ہیں، لیکن ان کا پہنچنا آخرکار سسٹم پر منحصر ہے۔ اگر دیر سے آئیں تو اس ایپ کے لیے بیٹری آپٹیمائزیشن بند کر کے دیکھیں۔ روزانہ ایپ کھولنے سے شیڈول تازہ رہتا ہے۔",
+  "@androidDeliveryNote": {
+    "description": "Honest Android delivery-limits note"
+  },
+  "iosDeliveryNote": "واضح بات: آئی فون پر اطلاعات پہلے سے شیڈول کی جاتی ہیں اور سسٹم انہیں پہنچاتا ہے۔ روزانہ ایپ کھولنے سے شیڈول تازہ رہتا ہے؛ آئی او ایس کی پس منظر کی پابندیاں اپ ڈیٹ میں تاخیر کر سکتی ہیں۔",
+  "@iosDeliveryNote": {
+    "description": "Honest iOS background-limits note"
+  },
+  "notificationScheduleError": "اطلاعات اپ ڈیٹ نہیں ہو سکیں۔ دوبارہ کوشش کریں۔",
+  "@notificationScheduleError": {
+    "description": "Error when rescheduling notifications fails"
+  },
+  "notifTitle": "{prayer} کا وقت",
+  "@notifTitle": {
+    "description": "Notification title at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifBody": "اب {prayer} کا وقت ہو گیا ہے۔",
+  "@notifBody": {
+    "description": "Notification body at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderTitle": "{minutes} منٹ میں {prayer}",
+  "@notifReminderTitle": {
+    "description": "Reminder notification title",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderBody": "{minutes} منٹ میں {prayer} کا وقت شروع ہوگا۔",
+  "@notifReminderBody": {
+    "description": "Reminder notification body",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  }
+}

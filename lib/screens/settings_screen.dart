@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
+import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/screens/profiles_screen.dart';
+import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/widgets/notification_settings.dart';
 
-/// User settings: active calculation profile, per-prayer time adjustments,
-/// the precautionary-delay (ihtiyat) switch, and adjustment reset.
+/// User settings: active calculation profile, app language, per-prayer time
+/// adjustments, the precautionary-delay (ihtiyat) switch, adjustment reset,
+/// and a fonts note.
 ///
 /// The active profile is PROPOSED — pending scholarly review — and the
 /// profile row says so.
@@ -14,11 +19,15 @@ class SettingsScreen extends StatelessWidget {
   final Coordinates coordinates;
   final Duration timeZoneOffset;
 
+  /// When null, the notification section is hidden (e.g. in widget tests).
+  final NotificationService? notifications;
+
   const SettingsScreen({
     super.key,
     required this.settings,
     required this.coordinates,
     required this.timeZoneOffset,
+    this.notifications,
   });
 
   static const _adjustablePrayers = [
@@ -29,21 +38,17 @@ class SettingsScreen extends StatelessWidget {
     Prayer.isha,
   ];
 
-  String _prayerLabel(Prayer p) => switch (p) {
-        Prayer.fajr => 'Fajr',
-        Prayer.sunrise => 'Sunrise',
-        Prayer.dhuhr => 'Dhuhr',
-        Prayer.asr => 'Asr',
-        Prayer.maghrib => 'Maghrib',
-        Prayer.isha => 'Isha',
+  String _prayerLabel(AppLocalizations l10n, Prayer p) => switch (p) {
+        Prayer.fajr => l10n.prayerFajr,
+        Prayer.sunrise => l10n.prayerSunrise,
+        Prayer.dhuhr => l10n.prayerDhuhr,
+        Prayer.asr => l10n.prayerAsr,
+        Prayer.maghrib => l10n.prayerMaghrib,
+        Prayer.isha => l10n.prayerIsha,
       };
 
-  String _adjustmentExplanation(Prayer p) {
-    final label = _prayerLabel(p);
-    return 'Moves the displayed $label time earlier or later. Use this to '
-        'match your local mosque\u2019s timetable; it does not change the '
-        'underlying calculation.';
-  }
+  String _adjustmentExplanation(AppLocalizations l10n, Prayer p) =>
+      l10n.adjustmentExplanation(_prayerLabel(l10n, p));
 
   void _openProfiles(BuildContext context) {
     Navigator.of(context).push(
@@ -57,8 +62,27 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  /// Language options: `null` = system default, then the four supported
+  /// locales shown by their endonyms (standard practice).
+  List<DropdownMenuItem<String?>> _languageItems(AppLocalizations l10n) {
+    // Item labels ellipsize: at large text sizes the selected value must
+    // never push the field outside its card.
+    Widget item(String text) => Text(text, overflow: TextOverflow.ellipsis);
+    return [
+      DropdownMenuItem<String?>(value: null, child: item(l10n.systemDefault)),
+      DropdownMenuItem<String?>(value: 'en', child: item('English')),
+      DropdownMenuItem<String?>(value: 'ur', child: item('اردو')),
+      DropdownMenuItem<String?>(value: 'ar', child: item('العربية')),
+      DropdownMenuItem<String?>(value: 'fr', child: item('Français')),
+    ];
+  }
+
   Widget _adjustmentRow(
-      BuildContext context, SettingsService settings, Prayer prayer) {
+    BuildContext context,
+    AppLocalizations l10n,
+    SettingsService settings,
+    Prayer prayer,
+  ) {
     final theme = Theme.of(context);
     final value = settings.adjustments[prayer] ?? 0;
     return Card(
@@ -71,13 +95,13 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    _prayerLabel(prayer),
+                    _prayerLabel(l10n, prayer),
                     style: theme.textTheme.titleSmall,
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.remove),
-                  tooltip: 'One minute earlier',
+                  tooltip: l10n.tooltipEarlier,
                   onPressed: value > -SettingsService.maxAdjustmentMinutes
                       ? () => settings.setAdjustment(prayer, value - 1)
                       : null,
@@ -85,14 +109,14 @@ class SettingsScreen extends StatelessWidget {
                 SizedBox(
                   width: 72,
                   child: Text(
-                    '${value >= 0 ? '+' : ''}$value min',
+                    l10n.adjustmentValue('${value >= 0 ? '+' : ''}$value'),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleSmall,
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
-                  tooltip: 'One minute later',
+                  tooltip: l10n.tooltipLater,
                   onPressed: value < SettingsService.maxAdjustmentMinutes
                       ? () => settings.setAdjustment(prayer, value + 1)
                       : null,
@@ -101,7 +125,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              _adjustmentExplanation(prayer),
+              _adjustmentExplanation(l10n, prayer),
               style: theme.textTheme.bodySmall,
             ),
           ],
@@ -113,10 +137,9 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListenableBuilder(
         listenable: settings,
         builder: (context, _) {
@@ -124,14 +147,17 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               // (1) Active profile.
-              Text('Calculation profile', style: theme.textTheme.titleMedium),
+              Text(
+                l10n.calculationProfileSection,
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 4),
               Card(
                 child: ListTile(
-                  title: Text(settings.activeProfile.name),
-                  subtitle: const Text(
-                    'PROPOSED — pending scholarly review',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  title: Text(profileLabel(l10n, settings.activeProfile).name),
+                  subtitle: Text(
+                    l10n.proposedStatus,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _openProfiles(context),
@@ -139,54 +165,88 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // (2) Per-prayer adjustments.
-              Text('Prayer time adjustments',
-                  style: theme.textTheme.titleMedium),
+              // (2) App language.
+              Text(l10n.languageSection, style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: DropdownButtonFormField<String?>(
+                    initialValue: settings.languageCode,
+                    // Full-width so the selected value can never push the
+                    // field outside its card at large text sizes.
+                    isExpanded: true,
+                    decoration: const InputDecoration(border: InputBorder.none),
+                    items: _languageItems(l10n),
+                    onChanged: (code) => settings.setLanguageCode(code),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // (3) Per-prayer adjustments.
+              Text(l10n.adjustmentsSection, style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
-                'Sunrise is a timetable marker, not a prayer, so it has no '
-                'adjustment.',
+                l10n.sunriseNoAdjustmentNote,
                 style: theme.textTheme.bodySmall,
               ),
               const SizedBox(height: 4),
-              ..._adjustablePrayers
-                  .map((p) => _adjustmentRow(context, settings, p)),
+              ..._adjustablePrayers.map(
+                (p) => _adjustmentRow(context, l10n, settings, p),
+              ),
               const SizedBox(height: 16),
 
-              // (3) Precautionary delay (ihtiyat).
-              Text('Precautionary delay (ihtiyat)',
-                  style: theme.textTheme.titleMedium),
+              // (4) Precautionary delay (ihtiyat).
+              Text(l10n.ihtiyatSection, style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Card(
                 child: SwitchListTile(
-                  title: const Text('Apply ihtiyat delays'),
-                  subtitle: const Text(
-                    'Adds a small delay after solar noon (Dhuhr) and after '
-                    'sunset (Maghrib), as a precaution. This is a convention, '
-                    'not part of the fiqh definition.',
-                  ),
+                  title: Text(l10n.applyIhtiyat),
+                  subtitle: Text(l10n.ihtiyatSubtitle),
                   value: settings.ihtiyatEnabled,
                   onChanged: settings.setIhtiyatEnabled,
                 ),
               ),
               const SizedBox(height: 16),
 
-              // (4) Reset adjustments.
+              // (5) Reset adjustments.
               TextButton.icon(
                 icon: const Icon(Icons.restart_alt),
-                label: const Text('Reset adjustments'),
+                label: Text(l10n.resetAdjustments),
                 onPressed: () async {
                   await settings.resetAdjustments();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content:
-                            Text('All prayer time adjustments were reset.'),
-                      ),
+                      SnackBar(content: Text(l10n.adjustmentsReset)),
                     );
                   }
                 },
               ),
+              const SizedBox(height: 16),
+
+              // (6) Fonts: known pending item — no font files are bundled
+              // (Jameel Noori Nastaleeq redistribution rights unverified).
+              Text(l10n.fontsSection, style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(l10n.fontsNote, style: theme.textTheme.bodySmall),
+                ),
+              ),
+
+              // (7) Prayer notifications (Track A widget; hidden when no
+              // NotificationService is provided, e.g. in widget tests).
+              if (notifications != null) ...[
+                const SizedBox(height: 16),
+                NotificationSettingsSection(
+                  notifications: notifications!,
+                  settings: settings,
+                  coordinates: coordinates,
+                  timeZoneOffset: timeZoneOffset,
+                ),
+              ],
             ],
           );
         },

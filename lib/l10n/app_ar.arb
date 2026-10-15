@@ -1,0 +1,263 @@
+{
+  "@@locale": "ar",
+  "navHome": "الرئيسية",
+  "navMonthly": "شهري",
+  "navQibla": "القبلة",
+  "navProfiles": "الحساب",
+  "navSettings": "الإعدادات",
+  "chooseLocationTitle": "اختر موقعك",
+  "chooseLocationBody": "تُحسب مواقيت الصلاة لمكان محدد. اختر موقعك للمتابعة.",
+  "homePromptBody": "تُحسب مواقيت الصلاة لمكان محدد. اختر موقعك لعرض جدول مواقيت اليوم.",
+  "setLocation": "تحديد الموقع",
+  "hijriDateLine": "هجري: {monthName} · {note}",
+  "nextPrayerIn": "{prayer} بعد {countdown}",
+  "nextPrayerAt": "الصلاة القادمة في {time}",
+  "todaysTimes": "مواقيت اليوم",
+  "prayerFajr": "الفجر",
+  "prayerSunrise": "الشروق",
+  "prayerDhuhr": "الظهر",
+  "prayerAsr": "العصر",
+  "prayerMaghrib": "المغرب",
+  "prayerIsha": "العشاء",
+  "nextPrayerBadge": "الصلاة القادمة",
+  "timetableMarkerNote": "علامة في الجدول — ليست صلاة",
+  "bandsTitle": "أوقات الاختيار والضرورة (مالكي)",
+  "preferredLabel": "وقت الاختيار: {text}",
+  "necessityLabel": "النهاية القصوى: {text}",
+  "calculationProfileProposed": "طريقة الحساب: مقترحة — بانتظار المراجعة العلمية",
+  "proposedStatus": "مقترح — بانتظار المراجعة العلمية",
+  "aboutProfile": "عن طريقة الحساب",
+  "aboutProfileText": "الزوايا المستخدمة في حساب هذه المواقيت (مثل زاوية الفجر 18° وزاوية العشاء 17°) اصطلاحات فلكية تقرّب العلامات الشرعية المذكورة في المصادر الفقهية، وليست أحكامًا فقهية بذاتها. لم يراجع أي عالم هذه الطريقة؛ وهي نقطة بداية مقترحة، ولا يُعدّ شيء في هذه الشاشة حكمًا علميًا.",
+  "bandNameSubh": "الصبح",
+  "bandNameDhuhr": "الظهر",
+  "bandNameAsr": "العصر",
+  "bandNameMaghrib": "المغرب",
+  "bandNameIsha": "العشاء",
+  "subhPreferredInfo": "وقت الاختيار إلى الإسفار (وضوح الإضاءة في الأفق) — شريط معلوماتي؛ لا يُعيَّن له وقت بالساعة.",
+  "subhNecessityEnd": "النهاية القصوى (لأصحاب الأعذار): الشروق، {time}.",
+  "dhuhrPreferred": "وقت الاختيار إلى دخول العصر (المثل الأول)، {time}.",
+  "dhuhrNecessityEnd": "النهاية القصوى (لأصحاب الأعذار): الغروب، {time}.",
+  "asrPreferredInfo": "وقت الاختيار إلى الاصفرار (اصفرار الشمس) — شريط معلوماتي؛ تقريبي، وليس وقت أذان أبدًا.",
+  "asrNecessityEnd": "النهاية القصوى (لأصحاب الأعذار): الغروب، {time}.",
+  "maghribPreferred": "وقت الاختيار ضيق — نحو 15 إلى 20 دقيقة بعد الغروب (حتى {time}). شريط معلوماتي؛ ليس وقت أذان.",
+  "maghribNecessityInfo": "النهاية القصوى (لأصحاب الأعذار): الفجر الصادق — غير محسوب في هذه الشاشة.",
+  "ishaPreferred": "وقت الاختيار إلى الثلث الأول من الليل، {third}. قول بديل مُسمّى: يمتد وقت الاختيار عند ابن حبيب إلى منتصف الليل، {midnight}.",
+  "ishaNecessityInfo": "النهاية القصوى (لأصحاب الأعذار): الفجر الصادق — غير محسوب في هذه الشاشة.",
+  "hijriCalendarNote": "تقويم إسلامي حسابي (رياضي) — تقدير حسابي؛ بداية الشهور الفعلية تعتمد على رؤية الهلال.",
+  "hijriDateFormat": "{day} {monthName} {year} هـ",
+  "monthSubtitle": "{hijri} · التواريخ الهجرية: تقويم حسابي",
+  "previousMonth": "الشهر السابق",
+  "nextMonth": "الشهر التالي",
+  "highLatitudeNote": "بعض مواقيت هذا اليوم تقديرية: لا تبلغ الشمس الزوايا المحددة هنا، فاستُخدم تقريب لخطوط العرض العالية.",
+  "bandsInfoNote": "أشرطة معلوماتية تصف نوافذ وقت الاختيار ووقت الضرورة — ليست مواقيت أذان ولا تُشغّل أي عدّاد أبدًا.",
+  "preferredWord": "وقت الاختيار",
+  "necessityWord": "النهاية القصوى",
+  "computedChip": "محسوب",
+  "informationalChip": "معلوماتي",
+  "estimatedMarker": "تقديري",
+  "estimatedTooltip": "مواقيت تقديرية (تقريب لخطوط العرض العالية)",
+  "dayCellFajr": "ف {time}",
+  "dayCellMaghrib": "م {time}",
+  "qiblaTitle": "اتجاه القبلة",
+  "qiblaBearing": "{degrees}° باتجاه عقارب الساعة من الشمال الحقيقي",
+  "qiblaAlignNote": "اضبط الاتجاه باستخدام أي تطبيق بوصلة أو بوصلة حقيقية — هذه الشاشة لا تستخدم حساس البوصلة في هاتفك.",
+  "qiblaLabel": "القبلة",
+  "profilesTitle": "طرق الحساب",
+  "proposedBanner": "مقترح — بانتظار المراجعة العلمية. الزوايا اصطلاحات فلكية وليست أحكامًا فقهية. لم يراجع أي عالم هذه الطرق.",
+  "selectProfile": "اختر طريقة الحساب",
+  "profileAngles": "زاوية الفجر {fajr}°  ·  زاوية العشاء {isha}°  ·  عامل العصر {asr}",
+  "compareProfiles": "مقارنة طرق الحساب",
+  "compareSubtitle": "مواقيت اليوم المحسوبة جنبًا إلى جنب (قيم المحرك، قبل تعديلاتك لكل صلاة).",
+  "profileALabel": "الطريقة أ",
+  "profileBLabel": "الطريقة ب",
+  "tablePrayer": "الصلاة",
+  "tableDiffHeader": "B − A",
+  "diffSame": "متساوٍ",
+  "diffMinutes": "{value} د",
+  "sunriseMarkerRow": "الشروق (علامة)",
+  "compareFootnote": "تأتي الفروق من زوايا الفجر والعشاء التي تستخدمها كل طريقة؛ والطرق نفسها مقترحة — بانتظار المراجعة العلمية.",
+  "settingsTitle": "الإعدادات",
+  "calculationProfileSection": "طريقة الحساب",
+  "adjustmentsSection": "تعديلات مواقيت الصلاة",
+  "sunriseNoAdjustmentNote": "الشروق علامة في الجدول وليس صلاة، فلا تعديل له.",
+  "ihtiyatSection": "التأخير الاحتياطي (احتياط)",
+  "applyIhtiyat": "تطبيق التأخيرات الاحتياطية",
+  "ihtiyatSubtitle": "يضيف تأخيرًا بسيطًا بعد الزوال (الظهر) وبعد الغروب (المغرب) احتياطًا. هذا اصطلاح وليس جزءًا من التعريف الفقهي.",
+  "resetAdjustments": "إعادة ضبط التعديلات",
+  "adjustmentsReset": "تمت إعادة ضبط جميع تعديلات مواقيت الصلاة.",
+  "tooltipEarlier": "دقيقة أبكر",
+  "tooltipLater": "دقيقة لاحقًا",
+  "adjustmentValue": "{value} د",
+  "adjustmentExplanation": "يقدّم وقت {prayer} المعروض أو يؤخّره. استخدمه لمطابقة جدول مسجدك المحلي؛ فهو لا يغيّر الحساب الأساسي.",
+  "languageSection": "اللغة",
+  "systemDefault": "الافتراضي للنظام",
+  "fontsSection": "الخطوط",
+  "fontsNote": "يستخدم النص الأردي حاليًا خط نظام الجهاز. تضمين خط جميل نوري نستعليق بند معروف معلّق: حقوق إعادة التوزيع غير مؤكدة، لذا لا يُضمَّن أي ملف خط مع التطبيق.",
+  "locationTitle": "الموقع",
+  "currentLocation": "الموقع الحالي",
+  "noLocationChosen": "لم يُختر موقع بعد.",
+  "currentLocationValue": "{name}\n{coordinates}{deviceNote}",
+  "deviceLocationSuffix": " (من الجهاز)",
+  "deviceLocationSection": "موقع الجهاز",
+  "useDeviceLocation": "استخدام موقع الجهاز",
+  "openSystemSettings": "فتح إعدادات النظام",
+  "enterManually": "إدخال يدوي",
+  "fieldName": "الاسم",
+  "hintName": "مثال: نواكشوط",
+  "fieldLatitude": "خط العرض",
+  "hintLatitude": "-90 إلى 90",
+  "fieldLongitude": "خط الطول",
+  "hintLongitude": "-180 إلى 180",
+  "saveLocation": "حفظ هذا الموقع",
+  "validateName": "يرجى إدخال اسم لهذا الموقع.",
+  "validateNumberExample": "يرجى إدخال رقم، مثال: 18.09.",
+  "validateLatitudeRange": "يجب أن يكون خط العرض بين -90 و 90.",
+  "validateLongitudeRange": "يجب أن يكون خط الطول بين -180 و 180.",
+  "deviceLocationName": "موقع الجهاز",
+  "errorServiceDisabled": "خدمات الموقع متوقفة. فعّلها في إعدادات الجهاز، أو أدخل موقعك يدويًا أدناه.",
+  "errorDeniedForever": "تم رفض إذن الموقع نهائيًا. افتح إعدادات النظام للسماح بالوصول إلى الموقع، أو أدخل موقعك يدويًا أدناه.",
+  "errorDenied": "تم رفض إذن الموقع. يمكنك المحاولة مرة أخرى، أو إدخال موقعك يدويًا أدناه.",
+  "errorPositionUnknown": "تعذّر تحديد موقعك. حاول مرة أخرى، أو أدخل موقعك يدويًا أدناه.",
+  "errorReauthorize": "لم يعد إذن الموقع متاحًا. استخدم موقع الجهاز مرة أخرى لإعادة الترخيص، أو أدخل موقعك يدويًا.",
+  "errorRefreshPositionUnknown": "تعذّر تحديد موقعك. حاول مرة أخرى، أو أدخل موقعك يدويًا.",
+  "errorUnexpectedUse": "تعذّر استخدام موقع الجهاز ({detail}). يمكنك المحاولة مرة أخرى، أو إدخال موقعك يدويًا أدناه.",
+  "errorUnexpectedRefresh": "تعذّر تحديث موقع الجهاز ({detail}).",
+  "hijriMonth1": "محرم",
+  "hijriMonth2": "صفر",
+  "hijriMonth3": "ربيع الأول",
+  "hijriMonth4": "ربيع الثاني",
+  "hijriMonth5": "جمادى الأولى",
+  "hijriMonth6": "جمادى الآخرة",
+  "hijriMonth7": "رجب",
+  "hijriMonth8": "شعبان",
+  "hijriMonth9": "رمضان",
+  "hijriMonth10": "شوال",
+  "hijriMonth11": "ذو القعدة",
+  "hijriMonth12": "ذو الحجة",
+  "profileNameMwlWestAfrica": "مالكي — رابطة العالم الإسلامي، غرب أفريقيا",
+  "profileBasisMwlWestAfrica": "مجمع الفقه الإسلامي برابطة العالم الإسلامي 1986: الفجر 18 درجة، العشاء 17 درجة (الشفق الأحمر)؛ عامل العصر 1 = المثل الأول المالكي (مختصر خليل). الزوايا اصطلاحات فلكية وليست أحكامًا فقهية.",
+  "profileNameEgyptian": "مالكي — المصري (19.5/17.5)",
+  "profileBasisEgyptian": "اصطلاح الهيئة المصرية العامة للمساحة: الفجر 19.5 درجة، العشاء 17.5 درجة؛ عامل العصر 1 (مالكي). بديل مُسمّى.",
+  "profileNameUoif": "مالكي — اتحاد المنظمات الإسلامية بفرنسا (12/12)",
+  "profileBasisUoif": "اصطلاح اتحاد المنظمات الإسلامية في فرنسا: الفجر 12 درجة، العشاء 12 درجة؛ عامل العصر 1 (مالكي). بديل مُسمّى.",
+  "notificationsSection": "إشعارات الصلوات",
+  "@notificationsSection": {
+    "description": "Settings section: prayer notifications"
+  },
+  "notificationsIntro": "احصل على إشعار عند وقت كل صلاة. تُحسب الأوقات بالملف الحسابي نفسه والتعديلات نفسها المعروضة في الشاشة الرئيسية.",
+  "@notificationsIntro": {
+    "description": "Intro text for the notifications section"
+  },
+  "notifyPrayerLabel": "إشعار لوقت {prayer}",
+  "@notifyPrayerLabel": {
+    "description": "Per-prayer notification toggle label",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderOffsetLabel": "تذكير قبل وقت الصلاة",
+  "@reminderOffsetLabel": {
+    "description": "Label for the pre-prayer reminder offset picker"
+  },
+  "reminderOffsetOptionNone": "عند وقت الصلاة (بدون تذكير مسبق)",
+  "@reminderOffsetOptionNone": {
+    "description": "Reminder offset option: no early reminder"
+  },
+  "reminderOffsetOptionMinutes": "قبل {minutes} دقائق",
+  "@reminderOffsetOptionMinutes": {
+    "description": "Reminder offset option with minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPermissionTitle": "إذن الإشعارات",
+  "@notificationPermissionTitle": {
+    "description": "Row title: notification permission status"
+  },
+  "permissionGranted": "مسموح",
+  "@permissionGranted": {
+    "description": "Permission status: granted"
+  },
+  "permissionNotGranted": "غير مسموح",
+  "@permissionNotGranted": {
+    "description": "Permission status: not granted"
+  },
+  "requestPermissionButton": "السماح بالإشعارات",
+  "@requestPermissionButton": {
+    "description": "Button: request notification permission"
+  },
+  "exactAlarmTitle": "منبهات الوقت الدقيق",
+  "@exactAlarmTitle": {
+    "description": "Row title: Android exact-alarm status"
+  },
+  "exactAlarmGranted": "مسموح — يمكن أن تصل الإشعارات في وقت الصلاة بالضبط.",
+  "@exactAlarmGranted": {
+    "description": "Exact alarms allowed explanation"
+  },
+  "exactAlarmDenied": "غير مسموح — قد تصل الإشعارات متأخرة، بعد وقت الصلاة بعدة دقائق.",
+  "@exactAlarmDenied": {
+    "description": "Exact alarms denied explanation (honest)"
+  },
+  "openExactAlarmSettingsButton": "السماح بالمنبهات الدقيقة",
+  "@openExactAlarmSettingsButton": {
+    "description": "Button: open Android exact-alarm settings"
+  },
+  "androidDeliveryNote": "ملاحظة صريحة: في بعض هواتف أندرويد قد يؤخر تحسين البطارية أو وضع السكون (Doze) الإشعارات أو يمنعها، خصوصًا عندما يكون الهاتف مقفلًا أو لم يُفتح التطبيق منذ مدة. تُجدول الإشعارات مسبقًا، لكن وصولها يعتمد في النهاية على النظام. إذا وصلت متأخرة، جرّب إيقاف تحسين البطارية لهذا التطبيق. فتح التطبيق يوميًا يُبقي الجدول محدثًا.",
+  "@androidDeliveryNote": {
+    "description": "Honest Android delivery-limits note"
+  },
+  "iosDeliveryNote": "ملاحظة صريحة: في iOS تُجدول الإشعارات مسبقًا ويوصلها النظام. فتح التطبيق يوميًا يُبقي الجدول محدثًا؛ وقد تؤخر قيود الخلفية في iOS التحديثات.",
+  "@iosDeliveryNote": {
+    "description": "Honest iOS background-limits note"
+  },
+  "notificationScheduleError": "تعذر تحديث الإشعارات. حاول مرة أخرى.",
+  "@notificationScheduleError": {
+    "description": "Error when rescheduling notifications fails"
+  },
+  "notifTitle": "وقت {prayer}",
+  "@notifTitle": {
+    "description": "Notification title at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifBody": "حان الآن وقت {prayer}.",
+  "@notifBody": {
+    "description": "Notification body at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderTitle": "{prayer} بعد {minutes} دقائق",
+  "@notifReminderTitle": {
+    "description": "Reminder notification title",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderBody": "يبدأ وقت {prayer} بعد {minutes} دقائق.",
+  "@notifReminderBody": {
+    "description": "Reminder notification body",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  }
+}

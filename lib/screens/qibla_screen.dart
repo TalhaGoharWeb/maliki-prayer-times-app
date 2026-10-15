@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/utils/qibla.dart';
 
 /// Milestone 2 qibla screen: a static compass dial showing the great-circle
@@ -23,14 +24,15 @@ class QiblaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bearing =
-        qiblaBearingDegrees(coordinates.latitude, coordinates.longitude);
+    final bearing = qiblaBearingDegrees(
+      coordinates.latitude,
+      coordinates.longitude,
+    );
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Qibla direction'),
-      ),
+      appBar: AppBar(title: Text(l10n.qiblaTitle)),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -41,21 +43,25 @@ class QiblaScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${bearing.toStringAsFixed(1)}° clockwise from true north',
+            l10n.qiblaBearing(bearing.toStringAsFixed(1)),
             style: theme.textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           AspectRatio(
             aspectRatio: 1,
-            child: CustomPaint(
-              painter: _QiblaDialPainter(bearing),
+            child: Semantics(
+              // The dial is pure CustomPaint: expose its essential
+              // information (the bearing) to screen readers.
+              label: l10n.qiblaBearing(bearing.toStringAsFixed(1)),
+              child: CustomPaint(
+                painter: _QiblaDialPainter(bearing, l10n.qiblaLabel),
+              ),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            'Align using any compass app or physical compass — this screen '
-            'does not use your phone\'s compass sensor.',
+            l10n.qiblaAlignNote,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -71,8 +77,9 @@ class QiblaScreen extends StatelessWidget {
 /// fixed Kaaba-direction arrow at [bearingDegrees]. Nothing rotates.
 class _QiblaDialPainter extends CustomPainter {
   final double bearingDegrees;
+  final String qiblaLabel;
 
-  _QiblaDialPainter(this.bearingDegrees);
+  _QiblaDialPainter(this.bearingDegrees, this.qiblaLabel);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -90,10 +97,8 @@ class _QiblaDialPainter extends CustomPainter {
       final rad = deg * math.pi / 180.0;
       final isCardinal = deg % 90 == 0;
       final inner = radius - (isCardinal ? 14 : 8);
-      final p1 = center +
-          Offset(math.sin(rad), -math.cos(rad)) * inner;
-      final p2 = center +
-          Offset(math.sin(rad), -math.cos(rad)) * radius;
+      final p1 = center + Offset(math.sin(rad), -math.cos(rad)) * inner;
+      final p2 = center + Offset(math.sin(rad), -math.cos(rad)) * radius;
       canvas.drawLine(
         p1,
         p2,
@@ -107,25 +112,20 @@ class _QiblaDialPainter extends CustomPainter {
     const cardinals = ['N', 'E', 'S', 'W'];
     for (var i = 0; i < 4; i++) {
       final rad = i * 90 * math.pi / 180.0;
-      final pos = center +
-          Offset(math.sin(rad), -math.cos(rad)) * (radius - 26);
+      final pos =
+          center + Offset(math.sin(rad), -math.cos(rad)) * (radius - 26);
       final tp = TextPainter(
         text: TextSpan(
           text: cardinals[i],
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: i == 0
-                ? const Color(0xFFB71C1C)
-                : const Color(0xFF212121),
+            color: i == 0 ? const Color(0xFFB71C1C) : const Color(0xFF212121),
           ),
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      tp.paint(
-        canvas,
-        pos - Offset(tp.width / 2, tp.height / 2),
-      );
+      tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
     }
 
     // North marker: small red triangle at the top of the dial.
@@ -135,10 +135,7 @@ class _QiblaDialPainter extends CustomPainter {
       ..lineTo(northTip.dx - 7, northTip.dy + 14)
       ..lineTo(northTip.dx + 7, northTip.dy + 14)
       ..close();
-    canvas.drawPath(
-      northPath,
-      Paint()..color = const Color(0xFFB71C1C),
-    );
+    canvas.drawPath(northPath, Paint()..color = const Color(0xFFB71C1C));
 
     // Kaaba-direction arrow at the bearing, drawn from the center.
     final bRad = bearingDegrees * math.pi / 180.0;
@@ -164,9 +161,9 @@ class _QiblaDialPainter extends CustomPainter {
     // Label under the arrow tip.
     final labelPos = center + dir * (radius - 58);
     final tp = TextPainter(
-      text: const TextSpan(
-        text: 'Qibla',
-        style: TextStyle(
+      text: TextSpan(
+        text: qiblaLabel,
+        style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Color(0xFF00695C),
@@ -174,10 +171,7 @@ class _QiblaDialPainter extends CustomPainter {
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(
-      canvas,
-      labelPos - Offset(tp.width / 2, tp.height / 2),
-    );
+    tp.paint(canvas, labelPos - Offset(tp.width / 2, tp.height / 2));
   }
 
   @override

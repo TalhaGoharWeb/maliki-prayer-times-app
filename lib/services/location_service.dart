@@ -23,6 +23,40 @@ enum LocationPermissionState {
   serviceDisabled,
 }
 
+/// Machine-readable kind of the latest location failure, so the UI can show
+/// a localized message via the ARB templates instead of the English
+/// [LocationService.errorMessage] fallback.
+enum LocationErrorKind {
+  /// No error.
+  none,
+
+  /// The device's location service (GPS toggle) is switched off.
+  serviceDisabled,
+
+  /// Permission permanently denied; only system settings can change it.
+  permissionDeniedForever,
+
+  /// Permission denied; the system dialog may be shown again.
+  permissionDenied,
+
+  /// No GPS fix could be determined (during the device-location flow).
+  positionUnknown,
+
+  /// Refresh attempted without a usable permission.
+  reauthorizeNeeded,
+
+  /// No GPS fix could be determined (during a refresh).
+  refreshPositionUnknown,
+
+  /// Unexpected failure in [LocationService.useDeviceLocation]; the
+  /// exception text is in [LocationService.errorDetail].
+  unexpectedUse,
+
+  /// Unexpected failure in [LocationService.refreshDeviceLocation]; the
+  /// exception text is in [LocationService.errorDetail].
+  unexpectedRefresh,
+}
+
 /// Reads a single GPS fix. Returns `null` when no position could be
 /// determined. The production implementation uses the geolocator plugin;
 /// tests inject a fake.
@@ -107,7 +141,18 @@ class LocationService extends ChangeNotifier {
   LocationPermissionState permissionState = LocationPermissionState.unknown;
 
   /// Human-readable explanation of the latest failure, or `null`.
+  ///
+  /// Kept in English as a fallback; the UI prefers the localized template
+  /// selected by [errorKind].
   String? errorMessage;
+
+  /// Machine-readable kind of the latest failure; [LocationErrorKind.none]
+  /// when there is no error. Always set alongside [errorMessage].
+  LocationErrorKind errorKind = LocationErrorKind.none;
+
+  /// Detail for [LocationErrorKind.unexpectedUse] /
+  /// [LocationErrorKind.unexpectedRefresh]: the caught exception's text.
+  String? errorDetail;
 
   final GpsReader _gpsReader;
   final LocationPermissionGateway _permissionGateway;
@@ -160,9 +205,12 @@ class LocationService extends ChangeNotifier {
   /// [permissionState] and [errorMessage] and leaves [current] unchanged.
   Future<void> useDeviceLocation() async {
     errorMessage = null;
+    errorKind = LocationErrorKind.none;
+    errorDetail = null;
     try {
       if (!await _permissionGateway.isLocationServiceEnabled()) {
         permissionState = LocationPermissionState.serviceDisabled;
+        errorKind = LocationErrorKind.serviceDisabled;
         errorMessage =
             'Location services are turned off. Turn them on in the device '
             'settings, or enter your location manually below.';
@@ -177,6 +225,9 @@ class LocationService extends ChangeNotifier {
 
       if (state != LocationPermissionState.granted) {
         permissionState = state;
+        errorKind = state == LocationPermissionState.deniedForever
+            ? LocationErrorKind.permissionDeniedForever
+            : LocationErrorKind.permissionDenied;
         errorMessage = state == LocationPermissionState.deniedForever
             ? 'Location permission is permanently denied. Open the system '
                 'settings to allow location access, or enter your location '
@@ -190,6 +241,7 @@ class LocationService extends ChangeNotifier {
       permissionState = LocationPermissionState.granted;
       final position = await _gpsReader.readPosition();
       if (position == null) {
+        errorKind = LocationErrorKind.positionUnknown;
         errorMessage =
             'Could not determine your position. Please try again, or enter '
             'your location manually below.';
@@ -206,6 +258,8 @@ class LocationService extends ChangeNotifier {
       await _persist(location);
       current = location;
     } catch (e) {
+      errorKind = LocationErrorKind.unexpectedUse;
+      errorDetail = '$e';
       errorMessage = 'Could not use the device location ($e). You can try '
           'again, or enter your location manually below.';
     }
@@ -225,8 +279,11 @@ class LocationService extends ChangeNotifier {
   Future<void> refreshDeviceLocation() async {
     if (current?.isDevice != true) return;
     errorMessage = null;
+    errorKind = LocationErrorKind.none;
+    errorDetail = null;
     try {
       if (permissionState != LocationPermissionState.granted) {
+        errorKind = LocationErrorKind.reauthorizeNeeded;
         errorMessage =
             'Location permission is no longer available. Use the device '
             'location again to re-authorize, or enter your location manually.';
@@ -235,6 +292,7 @@ class LocationService extends ChangeNotifier {
       }
       final position = await _gpsReader.readPosition();
       if (position == null) {
+        errorKind = LocationErrorKind.refreshPositionUnknown;
         errorMessage =
             'Could not determine your position. Please try again, or enter '
             'your location manually.';
@@ -250,6 +308,8 @@ class LocationService extends ChangeNotifier {
       await _persist(location);
       current = location;
     } catch (e) {
+      errorKind = LocationErrorKind.unexpectedRefresh;
+      errorDetail = '$e';
       errorMessage = 'Could not refresh the device location ($e).';
     }
     notifyListeners();

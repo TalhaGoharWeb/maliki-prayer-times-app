@@ -1,0 +1,825 @@
+{
+  "@@locale": "en",
+  "navHome": "Home",
+  "@navHome": {
+    "description": "Bottom navigation: home tab"
+  },
+  "navMonthly": "Monthly",
+  "@navMonthly": {
+    "description": "Bottom navigation: monthly tab"
+  },
+  "navQibla": "Qibla",
+  "@navQibla": {
+    "description": "Bottom navigation: qibla tab"
+  },
+  "navProfiles": "Profiles",
+  "@navProfiles": {
+    "description": "Bottom navigation: profiles tab"
+  },
+  "navSettings": "Settings",
+  "@navSettings": {
+    "description": "Bottom navigation: settings tab"
+  },
+  "chooseLocationTitle": "Choose your location",
+  "@chooseLocationTitle": {
+    "description": "Title of the choose-location prompt card"
+  },
+  "chooseLocationBody": "Prayer times are computed for a specific place. Pick your location to continue.",
+  "@chooseLocationBody": {
+    "description": "Body of the choose-location prompt (main shell version)"
+  },
+  "homePromptBody": "Prayer times are computed for a specific place. Pick your location to see today’s timetable.",
+  "@homePromptBody": {
+    "description": "Body of the choose-location prompt (home screen version)"
+  },
+  "setLocation": "Set location",
+  "@setLocation": {
+    "description": "Button opening the location picker"
+  },
+  "hijriDateLine": "Hijri: {monthName} · {note}",
+  "@hijriDateLine": {
+    "description": "Home screen Hijri date line",
+    "placeholders": {
+      "monthName": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "nextPrayerIn": "{prayer} in {countdown}",
+  "@nextPrayerIn": {
+    "description": "Next-prayer countdown headline",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "countdown": {
+        "type": "String"
+      }
+    }
+  },
+  "nextPrayerAt": "Next prayer at {time}",
+  "@nextPrayerAt": {
+    "description": "Next-prayer clock time line",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "todaysTimes": "Today’s times",
+  "@todaysTimes": {
+    "description": "Home screen section header"
+  },
+  "prayerFajr": "Fajr",
+  "@prayerFajr": {
+    "description": "Prayer name: Fajr"
+  },
+  "prayerSunrise": "Sunrise",
+  "@prayerSunrise": {
+    "description": "Timetable row: sunrise"
+  },
+  "prayerDhuhr": "Dhuhr",
+  "@prayerDhuhr": {
+    "description": "Prayer name: Dhuhr"
+  },
+  "prayerAsr": "Asr",
+  "@prayerAsr": {
+    "description": "Prayer name: Asr"
+  },
+  "prayerMaghrib": "Maghrib",
+  "@prayerMaghrib": {
+    "description": "Prayer name: Maghrib"
+  },
+  "prayerIsha": "Isha",
+  "@prayerIsha": {
+    "description": "Prayer name: Isha"
+  },
+  "nextPrayerBadge": "Next prayer",
+  "@nextPrayerBadge": {
+    "description": "Subtitle badge marking the next prayer row"
+  },
+  "timetableMarkerNote": "Timetable marker — not a prayer",
+  "@timetableMarkerNote": {
+    "description": "Note that sunrise is not a prayer"
+  },
+  "bandsTitle": "Preferred and necessity times (Maliki)",
+  "@bandsTitle": {
+    "description": "Section header for the Maliki two-tier bands"
+  },
+  "preferredLabel": "Preferred: {text}",
+  "@preferredLabel": {
+    "description": "Band line label for the ikhtiyari (choice) time",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "necessityLabel": "Absolute end: {text}",
+  "@necessityLabel": {
+    "description": "Band line label for the daruri (necessity) end",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "calculationProfileProposed": "Calculation profile: PROPOSED — pending scholarly review",
+  "@calculationProfileProposed": {
+    "description": "Home screen calculation-profile status label"
+  },
+  "proposedStatus": "PROPOSED — pending scholarly review",
+  "@proposedStatus": {
+    "description": "Short PROPOSED pending-review status"
+  },
+  "aboutProfile": "About this profile",
+  "@aboutProfile": {
+    "description": "Expansion tile title"
+  },
+  "aboutProfileText": "The angles used to compute these times (for example the 18° Fajr angle and 17° Isha angle) are astronomical conventions that approximate the legal signs described in the fiqh sources. They are not fiqh rulings themselves. No scholar has reviewed this profile; it is a proposed starting point, and nothing on this screen should be treated as a scholarly determination.",
+  "@aboutProfileText": {
+    "description": "Explanation that angles are conventions, not fiqh rulings"
+  },
+  "bandNameSubh": "Subh",
+  "@bandNameSubh": {
+    "description": "Band header name: Subh"
+  },
+  "bandNameDhuhr": "Dhuhr",
+  "@bandNameDhuhr": {
+    "description": "Band header name: Dhuhr"
+  },
+  "bandNameAsr": "Asr",
+  "@bandNameAsr": {
+    "description": "Band header name: Asr"
+  },
+  "bandNameMaghrib": "Maghrib",
+  "@bandNameMaghrib": {
+    "description": "Band header name: Maghrib"
+  },
+  "bandNameIsha": "Isha",
+  "@bandNameIsha": {
+    "description": "Band header name: Isha"
+  },
+  "subhPreferredInfo": "Preferred until isfar (clear brightening of the horizon) — informational band; no clock time is assigned to it.",
+  "@subhPreferredInfo": {
+    "description": "Subh ikhtiyari band (isfar, informational)"
+  },
+  "subhNecessityEnd": "Absolute end (for those with excuse): sunrise, {time}.",
+  "@subhNecessityEnd": {
+    "description": "Subh daruri end at sunrise",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dhuhrPreferred": "Preferred until Asr begins (first mithl), {time}.",
+  "@dhuhrPreferred": {
+    "description": "Dhuhr ikhtiyari end at Asr start",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dhuhrNecessityEnd": "Absolute end (for those with excuse): sunset, {time}.",
+  "@dhuhrNecessityEnd": {
+    "description": "Dhuhr daruri end at sunset",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "asrPreferredInfo": "Preferred until isfirar (yellowing of the sun) — informational band; shown approximately, never an adhan time.",
+  "@asrPreferredInfo": {
+    "description": "Asr ikhtiyari band (isfirar, informational)"
+  },
+  "asrNecessityEnd": "Absolute end (for those with excuse): sunset, {time}.",
+  "@asrNecessityEnd": {
+    "description": "Asr daruri end at sunset",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "maghribPreferred": "Preferred window is narrow — about 15-20 minutes after sunset (until {time}). Informational band; not an adhan time.",
+  "@maghribPreferred": {
+    "description": "Maghrib narrow mukhtar band",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "maghribNecessityInfo": "Absolute end (for those with excuse): true dawn — not computed on this screen.",
+  "@maghribNecessityInfo": {
+    "description": "Maghrib daruri end at true dawn (not computed)"
+  },
+  "ishaPreferred": "Preferred until the first third of the night, {third}. Labeled alternative: the Ibn Habib view extends the preferred time to midnight, {midnight}.",
+  "@ishaPreferred": {
+    "description": "Isha ikhtiyari end (first third of night; Ibn Habib midnight alternative)",
+    "placeholders": {
+      "third": {
+        "type": "String"
+      },
+      "midnight": {
+        "type": "String"
+      }
+    }
+  },
+  "ishaNecessityInfo": "Absolute end (for those with excuse): true dawn — not computed on this screen.",
+  "@ishaNecessityInfo": {
+    "description": "Isha daruri end at true dawn (not computed)"
+  },
+  "hijriCalendarNote": "Tabular (arithmetic) Islamic calendar — an arithmetic approximation; actual month starts depend on moon sighting.",
+  "@hijriCalendarNote": {
+    "description": "Note that the Hijri calendar is tabular/approximate"
+  },
+  "hijriDateFormat": "{day} {monthName} {year} AH",
+  "@hijriDateFormat": {
+    "description": "Formatted Hijri date",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "monthName": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "monthSubtitle": "{hijri} · Hijri dates: tabular calendar",
+  "@monthSubtitle": {
+    "description": "Monthly screen app-bar subtitle",
+    "placeholders": {
+      "hijri": {
+        "type": "String"
+      }
+    }
+  },
+  "previousMonth": "Previous month",
+  "@previousMonth": {
+    "description": "Tooltip: previous month"
+  },
+  "nextMonth": "Next month",
+  "@nextMonth": {
+    "description": "Tooltip: next month"
+  },
+  "highLatitudeNote": "Some times on this day are estimates: the sun never reaches the configured angles here, so a high-latitude approximation was used.",
+  "@highLatitudeNote": {
+    "description": "Note shown when high-latitude fallback was used"
+  },
+  "bandsInfoNote": "Informational bands describing the preferred and necessity windows — they are not adhan times and never drive a countdown.",
+  "@bandsInfoNote": {
+    "description": "Monthly screen note about the informational bands"
+  },
+  "preferredWord": "Preferred",
+  "@preferredWord": {
+    "description": "Short label: preferred"
+  },
+  "necessityWord": "Absolute end",
+  "@necessityWord": {
+    "description": "Short label: absolute end"
+  },
+  "computedChip": "computed",
+  "@computedChip": {
+    "description": "Chip marking a computed band boundary"
+  },
+  "informationalChip": "informational",
+  "@informationalChip": {
+    "description": "Chip marking an informational band"
+  },
+  "estimatedMarker": "est.",
+  "@estimatedMarker": {
+    "description": "Short marker for estimated times"
+  },
+  "estimatedTooltip": "Estimated times (high-latitude approximation)",
+  "@estimatedTooltip": {
+    "description": "Tooltip for estimated times"
+  },
+  "dayCellFajr": "F {time}",
+  "@dayCellFajr": {
+    "description": "Monthly grid cell Fajr line",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dayCellMaghrib": "M {time}",
+  "@dayCellMaghrib": {
+    "description": "Monthly grid cell Maghrib line",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qiblaTitle": "Qibla direction",
+  "@qiblaTitle": {
+    "description": "Qibla screen title"
+  },
+  "qiblaBearing": "{degrees}° clockwise from true north",
+  "@qiblaBearing": {
+    "description": "Qibla bearing description",
+    "placeholders": {
+      "degrees": {
+        "type": "String"
+      }
+    }
+  },
+  "qiblaAlignNote": "Align using any compass app or physical compass — this screen does not use your phone’s compass sensor.",
+  "@qiblaAlignNote": {
+    "description": "Note that the screen is not a live compass"
+  },
+  "qiblaLabel": "Qibla",
+  "@qiblaLabel": {
+    "description": "Label painted on the qibla dial"
+  },
+  "profilesTitle": "Calculation profiles",
+  "@profilesTitle": {
+    "description": "Profiles screen title"
+  },
+  "proposedBanner": "PROPOSED — pending scholarly review. Angles are astronomical conventions, not fiqh rulings. No scholar has reviewed these profiles.",
+  "@proposedBanner": {
+    "description": "PROPOSED banner on the profiles screen"
+  },
+  "selectProfile": "Select a profile",
+  "@selectProfile": {
+    "description": "Section header: select a profile"
+  },
+  "profileAngles": "Fajr angle {fajr}°  ·  Isha angle {isha}°  ·  Asr factor {asr}",
+  "@profileAngles": {
+    "description": "Profile spec line: Fajr/Isha angles and Asr factor",
+    "placeholders": {
+      "fajr": {
+        "type": "String"
+      },
+      "isha": {
+        "type": "String"
+      },
+      "asr": {
+        "type": "String"
+      }
+    }
+  },
+  "compareProfiles": "Compare profiles",
+  "@compareProfiles": {
+    "description": "Section header: compare profiles"
+  },
+  "compareSubtitle": "Today’s computed times side by side (engine values, before your per-prayer adjustments).",
+  "@compareSubtitle": {
+    "description": "Comparison table subtitle"
+  },
+  "profileALabel": "Profile A",
+  "@profileALabel": {
+    "description": "Dropdown label: profile A"
+  },
+  "profileBLabel": "Profile B",
+  "@profileBLabel": {
+    "description": "Dropdown label: profile B"
+  },
+  "tablePrayer": "Prayer",
+  "@tablePrayer": {
+    "description": "Comparison table column: prayer"
+  },
+  "tableDiffHeader": "B − A",
+  "@tableDiffHeader": {
+    "description": "Comparison table column: B minus A"
+  },
+  "diffSame": "same",
+  "@diffSame": {
+    "description": "Comparison diff: identical times"
+  },
+  "diffMinutes": "{value} min",
+  "@diffMinutes": {
+    "description": "Comparison diff in minutes (value includes sign)",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sunriseMarkerRow": "Sunrise (marker)",
+  "@sunriseMarkerRow": {
+    "description": "Comparison row label for sunrise"
+  },
+  "compareFootnote": "Differences come from the Fajr/Isha angles each profile uses; the profiles themselves are PROPOSED — pending scholarly review.",
+  "@compareFootnote": {
+    "description": "Footnote under the comparison table"
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings screen title"
+  },
+  "calculationProfileSection": "Calculation profile",
+  "@calculationProfileSection": {
+    "description": "Settings section: calculation profile"
+  },
+  "adjustmentsSection": "Prayer time adjustments",
+  "@adjustmentsSection": {
+    "description": "Settings section: per-prayer adjustments"
+  },
+  "sunriseNoAdjustmentNote": "Sunrise is a timetable marker, not a prayer, so it has no adjustment.",
+  "@sunriseNoAdjustmentNote": {
+    "description": "Note that sunrise has no adjustment"
+  },
+  "ihtiyatSection": "Precautionary delay (ihtiyat)",
+  "@ihtiyatSection": {
+    "description": "Settings section: precautionary delay"
+  },
+  "applyIhtiyat": "Apply ihtiyat delays",
+  "@applyIhtiyat": {
+    "description": "Switch label: apply ihtiyat delays"
+  },
+  "ihtiyatSubtitle": "Adds a small delay after solar noon (Dhuhr) and after sunset (Maghrib), as a precaution. This is a convention, not part of the fiqh definition.",
+  "@ihtiyatSubtitle": {
+    "description": "Explanation of the ihtiyat convention"
+  },
+  "resetAdjustments": "Reset adjustments",
+  "@resetAdjustments": {
+    "description": "Button: reset adjustments"
+  },
+  "adjustmentsReset": "All prayer time adjustments were reset.",
+  "@adjustmentsReset": {
+    "description": "SnackBar: adjustments were reset"
+  },
+  "tooltipEarlier": "One minute earlier",
+  "@tooltipEarlier": {
+    "description": "Tooltip: one minute earlier"
+  },
+  "tooltipLater": "One minute later",
+  "@tooltipLater": {
+    "description": "Tooltip: one minute later"
+  },
+  "adjustmentValue": "{value} min",
+  "@adjustmentValue": {
+    "description": "Adjustment value display (value includes sign)",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "adjustmentExplanation": "Moves the displayed {prayer} time earlier or later. Use this to match your local mosque’s timetable; it does not change the underlying calculation.",
+  "@adjustmentExplanation": {
+    "description": "Explanation of a per-prayer adjustment",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "languageSection": "Language",
+  "@languageSection": {
+    "description": "Settings section: language"
+  },
+  "systemDefault": "System default",
+  "@systemDefault": {
+    "description": "Language option: follow the system"
+  },
+  "fontsSection": "Fonts",
+  "@fontsSection": {
+    "description": "Settings section: fonts"
+  },
+  "fontsNote": "Urdu text currently uses the device system font. Bundling the Jameel Noori Nastaleeq font is a known pending item: redistribution rights are unverified, so no font file is bundled with the app.",
+  "@fontsNote": {
+    "description": "Note recording the pending Jameel Noori font decision"
+  },
+  "locationTitle": "Location",
+  "@locationTitle": {
+    "description": "Location screen title"
+  },
+  "currentLocation": "Current location",
+  "@currentLocation": {
+    "description": "Section header: current location"
+  },
+  "noLocationChosen": "No location chosen yet.",
+  "@noLocationChosen": {
+    "description": "Shown when no location is chosen"
+  },
+  "currentLocationValue": "{name}\n{coordinates}{deviceNote}",
+  "@currentLocationValue": {
+    "description": "Current location details",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "coordinates": {
+        "type": "String"
+      },
+      "deviceNote": {
+        "type": "String"
+      }
+    }
+  },
+  "deviceLocationSuffix": " (from device)",
+  "@deviceLocationSuffix": {
+    "description": "Suffix marking a device-derived location"
+  },
+  "deviceLocationSection": "Device location",
+  "@deviceLocationSection": {
+    "description": "Section header: device location"
+  },
+  "useDeviceLocation": "Use device location",
+  "@useDeviceLocation": {
+    "description": "Button: use device location"
+  },
+  "openSystemSettings": "Open system settings",
+  "@openSystemSettings": {
+    "description": "Button: open system settings"
+  },
+  "enterManually": "Enter manually",
+  "@enterManually": {
+    "description": "Section header: manual entry"
+  },
+  "fieldName": "Name",
+  "@fieldName": {
+    "description": "Form field: name"
+  },
+  "hintName": "e.g. Nouakchott",
+  "@hintName": {
+    "description": "Form hint: name example"
+  },
+  "fieldLatitude": "Latitude",
+  "@fieldLatitude": {
+    "description": "Form field: latitude"
+  },
+  "hintLatitude": "-90 to 90",
+  "@hintLatitude": {
+    "description": "Form hint: latitude range"
+  },
+  "fieldLongitude": "Longitude",
+  "@fieldLongitude": {
+    "description": "Form field: longitude"
+  },
+  "hintLongitude": "-180 to 180",
+  "@hintLongitude": {
+    "description": "Form hint: longitude range"
+  },
+  "saveLocation": "Save this location",
+  "@saveLocation": {
+    "description": "Button: save manual location"
+  },
+  "validateName": "Please enter a name for this location.",
+  "@validateName": {
+    "description": "Validation: name required"
+  },
+  "validateNumberExample": "Please enter a number, e.g. 18.09.",
+  "@validateNumberExample": {
+    "description": "Validation: number required"
+  },
+  "validateLatitudeRange": "Latitude must be between -90 and 90.",
+  "@validateLatitudeRange": {
+    "description": "Validation: latitude range"
+  },
+  "validateLongitudeRange": "Longitude must be between -180 and 180.",
+  "@validateLongitudeRange": {
+    "description": "Validation: longitude range"
+  },
+  "deviceLocationName": "Device location",
+  "@deviceLocationName": {
+    "description": "Display name for a device-derived location"
+  },
+  "errorServiceDisabled": "Location services are turned off. Turn them on in the device settings, or enter your location manually below.",
+  "@errorServiceDisabled": {
+    "description": "Location error: service disabled"
+  },
+  "errorDeniedForever": "Location permission is permanently denied. Open the system settings to allow location access, or enter your location manually below.",
+  "@errorDeniedForever": {
+    "description": "Location error: permission denied forever"
+  },
+  "errorDenied": "Location permission was denied. You can try again, or enter your location manually below.",
+  "@errorDenied": {
+    "description": "Location error: permission denied"
+  },
+  "errorPositionUnknown": "Could not determine your position. Please try again, or enter your location manually below.",
+  "@errorPositionUnknown": {
+    "description": "Location error: position unknown"
+  },
+  "errorReauthorize": "Location permission is no longer available. Use the device location again to re-authorize, or enter your location manually.",
+  "@errorReauthorize": {
+    "description": "Location error: re-authorization needed"
+  },
+  "errorRefreshPositionUnknown": "Could not determine your position. Please try again, or enter your location manually.",
+  "@errorRefreshPositionUnknown": {
+    "description": "Location error: refresh position unknown"
+  },
+  "errorUnexpectedUse": "Could not use the device location ({detail}). You can try again, or enter your location manually below.",
+  "@errorUnexpectedUse": {
+    "description": "Location error: unexpected failure using device location",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "errorUnexpectedRefresh": "Could not refresh the device location ({detail}).",
+  "@errorUnexpectedRefresh": {
+    "description": "Location error: unexpected failure refreshing",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "hijriMonth1": "Muharram",
+  "@hijriMonth1": {
+    "description": "Hijri month 1 name"
+  },
+  "hijriMonth2": "Safar",
+  "@hijriMonth2": {
+    "description": "Hijri month 2 name"
+  },
+  "hijriMonth3": "Rabi’ al-Awwal",
+  "@hijriMonth3": {
+    "description": "Hijri month 3 name"
+  },
+  "hijriMonth4": "Rabi’ al-Thani",
+  "@hijriMonth4": {
+    "description": "Hijri month 4 name"
+  },
+  "hijriMonth5": "Jumada al-Ula",
+  "@hijriMonth5": {
+    "description": "Hijri month 5 name"
+  },
+  "hijriMonth6": "Jumada al-Akhirah",
+  "@hijriMonth6": {
+    "description": "Hijri month 6 name"
+  },
+  "hijriMonth7": "Rajab",
+  "@hijriMonth7": {
+    "description": "Hijri month 7 name"
+  },
+  "hijriMonth8": "Sha’ban",
+  "@hijriMonth8": {
+    "description": "Hijri month 8 name"
+  },
+  "hijriMonth9": "Ramadan",
+  "@hijriMonth9": {
+    "description": "Hijri month 9 name"
+  },
+  "hijriMonth10": "Shawwal",
+  "@hijriMonth10": {
+    "description": "Hijri month 10 name"
+  },
+  "hijriMonth11": "Dhu al-Qa’dah",
+  "@hijriMonth11": {
+    "description": "Hijri month 11 name"
+  },
+  "hijriMonth12": "Dhu al-Hijjah",
+  "@hijriMonth12": {
+    "description": "Hijri month 12 name"
+  },
+  "profileNameMwlWestAfrica": "Maliki — MWL West Africa",
+  "@profileNameMwlWestAfrica": {
+    "description": "Localized display for profile id 'profileNameMwlWestAfrica'"
+  },
+  "profileBasisMwlWestAfrica": "MWL Islamic Fiqh Council 1986: Fajr 18 deg, Isha 17 deg (red twilight); Asr factor 1 = Maliki first mithl (Mukhtasar Khalil). Angles are astronomical conventions, not fiqh rulings.",
+  "@profileBasisMwlWestAfrica": {
+    "description": "Localized display for profile id 'profileBasisMwlWestAfrica'"
+  },
+  "profileNameEgyptian": "Maliki — Egyptian (19.5/17.5)",
+  "@profileNameEgyptian": {
+    "description": "Localized display for profile id 'profileNameEgyptian'"
+  },
+  "profileBasisEgyptian": "Egyptian General Authority of Survey convention: Fajr 19.5 deg, Isha 17.5 deg; Asr factor 1 (Maliki). Named alternative.",
+  "@profileBasisEgyptian": {
+    "description": "Localized display for profile id 'profileBasisEgyptian'"
+  },
+  "profileNameUoif": "Maliki — UOIF (12/12)",
+  "@profileNameUoif": {
+    "description": "Localized display for profile id 'profileNameUoif'"
+  },
+  "profileBasisUoif": "UOIF (France) convention: Fajr 12 deg, Isha 12 deg; Asr factor 1 (Maliki). Named alternative.",
+  "@profileBasisUoif": {
+    "description": "Localized display for profile id 'profileBasisUoif'"
+  },
+  "notificationsSection": "Prayer notifications",
+  "@notificationsSection": {
+    "description": "Settings section: prayer notifications"
+  },
+  "notificationsIntro": "Get a notification at each prayer time. Times are computed with the same calculation profile and adjustments shown on the home screen.",
+  "@notificationsIntro": {
+    "description": "Intro text for the notifications section"
+  },
+  "notifyPrayerLabel": "Notify for {prayer}",
+  "@notifyPrayerLabel": {
+    "description": "Per-prayer notification toggle label",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderOffsetLabel": "Reminder before prayer time",
+  "@reminderOffsetLabel": {
+    "description": "Label for the pre-prayer reminder offset picker"
+  },
+  "reminderOffsetOptionNone": "At prayer time (no early reminder)",
+  "@reminderOffsetOptionNone": {
+    "description": "Reminder offset option: no early reminder"
+  },
+  "reminderOffsetOptionMinutes": "{minutes} minutes before",
+  "@reminderOffsetOptionMinutes": {
+    "description": "Reminder offset option with minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPermissionTitle": "Notification permission",
+  "@notificationPermissionTitle": {
+    "description": "Row title: notification permission status"
+  },
+  "permissionGranted": "Granted",
+  "@permissionGranted": {
+    "description": "Permission status: granted"
+  },
+  "permissionNotGranted": "Not granted",
+  "@permissionNotGranted": {
+    "description": "Permission status: not granted"
+  },
+  "requestPermissionButton": "Allow notifications",
+  "@requestPermissionButton": {
+    "description": "Button: request notification permission"
+  },
+  "exactAlarmTitle": "Exact-time alarms",
+  "@exactAlarmTitle": {
+    "description": "Row title: Android exact-alarm status"
+  },
+  "exactAlarmGranted": "Allowed — notifications can fire at the prayer time.",
+  "@exactAlarmGranted": {
+    "description": "Exact alarms allowed explanation"
+  },
+  "exactAlarmDenied": "Not allowed — notifications may arrive late, a few minutes after the prayer time.",
+  "@exactAlarmDenied": {
+    "description": "Exact alarms denied explanation (honest)"
+  },
+  "openExactAlarmSettingsButton": "Allow exact alarms",
+  "@openExactAlarmSettingsButton": {
+    "description": "Button: open Android exact-alarm settings"
+  },
+  "androidDeliveryNote": "Honest note: on some Android phones, battery optimization or Doze mode can delay or block notifications, especially when the phone is locked or the app has not been opened for a while. Notifications are scheduled in advance, but delivery ultimately depends on the system. If they arrive late, try turning off battery optimization for this app. Opening the app each day keeps the schedule fresh.",
+  "@androidDeliveryNote": {
+    "description": "Honest Android delivery-limits note"
+  },
+  "iosDeliveryNote": "Honest note: on iOS, notifications are scheduled in advance and delivered by the system. Opening the app each day keeps the schedule fresh; iOS background limits can delay updates.",
+  "@iosDeliveryNote": {
+    "description": "Honest iOS background-limits note"
+  },
+  "notificationScheduleError": "Could not update notifications. Please try again.",
+  "@notificationScheduleError": {
+    "description": "Error when rescheduling notifications fails"
+  },
+  "notifTitle": "{prayer} time",
+  "@notifTitle": {
+    "description": "Notification title at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifBody": "It is now time for {prayer}.",
+  "@notifBody": {
+    "description": "Notification body at prayer time",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderTitle": "{prayer} in {minutes} minutes",
+  "@notifReminderTitle": {
+    "description": "Reminder notification title",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "notifReminderBody": "{prayer} begins in {minutes} minutes.",
+  "@notifReminderBody": {
+    "description": "Reminder notification body",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  }
+}

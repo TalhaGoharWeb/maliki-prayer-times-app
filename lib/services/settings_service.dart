@@ -15,6 +15,17 @@ class SettingsService extends ChangeNotifier {
   static const _activeProfileKey = 'active_profile_id';
   static const _adjustmentsKey = 'adjustments';
   static const _ihtiyatKey = 'ihtiyat_enabled';
+  static const _languageCodeKey = 'language_code';
+  static const _notificationTogglesKey = 'notification_toggles';
+  static const _reminderOffsetKey = 'reminder_offset_minutes';
+
+  /// Language codes the app can be switched to. `null` means "system
+  /// default" and is always allowed.
+  static const List<String> supportedLanguageCodes = ['en', 'ur', 'ar', 'fr'];
+
+  /// Pre-prayer reminder offsets (minutes before the prayer) the user can
+  /// pick from. 0 means "notify at the prayer time, no early reminder".
+  static const List<int> allowedReminderOffsets = [0, 5, 10, 15];
 
   /// Per-prayer adjustments are clamped to ±60 minutes.
   static const int maxAdjustmentMinutes = 60;
@@ -22,11 +33,26 @@ class SettingsService extends ChangeNotifier {
   /// Id of the active calculation profile.
   String activeProfileId = PrayerProfiles.defaultProfile.id;
 
+  /// UI language code ('en', 'ur', 'ar', 'fr'), or `null` for the system
+  /// default. Defaults to `null`.
+  String? _languageCode;
+
   final Map<Prayer, int> _adjustments = {
     for (final p in Prayer.values) p: 0,
   };
 
   bool _ihtiyatEnabled = true;
+
+  /// Per-prayer notification toggles. Defaults to true for every prayer
+  /// (including sunrise, which is a timetable marker — the user can switch
+  /// it off).
+  final Map<Prayer, bool> _notificationToggles = {
+    for (final p in Prayer.values) p: true,
+  };
+
+  /// Minutes before each prayer time at which a reminder notification fires.
+  /// One of [allowedReminderOffsets]; 0 = no early reminder.
+  int _reminderOffsetMinutes = 0;
 
   /// The active profile; falls back to the default when the stored id does
   /// not match a known profile.
@@ -62,6 +88,18 @@ class SettingsService extends ChangeNotifier {
   /// Whether the precautionary Dhuhr/Maghrib delay applies. Defaults to true.
   bool get ihtiyatEnabled => _ihtiyatEnabled;
 
+  /// Per-prayer notification toggles, each defaulting to true
+  /// (unmodifiable view).
+  Map<Prayer, bool> get notificationToggles =>
+      Map.unmodifiable(_notificationToggles);
+
+  /// Minutes before each prayer time at which a reminder fires.
+  /// One of [allowedReminderOffsets]; 0 = no early reminder.
+  int get reminderOffsetMinutes => _reminderOffsetMinutes;
+
+  /// The UI language code, or `null` for the system default.
+  String? get languageCode => _languageCode;
+
   /// The user-visible time for [prayer]: the computed engine time shifted by
   /// the stored per-prayer adjustment.
   DateTime adjustedTime(Prayer prayer, DateTime computed) {
@@ -81,6 +119,33 @@ class SettingsService extends ChangeNotifier {
     }
 
     service._ihtiyatEnabled = prefs.getBool(_ihtiyatKey) ?? true;
+
+    final storedOffset = prefs.getInt(_reminderOffsetKey);
+    if (storedOffset != null &&
+        allowedReminderOffsets.contains(storedOffset)) {
+      service._reminderOffsetMinutes = storedOffset;
+    }
+
+    final rawToggles = prefs.getString(_notificationTogglesKey);
+    if (rawToggles != null) {
+      try {
+        final decoded = jsonDecode(rawToggles);
+        if (decoded is Map) {
+          for (final prayer in Prayer.values) {
+            final value = decoded[prayer.name];
+            if (value is bool) {
+              service._notificationToggles[prayer] = value;
+            }
+          }
+        }
+      } catch (_) {
+        // Corrupt JSON: keep the defaults.
+      }
+    }
+
+    final storedLanguage = prefs.getString(_languageCodeKey);
+    service._languageCode =
+        supportedLanguageCodes.contains(storedLanguage) ? storedLanguage : null;
 
     final raw = prefs.getString(_adjustmentsKey);
     if (raw != null) {
@@ -111,6 +176,16 @@ class SettingsService extends ChangeNotifier {
       jsonEncode({for (final p in Prayer.values) p.name: _adjustments[p]}),
     );
     await prefs.setBool(_ihtiyatKey, _ihtiyatEnabled);
+    await prefs.setInt(_reminderOffsetKey, _reminderOffsetMinutes);
+    await prefs.setString(
+      _notificationTogglesKey,
+      jsonEncode({for (final p in Prayer.values) p.name: _notificationToggles[p]}),
+    );
+    if (_languageCode == null) {
+      await prefs.remove(_languageCodeKey);
+    } else {
+      await prefs.setString(_languageCodeKey, _languageCode!);
+    }
   }
 
   /// Selects the profile with [id]. Unknown ids are ignored: the current
@@ -136,6 +211,34 @@ class SettingsService extends ChangeNotifier {
   Future<void> setIhtiyatEnabled(bool value) async {
     if (_ihtiyatEnabled == value) return;
     _ihtiyatEnabled = value;
+    await _persist();
+    notifyListeners();
+  }
+
+  /// Enables or disables the notification for [prayer].
+  Future<void> setNotificationEnabled(Prayer prayer, bool value) async {
+    if (_notificationToggles[prayer] == value) return;
+    _notificationToggles[prayer] = value;
+    await _persist();
+    notifyListeners();
+  }
+
+  /// Sets the pre-prayer reminder offset in minutes. Must be one of
+  /// [allowedReminderOffsets]; other values are ignored.
+  Future<void> setReminderOffsetMinutes(int minutes) async {
+    if (!allowedReminderOffsets.contains(minutes)) return;
+    if (_reminderOffsetMinutes == minutes) return;
+    _reminderOffsetMinutes = minutes;
+    await _persist();
+    notifyListeners();
+  }
+
+  /// Sets the UI language: one of [supportedLanguageCodes], or `null` for
+  /// the system default. Unknown codes are ignored.
+  Future<void> setLanguageCode(String? code) async {
+    if (code != null && !supportedLanguageCodes.contains(code)) return;
+    if (_languageCode == code) return;
+    _languageCode = code;
     await _persist();
     notifyListeners();
   }

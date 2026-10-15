@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 
@@ -8,6 +9,10 @@ import 'package:malikiprayertimes/services/location_service.dart';
 ///
 /// The screen listens to [LocationService] and pops itself on a successful
 /// choice so the caller immediately sees the updated location.
+///
+/// Failure messages come from [LocationService.errorKind] rendered through
+/// the localized ARB templates; the service's English `errorMessage` is only
+/// a fallback that is never shown here.
 class LocationScreen extends StatefulWidget {
   final LocationService locationService;
 
@@ -43,19 +48,37 @@ class _LocationScreenState extends State<LocationScreen> {
       _service.permissionState == LocationPermissionState.deniedForever ||
       _service.permissionState == LocationPermissionState.serviceDisabled;
 
-  String? get _deviceLocationBlockReason {
+  String? _deviceLocationBlockReason(AppLocalizations l10n) {
     switch (_service.permissionState) {
       case LocationPermissionState.deniedForever:
-        return 'Location permission is permanently denied. Allow location '
-            'access in the system settings, or enter your location manually.';
+        return l10n.errorDeniedForever;
       case LocationPermissionState.serviceDisabled:
-        return 'Location services are turned off. Turn them on in the '
-            'system settings, or enter your location manually.';
+        return l10n.errorServiceDisabled;
       case LocationPermissionState.unknown:
       case LocationPermissionState.granted:
       case LocationPermissionState.denied:
         return null;
     }
+  }
+
+  /// The localized text for the service's latest failure, or `null` when
+  /// there is none.
+  String? _localizedError(AppLocalizations l10n) {
+    final detail = _service.errorDetail ?? '';
+    return switch (_service.errorKind) {
+      LocationErrorKind.none => null,
+      LocationErrorKind.serviceDisabled => l10n.errorServiceDisabled,
+      LocationErrorKind.permissionDeniedForever => l10n.errorDeniedForever,
+      LocationErrorKind.permissionDenied => l10n.errorDenied,
+      LocationErrorKind.positionUnknown => l10n.errorPositionUnknown,
+      LocationErrorKind.reauthorizeNeeded => l10n.errorReauthorize,
+      LocationErrorKind.refreshPositionUnknown =>
+        l10n.errorRefreshPositionUnknown,
+      LocationErrorKind.unexpectedUse => l10n.errorUnexpectedUse(detail),
+      LocationErrorKind.unexpectedRefresh => l10n.errorUnexpectedRefresh(
+          detail,
+        ),
+    };
   }
 
   Future<void> _useDeviceLocation() async {
@@ -82,31 +105,31 @@ class _LocationScreenState extends State<LocationScreen> {
     Navigator.of(context).pop();
   }
 
-  String? _validateName(String? value) {
+  String? _validateName(AppLocalizations l10n, String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter a name for this location.';
+      return l10n.validateName;
     }
     return null;
   }
 
-  String? _validateLatitude(String? value) {
+  String? _validateLatitude(AppLocalizations l10n, String? value) {
     final parsed = double.tryParse(value?.trim() ?? '');
     if (parsed == null) {
-      return 'Please enter a number, e.g. 18.09.';
+      return l10n.validateNumberExample;
     }
     if (parsed < -90 || parsed > 90) {
-      return 'Latitude must be between -90 and 90.';
+      return l10n.validateLatitudeRange;
     }
     return null;
   }
 
-  String? _validateLongitude(String? value) {
+  String? _validateLongitude(AppLocalizations l10n, String? value) {
     final parsed = double.tryParse(value?.trim() ?? '');
     if (parsed == null) {
-      return 'Please enter a number, e.g. -15.98.';
+      return l10n.validateNumberExample;
     }
     if (parsed < -180 || parsed > 180) {
-      return 'Longitude must be between -180 and 180.';
+      return l10n.validateLongitudeRange;
     }
     return null;
   }
@@ -114,33 +137,40 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _service,
       builder: (context, _) {
         final current = _service.current;
-        final blockedReason = _deviceLocationBlockReason;
+        final blockedReason = _deviceLocationBlockReason(l10n);
+        final errorText = _localizedError(l10n);
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Location'),
-          ),
+          appBar: AppBar(title: Text(l10n.locationTitle)),
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Current location', style: theme.textTheme.titleMedium),
+              Text(l10n.currentLocation, style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
                 current == null
-                    ? 'No location chosen yet.'
-                    : '${current.name}\n'
+                    ? l10n.noLocationChosen
+                    : l10n.currentLocationValue(
+                        current.isDevice
+                            ? l10n.deviceLocationName
+                            : current.name,
                         '${current.latitude.toStringAsFixed(5)}, '
-                        '${current.longitude.toStringAsFixed(5)}'
-                        '${current.isDevice ? ' (from device)' : ''}',
+                        '${current.longitude.toStringAsFixed(5)}',
+                        current.isDevice ? l10n.deviceLocationSuffix : '',
+                      ),
                 style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
 
               // Device location.
-              Text('Device location', style: theme.textTheme.titleMedium),
+              Text(
+                l10n.deviceLocationSection,
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 4),
               if (blockedReason != null) ...[
                 Text(blockedReason, style: theme.textTheme.bodySmall),
@@ -148,7 +178,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 OutlinedButton.icon(
                   onPressed: Geolocator.openAppSettings,
                   icon: const Icon(Icons.settings),
-                  label: const Text('Open system settings'),
+                  label: Text(l10n.openSystemSettings),
                 ),
               ],
               FilledButton(
@@ -161,13 +191,12 @@ class _LocationScreenState extends State<LocationScreen> {
                         height: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Use device location'),
+                    : Text(l10n.useDeviceLocation),
               ),
-              if (_service.errorMessage != null &&
-                  _service.current?.isDevice != true) ...[
+              if (errorText != null && _service.current?.isDevice != true) ...[
                 const SizedBox(height: 8),
                 Text(
-                  _service.errorMessage!,
+                  errorText,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.error,
                   ),
@@ -176,7 +205,7 @@ class _LocationScreenState extends State<LocationScreen> {
               const SizedBox(height: 16),
 
               // Manual entry.
-              Text('Enter manually', style: theme.textTheme.titleMedium),
+              Text(l10n.enterManually, style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Form(
                 key: _formKey,
@@ -184,37 +213,37 @@ class _LocationScreenState extends State<LocationScreen> {
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
-                        hintText: 'e.g. Nouakchott',
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldName,
+                        hintText: l10n.hintName,
                       ),
-                      validator: _validateName,
+                      validator: (v) => _validateName(l10n, v),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _latitudeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Latitude',
-                        hintText: '-90 to 90',
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldLatitude,
+                        hintText: l10n.hintLatitude,
                       ),
                       keyboardType: const TextInputType.numberWithOptions(
                         signed: true,
                         decimal: true,
                       ),
-                      validator: _validateLatitude,
+                      validator: (v) => _validateLatitude(l10n, v),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _longitudeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Longitude',
-                        hintText: '-180 to 180',
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldLongitude,
+                        hintText: l10n.hintLongitude,
                       ),
                       keyboardType: const TextInputType.numberWithOptions(
                         signed: true,
                         decimal: true,
                       ),
-                      validator: _validateLongitude,
+                      validator: (v) => _validateLongitude(l10n, v),
                     ),
                     const SizedBox(height: 12),
                     FilledButton(
@@ -223,10 +252,9 @@ class _LocationScreenState extends State<LocationScreen> {
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Save this location'),
+                          : Text(l10n.saveLocation),
                     ),
                   ],
                 ),

@@ -1,0 +1,358 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/prayer_profile.dart';
+import 'package:malikiprayertimes/engine/prayer_times.dart';
+import 'package:malikiprayertimes/services/notification_service.dart';
+import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// Nouakchott, Mauritania — UTC+0, so wall-clock fields equal UTC instants.
+const _nouakchott = Coordinates(18.0858, -15.9785);
+const _offset = Duration.zero;
+
+NotificationTexts _texts() => NotificationTexts(
+      titleFor: (p) => 'title-${p.name}',
+      bodyFor: (p) => 'body-${p.name}',
+      reminderTitleFor: (p, m) => 'rem-title-${p.name}-$m',
+      reminderBodyFor: (p, m) => 'rem-body-${p.name}-$m',
+    );
+
+/// Expected fire instants (UTC) per notification id, computed straight from
+/// the engine through [SettingsService.adjustedTime]: the next upcoming
+/// occurrence per enabled prayer (today when still future, else tomorrow) —
+/// the same contract [NotificationService.rescheduleAll] must honor.
+Map<int, DateTime> _expected({
+  required SettingsService settings,
+  required DateTime nowUtc,
+}) {
+  final result = <int, DateTime>{};
+  final nowWall = nowUtc.add(_offset);
+  final todayWall = DateTime.utc(nowWall.year, nowWall.month, nowWall.day);
+  final tomorrowWall = todayWall.add(const Duration(days: 1));
+  final reminder = settings.reminderOffsetMinutes;
+
+  DateTime prayerUtcFor(Prayer p, DateTime date) {
+    final times = calculatePrayerTimes(
+      coordinates: _nouakchott,
+      date: date,
+      timeZoneOffset: _offset,
+      profile: PrayerProfiles.defaultProfile,
+    );
+    return settings.adjustedTime(p, times.timeFor(p)).subtract(_offset);
+  }
+
+  for (final p in Prayer.values) {
+    if (!(settings.notificationToggles[p] ?? false)) continue;
+    var fireUtc = prayerUtcFor(p, todayWall);
+    if (!fireUtc.isAfter(nowUtc)) fireUtc = prayerUtcFor(p, tomorrowWall);
+    if (!fireUtc.isAfter(nowUtc)) continue;
+    result[p.index] = fireUtc;
+    if (reminder > 0) {
+      final reminderUtc = fireUtc.subtract(Duration(minutes: reminder));
+      if (reminderUtc.isAfter(nowUtc)) {
+        result[reminderIdBase + p.index] = reminderUtc;
+      }
+    }
+  }
+  return result;
+}
+
+void main() {
+  group('NotificationService with FakeNotificationScheduler', () {
+    test('reschedule computes correct times vs the engine', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      final now = DateTime.utc(2026, 10, 15, 10, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      expect(fake.cancelAllCount, 1);
+      final expected = _expected(settings: settings, nowUtc: now);
+      expect(expected, isNotEmpty);
+      expect(fake.scheduled.map((s) => s.id).toSet(),
+          expected.keys.toSet());
+      for (final s in fake.scheduled) {
+        expect(s.scheduledUtc, expected[s.id], reason: 'id ${s.id}');
+        expect(s.title, 'title-${Prayer.values[s.id].name}');
+        expect(s.body, 'body-${Prayer.values[s.id].name}');
+        expect(s.exact, isTrue);
+      }
+    });
+
+    test('past prayer times are skipped, nothing fires immediately', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      // 23:00 UTC: every prayer today is past; only tomorrow's six remain.
+      final now = DateTime.utc(2026, 10, 15, 23, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      final expected = _expected(settings: settings, nowUtc: now);
+      expect(expected.length, 6);
+      expect(fake.scheduled.map((s) => s.id).toSet(),
+          expected.keys.toSet());
+      for (final s in fake.scheduled) {
+        expect(s.scheduledUtc.isAfter(now), isTrue);
+      }
+    });
+
+    test('disabled prayer toggles are respected', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      await settings.setNotificationEnabled(Prayer.asr, false);
+      await settings.setNotificationEnabled(Prayer.sunrise, false);
+
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+      final now = DateTime.utc(2026, 10, 15, 10, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      final ids = fake.scheduled.map((s) => s.id).toSet();
+      expect(ids.contains(Prayer.asr.index), isFalse);
+      expect(ids.contains(Prayer.sunrise.index), isFalse);
+      expect(ids.contains(reminderIdBase + Prayer.asr.index), isFalse);
+      // Everything else still scheduled.
+      final expected = _expected(settings: settings, nowUtc: now);
+      expect(ids, expected.keys.toSet());
+    });
+
+    test('reminder offset applied with stable +1000 ids', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      await settings.setReminderOffsetMinutes(10);
+
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+      final now = DateTime.utc(2026, 10, 15, 10, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      final expected = _expected(settings: settings, nowUtc: now);
+      expect(fake.scheduled.map((s) => s.id).toSet(),
+          expected.keys.toSet());
+      for (final s in fake.scheduled) {
+        if (s.id >= reminderIdBase) {
+          final prayer = Prayer.values[s.id - reminderIdBase];
+          final main = expected[prayer.index]!;
+          expect(s.scheduledUtc, main.subtract(const Duration(minutes: 10)));
+          expect(s.title, 'rem-title-${prayer.name}-10');
+          expect(s.body, 'rem-body-${prayer.name}-10');
+        } else {
+          expect(s.scheduledUtc, expected[s.id]);
+        }
+      }
+    });
+
+    test('reminder in the past is skipped, at-time notification kept',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      await settings.setReminderOffsetMinutes(10);
+
+      final times = calculatePrayerTimes(
+        coordinates: _nouakchott,
+        date: DateTime.utc(2026, 10, 15),
+        timeZoneOffset: _offset,
+        profile: PrayerProfiles.defaultProfile,
+      );
+      final dhuhrUtc =
+          settings.adjustedTime(Prayer.dhuhr, times.dhuhr).subtract(_offset);
+      // 5 minutes before Dhuhr: its reminder (10 min before) already passed.
+      final now = dhuhrUtc.subtract(const Duration(minutes: 5));
+
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      final ids = fake.scheduled.map((s) => s.id).toSet();
+      expect(ids.contains(Prayer.dhuhr.index), isTrue);
+      expect(ids.contains(reminderIdBase + Prayer.dhuhr.index), isFalse);
+      // Other prayers' reminders are unaffected.
+      expect(ids.contains(reminderIdBase + Prayer.asr.index), isTrue);
+    });
+
+    test('inexact scheduling when exact alarms are denied', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler()..exactAlarmsResult = false;
+      final service = NotificationService(scheduler: fake);
+
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: DateTime.utc(2026, 10, 15, 10, 0),
+      );
+
+      expect(fake.scheduled, isNotEmpty);
+      for (final s in fake.scheduled) {
+        expect(s.exact, isFalse);
+      }
+    });
+
+    test('cancelAll clears scheduled notifications', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: DateTime.utc(2026, 10, 15, 10, 0),
+      );
+      expect(fake.scheduled, isNotEmpty);
+
+      await service.cancelAll();
+      expect(fake.scheduled, isEmpty);
+      expect(fake.cancelAllCount, 2);
+    });
+
+    test('init on first run does not reschedule', () async {
+      SharedPreferences.setMockInitialValues({});
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.init(texts: _texts());
+      expect(fake.initializeCount, 1);
+      expect(fake.scheduled, isEmpty);
+      expect(fake.cancelAllCount, 0);
+    });
+
+    test('timezone change triggers reschedule with stored params', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: DateTime.utc(2026, 10, 15, 10, 0),
+      );
+      final afterFirst = fake.scheduled.length;
+      expect(afterFirst, greaterThan(0));
+
+      // Simulate the device moving to a different timezone.
+      await service.syncTimeZoneForTest(
+        currentName: 'SOME_OTHER_TZ',
+        currentOffset: _offset,
+        texts: _texts(),
+      );
+      expect(fake.cancelAllCount, 2);
+      expect(fake.scheduled.length, greaterThan(0));
+
+      // Same timezone again: no reschedule.
+      final cancelCount = fake.cancelAllCount;
+      final scheduledCount = fake.scheduled.length;
+      await service.syncTimeZoneForTest(
+        currentName: 'SOME_OTHER_TZ',
+        currentOffset: _offset,
+        texts: _texts(),
+      );
+      expect(fake.cancelAllCount, cancelCount);
+      expect(fake.scheduled.length, scheduledCount);
+    });
+  });
+
+  group('SettingsService notification settings', () {
+    test('defaults: all toggles true, offset 0', () async {
+      SharedPreferences.setMockInitialValues({});
+      final s = await SettingsService.load();
+
+      for (final p in Prayer.values) {
+        expect(s.notificationToggles[p], isTrue, reason: 'toggle for $p');
+      }
+      expect(s.reminderOffsetMinutes, 0);
+    });
+
+    test('toggles persist and reload', () async {
+      SharedPreferences.setMockInitialValues({});
+      final s = await SettingsService.load();
+
+      await s.setNotificationEnabled(Prayer.fajr, false);
+      await s.setNotificationEnabled(Prayer.sunrise, false);
+      expect(s.notificationToggles[Prayer.fajr], isFalse);
+
+      final reloaded = await SettingsService.load();
+      expect(reloaded.notificationToggles[Prayer.fajr], isFalse);
+      expect(reloaded.notificationToggles[Prayer.sunrise], isFalse);
+      expect(reloaded.notificationToggles[Prayer.dhuhr], isTrue);
+    });
+
+    test('reminder offset accepts 0/5/10/15, rejects others', () async {
+      SharedPreferences.setMockInitialValues({});
+      final s = await SettingsService.load();
+
+      for (final m in [5, 10, 15, 0]) {
+        await s.setReminderOffsetMinutes(m);
+        expect(s.reminderOffsetMinutes, m);
+      }
+      await s.setReminderOffsetMinutes(7);
+      expect(s.reminderOffsetMinutes, 0);
+      await s.setReminderOffsetMinutes(-5);
+      expect(s.reminderOffsetMinutes, 0);
+
+      await s.setReminderOffsetMinutes(15);
+      final reloaded = await SettingsService.load();
+      expect(reloaded.reminderOffsetMinutes, 15);
+    });
+
+    test('corrupt stored toggles fall back to defaults', () async {
+      SharedPreferences.setMockInitialValues(
+          {'notification_toggles': 'not-json', 'reminder_offset_minutes': 99});
+      final s = await SettingsService.load();
+
+      for (final p in Prayer.values) {
+        expect(s.notificationToggles[p], isTrue, reason: 'toggle for $p');
+      }
+      expect(s.reminderOffsetMinutes, 0);
+    });
+  });
+}
