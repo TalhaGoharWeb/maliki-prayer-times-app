@@ -24,7 +24,7 @@
   "bandsTitle": "Temps de choix et de nécessité (malikite)",
   "preferredLabel": "Choix : {text}",
   "necessityLabel": "Fin absolue : {text}",
-  "calculationProfileProposed": "Profil de calcul : PROPOSÉ — en attente d’examen par des savants",
+  "calculationProfileProposed": "Profil de calcul",
   "proposedStatus": "PROPOSÉ — en attente d’examen par des savants",
   "aboutProfile": "À propos de ce profil",
   "aboutProfileText": "Les angles utilisés pour calculer ces horaires (par exemple l’angle de 18° pour le Fajr et de 17° pour l’Isha) sont des conventions astronomiques qui approchent les signes légaux décrits dans les sources de fiqh. Ce ne sont pas des règles de fiqh en elles-mêmes. Aucun savant n’a examiné ce profil ; c’est un point de départ proposé, et rien sur cet écran ne doit être considéré comme une décision savante.",
@@ -60,10 +60,17 @@
   "dayCellMaghrib": "M {time}",
   "qiblaTitle": "Direction de la Qibla",
   "qiblaBearing": "{degrees}° dans le sens horaire depuis le nord vrai",
-  "qiblaAlignNote": "Alignez-vous avec n’importe quelle application de boussole ou une boussole physique — cet écran n’utilise pas le capteur de boussole de votre téléphone.",
   "qiblaLabel": "Qibla",
+  "liveCompassTitle": "Boussole en direct",
+  "liveBadge": "EN DIRECT",
+  "liveHeading": "Cap {degrees}°",
+  "compassAcquiring": "Attente du capteur de boussole…",
+  "compassUnavailable": "Aucun capteur de boussole sur cet appareil. Alignez le cadran avec une boussole physique.",
+  "calibrationHint": "Astuce : décrivez un 8 avec votre téléphone pour améliorer la précision.",
+  "qiblaLiveNote": "Boussole en direct — suit le capteur magnétique de votre téléphone.",
+  "calibrationBodyLive": "Le cadran tourne avec votre téléphone. Tournez jusqu’à ce que la flèche sarcelle pointe droit vers le haut — vous faites alors face à la qibla.",
   "profilesTitle": "Profils de calcul",
-  "proposedBanner": "PROPOSÉ — en attente d’examen par des savants. Les angles sont des conventions astronomiques, pas des règles de fiqh. Aucun savant n’a examiné ces profils.",
+  "proposedBanner": "Les angles sont des conventions astronomiques, pas des règles de fiqh. Aucun savant n’a examiné ces profils.",
   "selectProfile": "Choisir un profil",
   "profileAngles": "Angle Fajr {fajr}°  ·  Angle Isha {isha}°  ·  Facteur Asr {asr}",
   "compareProfiles": "Comparer les profils",
@@ -79,6 +86,7 @@
   "settingsTitle": "Réglages",
   "calculationProfileSection": "Profil de calcul",
   "adjustmentsSection": "Ajustements des horaires de prière",
+  "adjustmentsSectionNote": "Avance ou retarde l’heure affichée. Utilisez-le pour correspondre aux horaires de votre mosquée locale ; cela ne change pas le calcul sous-jacent.",
   "sunriseNoAdjustmentNote": "Le lever du soleil est un repère d’horaire, pas une prière : aucun ajustement.",
   "ihtiyatSection": "Délai de précaution (ihtiyat)",
   "applyIhtiyat": "Appliquer les délais de précaution",
@@ -88,11 +96,10 @@
   "tooltipEarlier": "Une minute plus tôt",
   "tooltipLater": "Une minute plus tard",
   "adjustmentValue": "{value} min",
-  "adjustmentExplanation": "Avance ou retarde l’heure affichée de {prayer}. Utilisez-le pour correspondre à l’horaire de votre mosquée locale ; cela ne change pas le calcul sous-jacent.",
   "languageSection": "Langue",
   "systemDefault": "Défaut du système",
   "fontsSection": "Polices",
-  "fontsNote": "Le texte ourdou utilise la police Nafees Nastaleeq intégrée (CRULP). Le latin et le français utilisent Source Serif 4 et Manrope. L’arabe utilise Amiri. Toutes les polices sont sous licence ouverte ; leurs notices sont fournies avec l’application.",
+  "fontsNote": "Ourdou : Nafees Nastaleeq · Arabe : Amiri · Anglais/français : Source Serif 4 et Manrope.",
   "locationTitle": "Lieu",
   "currentLocation": "Lieu actuel",
   "noLocationChosen": "Aucun lieu choisi pour le moment.",
@@ -288,11 +295,11 @@
   "@prayerDescIsha": {
     "description": "Redesign 2026-10-15: prayerDescIsha"
   },
-  "presetHeader": "Horizons de référence historiques",
+  "presetHeader": "Villes malikites célèbres",
   "@presetHeader": {
     "description": "Redesign 2026-10-15: presetHeader"
   },
-  "presetSub": "Méridiens canoniques de l'astronomie malikite — touchez pour calculer.",
+  "presetSub": "Horaires en un toucher pour des centres historiques du savoir malikite — pratique en voyage, pour la famille qui y vit, ou pour voir comment les horaires varient avec la latitude. Touchez une ville pour calculer avec ses coordonnées exactes.",
   "@presetSub": {
     "description": "Redesign 2026-10-15: presetSub"
   },
@@ -300,19 +307,19 @@
   "@presetFezDesc": {
     "description": "Redesign 2026-10-15: presetFezDesc"
   },
-  "presetCairoDesc": "Méridien d'al-Azhar / Fustat",
+  "presetCairoDesc": "Al-Azhar / Fustat",
   "@presetCairoDesc": {
     "description": "Redesign 2026-10-15: presetCairoDesc"
   },
-  "presetKairouanDesc": "Méridien de la mosquée d'Uqba",
+  "presetKairouanDesc": "Mosquée d’Uqba",
   "@presetKairouanDesc": {
     "description": "Redesign 2026-10-15: presetKairouanDesc"
   },
-  "presetCordobaDesc": "Méridien andalou",
+  "presetCordobaDesc": "Grande mosquée de Cordoue",
   "@presetCordobaDesc": {
     "description": "Redesign 2026-10-15: presetCordobaDesc"
   },
-  "presetNouakchottDesc": "Référence de l'horizon désertique",
+  "presetNouakchottDesc": "Capitale de la Mauritanie",
   "@presetNouakchottDesc": {
     "description": "Redesign 2026-10-15: presetNouakchottDesc"
   },
@@ -417,6 +424,9 @@
     "description": "Redesign 2026-10-15: step2"
   },
   "step3": "La flèche verte pointe maintenant vers la qibla.",
+  "step1Live": "Tenez le téléphone à plat, écran vers le haut, loin du métal.",
+  "step2Live": "Tournez lentement jusqu’à ce que la flèche sarcelle pointe droit vers le haut.",
+  "step3Live": "Le bord supérieur du téléphone fait maintenant face à la qibla.",
   "@step3": {
     "description": "Redesign 2026-10-15: step3"
   },

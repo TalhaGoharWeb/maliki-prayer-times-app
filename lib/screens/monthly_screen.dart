@@ -9,6 +9,7 @@ import 'package:malikiprayertimes/screens/date_labels.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
+import 'package:malikiprayertimes/utils/prayer_names.dart';
 
 /// Monthly view: a month grid of computed prayer times.
 ///
@@ -168,13 +169,15 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                   _EstimateNotice(text: l10n.highLatitudeNote),
                 ],
                 const SizedBox(height: 12),
+                Divider(height: 1, color: scheme.outlineVariant),
+                const SizedBox(height: 12),
                 ...rows.map((r) {
                   final isMarker = r.label == l10n.prayerSunrise;
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                          horizontal: 16, vertical: 12),
                       child: Row(
                         children: [
                           Expanded(
@@ -190,15 +193,17 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      r.arabic,
-                                      style: const TextStyle(
-                                        fontFamily: AppFonts.arabic,
-                                        fontSize: 14,
-                                        color: Color(0xFF404944),
+                                    if (!omitArabicCompanion(context)) ...[
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        r.arabic,
+                                        style: const TextStyle(
+                                          fontFamily: AppFonts.arabic,
+                                          fontSize: 14,
+                                          color: Color(0xFF404944),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ],
                                 ),
                                 if (isMarker)
@@ -248,7 +253,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: Padding(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -256,7 +261,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  '${bandDisplayName(l10n, b.arabicName)}  ${b.arabicName}',
+                                  pairedPrayerName(context, bandDisplayName(l10n, b.arabicName), b.arabicName),
                                   style: theme.textTheme.titleMedium,
                                 ),
                               ),
@@ -358,93 +363,114 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
 
     return Column(
       children: [
-        // Month navigator header.
+        // Month header card: navigator + Hijri subtitle + verified chip.
         Padding(
-          padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
-          child: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.chevron_left),
-                tooltip: l10n.previousMonth,
-                onPressed: () => _shiftMonth(-1),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      materialL10n.formatMonthYear(DateTime(_year, _month)),
-                      style: theme.textTheme.displaySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _hijriLabel(l10n),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: scheme.secondary,
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+          child: Card(
+            color: scheme.surfaceContainerLow,
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(4, 12, 4, 14),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        tooltip: l10n.previousMonth,
+                        onPressed: () => _shiftMonth(-1),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right),
-                tooltip: l10n.nextMonth,
-                onPressed: () => _shiftMonth(1),
-              ),
-            ],
-          ),
-        ),
-        // Verified-calculation chip.
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: scheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.verified,
-                    size: 14, color: scheme.onSecondaryContainer),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      l10n.standardApplied,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: scheme.onSecondaryContainer,
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              materialL10n
+                                  .formatMonthYear(DateTime(_year, _month)),
+                              style: theme.textTheme.displaySmall,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _hijriLabel(l10n),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: scheme.secondary,
+                              ),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        tooltip: l10n.nextMonth,
+                        onPressed: () => _shiftMonth(1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Verified-calculation chip.
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: scheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.verified,
+                            size: 14, color: scheme.onSecondaryContainer),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              l10n.standardApplied,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: scheme.onSecondaryContainer,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-        // Mon–Sun header.
+        // Mon–Sun strip.
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Row(
-            children: weekdayHeaders
-                .map(
-                  (d) => Expanded(
-                    child: Center(
-                      child: Text(
-                        d,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: scheme.secondary,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: weekdayHeaders
+                  .map(
+                    (d) => Expanded(
+                      child: Center(
+                        child: Text(
+                          d,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: scheme.secondary,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-                .toList(),
+                  )
+                  .toList(),
+            ),
           ),
         ),
         Expanded(
@@ -470,10 +496,13 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
               final isToday = today.year == _year &&
                   today.month == _month &&
                   today.day == day;
+              // Today gets the filled primary treatment so it is
+              // unmistakable; other days stay quiet.
               final dayFg = isToday ? scheme.onPrimary : scheme.onSurface;
-              final timeFg = isToday
-                  ? scheme.onPrimary
-                  : scheme.onSurfaceVariant;
+              final timeFg =
+                  isToday ? scheme.onPrimary : scheme.onSurfaceVariant;
+              final markerFg =
+                  isToday ? scheme.onPrimary : scheme.onTertiaryContainer;
               // One clean announcement per day cell ("15 October 2026")
               // instead of the raw day-number + time fragments; the cell
               // is a button that opens the day's detail sheet.
@@ -504,6 +533,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                                 localizeDigits('$day', lang),
                                 style: theme.textTheme.titleSmall?.copyWith(
                                   color: dayFg,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
@@ -518,7 +548,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                                   child: Text(
                                     l10n.estimatedMarker,
                                     style: theme.textTheme.labelSmall?.copyWith(
-                                      color: scheme.onTertiaryContainer,
+                                      color: markerFg,
                                     ),
                                   ),
                                 ),
@@ -592,18 +622,17 @@ class _DayCellMaterial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = isToday
-        ? scheme.primaryContainer
-        : scheme.outlineVariant;
     return Material(
-      color: isToday ? scheme.primaryContainer : Colors.transparent,
+      color: isToday ? scheme.primary : Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: border),
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: isToday ? scheme.primary : scheme.outlineVariant,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(4),
           child: child,

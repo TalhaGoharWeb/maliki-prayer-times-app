@@ -7,6 +7,7 @@ import 'package:malikiprayertimes/screens/profiles_screen.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/utils/prayer_names.dart';
 import 'package:malikiprayertimes/widgets/notification_settings.dart';
 
 /// User settings: active calculation profile, app language, per-prayer time
@@ -67,9 +68,6 @@ class SettingsScreen extends StatelessWidget {
         Prayer.isha => l10n.prayerDescIsha,
       };
 
-  String _adjustmentExplanation(AppLocalizations l10n, Prayer p) =>
-      l10n.adjustmentExplanation(_prayerLabel(l10n, p));
-
   void _openProfiles(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -118,7 +116,7 @@ class SettingsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 onTap: () => _openProfiles(context),
                 child: Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Container(
@@ -172,13 +170,16 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Card(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: DropdownButtonFormField<String?>(
                   initialValue: settings.languageCode,
                   // Full-width so the selected value can never push the
                   // field outside its card at large text sizes.
                   isExpanded: true,
-                  decoration: const InputDecoration(border: InputBorder.none),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  ),
                   items: _languageItems(l10n),
                   onChanged: (code) => settings.setLanguageCode(code),
                 ),
@@ -190,20 +191,9 @@ class SettingsScreen extends StatelessWidget {
             _SectionHeader(
                 icon: Icons.history_edu, title: l10n.adjustmentsSection),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(Icons.info_outline, size: 14, color: scheme.secondary),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.sunriseNoAdjustmentNote,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: scheme.secondary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _SectionNote(icon: Icons.info_outline, text: l10n.sunriseNoAdjustmentNote),
+            const SizedBox(height: 6),
+            _SectionNote(icon: Icons.tune, text: l10n.adjustmentsSectionNote),
             const SizedBox(height: 8),
             ..._adjustablePrayers.map(
               (p) => Padding(
@@ -217,7 +207,6 @@ class SettingsScreen extends StatelessWidget {
                   max: SettingsService.maxAdjustmentMinutes,
                   earlierTooltip: l10n.tooltipEarlier,
                   laterTooltip: l10n.tooltipLater,
-                  explanation: _adjustmentExplanation(l10n, p),
                   onChanged: (v) => settings.setAdjustment(p, v),
                 ),
               ),
@@ -245,6 +234,8 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Card(
               child: SwitchListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 title: Text(l10n.applyIhtiyat,
                     style: theme.textTheme.titleSmall),
                 subtitle: Text(
@@ -327,9 +318,36 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// Section header: small icon + eyebrow title.
-class _SectionHeader extends StatelessWidget {
+/// Small icon + note line used for section-level explanations.
+class _SectionNote extends StatelessWidget {
   final IconData icon;
+  final String text;
+
+  const _SectionNote({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 14, color: theme.colorScheme.secondary),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Section header: small icon + eyebrow title.
+class _SectionHeader extends StatelessWidget {  final IconData icon;
   final String title;
 
   const _SectionHeader({required this.icon, required this.title});
@@ -354,7 +372,8 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// One per-prayer adjustment card: names, stepper, value, explanation.
+/// One per-prayer adjustment card: name, stepper, value.
+/// The "what adjustments do" explanation lives once at section level.
 class _AdjustmentCard extends StatelessWidget {
   final Prayer prayer;
   final String label;
@@ -364,7 +383,6 @@ class _AdjustmentCard extends StatelessWidget {
   final int max;
   final String earlierTooltip;
   final String laterTooltip;
-  final String explanation;
   final ValueChanged<int> onChanged;
 
   const _AdjustmentCard({
@@ -376,7 +394,6 @@ class _AdjustmentCard extends StatelessWidget {
     required this.max,
     required this.earlierTooltip,
     required this.laterTooltip,
-    required this.explanation,
     required this.onChanged,
   });
 
@@ -386,74 +403,75 @@ class _AdjustmentCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+        child: Row(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              label,
-                              style: theme.textTheme.titleMedium,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
+                      Flexible(
+                        child: Text(
+                          label,
+                          style: theme.textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      if (!omitArabicCompanion(context)) ...[
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
                             arabic,
                             style: const TextStyle(
                               fontFamily: AppFonts.arabic,
                               fontSize: 14,
                               color: Color(0xFF404944),
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
-                        ],
-                      ),
-                      Text(
-                        descriptor,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: scheme.secondary,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      ],
                     ],
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  tooltip: earlierTooltip,
-                  onPressed: value > -max ? () => onChanged(value - 1) : null,
-                ),
-                Container(
-                  width: 76,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: scheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(10),
+                  Text(
+                    descriptor,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  child: Text(
-                    '${value >= 0 ? '+' : ''}$value',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleSmall,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  tooltip: laterTooltip,
-                  onPressed: value < max ? () => onChanged(value + 1) : null,
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            Text(explanation, style: theme.textTheme.bodySmall),
+            IconButton(
+              icon: const Icon(Icons.remove),
+              tooltip: earlierTooltip,
+              onPressed: value > -max ? () => onChanged(value - 1) : null,
+            ),
+            Container(
+              width: 76,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${value >= 0 ? '+' : ''}$value',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleSmall,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: laterTooltip,
+              onPressed: value < max ? () => onChanged(value + 1) : null,
+            ),
           ],
         ),
       ),

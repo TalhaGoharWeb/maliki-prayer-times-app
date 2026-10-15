@@ -5,7 +5,7 @@ import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 
-/// Location picker: the active horizon card, historical reference presets,
+/// Location picker: the active horizon card, famous Maliki city presets,
 /// device GPS, and manual coordinate entry.
 ///
 /// The screen listens to [LocationService] and pops itself on a successful
@@ -23,8 +23,8 @@ class LocationScreen extends StatefulWidget {
   State<LocationScreen> createState() => _LocationScreenState();
 }
 
-/// A historical reference horizon: a canonical Maliki-astronomy meridian
-/// the user can adopt with one tap.
+/// A famous Maliki city the user can adopt with one tap: the timetable is
+/// computed with the city's exact coordinates.
 class _Preset {
   final String name;
   final double latitude;
@@ -36,7 +36,8 @@ class _Preset {
       this.name, this.latitude, this.longitude, this.icon, this.description);
 }
 
-// Historical presets cannot be `const`: their descriptions are localized.
+// Famous Maliki cities. Descriptions are localized, so this cannot be
+// `const`.
 final _presets = [
   _Preset('Fez (al-Qarawiyyin)', 34.033, -5.000, Icons.star,
       (l) => l.presetFezDesc),
@@ -44,9 +45,9 @@ final _presets = [
       (l) => l.presetCairoDesc),
   _Preset('Kairouan (Mosque of Uqba)', 35.679, 10.103, Icons.account_balance,
       (l) => l.presetKairouanDesc),
-  _Preset('Cordoba (Andalusian Meridian)', 37.879, -4.779, Icons.history_edu,
+  _Preset('Cordoba (Great Mosque)', 37.879, -4.779, Icons.history_edu,
       (l) => l.presetCordobaDesc),
-  _Preset('Nouakchott (Desert Horizon)', 18.073, -15.958, Icons.wb_sunny,
+  _Preset('Nouakchott', 18.073, -15.958, Icons.wb_sunny,
       (l) => l.presetNouakchottDesc),
 ];
 
@@ -541,10 +542,14 @@ class _ActiveHorizonCard extends StatelessWidget {
                       Icon(Icons.layers_outlined,
                           size: 14, color: scheme.onInverseSurface),
                       const SizedBox(width: 6),
-                      Text(
-                        '${l10n.datumLabel}: ${l10n.wgs84Datum}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: scheme.onInverseSurface,
+                      Flexible(
+                        child: Text(
+                          '${l10n.datumLabel}: ${l10n.wgs84Datum}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: scheme.onInverseSurface,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                     ],
@@ -556,7 +561,7 @@ class _ActiveHorizonCard extends StatelessWidget {
   }
 }
 
-/// One historical preset row: icon medallion, name + coords + description,
+/// One preset city row: icon medallion, name + coords + description,
 /// active check when adopted.
 class _PresetRow extends StatelessWidget {
   final _Preset preset;

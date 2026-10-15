@@ -24,7 +24,7 @@
   "bandsTitle": "أوقات الاختيار والضرورة (مالكي)",
   "preferredLabel": "وقت الاختيار: {text}",
   "necessityLabel": "النهاية القصوى: {text}",
-  "calculationProfileProposed": "طريقة الحساب: مقترحة — بانتظار المراجعة العلمية",
+  "calculationProfileProposed": "طريقة الحساب",
   "proposedStatus": "مقترح — بانتظار المراجعة العلمية",
   "aboutProfile": "عن طريقة الحساب",
   "aboutProfileText": "الزوايا المستخدمة في حساب هذه المواقيت (مثل زاوية الفجر 18° وزاوية العشاء 17°) اصطلاحات فلكية تقرّب العلامات الشرعية المذكورة في المصادر الفقهية، وليست أحكامًا فقهية بذاتها. لم يراجع أي عالم هذه الطريقة؛ وهي نقطة بداية مقترحة، ولا يُعدّ شيء في هذه الشاشة حكمًا علميًا.",
@@ -60,10 +60,17 @@
   "dayCellMaghrib": "م {time}",
   "qiblaTitle": "اتجاه القبلة",
   "qiblaBearing": "{degrees}° باتجاه عقارب الساعة من الشمال الحقيقي",
-  "qiblaAlignNote": "اضبط الاتجاه باستخدام أي تطبيق بوصلة أو بوصلة حقيقية — هذه الشاشة لا تستخدم حساس البوصلة في هاتفك.",
   "qiblaLabel": "القبلة",
+  "liveCompassTitle": "بوصلة حية",
+  "liveBadge": "مباشر",
+  "liveHeading": "الاتجاه {degrees}°",
+  "compassAcquiring": "بانتظار حساس البوصلة…",
+  "compassUnavailable": "لم يُعثر على حساس بوصلة في هذا الجهاز. طابِق القرص مع بوصلة حقيقية.",
+  "calibrationHint": "نصيحة: حرّك هاتفك على شكل الرقم 8 لتحسين دقة البوصلة.",
+  "qiblaLiveNote": "بوصلة حية — تتبع الحساس المغناطيسي لهاتفك.",
+  "calibrationBodyLive": "يدور القرص مع هاتفك. استدر حتى يشير السهم الفيروزي إلى الأعلى تمامًا — عندها تكون متجهًا نحو القبلة.",
   "profilesTitle": "طرق الحساب",
-  "proposedBanner": "مقترح — بانتظار المراجعة العلمية. الزوايا اصطلاحات فلكية وليست أحكامًا فقهية. لم يراجع أي عالم هذه الطرق.",
+  "proposedBanner": "الزوايا اصطلاحات فلكية وليست أحكامًا فقهية. لم يراجع أي عالم هذه الطرق.",
   "selectProfile": "اختر طريقة الحساب",
   "profileAngles": "زاوية الفجر {fajr}°  ·  زاوية العشاء {isha}°  ·  عامل العصر {asr}",
   "compareProfiles": "مقارنة طرق الحساب",
@@ -79,6 +86,7 @@
   "settingsTitle": "الإعدادات",
   "calculationProfileSection": "طريقة الحساب",
   "adjustmentsSection": "تعديلات مواقيت الصلاة",
+  "adjustmentsSectionNote": "يقدّم وقت العرض أو يؤخّره. استخدمه لمطابقة مواقيت مسجدك المحلي؛ فهو لا يغيّر الحساب الأساسي.",
   "sunriseNoAdjustmentNote": "الشروق علامة في الجدول وليس صلاة، فلا تعديل له.",
   "ihtiyatSection": "التأخير الاحتياطي (احتياط)",
   "applyIhtiyat": "تطبيق التأخيرات الاحتياطية",
@@ -88,11 +96,10 @@
   "tooltipEarlier": "دقيقة أبكر",
   "tooltipLater": "دقيقة لاحقًا",
   "adjustmentValue": "{value} د",
-  "adjustmentExplanation": "يقدّم وقت {prayer} المعروض أو يؤخّره. استخدمه لمطابقة جدول مسجدك المحلي؛ فهو لا يغيّر الحساب الأساسي.",
   "languageSection": "اللغة",
   "systemDefault": "الافتراضي للنظام",
   "fontsSection": "الخطوط",
-  "fontsNote": "يستخدم النص الأردي خط نفيس نستعليق المضمّن (CRULP). وتستخدم اللاتينية والفرنسية خطي Source Serif 4 وManrope، والعربية خط أميري. جميع الخطوط مرخّصة تراخيص مفتوحة؛ وإشعاراتها مرفقة مع التطبيق.",
+  "fontsNote": "الأردية: نفيس نستعليق · العربية: أميري · الإنجليزية/الفرنسية: Source Serif 4 وManrope.",
   "locationTitle": "الموقع",
   "currentLocation": "الموقع الحالي",
   "noLocationChosen": "لم يُختر موقع بعد.",
@@ -288,11 +295,11 @@
   "@prayerDescIsha": {
     "description": "Redesign 2026-10-15: prayerDescIsha"
   },
-  "presetHeader": "آفاق مرجعية تاريخية",
+  "presetHeader": "مدن مالكية مشهورة",
   "@presetHeader": {
     "description": "Redesign 2026-10-15: presetHeader"
   },
-  "presetSub": "خطوط الزوال المعتمدة في الفلك المالكي — اختر للحساب.",
+  "presetSub": "مواقيت بضغطة واحدة لمراكز علمية مالكية تاريخية — مفيدة عند السفر أو للأهل الذين يعيشون هناك أو لرؤية كيف تتغير المواقيت مع خط العرض. اضغط على مدينة ليُحسب بإحداثياتها الدقيقة.",
   "@presetSub": {
     "description": "Redesign 2026-10-15: presetSub"
   },
@@ -300,19 +307,19 @@
   "@presetFezDesc": {
     "description": "Redesign 2026-10-15: presetFezDesc"
   },
-  "presetCairoDesc": "زوال الأزهر / الفسطاط",
+  "presetCairoDesc": "الأزهر / الفسطاط",
   "@presetCairoDesc": {
     "description": "Redesign 2026-10-15: presetCairoDesc"
   },
-  "presetKairouanDesc": "زوال جامع عقبة",
+  "presetKairouanDesc": "جامع عقبة",
   "@presetKairouanDesc": {
     "description": "Redesign 2026-10-15: presetKairouanDesc"
   },
-  "presetCordobaDesc": "زوال الأندلس",
+  "presetCordobaDesc": "جامع قرطبة الكبير",
   "@presetCordobaDesc": {
     "description": "Redesign 2026-10-15: presetCordobaDesc"
   },
-  "presetNouakchottDesc": "مرجع الأفق الصحراوي",
+  "presetNouakchottDesc": "عاصمة موريتانيا",
   "@presetNouakchottDesc": {
     "description": "Redesign 2026-10-15: presetNouakchottDesc"
   },
@@ -417,6 +424,9 @@
     "description": "Redesign 2026-10-15: step2"
   },
   "step3": "السهم الأخضر يشير الآن إلى سمت القبلة.",
+  "step1Live": "أمسك الهاتف مسطحًا والشاشة إلى الأعلى بعيدًا عن المعادن.",
+  "step2Live": "استدر ببطء حتى يشير السهم الفيروزي إلى الأعلى تمامًا.",
+  "step3Live": "الحافة العلوية للهاتف تتجه الآن نحو القبلة.",
   "@step3": {
     "description": "Redesign 2026-10-15: step3"
   },

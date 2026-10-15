@@ -5,7 +5,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/main.dart';
+import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/screens/location_screen.dart';
+import 'package:malikiprayertimes/screens/settings_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
@@ -166,9 +168,8 @@ void main() {
         await tester.pump();
 
         // Home tab (index 0) renders the timetable with a location set.
-        // Urdu and Arabic use Indic digits, so match those too.
-        final digitClass =
-            (code == 'ur' || code == 'ar') ? r'[۰-۹٠-٩]' : r'\d';
+        // Arabic uses Arabic-Indic digits; Urdu and others use Western.
+        final digitClass = code == 'ar' ? r'[٠-٩]' : r'\d';
         expect(
             find.textContaining(
                 RegExp('$digitClass$digitClass:$digitClass$digitClass')),
@@ -221,6 +222,143 @@ void main() {
         await tester.pump();
         expect(find.text(l10n.useDeviceLocation), findsOneWidget,
             reason: '$code device location button');
+      }
+    });
+  });
+
+  group('arabic locale: no doubled prayer names', () {
+    testWidgets('home screen never renders "X X" name pairs in ar',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'saved_location': jsonEncode({
+          'name': 'Nouakchott',
+          'latitude': 18.0858,
+          'longitude': -15.9785,
+          'isDevice': false,
+        }),
+      });
+      final settings = await SettingsService.load();
+      final location = await LocationService.load();
+      await settings.setLanguageCode('ar');
+
+      await tester.pumpWidget(
+          MalikiPrayerTimesApp(settings: settings, location: location));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Scroll through the whole home screen so lazily-built rows enter
+      // the tree, collecting every text fragment.
+      final seen = <String>{};
+      for (var i = 0; i < 10; i++) {
+        final texts = tester
+            .widgetList<Text>(find.byType(Text))
+            .map((t) => t.data ?? t.textSpan?.toPlainText() ?? '');
+        seen.addAll(texts);
+        await tester.drag(
+            find.byType(Scrollable).first, const Offset(0, -800));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      // Arabic prayer/band names must never appear doubled ("العصر العصر").
+      const arabicNames = [
+        'الفجر',
+        'الشروق',
+        'الظهر',
+        'العصر',
+        'المغرب',
+        'العشاء',
+        'الصبح',
+      ];
+      for (final text in seen) {
+        for (final name in arabicNames) {
+          expect(text.contains('$name $name'), isFalse,
+              reason: 'doubled name "$name" in: "$text"');
+          expect(text.contains('$name  $name'), isFalse,
+              reason: 'doubled name "$name" in: "$text"');
+        }
+      }
+      expect(seen.any((t) => t.contains('العصر')), isTrue,
+          reason: 'sanity: Arabic prayer names are rendered');
+    });
+  });
+
+  group('preset locations', () {
+    testWidgets('tapping Cordoba saves its exact coordinates', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final location = await LocationService.load();
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: _delegates,
+          supportedLocales: _supportedLocales,
+          home: LocationScreen(locationService: location),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Scroll the preset into view (ListView lazily builds its window).
+      final presetFinder = find.text('Cordoba (Great Mosque)');
+      for (var i = 0; i < 6 && presetFinder.evaluate().isEmpty; i++) {
+        await tester.drag(
+            find.byType(Scrollable).first, const Offset(0, -800));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      await tester.ensureVisible(presetFinder);
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(presetFinder, warnIfMissed: false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      // The service must hold the preset's EXACT coordinates.
+      final current = location.current;
+      expect(current, isNotNull, reason: 'preset saved a location');
+      expect(current!.name, 'Cordoba (Great Mosque)');
+      expect(current.latitude, 37.879, reason: 'exact preset latitude');
+      expect(current.longitude, -4.779, reason: 'exact preset longitude');
+      expect(current.isDevice, isFalse);
+    });
+  });
+
+  group('settings adjustments section', () {
+    testWidgets('explanation appears once at section level, not per card',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final l10n =
+          await AppLocalizations.delegate.load(const Locale('en'));
+
+      // Tall viewport so every adjustment card builds at once.
+      tester.view.physicalSize = const Size(1080, 12000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: _delegates,
+          supportedLocales: _supportedLocales,
+          home: SettingsScreen(
+            settings: settings,
+            coordinates: const Coordinates(24.86, 67.0),
+            timeZoneOffset: const Duration(hours: 5),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // The explanation lives exactly once, above the cards.
+      expect(find.text(l10n.adjustmentsSectionNote), findsOneWidget,
+          reason: 'section-level note present exactly once');
+      // The old per-prayer paragraph ("Moves the displayed Fajr time …")
+      // must not appear on any card.
+      for (final prayer in ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']) {
+        expect(
+            find.textContaining('Moves the displayed $prayer time'),
+            findsNothing,
+            reason: 'no per-card explanation for $prayer');
       }
     });
   });

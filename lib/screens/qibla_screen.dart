@@ -1,24 +1,27 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/services/compass_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/qibla.dart';
 import 'package:malikiprayertimes/utils/solar.dart';
 
-/// Qibla tab: the great-circle bearing to the Kaaba with a static compass
-/// dial, distance, rhumb-line bearing, calibration guidance, and the
-/// sun-alignment method.
+/// Qibla tab: the great-circle bearing to the Kaaba with a live compass dial,
+/// distance, rhumb-line bearing, calibration guidance, and the sun-alignment
+/// method.
 ///
-/// The dial is deliberately NOT a live compass: it draws once with the
-/// Kaaba-direction arrow fixed at the computed bearing, and tells the user
-/// to align it with a real compass. No rotation animation pretends to track
-/// the device. Magnetic declination is intentionally omitted (no offline
-/// geomagnetic model — the figure is never invented).
-class QiblaScreen extends StatelessWidget {
+/// The dial is LIVE when the device has a magnetometer: it rotates with the
+/// device so the teal qibla arrow always points along the computed bearing.
+/// Without a compass sensor it falls back to the static dial with an
+/// explanatory note. Magnetic declination is intentionally omitted (no
+/// offline geomagnetic model — the figure is never invented); the live
+/// compass follows the magnetic sensor and says so.
+class QiblaScreen extends StatefulWidget {
   final Coordinates coordinates;
   final String locationName;
   final Duration timeZoneOffset;
@@ -27,13 +30,47 @@ class QiblaScreen extends StatelessWidget {
   /// widget tests where no real notification plugin exists).
   final NotificationService? notifications;
 
+  /// Injected compass (widget tests). When null, a [SensorCompassService]
+  /// is created and owned by this screen.
+  final CompassService? compass;
+
   const QiblaScreen({
     super.key,
     required this.coordinates,
     required this.locationName,
     required this.timeZoneOffset,
     this.notifications,
+    this.compass,
   });
+
+  @override
+  State<QiblaScreen> createState() => _QiblaScreenState();
+}
+
+class _QiblaScreenState extends State<QiblaScreen> {
+  late final CompassService _compass;
+  late final bool _ownsCompass;
+  StreamSubscription<double?>? _liveSub;
+  bool _liveMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ownsCompass = widget.compass == null;
+    _compass = widget.compass ?? SensorCompassService();
+    // Track live-ness for the calibration card; the dial itself renders
+    // from a StreamBuilder on the same broadcast stream.
+    _liveSub = _compass.headings.listen((heading) {
+      if (mounted) setState(() => _liveMode = heading != null);
+    });
+  }
+
+  @override
+  void dispose() {
+    _liveSub?.cancel();
+    if (_ownsCompass) _compass.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,25 +80,25 @@ class QiblaScreen extends StatelessWidget {
     final lang = Localizations.localeOf(context).languageCode;
 
     final bearing = qiblaBearingDegrees(
-      coordinates.latitude,
-      coordinates.longitude,
+      widget.coordinates.latitude,
+      widget.coordinates.longitude,
     );
     final point = compassPoint16(bearing);
-    final km = qiblaDistanceKm(coordinates.latitude, coordinates.longitude);
+    final km = qiblaDistanceKm(widget.coordinates.latitude, widget.coordinates.longitude);
     final nm = km / 1.852;
     final rhumb = qiblaRhumbBearingDeg(
-      coordinates.latitude,
-      coordinates.longitude,
+      widget.coordinates.latitude,
+      widget.coordinates.longitude,
     );
     final eastOffset = bearing - 90.0;
 
     // Sun-alignment: the wall-clock time today when the sun's azimuth
     // equals the qibla bearing.
-    final now = DateTime.now().toUtc().add(timeZoneOffset);
+    final now = DateTime.now().toUtc().add(widget.timeZoneOffset);
     final today = DateTime(now.year, now.month, now.day);
     final alignUtc = sunAlignmentUtcHours(
-      coordinates.latitude,
-      coordinates.longitude,
+      widget.coordinates.latitude,
+      widget.coordinates.longitude,
       today,
       bearing,
     );
@@ -70,7 +107,7 @@ class QiblaScreen extends StatelessWidget {
       final base = DateTime.utc(today.year, today.month, today.day);
       alignWall = base
           .add(Duration(microseconds: (alignUtc * 3600 * 1e6).round()))
-          .add(timeZoneOffset);
+          .add(widget.timeZoneOffset);
     }
 
     String fmtNum(num value, {int decimals = 1}) {
@@ -92,7 +129,7 @@ class QiblaScreen extends StatelessWidget {
       children: [
         // Location header.
         Text(
-          locationName,
+          widget.locationName,
           style: theme.textTheme.displaySmall,
         ),
         const SizedBox(height: 4),
@@ -105,8 +142,8 @@ class QiblaScreen extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '${coordinates.latitude.toStringAsFixed(5)}°  ·  '
-                  '${coordinates.longitude.toStringAsFixed(5)}°',
+                  '${widget.coordinates.latitude.toStringAsFixed(5)}°  ·  '
+                  '${widget.coordinates.longitude.toStringAsFixed(5)}°',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: scheme.secondary,
                   ),
@@ -192,31 +229,131 @@ class QiblaScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Static dial.
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+        // Compass dial: live when the device has a magnetometer, static
+        // fallback otherwise.
+        _CompassDial(
+          compass: _compass,
+          bearing: bearing,
+        ),
+        const SizedBox(height: 12),
+
+        // Calibration notice with expandable steps (copy follows the mode).
+        _CalibrationCard(bearing: bearing, live: _liveMode),
+        const SizedBox(height: 12),
+
+        // Sun-alignment method.
+        _SunAlignCard(
+          alignWall: alignWall,
+          languageCode: lang,
+          notifications: widget.notifications,
+        ),
+      ],
+    );
+  }
+}
+
+/// Compass dial: live when the compass emits a heading, static fallback
+/// while waiting or when the device has no magnetometer.
+///
+/// Live behavior is standard-compass: the dial artwork rotates by
+/// −heading so the teal qibla arrow stays fixed on the computed bearing
+/// while the dial turns with the device. Turn until the arrow points
+/// straight up — then the top of the phone faces the qibla.
+class _CompassDial extends StatelessWidget {
+  final CompassService compass;
+  final double bearing;
+
+  const _CompassDial({required this.compass, required this.bearing});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final lang = Localizations.localeOf(context).languageCode;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: StreamBuilder<double?>(
+          stream: compass.headings,
+          builder: (context, snapshot) {
+            final waiting =
+                snapshot.connectionState == ConnectionState.waiting;
+            // Null while waiting, null when the sensor is unavailable.
+            final double? heading = waiting ? null : snapshot.data;
+            final live = heading != null;
+
+            final headerTitle =
+                live ? l10n.liveCompassTitle : l10n.staticVector;
+            final semanticsLabel = heading != null
+                ? l10n.liveHeading(
+                    localizeDigits(heading.toStringAsFixed(0), lang))
+                : l10n.qiblaBearing(bearing.toStringAsFixed(1));
+
+            return Column(
               children: [
                 Row(
                   children: [
-                    Icon(Icons.hdr_weak,
-                        size: 16, color: scheme.secondary),
+                    Icon(
+                      live ? Icons.explore : Icons.hdr_weak,
+                      size: 16,
+                      color: scheme.secondary,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        l10n.staticVector,
+                        headerTitle,
                         style: AppFonts.eyebrow(context).copyWith(
                           color: scheme.secondary,
                         ),
                       ),
                     ),
-                    Text(
-                      l10n.northUp,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: scheme.secondary,
+                    if (live)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: scheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              l10n.liveBadge,
+                              style: AppFonts.badgeLabel(context).copyWith(
+                                color: scheme.onTertiaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (waiting)
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: scheme.secondary,
+                        ),
+                      )
+                    else
+                      Text(
+                        l10n.northUp,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: scheme.secondary,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -224,34 +361,80 @@ class QiblaScreen extends StatelessWidget {
                   aspectRatio: 1,
                   child: Semantics(
                     // The dial is pure CustomPaint: expose its essential
-                    // information (the bearing) to screen readers.
-                    label: l10n.qiblaBearing(bearing.toStringAsFixed(1)),
-                    child: CustomPaint(
-                      painter: _QiblaDialPainter(
-                        bearing,
-                        l10n.qiblaLabel,
-                        scheme,
+                    // information to screen readers.
+                    label: semanticsLabel,
+                    child: Transform.rotate(
+                      // Rotate the artwork opposite the device heading so
+                      // the qibla arrow stays fixed on the bearing.
+                      angle:
+                          heading != null ? -heading * math.pi / 180.0 : 0,
+                      child: CustomPaint(
+                        painter: _QiblaDialPainter(
+                          bearing,
+                          l10n.qiblaLabel,
+                          scheme,
+                        ),
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                if (heading != null) ...[
+                  Text(
+                    l10n.liveHeading(
+                      localizeDigits(heading.toStringAsFixed(0), lang),
+                    ),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.qiblaLiveNote,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.gesture,
+                          size: 14, color: scheme.secondary),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          l10n.calibrationHint,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: scheme.secondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else if (waiting)
+                  Text(
+                    l10n.compassAcquiring,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  )
+                else
+                  Text(
+                    l10n.compassUnavailable,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
               ],
-            ),
-          ),
+            );
+          },
         ),
-        const SizedBox(height: 12),
-
-        // Calibration notice with expandable steps.
-        _CalibrationCard(bearing: bearing),
-        const SizedBox(height: 12),
-
-        // Sun-alignment method.
-        _SunAlignCard(
-          alignWall: alignWall,
-          languageCode: lang,
-          notifications: notifications,
-        ),
-      ],
+      ),
     );
   }
 }
@@ -304,17 +487,21 @@ class _StatRow extends StatelessWidget {
   }
 }
 
-/// Calibration notice: honest non-compass disclaimer + expandable steps.
+/// Calibration notice: mode-aware guidance + expandable steps.
 class _CalibrationCard extends StatelessWidget {
   final double bearing;
+  final bool live;
 
-  const _CalibrationCard({required this.bearing});
+  const _CalibrationCard({required this.bearing, required this.live});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final steps = live
+        ? [l10n.step1Live, l10n.step2Live, l10n.step3Live]
+        : [l10n.step1, l10n.step2, l10n.step3];
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -334,7 +521,10 @@ class _CalibrationCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(l10n.calibrationBody, style: theme.textTheme.bodySmall),
+            Text(
+              live ? l10n.calibrationBodyLive : l10n.calibrationBody,
+              style: theme.textTheme.bodySmall,
+            ),
             Theme(
               data: theme.copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
@@ -346,9 +536,8 @@ class _CalibrationCard extends StatelessWidget {
                   ),
                 ),
                 children: [
-                  _Step(number: '1', text: l10n.step1),
-                  _Step(number: '2', text: l10n.step2),
-                  _Step(number: '3', text: l10n.step3),
+                  for (var i = 0; i < steps.length; i++)
+                    _Step(number: '${i + 1}', text: steps[i]),
                 ],
               ),
             ),

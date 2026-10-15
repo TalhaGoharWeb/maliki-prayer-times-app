@@ -145,3 +145,15 @@ copyleft, no proprietary terms, LICENSE files present and read).
 - **Source:** google/fonts repository (github.com/google/fonts), verified
   2026-10-15. Designed by Michael Sharanda.
 - **Use:** Body text, labels, and UI chrome for en/fr locales.
+
+## sensors_plus (live compass)
+
+- **Package:** sensors_plus 7.1.1 (plus_platform_interface 2.0.2) —
+  https://github.com/fluttercommunity/plus_plugins
+- **License:** BSD-3-Clause ("Copyright 2017 The Chromium Authors").
+  Verified 2026-10-15 by reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/sensors_plus-7.1.1/LICENSE`): full
+  BSD-3-Clause text. Passed the license gate (permissive, no copyleft).
+- **Use:** accelerometer + magnetometer streams for the live Qibla compass
+  heading. Abstracted behind `CompassService` so widget tests never touch
+  platform channels.

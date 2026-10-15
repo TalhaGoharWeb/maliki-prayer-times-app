@@ -127,7 +127,7 @@
       }
     }
   },
-  "calculationProfileProposed": "Calculation profile: PROPOSED — pending scholarly review",
+  "calculationProfileProposed": "Calculation profile",
   "@calculationProfileProposed": {
     "description": "Home screen calculation-profile status label"
   },
@@ -335,19 +335,47 @@
       }
     }
   },
-  "qiblaAlignNote": "Align using any compass app or physical compass — this screen does not use your phone’s compass sensor.",
-  "@qiblaAlignNote": {
-    "description": "Note that the screen is not a live compass"
-  },
   "qiblaLabel": "Qibla",
   "@qiblaLabel": {
     "description": "Label painted on the qibla dial"
+  },
+  "liveCompassTitle": "Live compass",
+  "@liveCompassTitle": {
+    "description": "Qibla dial header in live mode"
+  },
+  "liveBadge": "LIVE",
+  "@liveBadge": {
+    "description": "LIVE badge on the compass dial"
+  },
+  "liveHeading": "Heading {degrees}°",
+  "@liveHeading": {
+    "description": "Current device heading in degrees"
+  },
+  "compassAcquiring": "Waiting for compass sensor…",
+  "@compassAcquiring": {
+    "description": "Shown while waiting for the compass sensor"
+  },
+  "compassUnavailable": "No compass sensor found on this device. Align the dial with a physical compass instead.",
+  "@compassUnavailable": {
+    "description": "Shown when the device has no compass sensor"
+  },
+  "calibrationHint": "Tip: wave your phone in a figure-8 motion to improve compass accuracy.",
+  "@calibrationHint": {
+    "description": "Figure-8 calibration tip for the live compass"
+  },
+  "qiblaLiveNote": "Live compass — follows your phone’s magnetic sensor.",
+  "@qiblaLiveNote": {
+    "description": "Note that the compass is live and magnetic"
+  },
+  "calibrationBodyLive": "The dial turns with your phone. Turn until the teal arrow points straight up — then you are facing the qibla.",
+  "@calibrationBodyLive": {
+    "description": "Calibration card body in live compass mode"
   },
   "profilesTitle": "Calculation profiles",
   "@profilesTitle": {
     "description": "Profiles screen title"
   },
-  "proposedBanner": "PROPOSED — pending scholarly review. Angles are astronomical conventions, not fiqh rulings. No scholar has reviewed these profiles.",
+  "proposedBanner": "Angles are astronomical conventions, not fiqh rulings. No scholar has reviewed these profiles.",
   "@proposedBanner": {
     "description": "PROPOSED banner on the profiles screen"
   },
@@ -427,6 +455,10 @@
   "@adjustmentsSection": {
     "description": "Settings section: per-prayer adjustments"
   },
+  "adjustmentsSectionNote": "Moves the displayed time earlier or later. Use this to match your local mosque’s timetable; it does not change the underlying calculation.",
+  "@adjustmentsSectionNote": {
+    "description": "One-time note above the per-prayer adjustment cards"
+  },
   "sunriseNoAdjustmentNote": "Sunrise is a timetable marker, not a prayer, so it has no adjustment.",
   "@sunriseNoAdjustmentNote": {
     "description": "Note that sunrise has no adjustment"
@@ -468,15 +500,6 @@
       }
     }
   },
-  "adjustmentExplanation": "Moves the displayed {prayer} time earlier or later. Use this to match your local mosque’s timetable; it does not change the underlying calculation.",
-  "@adjustmentExplanation": {
-    "description": "Explanation of a per-prayer adjustment",
-    "placeholders": {
-      "prayer": {
-        "type": "String"
-      }
-    }
-  },
   "languageSection": "Language",
   "@languageSection": {
     "description": "Settings section: language"
@@ -489,7 +512,7 @@
   "@fontsSection": {
     "description": "Settings section: fonts"
   },
-  "fontsNote": "Urdu text uses the bundled Nafees Nastaleeq font (CRULP). Latin and French use Source Serif 4 and Manrope. Arabic uses Amiri. All fonts are openly licensed; their notices ship with the app.",
+  "fontsNote": "Urdu: Nafees Nastaleeq · Arabic: Amiri · English/French: Source Serif 4 and Manrope.",
   "@fontsNote": {
     "description": "Note about the bundled Urdu font (Nafees Nastaleeq, CRULP)"
   },
@@ -850,11 +873,11 @@
   "@prayerDescIsha": {
     "description": "Redesign 2026-10-15: prayerDescIsha"
   },
-  "presetHeader": "Historical Reference Horizons",
+  "presetHeader": "Famous Maliki cities",
   "@presetHeader": {
     "description": "Redesign 2026-10-15: presetHeader"
   },
-  "presetSub": "Canonical meridians of Maliki astronomy — tap one to compute with it.",
+  "presetSub": "One-tap timetables for historic centers of Maliki scholarship — handy when traveling, for family living there, or to see how prayer times shift with latitude. Tap one to compute with its exact coordinates.",
   "@presetSub": {
     "description": "Redesign 2026-10-15: presetSub"
   },
@@ -862,19 +885,19 @@
   "@presetFezDesc": {
     "description": "Redesign 2026-10-15: presetFezDesc"
   },
-  "presetCairoDesc": "Al-Azhar / Fustat meridian",
+  "presetCairoDesc": "Al-Azhar / Fustat",
   "@presetCairoDesc": {
     "description": "Redesign 2026-10-15: presetCairoDesc"
   },
-  "presetKairouanDesc": "Mosque of Uqba meridian",
+  "presetKairouanDesc": "Mosque of Uqba",
   "@presetKairouanDesc": {
     "description": "Redesign 2026-10-15: presetKairouanDesc"
   },
-  "presetCordobaDesc": "Andalusian meridian",
+  "presetCordobaDesc": "Great Mosque of Cordoba",
   "@presetCordobaDesc": {
     "description": "Redesign 2026-10-15: presetCordobaDesc"
   },
-  "presetNouakchottDesc": "Desert horizon reference",
+  "presetNouakchottDesc": "Capital of Mauritania",
   "@presetNouakchottDesc": {
     "description": "Redesign 2026-10-15: presetNouakchottDesc"
   },
@@ -981,6 +1004,18 @@
   "step3": "The teal arrow now points along the qibla azimuth.",
   "@step3": {
     "description": "Redesign 2026-10-15: step3"
+  },
+  "step1Live": "Hold the phone flat, screen up, away from metal objects.",
+  "@step1Live": {
+    "description": "Live compass calibration step 1"
+  },
+  "step2Live": "Turn slowly until the teal arrow points straight up.",
+  "@step2Live": {
+    "description": "Live compass calibration step 2"
+  },
+  "step3Live": "The top edge of the phone now faces the qibla.",
+  "@step3Live": {
+    "description": "Live compass calibration step 3"
   },
   "sunAlignTitle": "Sun-alignment method",
   "@sunAlignTitle": {

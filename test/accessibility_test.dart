@@ -8,6 +8,7 @@ import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/screens/home_screen.dart';
+import 'package:malikiprayertimes/screens/date_labels.dart';
 import 'package:malikiprayertimes/screens/location_screen.dart';
 import 'package:malikiprayertimes/screens/monthly_screen.dart';
 import 'package:malikiprayertimes/screens/profiles_screen.dart';
@@ -16,6 +17,7 @@ import 'package:malikiprayertimes/screens/settings_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Accessibility audit tests (Track C).
@@ -133,7 +135,7 @@ Finder _dayCells() => find.descendant(
 
 void main() {
   group('semantics labels', () {
-    testWidgets('home timetable: chip, countdown card, expansion tile',
+    testWidgets('home timetable: location header, expansion tile',
         (tester) async {
       final (settings, location) = await _services();
       await tester.pumpWidget(
@@ -141,11 +143,42 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.takeException(), isNull);
 
-      _expectAccessibleName(tester, find.byType(ActionChip), 'location chip');
+      // The prominent location header (replaced the old ActionChip):
+      // the InkWell wrapping the current-location name.
+      _expectAccessibleName(
+          tester,
+          find.ancestor(
+              of: find.text('Karachi'),
+              matching: find.byType(InkWell)),
+          'location header');
       // The about-profile tile is below the fold: scroll first.
       await _scrollThrough(tester);
       _expectAccessibleName(
           tester, find.byType(ExpansionTile), 'about-profile tile');
+    });
+
+    testWidgets('hero card shows the Hijri date (day, month name, year)',
+        (tester) async {
+      final (settings, location) = await _services();
+      await tester.pumpWidget(
+          _wrap(HomeScreen(settings: settings, location: location), 1.0));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      final expected =
+          formatHijriDate(l10n, gregorianToHijri(DateTime.now()));
+      // The date sits inside the dark hero card, below its eyebrow.
+      final hero = find.ancestor(
+        of: find.text(l10n.heroEyebrow.toUpperCase()),
+        matching: find.byType(Card),
+      );
+      expect(hero, findsOneWidget);
+      expect(
+        find.descendant(of: hero, matching: find.text(expected)),
+        findsOneWidget,
+        reason: 'hero card must show the Hijri date "$expected"',
+      );
     });
 
     testWidgets('home location prompt: set-location button', (tester) async {

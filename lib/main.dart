@@ -90,28 +90,37 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     );
   }
 
-  /// The global top bar: mosque mark + "Maliki Prayer" wordmark, the current
-  /// screen title with the Arabic subtitle, and the location chip action.
+  /// The global top bar.
+  ///
+  /// Two zones: the brand block (mosque mark + "Maliki Prayer" wordmark +
+  /// Arabic subtitle) gets the full toolbar row, so the Arabic subtitle
+  /// renders in full and wraps (never truncates) even at large text sizes;
+  /// below it, a strip carries the current screen title and the tappable
+  /// location chip. The bar grows with the system text scale so the brand
+  /// block never overflows; the chip keeps its full name in its
+  /// tooltip/semantics label.
   PreferredSizeWidget _topBar(
       BuildContext context, AppLocalizations l10n, ThemeData theme) {
     final scheme = theme.colorScheme;
     final loc = widget.location.current;
-    final shortName = loc == null
+    final locationName = loc == null
         ? l10n.setLocation
         : (loc.isDevice ? l10n.deviceLocationName : loc.name);
+    // Taller at large text scales: the brand block can wrap to two lines.
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
     return AppBar(
-      toolbarHeight: 76,
+      toolbarHeight: (78 * textScale).clamp(78.0, 150.0),
       titleSpacing: 16,
       title: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
               color: scheme.primary,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(15),
             ),
-            child: Icon(Icons.mosque, color: scheme.onPrimary, size: 24),
+            child: Icon(Icons.mosque, color: scheme.onPrimary, size: 25),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -121,61 +130,58 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
               children: [
                 Text(
                   'Maliki Prayer',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: scheme.onSurface,
-                  ),
+                  style: theme.textTheme.headlineSmall,
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
                 const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        _screenTitle(l10n).toUpperCase(),
-                        style: AppFonts.eyebrow(context).copyWith(
-                          color: scheme.secondary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      '  ·  ',
-                      style: AppFonts.eyebrow(context).copyWith(
-                        color: scheme.outline,
-                      ),
-                    ),
-                    const Flexible(
-                      child: Text(
-                        'أوقات الصلاة المالكية',
-                        style: TextStyle(
-                          fontFamily: AppFonts.arabic,
-                          fontSize: 13,
-                          color: Color(0xFF404944),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'أوقات الصلاة المالكية',
+                  style: TextStyle(
+                    fontFamily: AppFonts.arabic,
+                    fontSize: 13,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  // Wraps instead of truncating: the subtitle is never cut.
+                  softWrap: true,
+                  maxLines: 2,
                 ),
               ],
             ),
           ),
         ],
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsetsDirectional.only(end: 12),
-          child: Center(
-            child: _LocationChip(
-              label: shortName,
-              onTap: () => _openLocation(context),
-            ),
-          ),
-        ),
-      ],
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: scheme.outlineVariant),
+        preferredSize: const Size.fromHeight(49),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _screenTitle(l10n).toUpperCase(),
+                      style: AppFonts.eyebrow(context).copyWith(
+                        color: scheme.secondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _LocationChip(
+                    label: locationName,
+                    onTap: () => _openLocation(context),
+                  ),
+                ],
+              ),
+            ),
+            Container(height: 1, color: scheme.outlineVariant),
+          ],
+        ),
       ),
     );
   }
@@ -202,6 +208,9 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
       ],
       locale: locale,
       theme: AppFonts.themeFor(locale, seedColor: Colors.teal),
+      // The design is light-mode-only: never follow the platform into dark
+      // mode (dark scaffold + light cards rendered screens unreadable).
+      themeMode: ThemeMode.light,
       // The Builder gives a context below MaterialApp, where the
       // localizations are available (the State's own context is above it).
       // _NotificationBootstrap initializes notifications once that context
@@ -308,30 +317,44 @@ class _LocationChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: scheme.secondaryContainer,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.near_me, size: 16, color: scheme.onSecondaryContainer),
-              const SizedBox(width: 6),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 110),
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: scheme.onSecondaryContainer,
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+    // The visible label ellipsizes, but the full location name is always
+    // available via tooltip and semantics.
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        label: label,
+        child: Material(
+          color: scheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(20),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 8, 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.near_me,
+                      size: 16, color: scheme.onSecondaryContainer),
+                  const SizedBox(width: 6),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 150),
+                    child: Text(
+                      label,
+                      style:
+                          Theme.of(context).textTheme.labelMedium?.copyWith(
+                                color: scheme.onSecondaryContainer,
+                              ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                  Icon(Icons.chevron_right,
+                      size: 16, color: scheme.onSecondaryContainer),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

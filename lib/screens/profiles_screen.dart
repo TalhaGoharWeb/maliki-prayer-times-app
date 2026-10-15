@@ -151,20 +151,30 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                   child: Text(
                     l10n.profilesTitle,
                     style: theme.textTheme.displaySmall,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: scheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    l10n.methodsAvailable(
-                        '${PrayerProfiles.all.length}'),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: scheme.onSecondaryContainer,
+                const SizedBox(width: 8),
+                // Shrink-to-fit: the pill must never push the Row into
+                // overflow at large text sizes.
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: scheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        l10n.methodsAvailable(
+                            '${PrayerProfiles.all.length}'),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: scheme.onSecondaryContainer,
+                        ),
+                      ),
                     ),
                   ),
                 ),

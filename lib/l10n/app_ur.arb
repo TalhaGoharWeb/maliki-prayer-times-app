@@ -24,7 +24,7 @@
   "bandsTitle": "اختیاری اور اضطراری اوقات (مالکی)",
   "preferredLabel": "اختیاری: {text}",
   "necessityLabel": "انتہائی حد: {text}",
-  "calculationProfileProposed": "حسابی پروفائل: مجوزہ — علمی جائزے کا منتظر",
+  "calculationProfileProposed": "حسابی پروفائل",
   "proposedStatus": "مجوزہ — علمی جائزے کا منتظر",
   "aboutProfile": "اس پروفائل کے بارے میں",
   "aboutProfileText": "ان اوقات کے حساب میں استعمال ہونے والے زاویے (مثلاً فجر کا 18° زاویہ اور عشاء کا 17° زاویہ) فلکیاتی روایتیں ہیں جو فقہی ذرائع میں مذکور شرعی علامات کا تقریب ہیں؛ یہ خود فقہی احکام نہیں۔ کسی عالم نے اس پروفائل کا جائزہ نہیں لیا۔ یہ ایک مجوزہ نقطۂ آغاز ہے، اور اس اسکرین کی کوئی بات علمی فیصلہ نہ سمجھی جائے۔",
@@ -60,10 +60,17 @@
   "dayCellMaghrib": "م {time}",
   "qiblaTitle": "قبلے کی سمت",
   "qiblaBearing": "{degrees}° شمالِ حقیقی سے گھڑی کی سمت میں",
-  "qiblaAlignNote": "کسی بھی کمپاس ایپ یا اصلی کمپاس سے سمت درست کریں — یہ اسکرین آپ کے فون کے کمپاس سینسر کو استعمال نہیں کرتی۔",
   "qiblaLabel": "قبلہ",
+  "liveCompassTitle": "لائیو قطب نما",
+  "liveBadge": "لائیو",
+  "liveHeading": "سمت {degrees}°",
+  "compassAcquiring": "قطب نما سینسر کا انتظار ہے…",
+  "compassUnavailable": "اس آلے میں قطب نما سینسر نہیں ملا۔ ڈائل کو دستی قطب نما سے ملائیں۔",
+  "calibrationHint": "مشورہ: قطب نما کی درستگی بہتر بنانے کے لیے فون کو 8 کی شکل میں ہلائیں۔",
+  "qiblaLiveNote": "لائیو قطب نما — آپ کے فون کے مقناطیسی سینسر کے مطابق۔",
+  "calibrationBodyLive": "ڈائل آپ کے فون کے ساتھ گھومتا ہے۔ اس وقت تک گھومیں جب تک سبز تیر بالکل اوپر کی طرف نہ ہو — تب آپ قبلے کی طرف ہیں۔",
   "profilesTitle": "حسابی پروفائلز",
-  "proposedBanner": "مجوزہ — علمی جائزے کا منتظر۔ زاویے فلکیاتی روایتیں ہیں، فقہی احکام نہیں۔ کسی عالم نے ان پروفائلز کا جائزہ نہیں لیا۔",
+  "proposedBanner": "زاویے فلکیاتی روایتیں ہیں، فقہی احکام نہیں۔ کسی عالم نے ان پروفائلز کا جائزہ نہیں لیا۔",
   "selectProfile": "پروفائل منتخب کریں",
   "profileAngles": "فجر کا زاویہ {fajr}°  ·  عشاء کا زاویہ {isha}°  ·  عصر کا عامل {asr}",
   "compareProfiles": "پروفائلز کا موازنہ",
@@ -79,6 +86,7 @@
   "settingsTitle": "ترتیبات",
   "calculationProfileSection": "حسابی پروفائل",
   "adjustmentsSection": "نماز کے اوقات میں ترامیم",
+  "adjustmentsSectionNote": "ظاہر کردہ وقت کو پہلے یا بعد میں کرتا ہے۔ اپنی مقامی مسجد کے ٹائم ٹیبل سے ملانے کے لیے استعمال کریں؛ اس سے بنیادی حساب نہیں بدلتا۔",
   "sunriseNoAdjustmentNote": "طلوعِ آفتاب ٹائم ٹیبل کی علامت ہے، نماز نہیں، اس لیے اس میں کوئی ترمیم نہیں۔",
   "ihtiyatSection": "احتیاطی تاخیر (احتیاط)",
   "applyIhtiyat": "احتیاطی تاخیر لاگو کریں",
@@ -88,11 +96,10 @@
   "tooltipEarlier": "ایک منٹ پہلے",
   "tooltipLater": "ایک منٹ بعد",
   "adjustmentValue": "{value} منٹ",
-  "adjustmentExplanation": "ظاہر کردہ {prayer} کے وقت کو پہلے یا بعد میں کرتا ہے۔ اپنی مقامی مسجد کے ٹائم ٹیبل سے ملانے کے لیے استعمال کریں؛ اس سے بنیادی حساب نہیں بدلتا۔",
   "languageSection": "زبان",
   "systemDefault": "سسٹم کی طے شدہ",
   "fontsSection": "فونٹس",
-  "fontsNote": "اردو متن میں شامل کردہ نفیس نستعلیق فونٹ (CRULP) استعمال ہوتا ہے۔ لاطینی اور فرانسیسی کے لیے سورس سیرف 4 اور مین روپ، اور عربی کے لیے امیری استعمال ہوتا ہے۔ تمام فونٹس کھلے لائسنس کے حامل ہیں؛ ان کے نوٹس ایپ کے ساتھ شامل ہیں۔",
+  "fontsNote": "اردو: نفیس نستعلیق · عربی: امیری · انگریزی/فرانسیسی: سورس سیرف 4 اور مین روپ۔",
   "locationTitle": "مقام",
   "currentLocation": "موجودہ مقام",
   "noLocationChosen": "ابھی کوئی مقام منتخب نہیں ہوا۔",
@@ -288,11 +295,11 @@
   "@prayerDescIsha": {
     "description": "Redesign 2026-10-15: prayerDescIsha"
   },
-  "presetHeader": "تاریخی حوالہ جاتی افق",
+  "presetHeader": "مشہور مالکی شہر",
   "@presetHeader": {
     "description": "Redesign 2026-10-15: presetHeader"
   },
-  "presetSub": "فلکیاتِ مالکیہ کے مستند نصف النہار — حساب کے لیے کسی ایک کو منتخب کریں۔",
+  "presetSub": "مالکی علمی روایت کے تاریخی مراکز کے لیے ایک ٹیپ میں ٹائم ٹیبل — سفر کے دوران، وہاں رہنے والے اہل خانہ کے لیے، یا یہ دیکھنے کے لیے کہ عرض بلد کے ساتھ نماز کے اوقات کیسے بدلتے ہیں۔ حساب کے لیے کسی ایک پر ٹیپ کریں تو اس کے بالکل درست نقاط استعمال ہوں گے۔",
   "@presetSub": {
     "description": "Redesign 2026-10-15: presetSub"
   },
@@ -300,19 +307,19 @@
   "@presetFezDesc": {
     "description": "Redesign 2026-10-15: presetFezDesc"
   },
-  "presetCairoDesc": "نصف النہارِ ازہر / فسطاط",
+  "presetCairoDesc": "ازہر / فسطاط",
   "@presetCairoDesc": {
     "description": "Redesign 2026-10-15: presetCairoDesc"
   },
-  "presetKairouanDesc": "نصف النہارِ مسجدِ عقبہ",
+  "presetKairouanDesc": "مسجد عقبہ",
   "@presetKairouanDesc": {
     "description": "Redesign 2026-10-15: presetKairouanDesc"
   },
-  "presetCordobaDesc": "نصف النہارِ اندلسی",
+  "presetCordobaDesc": "جامع قرطبہ",
   "@presetCordobaDesc": {
     "description": "Redesign 2026-10-15: presetCordobaDesc"
   },
-  "presetNouakchottDesc": "صحرا کے افق کا حوالہ",
+  "presetNouakchottDesc": "موریطانیہ کا دارالحکومت",
   "@presetNouakchottDesc": {
     "description": "Redesign 2026-10-15: presetNouakchottDesc"
   },
@@ -417,6 +424,9 @@
     "description": "Redesign 2026-10-15: step2"
   },
   "step3": "اب سبز تیر قبلے کی سمت کی طرف اشارہ کر رہا ہے۔",
+  "step1Live": "فون کو سیدھا رکھیں، اسکرین اوپر کی طرف، دھاتی چیزوں سے دور۔",
+  "step2Live": "آہستہ گھومیں جب تک سبز تیر بالکل اوپر کی طرف نہ ہو۔",
+  "step3Live": "اب فون کا اوپری کنارہ قبلے کی طرف ہے۔",
   "@step3": {
     "description": "Redesign 2026-10-15: step3"
   },

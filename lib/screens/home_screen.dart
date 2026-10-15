@@ -14,6 +14,7 @@ import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
+import 'package:malikiprayertimes/utils/prayer_names.dart';
 
 /// Home tab: today's timetable with a next-prayer hero, the Maliki two-tier
 /// bands, and the calculation-profile status.
@@ -243,30 +244,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       children: [
-        // Location chip: current horizon, taps through to Location.
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          // Material ancestor for the chip's ink effects (the screen
-          // itself has no Scaffold).
-          child: Material(
-            type: MaterialType.transparency,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth:
-                    (MediaQuery.sizeOf(context).width - 32).clamp(0.0, 600.0),
-              ),
-              child: ActionChip(
-                avatar: Icon(Icons.near_me,
-                    size: 16, color: theme.colorScheme.secondary),
-                label: Text(
-                  widget.location.current?.name ?? l10n.setLocation,
-                  style: theme.textTheme.labelLarge,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onPressed: _openLocationScreen,
-              ),
-            ),
-          ),
+        // Prominent location header: unmistakable current horizon, taps
+        // through to the Location screen.
+        _LocationHeader(
+          location: widget.location,
+          onTap: _openLocationScreen,
         ),
         const SizedBox(height: 12),
         // Hijri date line (tabular calendar, approximate).
@@ -299,9 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
               .descriptor,
           now: _now,
           languageCode: lang,
-          sunsetHour: settings
-              .adjustedTime(Prayer.maghrib, times.timeFor(Prayer.maghrib))
-              .hour,
+          hijriDate: localizeDigits(formatHijriDate(l10n, hijri), lang),
         ),
         const SizedBox(height: 20),
 
@@ -317,11 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.only(bottom: 8),
             child: _PrayerRowCard(
               row: row,
-              time: formatPrayerTime(time, lang,
-                  sunsetHour: settings
-                      .adjustedTime(
-                          Prayer.maghrib, times.timeFor(Prayer.maghrib))
-                      .hour),
+              time: formatPrayerTime(time, lang),
               isNext: isNext,
               nextBadge: l10n.nextPrayerBadge,
             ),
@@ -395,8 +371,86 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// The next-prayer hero: deep-primary card with the prayer name, its time,
-/// and a segmented live countdown.
+/// Prominent current-location header: large name, coordinates beneath,
+/// taps through to the Location screen. The active horizon must be
+/// unmistakable at a glance.
+class _LocationHeader extends StatelessWidget {
+  final LocationService location;
+  final VoidCallback onTap;
+
+  const _LocationHeader({required this.location, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+    final current = location.current;
+    final name = current == null
+        ? l10n.setLocation
+        : (current.isDevice ? l10n.deviceLocationName : current.name);
+    final coords = current == null
+        ? null
+        : '${current.latitude.toStringAsFixed(5)}, '
+            '${current.longitude.toStringAsFixed(5)}';
+
+    return Card(
+      color: scheme.secondaryContainer,
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: scheme.secondary,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(Icons.near_me,
+                    color: scheme.onSecondary, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: scheme.onSecondaryContainer,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (coords != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        coords,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: scheme.onSecondaryContainer,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right,
+                  color: scheme.onSecondaryContainer, size: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _HeroCard extends StatelessWidget {
   final ({Prayer prayer, DateTime time}) next;
   final String label;
@@ -404,7 +458,9 @@ class _HeroCard extends StatelessWidget {
   final String descriptor;
   final DateTime now;
   final String? languageCode;
-  final int sunsetHour;
+
+  /// Localized Hijri date for today, e.g. "27 Sha'ban 1447 AH".
+  final String hijriDate;
 
   const _HeroCard({
     required this.next,
@@ -413,7 +469,7 @@ class _HeroCard extends StatelessWidget {
     required this.descriptor,
     required this.now,
     required this.languageCode,
-    required this.sunsetHour,
+    required this.hijriDate,
   });
 
   String _countdownParts() {
@@ -436,19 +492,25 @@ class _HeroCard extends StatelessWidget {
     final parts = _countdownParts().split(':');
     final localized =
         parts.map((p) => localizeDigits(p, languageCode)).toList();
-    final heroTime =
-        formatPrayerTime(next.time, languageCode, sunsetHour: sunsetHour);
+    final heroTime = formatPrayerTime(next.time, languageCode);
 
+    // Flexible + shrink-to-fit: at large text sizes the three boxes share
+    // the row width and scale their content down instead of overflowing.
     Widget digitBox(String digits) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: scheme.primaryContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          digits,
-          style: theme.textTheme.displaySmall?.copyWith(color: onHero),
+      return Flexible(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              digits,
+              style: theme.textTheme.displaySmall?.copyWith(color: onHero),
+            ),
+          ),
         ),
       );
     }
@@ -482,6 +544,14 @@ class _HeroCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            // Hijri date for today: day, month name, year (tabular
+            // calendar — the approximation note lives on the date line
+            // above the card).
+            Text(
+              hijriDate,
+              style: theme.textTheme.bodySmall?.copyWith(color: heroDim),
+            ),
+            const SizedBox(height: 10),
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -489,17 +559,25 @@ class _HeroCard extends StatelessWidget {
                 Flexible(
                   child: Text(label,
                       style: theme.textTheme.displayMedium
-                          ?.copyWith(color: onHero)),
+                          ?.copyWith(color: onHero),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1),
                 ),
-                const SizedBox(width: 10),
-                Text(
-                  arabic,
-                  style: const TextStyle(
-                    fontFamily: AppFonts.arabic,
-                    fontSize: 22,
-                    color: Color(0xFFD9F7ED),
+                if (!omitArabicCompanion(context)) ...[
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      arabic,
+                      style: const TextStyle(
+                        fontFamily: AppFonts.arabic,
+                        fontSize: 22,
+                        color: Color(0xFFD9F7ED),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
             const SizedBox(height: 4),
@@ -597,28 +675,36 @@ class _PrayerRowCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        row.arabic,
-                        style: TextStyle(
-                          fontFamily: AppFonts.arabic,
-                          fontSize: 15,
-                          color: sub,
+                      if (!omitArabicCompanion(context)) ...[
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            row.arabic,
+                            style: TextStyle(
+                              fontFamily: AppFonts.arabic,
+                              fontSize: 15,
+                              color: sub,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
+                      ],
                       if (highlighted) ...[
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: scheme.tertiaryFixed,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            nextBadge,
-                            style: AppFonts.badgeLabel(context).copyWith(
-                              color: scheme.onTertiaryFixed,
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: scheme.tertiaryFixed,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              nextBadge,
+                              style: AppFonts.badgeLabel(context).copyWith(
+                                color: scheme.onTertiaryFixed,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
@@ -635,9 +721,16 @@ class _PrayerRowCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(
-              time,
-              style: AppFonts.timeLabel(context).copyWith(color: fg),
+            // Shrink-to-fit: the readout scales down instead of pushing
+            // the row into overflow at large text sizes.
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  time,
+                  style: AppFonts.timeLabel(context).copyWith(color: fg),
+                ),
+              ),
             ),
           ],
         ),
@@ -688,21 +781,31 @@ class _BandCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '${bandDisplayName(l10n, band.arabicName)}  ${band.arabicName}',
+                    pairedPrayerName(context, bandDisplayName(l10n, band.arabicName), band.arabicName),
                     style: theme.textTheme.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: scheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    l10n.informationalChip,
-                    style: AppFonts.badgeLabel(context).copyWith(
-                      color: scheme.onSecondaryContainer,
+                const SizedBox(width: 8),
+                // Shrink-to-fit: at large text sizes the chip scales down
+                // instead of pushing the Row into overflow.
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: scheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        l10n.informationalChip,
+                        style: AppFonts.badgeLabel(context).copyWith(
+                          color: scheme.onSecondaryContainer,
+                        ),
+                      ),
                     ),
                   ),
                 ),
