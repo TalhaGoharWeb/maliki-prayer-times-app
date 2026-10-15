@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 /// Font-family hooks for the app's multilingual UI.
 ///
-/// Jameel Noori Nastaleeq is bundled (assets/fonts/, declared in pubspec.yaml)
-/// and used for Urdu text. NOTE ON RIGHTS: no redistribution license for this
-/// font could be verified — font sites list it as personal-use-only and no
-/// official license document exists. It was bundled at the user's explicit
-/// direction on 2026-10-15 after they were informed of this; see ATTRIBUTION.md.
-/// The residual licensing risk is the user's accepted decision.
+/// Nafees Nastaleeq (CRULP) is bundled (assets/fonts/, declared in
+/// pubspec.yaml) and used for Urdu text. Its license explicitly permits
+/// redistribution — see ATTRIBUTION.md ("Bundled font: Nafees Nastaleeq").
+/// The license's attribution condition is satisfied by the copyright notice
+/// shipped alongside the font (assets/fonts/NafeesNastaleeq-Debian-copyright.txt)
+/// and the ATTRIBUTION.md entry.
 ///
 /// Each hook names a preferred family first; when the family is absent from
 /// the device, Flutter silently falls back to the platform default font.
 /// Documented chains:
 ///
-/// * Urdu (`ur`): `'JameelNooriNastaleeq'` (bundled) → platform default.
+/// * Urdu (`ur`): `'Nafees Nastaleeq'` (bundled) → platform default.
 /// * Arabic (`ar`): `'Amiri'` → platform default. Amiri is not installed on
 ///   stock devices, so in practice this resolves to the platform default
 ///   Arabic font until a licensed font is bundled.
@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 ///   Material default (Roboto on Android, San Francisco on iOS).
 abstract final class AppFonts {
   /// Preferred family for Urdu text (Nastaliq style, bundled).
-  static const String urdu = 'JameelNooriNastaleeq';
+  static const String urdu = 'Nafees Nastaleeq';
 
   /// Preferred family for Arabic text.
   static const String arabic = 'Amiri';

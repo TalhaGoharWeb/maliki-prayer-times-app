@@ -88,21 +88,32 @@ this app is presented as scholar-reviewed.
 Both passed the license gate (permissive: MIT/Apache-2.0/BSD — no
 copyleft, no proprietary terms, LICENSE files present and read).
 
-## Bundled font: Jameel Noori Nastaleeq (user-directed, rights unverified)
+## Bundled font: Nafees Nastaleeq (CRULP — redistribution permitted)
 
-- **File:** `assets/fonts/JameelNooriNastaleeq-v4.ttf` (copied 2026-10-15 from the
-  user's own radd-al-ilhad-app bundle), declared as family
-  `JameelNooriNastaleeq` in pubspec.yaml, used for Urdu (`ur`) locale text.
-- **License status: UNVERIFIED — personal-use-only per font sites.** Web research
-  on 2026-10-15 found: font download sites list it as "Personal Use Only"
-  (commercial use not permitted); multiple Urdu font sites state there is NO
-  official license document and advise independently verifying rights before
-  commercial-scale use. No redistribution license could be located.
-- **Decision:** bundled at the user's explicit in-chat direction on 2026-10-15
-  ("Just use Jameel noori nastaleeq font don't bother"), AFTER the user was
-  informed of the above findings and offered the verified alternative
-  (Nafees Nastaleeq, CRULP, explicit redistribution license), which they
-  declined. The residual licensing risk of distributing this font is the
-  user's accepted decision, recorded here per the license-safety paper trail.
-- **Action item:** if the user later obtains a redistribution license or
-  written permission, record its source/date here.
+- **File:** `assets/fonts/NafeesNastaleeq.ttf` (396,948 bytes), declared as family
+  `Nafees Nastaleeq` in pubspec.yaml, used for Urdu (`ur`) locale text.
+- **License: VERIFIED permissive.** The Nafees Nastaleeq License Agreement
+  (Copyright (c) 2004 by Center for Research in Urdu Language Processing
+  (CRULP), National University of Computer and Emerging Sciences, Lahore,
+  Pakistan) grants, free of charge, the rights to "reproduce and distribute
+  the Font Software, including without limitation the rights to use, copy,
+  merge, publish, distribute, and/or sell copies", subject to: (1) including
+  the copyright/trademark/permission notices in all copies, (2) renaming the
+  font if modified, (3) voiding of the license for modified versions
+  distributed under the Nafees/CRULP names, (4) no sale of the font by itself.
+  License text confirmed 2026-10-15 via the font's metadata on multiple font
+  registries and the Debian packaging record.
+- **Source of this binary:** Ubuntu package `fonts-nafees` 1.2-5.1ubuntu1
+  (downloaded from the Ubuntu archive 2026-10-15); its copyright file
+  (`assets/fonts/NafeesNastaleeq-Debian-copyright.txt`) notes the font was
+  obtained from CRULP/CLE and additionally records GPL-2 terms per the Debian
+  maintainer. Either way, redistribution in this app is permitted.
+- **Attribution condition satisfied:** the copyright/trademark notice travels
+  with the font in `assets/fonts/NafeesNastaleeq-Debian-copyright.txt` and is
+  recorded here.
+- **History:** Jameel Noori Nastaleeq was briefly bundled on 2026-10-15 at the
+  user's explicit direction, then REMOVED the same day when the user said "if
+  you are not satisfied use nafees nastaleeq for now" — no Jameel Noori files
+  remain in this repo. The earlier finding stands: no redistribution license
+  for Jameel Noori could be verified (font sites list it as personal-use-only;
+  no official license document exists).
