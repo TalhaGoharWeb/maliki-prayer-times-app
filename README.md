@@ -134,6 +134,33 @@ the project.
 - [ ] Mosque-timetable verification helper
 - [ ] Google Play release
 
+## Contributing
+
+Developers and scholars are both welcome — this app gets better when code and fiqh review move together.
+
+### Developers
+
+- Fork the repo, branch from `master`, and open a pull request with a clear description.
+- `flutter analyze` must be clean and the full test suite green (`flutter test` — 144 tests).
+- Match the repo's hand code style — do **not** run bare `dart format` (read-only check:
+  `dart format --output=none --set-exit-if-changed`).
+- Every new dependency must be license-checked **before** adoption (permissive only:
+  MIT / BSD / Apache / OFL) and recorded in [ATTRIBUTION.md](ATTRIBUTION.md).
+- Free-first is a hard rule: no paid APIs, no API keys, no network calls on the critical path.
+- All user-facing strings go in the four locales (`lib/l10n/`: en, ur, ar, fr) — no hardcoded UI text.
+
+### Scholars and students of knowledge
+
+- **Fiqh review** — check the Maliki rule mappings in `lib/fiqh/` (two-tier times, Asr at first mithl,
+  Maghrib/Isha windows, combining basis) against the classical sources; open an issue for anything
+  that misrepresents the mashhur position, citing book, author, and page.
+- **Calculation profiles** — scrutinize the profile parameters in `lib/models/` and their documented
+  bases (angle conventions, shadow factors, ihtiyat handling); propose corrections with evidence.
+- **Language review** — verify the Arabic and Urdu religious text throughout the app for accuracy
+  and appropriate terminology.
+- When reporting, distinguish the **fiqh ruling** from the **astronomical convention** — the codebase
+  keeps these layers separate by design, and corrections should respect that split.
+
 ## Credits
 
 Developed by **Muhammad Talha Bin Farid Al Maliki** — **Maliki Fiqh Subcontinent**.
