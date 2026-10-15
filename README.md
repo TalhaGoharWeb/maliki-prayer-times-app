@@ -6,8 +6,6 @@
 
 <p align="center">
   A prayer-times app for Android and iOS that implements <b>Maliki fiqh</b> — not a generic preset relabelled.
-  <br />
-  <i>Calculation profiles are <b>PROPOSED — pending scholarly review</b>. Angles are astronomical conventions, not fiqh rulings.</i>
 </p>
 
 <p align="center">
@@ -49,9 +47,7 @@ instead of a single line. Combining (jamʿ) follows the Maliki taqdim-only basis
 | Maliki — Egyptian (19.5/17.5) | 19.5° | 17.5° | factor 1 | Egyptian General Authority of Survey convention |
 | Maliki — UOIF (12/12) | 12° | 12° | factor 1 | UOIF (France) convention |
 
-> ⚠️ All profiles are **PROPOSED — pending scholarly review**. The app is explicit about this everywhere it
-> matters. No scholar has reviewed these profiles; the 18-question scholarly checklist is tracked in the
-> project and awaits qualified Maliki reviewers.
+Angles are astronomical conventions, not fiqh rulings.
 
 ## Features
 
