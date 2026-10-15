@@ -829,8 +829,8 @@ class _BandCard extends StatelessWidget {
   }
 }
 
-/// Calculation-profile status card in tertiary tones, with the PROPOSED badge
-/// and an expandable "About this profile" section.
+/// Calculation-profile card in tertiary tones, with an expandable
+/// "About this profile" section.
 class _ProfileStatusCard extends StatelessWidget {
   final PrayerTimes times;
 
@@ -855,28 +855,13 @@ class _ProfileStatusCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    l10n.calculationProfileProposed,
+                    l10n.calculationProfile,
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: scheme.onTertiaryFixed,
                     ),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: scheme.tertiaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                l10n.proposedStatus,
-                style: AppFonts.badgeLabel(context).copyWith(
-                  color: scheme.onTertiaryContainer,
-                ),
-              ),
             ),
             const SizedBox(height: 8),
             Text(

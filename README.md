@@ -143,5 +143,5 @@ Full third-party attributions in [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ---
 
-*This app presents proposed calculation profiles for study and testing. For religious practice, consult
+*The calculation profiles document their source conventions. For religious practice, consult
 qualified Maliki scholars in your region.*

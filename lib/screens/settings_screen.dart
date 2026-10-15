@@ -11,12 +11,9 @@ import 'package:malikiprayertimes/utils/prayer_names.dart';
 import 'package:malikiprayertimes/widgets/notification_settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// User settings: active calculation profile, app language, per-prayer time
-/// adjustments, the precautionary-delay (ihtiyat) switch, adjustment reset,
-/// fonts note, app version, and the notification section.
-///
-/// The active profile is PROPOSED — pending scholarly review — and the
-/// profile row says so.
+/// User settings: app language, per-prayer time adjustments, the
+/// precautionary-delay (ihtiyat) switch, adjustment reset, fonts note,
+/// app version, and the notification section.
 class SettingsScreen extends StatelessWidget {
   final SettingsService settings;
   final Coordinates coordinates;

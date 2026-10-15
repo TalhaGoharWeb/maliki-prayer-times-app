@@ -127,19 +127,15 @@
       }
     }
   },
-  "calculationProfileProposed": "Calculation profile",
-  "@calculationProfileProposed": {
+  "calculationProfile": "Calculation profile",
+  "@calculationProfile": {
     "description": "Home screen calculation-profile status label"
-  },
-  "proposedStatus": "PROPOSED — pending scholarly review",
-  "@proposedStatus": {
-    "description": "Short PROPOSED pending-review status"
   },
   "aboutProfile": "About this profile",
   "@aboutProfile": {
     "description": "Expansion tile title"
   },
-  "aboutProfileText": "The angles used to compute these times (for example the 18° Fajr angle and 17° Isha angle) are astronomical conventions that approximate the legal signs described in the fiqh sources. They are not fiqh rulings themselves. No scholar has reviewed this profile; it is a proposed starting point, and nothing on this screen should be treated as a scholarly determination.",
+  "aboutProfileText": "The angles used to compute these times (for example the 18° Fajr angle and 17° Isha angle) are astronomical conventions that approximate the legal signs described in the fiqh sources. They are not fiqh rulings themselves.",
   "@aboutProfileText": {
     "description": "Explanation that angles are conventions, not fiqh rulings"
   },
@@ -375,10 +371,6 @@
   "@profilesTitle": {
     "description": "Profiles screen title"
   },
-  "proposedBanner": "Angles are astronomical conventions, not fiqh rulings. No scholar has reviewed these profiles.",
-  "@proposedBanner": {
-    "description": "PROPOSED banner on the profiles screen"
-  },
   "selectProfile": "Select a profile",
   "@selectProfile": {
     "description": "Section header: select a profile"
@@ -439,7 +431,7 @@
   "@sunriseMarkerRow": {
     "description": "Comparison row label for sunrise"
   },
-  "compareFootnote": "Differences come from the Fajr/Isha angles each profile uses; the profiles themselves are PROPOSED — pending scholarly review.",
+  "compareFootnote": "Differences come from the Fajr/Isha angles each profile uses.",
   "@compareFootnote": {
     "description": "Footnote under the comparison table"
   },
@@ -1077,7 +1069,7 @@
   "@aboutAppSection": {
     "description": "Settings 2026-10-15: aboutAppSection"
   },
-  "aboutAppBody": "A prayer-times app implementing Maliki fiqh prayer-time rules — two-tier ikhtiyari (preferred) and daruri (necessity) times, Asr at the first mithl, Maghrib and Isha per the Maliki schools — with research-based calculation profiles. All profiles are PROPOSED — pending scholarly review.",
+  "aboutAppBody": "A prayer-times app implementing Maliki fiqh prayer-time rules — two-tier ikhtiyari (preferred) and daruri (necessity) times, Asr at the first mithl, Maghrib and Isha per the Maliki schools — with research-based calculation profiles.",
   "@aboutAppBody": {
     "description": "Settings 2026-10-15: aboutAppBody"
   },
@@ -1139,7 +1131,7 @@
   "@exitAppCancel": {
     "description": "Settings/branding 2026-10-15: exitAppCancel"
   },
-  "footerNote": "Tawqīt Maliki — computed from the proposed profile (pending scholarly review).",
+  "footerNote": "Tawqīt Maliki — computed from the active calculation profile.",
   "@footerNote": {
     "description": "Redesign 2026-10-15: footerNote"
   }

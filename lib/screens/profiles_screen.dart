@@ -8,13 +8,12 @@ import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 
-/// Calculation profiles: the proposed juristic presets, selection, and a
+/// Calculation profiles: the juristic presets, selection, and a
 /// two-profile comparison of today's computed times.
 ///
-/// Every profile on this screen is PROPOSED — pending scholarly review — and
-/// the banner at the top states this. Profiles are immutable engine
-/// constants. Tapping a preset marks it pending; "Apply Active Profile"
-/// commits the pending choice to [SettingsService].
+/// Profiles are immutable engine constants. Tapping a preset marks it
+/// pending; "Apply Active Profile" commits the pending choice to
+/// [SettingsService].
 class ProfilesScreen extends StatefulWidget {
   final SettingsService settings;
   final Coordinates coordinates;
@@ -99,44 +98,6 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           children: [
-            // Persistent PROPOSED status banner.
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: scheme.errorContainer,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.verified,
-                      color: scheme.onErrorContainer, size: 22),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.proposedStatus.toUpperCase(),
-                          style: AppFonts.badgeLabel(context).copyWith(
-                            color: scheme.onErrorContainer,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.proposedBanner,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: scheme.onErrorContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
             // Juristic presets header.
             Text(
               l10n.juristicPresets.toUpperCase(),

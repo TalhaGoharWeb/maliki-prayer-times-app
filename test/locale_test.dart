@@ -7,6 +7,7 @@ import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/main.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/screens/location_screen.dart';
+import 'package:malikiprayertimes/screens/profiles_screen.dart';
 import 'package:malikiprayertimes/screens/settings_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
@@ -38,8 +39,6 @@ void main() {
         expect(l10n.navQibla, isNotEmpty, reason: '$code navQibla');
         expect(l10n.navProfiles, isNotEmpty, reason: '$code navProfiles');
         expect(l10n.navSettings, isNotEmpty, reason: '$code navSettings');
-        expect(l10n.proposedStatus, isNotEmpty, reason: '$code proposedStatus');
-        expect(l10n.proposedBanner, isNotEmpty, reason: '$code proposedBanner');
         // Placeholders must survive formatting in every locale.
         final inText = l10n.nextPrayerIn('X', '01:02:03');
         expect(inText, contains('X'), reason: '$code nextPrayerIn prayer');
@@ -61,10 +60,42 @@ void main() {
       for (final code in ['en', 'ur', 'ar', 'fr']) {
         final l10n = await AppLocalizations.delegate.load(Locale(code));
         for (final s in [
-          l10n.proposedStatus,
-          l10n.proposedBanner,
-          l10n.calculationProfileProposed,
+          l10n.calculationProfile,
           l10n.compareFootnote,
+        ]) {
+          for (final word in banned) {
+            expect(s.toLowerCase(), isNot(contains(word)),
+                reason: '$code contains "$word": $s');
+          }
+        }
+      }
+    });
+
+    test('no pending-review labels in any locale', () async {
+      // User directive: no "PROPOSED — pending scholarly review" text
+      // anywhere in the UI, in any language.
+      final banned = [
+        'propos', // proposed / PROPOSED / proposé
+        'pending scholarly review',
+        'no scholar has reviewed',
+        'examen par des savants',
+        'révision savante',
+        'مجوزہ',
+        'مقترح',
+        'بانتظار المراجعة',
+        'المراجعة العلمية',
+        'علمی جائزے',
+        'علمی جائزہ',
+        'شرعی توثیق',
+      ];
+      for (final code in ['en', 'ur', 'ar', 'fr']) {
+        final l10n = await AppLocalizations.delegate.load(Locale(code));
+        for (final s in [
+          l10n.calculationProfile,
+          l10n.compareFootnote,
+          l10n.aboutProfileText,
+          l10n.aboutAppBody,
+          l10n.footerNote,
         ]) {
           for (final word in banned) {
             expect(s.toLowerCase(), isNot(contains(word)),
@@ -536,6 +567,72 @@ void main() {
       expect(find.text(l10n.appVersion('1.1.0')), findsOneWidget);
       // The redundant profile card (and its section header) are gone.
       expect(find.text('Calculation profile'), findsNothing);
+    });
+  });
+
+  group('no pending-review labels in the UI', () {
+    testWidgets('profiles screen shows no PROPOSED banner', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: _delegates,
+          supportedLocales: _supportedLocales,
+          home: ProfilesScreen(
+            settings: settings,
+            coordinates: const Coordinates(24.86, 67.0),
+            timeZoneOffset: const Duration(hours: 5),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.textContaining(RegExp('proposed', caseSensitive: false)),
+          findsNothing,
+          reason: 'no PROPOSED banner on the profiles screen');
+      expect(
+          find.textContaining(
+              RegExp('pending scholarly review', caseSensitive: false)),
+          findsNothing,
+          reason: 'no pending-review sentence on the profiles screen');
+    });
+
+    testWidgets('home profile card shows no PROPOSED badge', (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'saved_location': jsonEncode({
+          'name': 'Nouakchott',
+          'latitude': 18.0858,
+          'longitude': -15.9785,
+          'isDevice': false,
+        }),
+      });
+      final settings = await SettingsService.load();
+      final location = await LocationService.load();
+      await settings.setLanguageCode('en');
+
+      // Tall viewport so the profile card (below the fold) builds at once.
+      tester.view.physicalSize = const Size(1080, 12000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+          MalikiPrayerTimesApp(settings: settings, location: location));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.house));
+      await tester.pump();
+
+      expect(find.textContaining(RegExp('proposed', caseSensitive: false)),
+          findsNothing,
+          reason: 'no PROPOSED badge on the home profile card');
+      // The card itself (title + active profile name) still renders.
+      final l10n =
+          await AppLocalizations.delegate.load(const Locale('en'));
+      expect(find.text(l10n.calculationProfile), findsOneWidget,
+          reason: 'profile card title still present');
     });
   });
 }
