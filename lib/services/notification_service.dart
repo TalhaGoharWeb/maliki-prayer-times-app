@@ -483,19 +483,18 @@ class NotificationService {
     await prefs.setString(_lastProfileKey, profile.id);
     await prefs.setInt(_lastOffsetMinutesKey, timeZoneOffset.inMinutes);
     await prefs.setString(_lastTimeZoneKey, DateTime.now().timeZoneName);
-    if (restoreSun) {
-      final sUtc = sunUtc;
-      final sTitle = sunTitle;
-      final sBody = sunBody;
-      if (sUtc != null && sTitle != null && sBody != null) {
-        await _scheduler.schedule(
-          id: sunReminderId,
-          title: sTitle,
-          body: sBody,
-          scheduledUtc: sUtc,
-          exact: exact,
-        );
-      }
+    if (sunUtc != null &&
+        sunUtc.isAfter(nowUtc) &&
+        sunTitle != null &&
+        sunBody != null) {
+      // The null checks above promote these final locals to non-null.
+      await _scheduler.schedule(
+        id: sunReminderId,
+        title: sunTitle,
+        body: sunBody,
+        scheduledUtc: sunUtc,
+        exact: exact,
+      );
     }
   }
 
