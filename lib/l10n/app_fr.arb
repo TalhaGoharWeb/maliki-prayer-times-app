@@ -92,7 +92,7 @@
   "languageSection": "Langue",
   "systemDefault": "Défaut du système",
   "fontsSection": "Polices",
-  "fontsNote": "Le texte ourdou utilise actuellement la police système de l’appareil. L’intégration de la police Jameel Noori Nastaleeq est un point connu en attente : les droits de redistribution ne sont pas vérifiés, donc aucun fichier de police n’est intégré à l’application.",
+  "fontsNote": "Le texte ourdou utilise la police Nafees Nastaleeq intégrée (CRULP). Sa licence autorise la redistribution, et sa notice de copyright est fournie avec l’application.",
   "locationTitle": "Lieu",
   "currentLocation": "Lieu actuel",
   "noLocationChosen": "Aucun lieu choisi pour le moment.",

@@ -489,9 +489,9 @@
   "@fontsSection": {
     "description": "Settings section: fonts"
   },
-  "fontsNote": "Urdu text currently uses the device system font. Bundling the Jameel Noori Nastaleeq font is a known pending item: redistribution rights are unverified, so no font file is bundled with the app.",
+  "fontsNote": "Urdu text uses the bundled Nafees Nastaleeq font (CRULP). Its license permits redistribution, and its copyright notice ships with the app.",
   "@fontsNote": {
-    "description": "Note recording the pending Jameel Noori font decision"
+    "description": "Note about the bundled Urdu font (Nafees Nastaleeq, CRULP)"
   },
   "locationTitle": "Location",
   "@locationTitle": {
