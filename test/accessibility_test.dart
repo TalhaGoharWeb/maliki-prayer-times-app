@@ -302,7 +302,18 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
-      expect(find.text(l10n.nextPrayerBadge), findsOneWidget,
+      // The next prayer depends on the wall-clock time: late in the day it
+      // is Isha, whose row starts below the fold on the default test
+      // surface — and ListView only keeps its visible window in the tree.
+      // Scroll in small steps until the badge's row enters the viewport
+      // (a full scroll-through would dispose it again at the bottom).
+      final badge = find.text(l10n.nextPrayerBadge);
+      for (var i = 0; i < 10 && badge.evaluate().isEmpty; i++) {
+        await tester.drag(
+            find.byType(Scrollable).first, const Offset(0, -600));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(badge, findsOneWidget,
           reason: 'highlighted row must say "${l10n.nextPrayerBadge}"');
     });
 
