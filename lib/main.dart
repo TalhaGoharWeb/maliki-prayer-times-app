@@ -15,25 +15,35 @@ import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Immediate deep-green brand splash while the services load; replaced by
   // the main app below. Widget tests pump MalikiPrayerTimesApp directly and
   // never see this.
+  final splashStart = DateTime.now();
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     ),
   );
-  final settings = await SettingsService.load();
-  final location = await LocationService.load();
+  // Load in parallel — never sequential awaits on the launch path.
+  final (settings, location) = await (
+    SettingsService.load(),
+    LocationService.load(),
+  ).wait;
   final notifications = NotificationService(
     scheduler: PluginNotificationScheduler(),
   );
-  // Brief brand moment before the home screen takes over.
-  await Future<void>.delayed(const Duration(milliseconds: 1500));
+  // Brief brand moment, but never slower than the actual init: only wait
+  // out the remainder of a short minimum so the splash can't flash by.
+  final elapsed = DateTime.now().difference(splashStart);
+  const minSplash = Duration(milliseconds: 700);
+  if (elapsed < minSplash) {
+    await Future<void>.delayed(minSplash - elapsed);
+  }
   runApp(MalikiPrayerTimesApp(
     settings: settings,
     location: location,
@@ -69,11 +79,26 @@ class MalikiPrayerTimesApp extends StatefulWidget {
 class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
   int _index = 0;
 
+  /// Guard so the notification permission prompt appears exactly once.
+  static const _notifAskedKey = 'notif_permission_asked_v1';
+
   @override
   void initState() {
     super.initState();
     widget.settings.addListener(_onServicesChanged);
     widget.location.addListener(_onServicesChanged);
+    _askNotificationPermissionOnce();
+  }
+
+  /// Asks for notification permission right after the splash closes, once
+  /// ever. Skipped in widget tests (no real notification plugin there).
+  Future<void> _askNotificationPermissionOnce() async {
+    final notifications = widget.notifications;
+    if (notifications == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_notifAskedKey) == true) return;
+    await notifications.requestPermissions();
+    await prefs.setBool(_notifAskedKey, true);
   }
 
   @override
@@ -128,7 +153,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
 
   /// The global top bar.
   ///
-  /// Two zones: the brand block (mosque mark + "Maliki Prayer" wordmark +
+  /// Two zones: the brand block (app logo + "Maliki Prayer" wordmark +
   /// Arabic subtitle) gets the full toolbar row, so the Arabic subtitle
   /// renders in full and wraps (never truncates) even at large text sizes;
   /// below it, a strip carries the current screen title and the tappable
@@ -149,14 +174,13 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
       titleSpacing: 16,
       title: Row(
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: scheme.primary,
-              borderRadius: BorderRadius.circular(15),
+          ClipOval(
+            child: Image.asset(
+              'assets/branding/compass_mark.jpg',
+              width: 46,
+              height: 46,
+              fit: BoxFit.cover,
             ),
-            child: Icon(Icons.mosque, color: scheme.onPrimary, size: 25),
           ),
           const SizedBox(width: 12),
           Expanded(

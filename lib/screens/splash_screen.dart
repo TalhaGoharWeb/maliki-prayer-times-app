@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 /// The credit strings are verbatim proper-name credits (user's exact
 /// spellings) and are intentionally not localized.
 class SplashScreen extends StatelessWidget {
-  /// Path of the full logo art (with text ring).
-  static const String logoAsset = 'assets/branding/logo_full_text.jpg';
+  /// Path of the full logo art (white corners removed → transparent).
+  static const String logoAsset = 'assets/branding/logo_full_transparent.png';
 
   /// Deep green shared with the native Android launch background.
   static const Color splashGreen = Color(0xFF003527);
@@ -26,12 +26,9 @@ class SplashScreen extends StatelessWidget {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(48),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.asset(
-                      logoAsset,
-                      fit: BoxFit.contain,
-                    ),
+                  child: Image.asset(
+                    logoAsset,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
