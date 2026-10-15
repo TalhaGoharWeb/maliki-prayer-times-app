@@ -54,3 +54,13 @@ dependencies {
     // Core library desugaring (flutter_local_notifications requirement).
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
+
+// Align androidx.activity artifacts: package_info_plus / url_launcher pull
+// newer activity versions than other plugins' activity-ktx; misaligned pairs
+// fail checkReleaseDuplicateClasses (duplicate ActivityViewModelLazyKt).
+configurations.all {
+    resolutionStrategy {
+        force("androidx.activity:activity:1.9.0")
+        force("androidx.activity:activity-ktx:1.9.0")
+    }
+}
