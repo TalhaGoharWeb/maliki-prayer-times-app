@@ -92,7 +92,7 @@
   "languageSection": "زبان",
   "systemDefault": "سسٹم کی طے شدہ",
   "fontsSection": "فونٹس",
-  "fontsNote": "اردو متن میں شامل کردہ نفیس نستعلیق فونٹ (CRULP) استعمال ہوتا ہے۔ اس کا لائسنس دوبارہ تقسیم کی اجازت دیتا ہے، اور کاپی رائٹ نوٹس ایپ کے ساتھ شامل ہے۔",
+  "fontsNote": "اردو متن میں شامل کردہ نفیس نستعلیق فونٹ (CRULP) استعمال ہوتا ہے۔ لاطینی اور فرانسیسی کے لیے سورس سیرف 4 اور مین روپ، اور عربی کے لیے امیری استعمال ہوتا ہے۔ تمام فونٹس کھلے لائسنس کے حامل ہیں؛ ان کے نوٹس ایپ کے ساتھ شامل ہیں۔",
   "locationTitle": "مقام",
   "currentLocation": "موجودہ مقام",
   "noLocationChosen": "ابھی کوئی مقام منتخب نہیں ہوا۔",
@@ -259,5 +259,229 @@
         "type": "String"
       }
     }
+  },
+  "heroEyebrow": "اگلی نماز · اختیاری وقت",
+  "@heroEyebrow": {
+    "description": "Redesign 2026-10-15: heroEyebrow"
+  },
+  "heroCountdownLabel": "باقی وقت",
+  "@heroCountdownLabel": {
+    "description": "Redesign 2026-10-15: heroCountdownLabel"
+  },
+  "prayerDescFajr": "صبحِ صادق · 18 درجے انحطاط",
+  "@prayerDescFajr": {
+    "description": "Redesign 2026-10-15: prayerDescFajr"
+  },
+  "prayerDescDhuhr": "زوالِ آفتاب کے بعد",
+  "@prayerDescDhuhr": {
+    "description": "Redesign 2026-10-15: prayerDescDhuhr"
+  },
+  "prayerDescAsr": "پہلا سایہ — موقفِ مالکی",
+  "@prayerDescAsr": {
+    "description": "Redesign 2026-10-15: prayerDescAsr"
+  },
+  "prayerDescMaghrib": "عین غروبِ آفتاب",
+  "@prayerDescMaghrib": {
+    "description": "Redesign 2026-10-15: prayerDescMaghrib"
+  },
+  "prayerDescIsha": "شفقِ احمر کا مکمل زوال · 17 درجے",
+  "@prayerDescIsha": {
+    "description": "Redesign 2026-10-15: prayerDescIsha"
+  },
+  "presetHeader": "تاریخی حوالہ جاتی افق",
+  "@presetHeader": {
+    "description": "Redesign 2026-10-15: presetHeader"
+  },
+  "presetSub": "فلکیاتِ مالکیہ کے مستند نصف النہار — حساب کے لیے کسی ایک کو منتخب کریں۔",
+  "@presetSub": {
+    "description": "Redesign 2026-10-15: presetSub"
+  },
+  "presetFezDesc": "روایتِ قرویین کا مرکز",
+  "@presetFezDesc": {
+    "description": "Redesign 2026-10-15: presetFezDesc"
+  },
+  "presetCairoDesc": "نصف النہارِ ازہر / فسطاط",
+  "@presetCairoDesc": {
+    "description": "Redesign 2026-10-15: presetCairoDesc"
+  },
+  "presetKairouanDesc": "نصف النہارِ مسجدِ عقبہ",
+  "@presetKairouanDesc": {
+    "description": "Redesign 2026-10-15: presetKairouanDesc"
+  },
+  "presetCordobaDesc": "نصف النہارِ اندلسی",
+  "@presetCordobaDesc": {
+    "description": "Redesign 2026-10-15: presetCordobaDesc"
+  },
+  "presetNouakchottDesc": "صحرا کے افق کا حوالہ",
+  "@presetNouakchottDesc": {
+    "description": "Redesign 2026-10-15: presetNouakchottDesc"
+  },
+  "activeHorizon": "فعال افق",
+  "@activeHorizon": {
+    "description": "Redesign 2026-10-15: activeHorizon"
+  },
+  "primaryBase": "بنیادی مرکز",
+  "@primaryBase": {
+    "description": "Redesign 2026-10-15: primaryBase"
+  },
+  "activeNow": "فی الحال فعال",
+  "@activeNow": {
+    "description": "Redesign 2026-10-15: activeNow"
+  },
+  "coordsLabel": "مختصات",
+  "@coordsLabel": {
+    "description": "Redesign 2026-10-15: coordsLabel"
+  },
+  "datumLabel": "ڈیٹم",
+  "@datumLabel": {
+    "description": "Redesign 2026-10-15: datumLabel"
+  },
+  "wgs84Datum": "WGS-84",
+  "@wgs84Datum": {
+    "description": "Redesign 2026-10-15: wgs84Datum"
+  },
+  "verifiedZenith": "تصدیق شدہ شمسی زوال",
+  "@verifiedZenith": {
+    "description": "Redesign 2026-10-15: verifiedZenith"
+  },
+  "deviceGpsTitle": "آلے کا GPS",
+  "@deviceGpsTitle": {
+    "description": "Redesign 2026-10-15: deviceGpsTitle"
+  },
+  "deviceGpsSub": "درست مختصات کے لیے اپنے فون کا GPS استعمال کریں۔",
+  "@deviceGpsSub": {
+    "description": "Redesign 2026-10-15: deviceGpsSub"
+  },
+  "saveCompute": "محفوظ کریں اور حساب لگائیں",
+  "@saveCompute": {
+    "description": "Redesign 2026-10-15: saveCompute"
+  },
+  "standardApplied": "معیاری مالکی حساب لاگو",
+  "@standardApplied": {
+    "description": "Redesign 2026-10-15: standardApplied"
+  },
+  "kaabaAzimuth": "سمتِ کعبہ",
+  "@kaabaAzimuth": {
+    "description": "Redesign 2026-10-15: kaabaAzimuth"
+  },
+  "greatCircle": "دائرۂ عظیم کا راستہ",
+  "@greatCircle": {
+    "description": "Redesign 2026-10-15: greatCircle"
+  },
+  "nauticalMiles": "{n} ناٹیکل میل",
+  "@nauticalMiles": {
+    "description": "Redesign 2026-10-15: nauticalMiles"
+  },
+  "kmValue": "{n} کلومیٹر",
+  "@kmValue": {
+    "description": "Redesign 2026-10-15: kmValue"
+  },
+  "rhumbLine": "سمتِ خطِ مستقیم",
+  "@rhumbLine": {
+    "description": "Redesign 2026-10-15: rhumbLine"
+  },
+  "trueNorthOffset": "شمالِ حقیقی سے فرق",
+  "@trueNorthOffset": {
+    "description": "Redesign 2026-10-15: trueNorthOffset"
+  },
+  "vsDueEast": "مشرق سے {d}° کا فرق",
+  "@vsDueEast": {
+    "description": "Redesign 2026-10-15: vsDueEast"
+  },
+  "staticVector": "ساکن نصف النہاری ویکٹر",
+  "@staticVector": {
+    "description": "Redesign 2026-10-15: staticVector"
+  },
+  "northUp": "شمال اوپر (0°)",
+  "@northUp": {
+    "description": "Redesign 2026-10-15: northUp"
+  },
+  "calibrationTitle": "تنبیہِ ضبط",
+  "@calibrationTitle": {
+    "description": "Redesign 2026-10-15: calibrationTitle"
+  },
+  "calibrationBody": "اس ڈائل کو حقیقی قطب نما یا معلوم علامت سے ملائیں — یہ اسکرین آپ کی حرکت کا تعاقب نہیں کرتی۔",
+  "@calibrationBody": {
+    "description": "Redesign 2026-10-15: calibrationBody"
+  },
+  "calibrationSteps": "ضبط کے مراحل",
+  "@calibrationSteps": {
+    "description": "Redesign 2026-10-15: calibrationSteps"
+  },
+  "step1": "فون کو غیر دھاتی سطح پر چت لٹائیں۔",
+  "@step1": {
+    "description": "Redesign 2026-10-15: step1"
+  },
+  "step2": "اس وقت تک گھمائیں جب تک ڈائل کا شمال حقیقی قطب نما سے نہ مل جائے۔",
+  "@step2": {
+    "description": "Redesign 2026-10-15: step2"
+  },
+  "step3": "اب سبز تیر قبلے کی سمت کی طرف اشارہ کر رہا ہے۔",
+  "@step3": {
+    "description": "Redesign 2026-10-15: step3"
+  },
+  "sunAlignTitle": "سورج سے سمت معلوم کرنے کا طریقہ",
+  "@sunAlignTitle": {
+    "description": "Redesign 2026-10-15: sunAlignTitle"
+  },
+  "sunAlignBody": "قدیم طریقہ: جب سورج کی سمت قبلے کی سمت کے برابر ہو تو عمودی چیز کا سایہ قبلے کی طرف ہوتا ہے۔",
+  "@sunAlignBody": {
+    "description": "Redesign 2026-10-15: sunAlignBody"
+  },
+  "sunAlignAt": "سورج اس وقت قبلے کے مطابق ہوگا",
+  "@sunAlignAt": {
+    "description": "Redesign 2026-10-15: sunAlignAt"
+  },
+  "sunAlignNone": "آج سورج طلوع سے غروب تک قبلے کے مطابق نہیں ہوگا۔",
+  "@sunAlignNone": {
+    "description": "Redesign 2026-10-15: sunAlignNone"
+  },
+  "sunAlignNote": "مقامی وقت، آج کی شمسی پوزیشن سے محسوب۔",
+  "@sunAlignNote": {
+    "description": "Redesign 2026-10-15: sunAlignNote"
+  },
+  "remindMe": "یاد دہانی لگائیں",
+  "@remindMe": {
+    "description": "Redesign 2026-10-15: remindMe"
+  },
+  "reminderSet": "{time} کے لیے یاد دہانی لگا دی گئی",
+  "@reminderSet": {
+    "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunReminderTitle": "سورج سے قبلے کی مطابقت",
+  "@sunReminderTitle": {
+    "description": "Redesign 2026-10-15: sunReminderTitle"
+  },
+  "sunReminderBody": "سورج کی سمت اب قبلے کی سمت کے مطابق ہے۔",
+  "@sunReminderBody": {
+    "description": "Redesign 2026-10-15: sunReminderBody"
+  },
+  "juristicPresets": "فقہی معیارات",
+  "@juristicPresets": {
+    "description": "Redesign 2026-10-15: juristicPresets"
+  },
+  "methodsAvailable": "{n} طریقے دستیاب",
+  "@methodsAvailable": {
+    "description": "Redesign 2026-10-15: methodsAvailable"
+  },
+  "applyActiveProfile": "فعال پروفائل لاگو کریں",
+  "@applyActiveProfile": {
+    "description": "Redesign 2026-10-15: applyActiveProfile"
+  },
+  "activeBadge": "فعال",
+  "@activeBadge": {
+    "description": "Redesign 2026-10-15: activeBadge"
+  },
+  "profileApplied": "پروفائل لاگو: {name}",
+  "@profileApplied": {
+    "description": "Redesign 2026-10-15: profileApplied"
+  },
+  "appVersion": "ورژن {v}",
+  "@appVersion": {
+    "description": "Redesign 2026-10-15: appVersion"
+  },
+  "footerNote": "توقیتِ مالکی — مجوزہ پروفائل سے محسوب (شرعی توثیق زیرِ التوا)۔",
+  "@footerNote": {
+    "description": "Redesign 2026-10-15: footerNote"
   }
 }

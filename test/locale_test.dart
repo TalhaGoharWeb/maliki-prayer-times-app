@@ -162,11 +162,17 @@ void main() {
 
         // Back to the home tab: pumpWidget reuses the element tree across
         // loop iterations, so the tab index may be stale.
-        await tester.tap(find.byIcon(Icons.home));
+        await tester.tap(find.byIcon(Icons.house));
         await tester.pump();
 
         // Home tab (index 0) renders the timetable with a location set.
-        expect(find.textContaining(RegExp(r'\d\d:\d\d')), findsWidgets,
+        // Urdu and Arabic use Indic digits, so match those too.
+        final digitClass =
+            (code == 'ur' || code == 'ar') ? r'[۰-۹٠-٩]' : r'\d';
+        expect(
+            find.textContaining(
+                RegExp('$digitClass$digitClass:$digitClass$digitClass')),
+            findsWidgets,
             reason: '$code home timetable');
 
         // Walk the remaining tabs.
@@ -202,10 +208,17 @@ void main() {
           ),
         );
         await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+        // Screen builds without missing-key exceptions under every locale.
+        expect(tester.takeException(), isNull,
+            reason: '$code location screen build');
         final l10n =
             await AppLocalizations.delegate.load(Locale(code));
-        expect(find.text(l10n.locationTitle), findsOneWidget,
-            reason: '$code location title');
+        // The device-location button is below the fold in the lazy
+        // ListView: scroll it into view first.
+        await tester.drag(
+            find.byType(Scrollable).first, const Offset(0, -2000));
+        await tester.pump();
         expect(find.text(l10n.useDeviceLocation), findsOneWidget,
             reason: '$code device location button');
       }

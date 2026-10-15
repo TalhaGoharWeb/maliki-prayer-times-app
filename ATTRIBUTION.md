@@ -117,3 +117,31 @@ copyleft, no proprietary terms, LICENSE files present and read).
   remain in this repo. The earlier finding stands: no redistribution license
   for Jameel Noori could be verified (font sites list it as personal-use-only;
   no official license document exists).
+
+## Amiri (Arabic typeface)
+- **Files:** `assets/fonts/Amiri-Regular.ttf`, `assets/fonts/Amiri-Bold.ttf`
+  (font family "Amiri").
+- **License:** SIL Open Font License 1.1 (OFL). License text in
+  `assets/fonts/OFL-Amiri.txt`.
+- **Source:** google/fonts repository (github.com/google/fonts), verified
+  2026-10-15. Designed by Khaled Hosny.
+- **Use:** Arabic-script UI text (ar locale and Arabic names/labels across
+  locales).
+
+## Source Serif 4 (Latin/French headlines)
+- **Files:** `assets/fonts/SourceSerif4-Variable.ttf` (font family
+  "Source Serif 4", variable weight; used at w400/w600/w700).
+- **License:** SIL Open Font License 1.1 (OFL). License text in
+  `assets/fonts/OFL-SourceSerif4.txt`.
+- **Source:** google/fonts repository (github.com/google/fonts), verified
+  2026-10-15. Designed by Frank Grießhammer.
+- **Use:** Headlines and HH:MM time readouts for en/fr locales.
+
+## Manrope (Latin/French body)
+- **Files:** `assets/fonts/Manrope-Variable.ttf` (font family "Manrope",
+  variable weight).
+- **License:** SIL Open Font License 1.1 (OFL). License text in
+  `assets/fonts/OFL-Manrope.txt`.
+- **Source:** google/fonts repository (github.com/google/fonts), verified
+  2026-10-15. Designed by Michael Sharanda.
+- **Use:** Body text, labels, and UI chrome for en/fr locales.

@@ -6,11 +6,12 @@ import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/screens/profiles_screen.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/widgets/notification_settings.dart';
 
 /// User settings: active calculation profile, app language, per-prayer time
 /// adjustments, the precautionary-delay (ihtiyat) switch, adjustment reset,
-/// and a fonts note.
+/// fonts note, app version, and the notification section.
 ///
 /// The active profile is PROPOSED — pending scholarly review — and the
 /// profile row says so.
@@ -47,6 +48,25 @@ class SettingsScreen extends StatelessWidget {
         Prayer.isha => l10n.prayerIsha,
       };
 
+  String _prayerArabic(Prayer p) => switch (p) {
+        Prayer.fajr => 'الفجر',
+        Prayer.sunrise => 'الشروق',
+        Prayer.dhuhr => 'الظهر',
+        Prayer.asr => 'العصر',
+        Prayer.maghrib => 'المغرب',
+        Prayer.isha => 'العشاء',
+      };
+
+  /// Short scholarly descriptor per prayer (template flavor, honest).
+  String _prayerDescriptor(AppLocalizations l10n, Prayer p) => switch (p) {
+        Prayer.fajr => l10n.prayerDescFajr,
+        Prayer.sunrise => l10n.timetableMarkerNote,
+        Prayer.dhuhr => l10n.prayerDescDhuhr,
+        Prayer.asr => l10n.prayerDescAsr,
+        Prayer.maghrib => l10n.prayerDescMaghrib,
+        Prayer.isha => l10n.prayerDescIsha,
+      };
+
   String _adjustmentExplanation(AppLocalizations l10n, Prayer p) =>
       l10n.adjustmentExplanation(_prayerLabel(l10n, p));
 
@@ -77,142 +97,135 @@ class SettingsScreen extends StatelessWidget {
     ];
   }
 
-  Widget _adjustmentRow(
-    BuildContext context,
-    AppLocalizations l10n,
-    SettingsService settings,
-    Prayer prayer,
-  ) {
-    final theme = Theme.of(context);
-    final value = settings.adjustments[prayer] ?? 0;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _prayerLabel(l10n, prayer),
-                    style: theme.textTheme.titleSmall,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  tooltip: l10n.tooltipEarlier,
-                  onPressed: value > -SettingsService.maxAdjustmentMinutes
-                      ? () => settings.setAdjustment(prayer, value - 1)
-                      : null,
-                ),
-                SizedBox(
-                  width: 72,
-                  child: Text(
-                    l10n.adjustmentValue('${value >= 0 ? '+' : ''}$value'),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleSmall,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  tooltip: l10n.tooltipLater,
-                  onPressed: value < SettingsService.maxAdjustmentMinutes
-                      ? () => settings.setAdjustment(prayer, value + 1)
-                      : null,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _adjustmentExplanation(l10n, prayer),
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
-      body: ListenableBuilder(
-        listenable: settings,
-        builder: (context, _) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // (1) Active profile.
-              Text(
-                l10n.calculationProfileSection,
-                style: theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              Card(
-                child: ListTile(
-                  title: Text(profileLabel(l10n, settings.activeProfile).name),
-                  subtitle: Text(
-                    l10n.proposedStatus,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _openProfiles(context),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // (2) App language.
-              Text(l10n.languageSection, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Card(
+    return ListenableBuilder(
+      listenable: settings,
+      builder: (context, _) {
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          children: [
+            // (1) Jurisprudential profile.
+            _SectionHeader(
+                icon: Icons.menu_book,
+                title: l10n.calculationProfileSection),
+            const SizedBox(height: 8),
+            Card(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => _openProfiles(context),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: DropdownButtonFormField<String?>(
-                    initialValue: settings.languageCode,
-                    // Full-width so the selected value can never push the
-                    // field outside its card at large text sizes.
-                    isExpanded: true,
-                    decoration: const InputDecoration(border: InputBorder.none),
-                    items: _languageItems(l10n),
-                    onChanged: (code) => settings.setLanguageCode(code),
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: scheme.tertiaryFixed,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(Icons.menu_book,
+                            color: scheme.onTertiaryFixed, size: 22),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              profileLabel(l10n, settings.activeProfile).name,
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: scheme.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                l10n.proposedStatus.toUpperCase(),
+                                style: AppFonts.badgeLabel(context).copyWith(
+                                  color: scheme.onTertiaryContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: scheme.outline),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 20),
 
-              // (3) Per-prayer adjustments.
-              Text(l10n.adjustmentsSection, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Text(
-                l10n.sunriseNoAdjustmentNote,
-                style: theme.textTheme.bodySmall,
-              ),
-              const SizedBox(height: 4),
-              ..._adjustablePrayers.map(
-                (p) => _adjustmentRow(context, l10n, settings, p),
-              ),
-              const SizedBox(height: 16),
-
-              // (4) Precautionary delay (ihtiyat).
-              Text(l10n.ihtiyatSection, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Card(
-                child: SwitchListTile(
-                  title: Text(l10n.applyIhtiyat),
-                  subtitle: Text(l10n.ihtiyatSubtitle),
-                  value: settings.ihtiyatEnabled,
-                  onChanged: settings.setIhtiyatEnabled,
+            // (2) Language & localization.
+            _SectionHeader(
+                icon: Icons.translate, title: l10n.languageSection),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: DropdownButtonFormField<String?>(
+                  initialValue: settings.languageCode,
+                  // Full-width so the selected value can never push the
+                  // field outside its card at large text sizes.
+                  isExpanded: true,
+                  decoration: const InputDecoration(border: InputBorder.none),
+                  items: _languageItems(l10n),
+                  onChanged: (code) => settings.setLanguageCode(code),
                 ),
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 20),
 
-              // (5) Reset adjustments.
-              TextButton.icon(
-                icon: const Icon(Icons.restart_alt),
+            // (3) Per-prayer adjustments.
+            _SectionHeader(
+                icon: Icons.history_edu, title: l10n.adjustmentsSection),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Icons.info_outline, size: 14, color: scheme.secondary),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.sunriseNoAdjustmentNote,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ..._adjustablePrayers.map(
+              (p) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _AdjustmentCard(
+                  prayer: p,
+                  label: _prayerLabel(l10n, p),
+                  arabic: _prayerArabic(p),
+                  descriptor: _prayerDescriptor(l10n, p),
+                  value: settings.adjustments[p] ?? 0,
+                  max: SettingsService.maxAdjustmentMinutes,
+                  earlierTooltip: l10n.tooltipEarlier,
+                  laterTooltip: l10n.tooltipLater,
+                  explanation: _adjustmentExplanation(l10n, p),
+                  onChanged: (v) => settings.setAdjustment(p, v),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Center(
+              child: TextButton.icon(
+                icon: const Icon(Icons.restart_alt, size: 18),
                 label: Text(l10n.resetAdjustments),
                 onPressed: () async {
                   await settings.resetAdjustments();
@@ -223,33 +236,226 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 20),
 
-              // (6) Fonts: known pending item — no font files are bundled
-              // (Jameel Noori Nastaleeq redistribution rights unverified).
-              Text(l10n.fontsSection, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(l10n.fontsNote, style: theme.textTheme.bodySmall),
+            // (4) Precautionary delay (ihtiyat).
+            _SectionHeader(
+                icon: Icons.verified, title: l10n.ihtiyatSection),
+            const SizedBox(height: 8),
+            Card(
+              child: SwitchListTile(
+                title: Text(l10n.applyIhtiyat,
+                    style: theme.textTheme.titleSmall),
+                subtitle: Text(
+                  l10n.ihtiyatSubtitle,
+                  style: theme.textTheme.bodySmall,
+                ),
+                value: settings.ihtiyatEnabled,
+                onChanged: settings.setIhtiyatEnabled,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // (5) Fonts.
+            _SectionHeader(
+                icon: Icons.text_fields, title: l10n.fontsSection),
+            const SizedBox(height: 8),
+            Card(
+              color: scheme.surfaceContainerHigh,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.text_fields,
+                        size: 18, color: scheme.secondary),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        l10n.fontsNote,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
+            const SizedBox(height: 20),
 
-              // (7) Prayer notifications (Track A widget; hidden when no
-              // NotificationService is provided, e.g. in widget tests).
-              if (notifications != null) ...[
-                const SizedBox(height: 16),
-                NotificationSettingsSection(
-                  notifications: notifications!,
-                  settings: settings,
-                  coordinates: coordinates,
-                  timeZoneOffset: timeZoneOffset,
+            // (6) Prayer notifications (Track A widget; hidden when no
+            // NotificationService is provided, e.g. in widget tests).
+            if (notifications != null) ...[
+              NotificationSettingsSection(
+                notifications: notifications!,
+                settings: settings,
+                coordinates: coordinates,
+                timeZoneOffset: timeZoneOffset,
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // (7) Version + footer.
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: scheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  l10n.appVersion('1.0.0'),
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.footerNote,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: scheme.secondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Section header: small icon + eyebrow title.
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const _SectionHeader({required this.icon, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: theme.colorScheme.secondary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            title.toUpperCase(),
+            style: AppFonts.eyebrow(context).copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// One per-prayer adjustment card: names, stepper, value, explanation.
+class _AdjustmentCard extends StatelessWidget {
+  final Prayer prayer;
+  final String label;
+  final String arabic;
+  final String descriptor;
+  final int value;
+  final int max;
+  final String earlierTooltip;
+  final String laterTooltip;
+  final String explanation;
+  final ValueChanged<int> onChanged;
+
+  const _AdjustmentCard({
+    required this.prayer,
+    required this.label,
+    required this.arabic,
+    required this.descriptor,
+    required this.value,
+    required this.max,
+    required this.earlierTooltip,
+    required this.laterTooltip,
+    required this.explanation,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              label,
+                              style: theme.textTheme.titleMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            arabic,
+                            style: const TextStyle(
+                              fontFamily: AppFonts.arabic,
+                              fontSize: 14,
+                              color: Color(0xFF404944),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        descriptor,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: scheme.secondary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  tooltip: earlierTooltip,
+                  onPressed: value > -max ? () => onChanged(value - 1) : null,
+                ),
+                Container(
+                  width: 76,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '${value >= 0 ? '+' : ''}$value',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: laterTooltip,
+                  onPressed: value < max ? () => onChanged(value + 1) : null,
                 ),
               ],
-            ],
-          );
-        },
+            ),
+            const SizedBox(height: 4),
+            Text(explanation, style: theme.textTheme.bodySmall),
+          ],
+        ),
       ),
     );
   }

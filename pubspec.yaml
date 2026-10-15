@@ -83,3 +83,14 @@ flutter:
     - family: Nafees Nastaleeq
       fonts:
         - asset: assets/fonts/NafeesNastaleeq.ttf
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+    - family: Source Serif 4
+      fonts:
+        - asset: assets/fonts/SourceSerif4-Variable.ttf
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Variable.ttf

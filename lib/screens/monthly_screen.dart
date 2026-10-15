@@ -6,9 +6,11 @@ import 'package:malikiprayertimes/fiqh/maliki_rules.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/band_texts.dart';
 import 'package:malikiprayertimes/screens/date_labels.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
+import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 
-/// Milestone 2 monthly view: a month grid of computed prayer times.
+/// Monthly view: a month grid of computed prayer times.
 ///
 /// Each day cell shows the day number plus that day's Fajr and Maghrib.
 /// Tapping a day opens a bottom sheet with all six computed times and the
@@ -109,50 +111,26 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     final bands = malikiPrayerBands(times);
     final gregorian = DateTime(_year, _month, day);
     final hijri = gregorianToHijri(gregorian);
+    final lang = Localizations.localeOf(context).languageCode;
     final rows = [
-      (
-        label: l10n.prayerFajr,
-        arabic: 'الفجر',
-        time: times.fajr,
-        isMarker: false,
-      ),
-      (
-        label: l10n.prayerSunrise,
-        arabic: 'الشروق',
-        time: times.sunrise,
-        isMarker: true,
-      ),
-      (
-        label: l10n.prayerDhuhr,
-        arabic: 'الظهر',
-        time: times.dhuhr,
-        isMarker: false,
-      ),
-      (
-        label: l10n.prayerAsr,
-        arabic: 'العصر',
-        time: times.asr,
-        isMarker: false,
-      ),
-      (
-        label: l10n.prayerMaghrib,
-        arabic: 'المغرب',
-        time: times.maghrib,
-        isMarker: false,
-      ),
-      (
-        label: l10n.prayerIsha,
-        arabic: 'العشاء',
-        time: times.isha,
-        isMarker: false,
-      ),
+      (label: l10n.prayerFajr, arabic: 'الفجر', time: times.fajr),
+      (label: l10n.prayerSunrise, arabic: 'الشروق', time: times.sunrise),
+      (label: l10n.prayerDhuhr, arabic: 'الظهر', time: times.dhuhr),
+      (label: l10n.prayerAsr, arabic: 'العصر', time: times.asr),
+      (label: l10n.prayerMaghrib, arabic: 'المغرب', time: times.maghrib),
+      (label: l10n.prayerIsha, arabic: 'العشاء', time: times.isha),
     ];
 
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (context) {
         final theme = Theme.of(context);
+        final scheme = theme.colorScheme;
         return DraggableScrollableSheet(
           expand: false,
           initialChildSize: 0.85,
@@ -161,55 +139,135 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
           builder: (context, scrollController) {
             return ListView(
               controller: scrollController,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               children: [
-                Text(
-                  materialL10n.formatFullDate(gregorian),
-                  style: theme.textTheme.titleLarge,
-                ),
-                Text(
-                  formatHijriDate(l10n, hijri),
-                  style: theme.textTheme.bodySmall,
-                ),
-                if (times.highLatitudeFallback) ...[
-                  const SizedBox(height: 8),
-                  Card(
-                    color: theme.colorScheme.tertiaryContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(l10n.highLatitudeNote),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: scheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  materialL10n.formatFullDate(gregorian),
+                  style: theme.textTheme.displaySmall,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  formatHijriDate(l10n, hijri),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.secondary,
+                  ),
+                ),
+                if (times.highLatitudeFallback) ...[
+                  const SizedBox(height: 12),
+                  _EstimateNotice(text: l10n.highLatitudeNote),
                 ],
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 ...rows.map((r) {
-                  return ListTile(
-                    title: Text('${r.label}  ${r.arabic}'),
-                    trailing: Text(
-                      _hhmm(r.time),
-                      style: theme.textTheme.titleMedium,
+                  final isMarker = r.label == l10n.prayerSunrise;
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        r.label,
+                                        style: theme.textTheme.titleMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      r.arabic,
+                                      style: const TextStyle(
+                                        fontFamily: AppFonts.arabic,
+                                        fontSize: 14,
+                                        color: Color(0xFF404944),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (isMarker)
+                                  Text(
+                                    l10n.timetableMarkerNote,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: scheme.secondary,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            localizeDigits(_hhmm(r.time), lang),
+                            style: AppFonts.timeLabel(context),
+                          ),
+                        ],
+                      ),
                     ),
-                    subtitle:
-                        r.isMarker ? Text(l10n.timetableMarkerNote) : null,
                   );
                 }),
-                const SizedBox(height: 8),
-                Text(l10n.bandsTitle, style: theme.textTheme.titleMedium),
-                const SizedBox(height: 2),
-                Text(l10n.bandsInfoNote, style: theme.textTheme.bodySmall),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Icon(Icons.auto_stories,
+                        size: 18, color: scheme.secondary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.bandsTitle.toUpperCase(),
+                        style: AppFonts.eyebrow(context).copyWith(
+                          color: scheme.secondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 4),
+                Text(
+                  l10n.bandsInfoNote,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.secondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 ...bands.map((b) {
                   return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
                     child: Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '${bandDisplayName(l10n, b.arabicName)}  ${b.arabicName}',
-                            style: theme.textTheme.titleSmall,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${bandDisplayName(l10n, b.arabicName)}  ${b.arabicName}',
+                                  style: theme.textTheme.titleMedium,
+                                ),
+                              ),
+                              _MiniChip(
+                                text: l10n.informationalChip,
+                                background: scheme.secondaryContainer,
+                                foreground: scheme.onSecondaryContainer,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
                           _bandLine(
                             theme,
                             l10n.preferredWord,
@@ -217,7 +275,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                             b.ikhtiyariIsComputed,
                             l10n,
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 6),
                           _bandLine(
                             theme,
                             l10n.necessityWord,
@@ -245,20 +303,33 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     bool isComputed,
     AppLocalizations l10n,
   ) {
+    final scheme = theme.colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Text('$label: $text', style: theme.textTheme.bodySmall),
+          child: RichText(
+            text: TextSpan(
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: scheme.onSurface,
+              ),
+              children: [
+                TextSpan(
+                  text: '${label.toUpperCase()}  ',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: scheme.secondary,
+                  ),
+                ),
+                TextSpan(text: text),
+              ],
+            ),
+          ),
         ),
         const SizedBox(width: 8),
-        Chip(
-          label: Text(
-            isComputed ? l10n.computedChip : l10n.informationalChip,
-            style: theme.textTheme.labelSmall,
-          ),
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
+        _MiniChip(
+          text: isComputed ? l10n.computedChip : l10n.informationalChip,
+          background: scheme.surfaceContainerHigh,
+          foreground: scheme.onSurfaceVariant,
         ),
       ],
     );
@@ -267,8 +338,10 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final materialL10n = MaterialLocalizations.of(context);
+    final lang = Localizations.localeOf(context).languageCode;
     final leadingBlanks = DateTime(_year, _month, 1).weekday - 1;
     // Text-scaler multiplier (1.0 at the default size) used below to grow
     // the day cells taller, so large-text sizes never overflow the fixed
@@ -283,186 +356,344 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
       (i) => materialL10n.narrowWeekdays[(i + 1) % 7],
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(materialL10n.formatMonthYear(DateTime(_year, _month))),
-            Text(
-              l10n.monthSubtitle(_hijriLabel(l10n)),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+    return Column(
+      children: [
+        // Month navigator header.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                tooltip: l10n.previousMonth,
+                onPressed: () => _shiftMonth(-1),
               ),
-            ),
-          ],
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      materialL10n.formatMonthYear(DateTime(_year, _month)),
+                      style: theme.textTheme.displaySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _hijriLabel(l10n),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.secondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                tooltip: l10n.nextMonth,
+                onPressed: () => _shiftMonth(1),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.chevron_left),
-            tooltip: l10n.previousMonth,
-            onPressed: () => _shiftMonth(-1),
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            tooltip: l10n.nextMonth,
-            onPressed: () => _shiftMonth(1),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Mon–Sun header.
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        // Verified-calculation chip.
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: scheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Row(
-              children: weekdayHeaders
-                  .map(
-                    (d) => Expanded(
-                      child: Center(
-                        child: Text(
-                          d,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.verified,
+                    size: 14, color: scheme.onSecondaryContainer),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      l10n.standardApplied,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: scheme.onSecondaryContainer,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Mon–Sun header.
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Row(
+            children: weekdayHeaders
+                .map(
+                  (d) => Expanded(
+                    child: Center(
+                      child: Text(
+                        d,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: scheme.secondary,
                         ),
                       ),
                     ),
-                  )
-                  .toList(),
-            ),
-          ),
-          Expanded(
-            child: GridView.builder(
-              // Horizontal padding + spacing sized so a day cell is at
-              // least 48dp wide on a 360dp phone: (360 - 12 - 12) / 7 = 48.
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 2,
-                childAspectRatio: 0.78 / textScale,
-              ),
-              itemCount: leadingBlanks + _daysInMonth,
-              itemBuilder: (context, index) {
-                if (index < leadingBlanks) {
-                  return const SizedBox.shrink();
-                }
-                final day = index - leadingBlanks + 1;
-                final times = _days[day - 1];
-                // One clean announcement per day cell ("15 October 2026")
-                // instead of the raw day-number + time fragments; the cell
-                // is a button that opens the day's detail sheet.
-                return Semantics(
-                  button: true,
-                  label: materialL10n.formatFullDate(
-                    DateTime(_year, _month, day),
                   ),
-                  excludeSemantics: true,
-                  child: InkWell(
-                    onTap: () => _showDaySheet(day),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                )
+                .toList(),
+          ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            // Horizontal padding + spacing sized so a day cell is at
+            // least 48dp wide on a 360dp phone:
+            // (360 - 6 - 6 - 6*2) / 7 = 48.
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 2,
+              childAspectRatio: 0.72 / textScale,
+            ),
+            itemCount: leadingBlanks + _daysInMonth,
+            itemBuilder: (context, index) {
+              if (index < leadingBlanks) {
+                return const SizedBox.shrink();
+              }
+              final day = index - leadingBlanks + 1;
+              final times = _days[day - 1];
+              final today = DateTime.now();
+              final isToday = today.year == _year &&
+                  today.month == _month &&
+                  today.day == day;
+              final dayFg = isToday ? scheme.onPrimary : scheme.onSurface;
+              final timeFg = isToday
+                  ? scheme.onPrimary
+                  : scheme.onSurfaceVariant;
+              // One clean announcement per day cell ("15 October 2026")
+              // instead of the raw day-number + time fragments; the cell
+              // is a button that opens the day's detail sheet.
+              return Semantics(
+                button: true,
+                label: materialL10n.formatFullDate(
+                  DateTime(_year, _month, day),
+                ),
+                excludeSemantics: true,
+                child: _DayCellMaterial(
+                  isToday: isToday,
+                  scheme: scheme,
+                  onTap: () => _showDaySheet(day),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Shrink-to-fit: at very large text sizes on
-                              // narrow phones the day number must not push
-                              // the row (or the column) into overflow.
-                              Flexible(
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    '$day',
-                                    style: theme.textTheme.titleSmall,
-                                  ),
+                          // Shrink-to-fit: at very large text sizes on
+                          // narrow phones the day number must not push
+                          // the row (or the column) into overflow.
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                localizeDigits('$day', lang),
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: dayFg,
                                 ),
                               ),
-                              if (times.highLatitudeFallback)
-                                Flexible(
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerRight,
-                                    child: Tooltip(
-                                      message: l10n.estimatedTooltip,
-                                      child: Text(
-                                        l10n.estimatedMarker,
-                                        style: theme.textTheme.labelSmall
-                                            ?.copyWith(
-                                          color: theme
-                                              .colorScheme.onTertiaryContainer,
-                                        ),
-                                      ),
+                            ),
+                          ),
+                          if (times.highLatitudeFallback)
+                            Flexible(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerRight,
+                                child: Tooltip(
+                                  message: l10n.estimatedTooltip,
+                                  child: Text(
+                                    l10n.estimatedMarker,
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: scheme.onTertiaryContainer,
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                          const Spacer(),
-                          // Single-line shrink-to-fit time labels: on a
-                          // 7-column grid the labels must never wrap into
-                          // extra lines (or overflow) at large text scales.
-                          // Full-size times remain one tap away in the day
-                          // detail sheet.
-                          SizedBox(
-                            width: double.infinity,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                l10n.dayCellFajr(_hhmm(times.fajr)),
-                                style: theme.textTheme.labelSmall,
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                l10n.dayCellMaghrib(_hhmm(times.maghrib)),
-                                style: theme.textTheme.labelSmall,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
-                    ),
+                      const Spacer(),
+                      // Single-line shrink-to-fit time labels: on a
+                      // 7-column grid the labels must never wrap into
+                      // extra lines (or overflow) at large text scales.
+                      // Full-size times remain one tap away in the day
+                      // detail sheet.
+                      _CellTime(
+                        text: l10n.dayCellFajr(
+                            localizeDigits(_hhmm(times.fajr), lang)),
+                        color: timeFg,
+                      ),
+                      _CellTime(
+                        text: l10n.dayCellMaghrib(
+                            localizeDigits(_hhmm(times.maghrib), lang)),
+                        color: timeFg,
+                      ),
+                    ],
                   ),
-                );
-              },
+                ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          // Capped so the footnote can never push the month grid into
+          // overflow at very large text sizes; it scrolls internally
+          // only when constrained, and is unaffected at normal sizes.
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height / 3,
+            ),
+            child: SingleChildScrollView(
+              child: Text(
+                l10n.hijriCalendarNote,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            // Capped so the footnote can never push the month grid into
-            // overflow at very large text sizes; it scrolls internally
-            // only when constrained, and is unaffected at normal sizes.
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height / 3,
-              ),
-              child: SingleChildScrollView(
-                child: Text(
-                  l10n.hijriCalendarNote,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ],
+    );
+  }
+}
+
+/// Material-backed tappable day cell: provides the Material ancestor
+/// InkWell needs (the screen itself has no Scaffold), with the
+/// today-highlight and rounded border baked in.
+class _DayCellMaterial extends StatelessWidget {
+  const _DayCellMaterial({
+    required this.isToday,
+    required this.scheme,
+    required this.onTap,
+    required this.child,
+  });
+
+  final bool isToday;
+  final ColorScheme scheme;
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final border = isToday
+        ? scheme.primaryContainer
+        : scheme.outlineVariant;
+    return Material(
+      color: isToday ? scheme.primaryContainer : Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: border),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// Single-line shrink-to-fit time label inside a day cell.
+class _CellTime extends StatelessWidget {
+  const _CellTime({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Text(
+          text,
+          style: Theme.of(context)
+              .textTheme
+              .labelSmall
+              ?.copyWith(color: color),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tiny rounded chip for computed/informational markers.
+class _MiniChip extends StatelessWidget {
+  final String text;
+  final Color background;
+  final Color foreground;
+
+  const _MiniChip({
+    required this.text,
+    required this.background,
+    required this.foreground,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: AppFonts.badgeLabel(context).copyWith(color: foreground),
+      ),
+    );
+  }
+}
+
+/// Tertiary-toned notice for high-latitude estimation.
+class _EstimateNotice extends StatelessWidget {
+  final String text;
+
+  const _EstimateNotice({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryFixed,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline,
+              size: 16, color: scheme.onTertiaryFixed),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onTertiaryFixed,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             ),
           ),
         ],

@@ -92,7 +92,7 @@
   "languageSection": "اللغة",
   "systemDefault": "الافتراضي للنظام",
   "fontsSection": "الخطوط",
-  "fontsNote": "يستخدم النص الأردي خط نفيس نستعليق المضمّن (CRULP). يسمح ترخيصه بإعادة التوزيع، وإشعار حقوق النشر مرفق مع التطبيق.",
+  "fontsNote": "يستخدم النص الأردي خط نفيس نستعليق المضمّن (CRULP). وتستخدم اللاتينية والفرنسية خطي Source Serif 4 وManrope، والعربية خط أميري. جميع الخطوط مرخّصة تراخيص مفتوحة؛ وإشعاراتها مرفقة مع التطبيق.",
   "locationTitle": "الموقع",
   "currentLocation": "الموقع الحالي",
   "noLocationChosen": "لم يُختر موقع بعد.",
@@ -259,5 +259,229 @@
         "type": "String"
       }
     }
+  },
+  "heroEyebrow": "الصلاة القادمة · الوقت المختار",
+  "@heroEyebrow": {
+    "description": "Redesign 2026-10-15: heroEyebrow"
+  },
+  "heroCountdownLabel": "الوقت المتبقي",
+  "@heroCountdownLabel": {
+    "description": "Redesign 2026-10-15: heroCountdownLabel"
+  },
+  "prayerDescFajr": "الفجر الصادق · انحطاط 18°",
+  "@prayerDescFajr": {
+    "description": "Redesign 2026-10-15: prayerDescFajr"
+  },
+  "prayerDescDhuhr": "بعد زوال الشمس",
+  "@prayerDescDhuhr": {
+    "description": "Redesign 2026-10-15: prayerDescDhuhr"
+  },
+  "prayerDescAsr": "الظل الأول — مذهب مالك",
+  "@prayerDescAsr": {
+    "description": "Redesign 2026-10-15: prayerDescAsr"
+  },
+  "prayerDescMaghrib": "لحظة غروب الشمس",
+  "@prayerDescMaghrib": {
+    "description": "Redesign 2026-10-15: prayerDescMaghrib"
+  },
+  "prayerDescIsha": "اختفاء الشفق الأحمر تمامًا · 17°",
+  "@prayerDescIsha": {
+    "description": "Redesign 2026-10-15: prayerDescIsha"
+  },
+  "presetHeader": "آفاق مرجعية تاريخية",
+  "@presetHeader": {
+    "description": "Redesign 2026-10-15: presetHeader"
+  },
+  "presetSub": "خطوط الزوال المعتمدة في الفلك المالكي — اختر للحساب.",
+  "@presetSub": {
+    "description": "Redesign 2026-10-15: presetSub"
+  },
+  "presetFezDesc": "موطن التقليد القروي",
+  "@presetFezDesc": {
+    "description": "Redesign 2026-10-15: presetFezDesc"
+  },
+  "presetCairoDesc": "زوال الأزهر / الفسطاط",
+  "@presetCairoDesc": {
+    "description": "Redesign 2026-10-15: presetCairoDesc"
+  },
+  "presetKairouanDesc": "زوال جامع عقبة",
+  "@presetKairouanDesc": {
+    "description": "Redesign 2026-10-15: presetKairouanDesc"
+  },
+  "presetCordobaDesc": "زوال الأندلس",
+  "@presetCordobaDesc": {
+    "description": "Redesign 2026-10-15: presetCordobaDesc"
+  },
+  "presetNouakchottDesc": "مرجع الأفق الصحراوي",
+  "@presetNouakchottDesc": {
+    "description": "Redesign 2026-10-15: presetNouakchottDesc"
+  },
+  "activeHorizon": "الأفق النشط",
+  "@activeHorizon": {
+    "description": "Redesign 2026-10-15: activeHorizon"
+  },
+  "primaryBase": "القاعدة الأساسية",
+  "@primaryBase": {
+    "description": "Redesign 2026-10-15: primaryBase"
+  },
+  "activeNow": "نشط حاليًا",
+  "@activeNow": {
+    "description": "Redesign 2026-10-15: activeNow"
+  },
+  "coordsLabel": "الإحداثيات",
+  "@coordsLabel": {
+    "description": "Redesign 2026-10-15: coordsLabel"
+  },
+  "datumLabel": "المرجع الجيوديسي",
+  "@datumLabel": {
+    "description": "Redesign 2026-10-15: datumLabel"
+  },
+  "wgs84Datum": "WGS-84",
+  "@wgs84Datum": {
+    "description": "Redesign 2026-10-15: wgs84Datum"
+  },
+  "verifiedZenith": "الزوال الشمسي المؤكد",
+  "@verifiedZenith": {
+    "description": "Redesign 2026-10-15: verifiedZenith"
+  },
+  "deviceGpsTitle": "GPS الجهاز",
+  "@deviceGpsTitle": {
+    "description": "Redesign 2026-10-15: deviceGpsTitle"
+  },
+  "deviceGpsSub": "استخدم GPS هاتفك للحصول على إحداثيات دقيقة.",
+  "@deviceGpsSub": {
+    "description": "Redesign 2026-10-15: deviceGpsSub"
+  },
+  "saveCompute": "احفظ واحسب",
+  "@saveCompute": {
+    "description": "Redesign 2026-10-15: saveCompute"
+  },
+  "standardApplied": "الحساب المالكي المعياري مطبق",
+  "@standardApplied": {
+    "description": "Redesign 2026-10-15: standardApplied"
+  },
+  "kaabaAzimuth": "سمت الكعبة",
+  "@kaabaAzimuth": {
+    "description": "Redesign 2026-10-15: kaabaAzimuth"
+  },
+  "greatCircle": "طريق الدائرة العظمى",
+  "@greatCircle": {
+    "description": "Redesign 2026-10-15: greatCircle"
+  },
+  "nauticalMiles": "{n} ميل بحري",
+  "@nauticalMiles": {
+    "description": "Redesign 2026-10-15: nauticalMiles"
+  },
+  "kmValue": "{n} كم",
+  "@kmValue": {
+    "description": "Redesign 2026-10-15: kmValue"
+  },
+  "rhumbLine": "اتجاه خط الرُمب",
+  "@rhumbLine": {
+    "description": "Redesign 2026-10-15: rhumbLine"
+  },
+  "trueNorthOffset": "الانحراف عن الشمال الحقيقي",
+  "@trueNorthOffset": {
+    "description": "Redesign 2026-10-15: trueNorthOffset"
+  },
+  "vsDueEast": "{d}° عن الشرق تمامًا",
+  "@vsDueEast": {
+    "description": "Redesign 2026-10-15: vsDueEast"
+  },
+  "staticVector": "متجه الزوال الثابت",
+  "@staticVector": {
+    "description": "Redesign 2026-10-15: staticVector"
+  },
+  "northUp": "الشمال أعلى (0°)",
+  "@northUp": {
+    "description": "Redesign 2026-10-15: northUp"
+  },
+  "calibrationTitle": "تنبيه المعايرة",
+  "@calibrationTitle": {
+    "description": "Redesign 2026-10-15: calibrationTitle"
+  },
+  "calibrationBody": "طابق هذا القرص مع بوصلة حقيقية أو معلم معروف — هذه الشاشة لا تتبع حركتك.",
+  "@calibrationBody": {
+    "description": "Redesign 2026-10-15: calibrationBody"
+  },
+  "calibrationSteps": "خطوات المحاذاة",
+  "@calibrationSteps": {
+    "description": "Redesign 2026-10-15: calibrationSteps"
+  },
+  "step1": "ضع الهاتف مسطحًا على سطح غير معدني.",
+  "@step1": {
+    "description": "Redesign 2026-10-15: step1"
+  },
+  "step2": "أدر حتى يطابق شمال القرص البوصلة الحقيقية.",
+  "@step2": {
+    "description": "Redesign 2026-10-15: step2"
+  },
+  "step3": "السهم الأخضر يشير الآن إلى سمت القبلة.",
+  "@step3": {
+    "description": "Redesign 2026-10-15: step3"
+  },
+  "sunAlignTitle": "طريقة المحاذاة بالشمس",
+  "@sunAlignTitle": {
+    "description": "Redesign 2026-10-15: sunAlignTitle"
+  },
+  "sunAlignBody": "طريقة كلاسيكية: عندما يطابق سمت الشمس سمت القبلة، يشير ظل الجسم العمودي إلى القبلة.",
+  "@sunAlignBody": {
+    "description": "Redesign 2026-10-15: sunAlignBody"
+  },
+  "sunAlignAt": "تطابق الشمس القبلة في",
+  "@sunAlignAt": {
+    "description": "Redesign 2026-10-15: sunAlignAt"
+  },
+  "sunAlignNone": "لا تطابق الشمس القبلة اليوم أثناء شروقها.",
+  "@sunAlignNone": {
+    "description": "Redesign 2026-10-15: sunAlignNone"
+  },
+  "sunAlignNote": "التوقيت المحلي، محسوب من الوضع الشمسي اليوم.",
+  "@sunAlignNote": {
+    "description": "Redesign 2026-10-15: sunAlignNote"
+  },
+  "remindMe": "ذكرني",
+  "@remindMe": {
+    "description": "Redesign 2026-10-15: remindMe"
+  },
+  "reminderSet": "تم ضبط التذكير لـ {time}",
+  "@reminderSet": {
+    "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunReminderTitle": "محاذاة الشمس مع القبلة",
+  "@sunReminderTitle": {
+    "description": "Redesign 2026-10-15: sunReminderTitle"
+  },
+  "sunReminderBody": "سمت الشمس الآن يطابق سمت القبلة.",
+  "@sunReminderBody": {
+    "description": "Redesign 2026-10-15: sunReminderBody"
+  },
+  "juristicPresets": "المعايير الفقهية",
+  "@juristicPresets": {
+    "description": "Redesign 2026-10-15: juristicPresets"
+  },
+  "methodsAvailable": "{n} طرق متاحة",
+  "@methodsAvailable": {
+    "description": "Redesign 2026-10-15: methodsAvailable"
+  },
+  "applyActiveProfile": "تطبيق الملف النشط",
+  "@applyActiveProfile": {
+    "description": "Redesign 2026-10-15: applyActiveProfile"
+  },
+  "activeBadge": "نشط",
+  "@activeBadge": {
+    "description": "Redesign 2026-10-15: activeBadge"
+  },
+  "profileApplied": "تم تطبيق الملف: {name}",
+  "@profileApplied": {
+    "description": "Redesign 2026-10-15: profileApplied"
+  },
+  "appVersion": "الإصدار {v}",
+  "@appVersion": {
+    "description": "Redesign 2026-10-15: appVersion"
+  },
+  "footerNote": "توقيت مالكي — محسوب من الملف المقترح (بانتظار المراجعة الشرعية).",
+  "@footerNote": {
+    "description": "Redesign 2026-10-15: footerNote"
   }
 }

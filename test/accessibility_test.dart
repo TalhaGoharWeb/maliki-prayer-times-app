@@ -224,6 +224,8 @@ void main() {
       await tester.pump();
       expect(tester.takeException(), isNull);
 
+      // Buttons live below the fold in the lazy ListView: scroll first.
+      await _scrollThrough(tester);
       _expectAccessibleName(
           tester, find.byType(FilledButton), 'location buttons');
       for (final e in find.byType(TextFormField).evaluate()) {
@@ -251,7 +253,12 @@ void main() {
       expect(tester.takeException(), isNull);
 
       _expectAccessibleName(
-          tester, find.byType(RadioListTile<String>), 'profile radio rows');
+          tester,
+          find.ancestor(
+            of: find.byType(Radio<String>),
+            matching: find.byType(Semantics),
+          ),
+          'profile radio rows');
       _expectAccessibleName(
           tester,
           find.byType(DropdownButtonFormField<PrayerProfile>),
@@ -261,7 +268,7 @@ void main() {
     testWidgets('qibla dial exposes its bearing to screen readers',
         (tester) async {
       await tester.pumpWidget(_wrap(
-          const QiblaScreen(coordinates: _coords, locationName: 'Karachi'),
+          QiblaScreen(coordinates: _coords, locationName: 'Karachi', timeZoneOffset: _offset),
           1.0));
       await tester.pump();
       expect(tester.takeException(), isNull);
@@ -375,7 +382,7 @@ void main() {
             settings: settings, coordinates: _coords, timeZoneOffset: _offset),
         'location': LocationScreen(locationService: location),
         'qibla':
-            const QiblaScreen(coordinates: _coords, locationName: 'Karachi'),
+            QiblaScreen(coordinates: _coords, locationName: 'Karachi', timeZoneOffset: _offset),
       };
       for (final entry in screens.entries) {
         await tester.pumpWidget(_wrap(entry.value, scale));

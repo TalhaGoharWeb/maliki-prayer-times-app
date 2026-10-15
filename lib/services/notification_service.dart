@@ -351,6 +351,46 @@ class NotificationService {
   /// Cancels every notification scheduled by this app.
   Future<void> cancelAll() => _scheduler.cancelAll();
 
+  /// One-time notification id reserved for the Qibla sun-alignment reminder.
+  /// Kept clear of the prayer ids ([Prayer.index]) and the reminder block
+  /// ([reminderIdBase] + [Prayer.index]).
+  static const int sunReminderId = 950;
+  static const _sunReminderUtcKey = 'sun_reminder_utc';
+  static const _sunReminderTitleKey = 'sun_reminder_title';
+  static const _sunReminderBodyKey = 'sun_reminder_body';
+
+  /// Schedules a one-time reminder for the sun–qibla alignment moment.
+  /// Persisted so [rescheduleAll] (which cancels everything first) restores
+  /// it while its fire time is still in the future.
+  Future<void> scheduleSunReminder({
+    required DateTime scheduledUtc,
+    required String title,
+    required String body,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        _sunReminderUtcKey, scheduledUtc.toIso8601String());
+    await prefs.setString(_sunReminderTitleKey, title);
+    await prefs.setString(_sunReminderBodyKey, body);
+    final exact = await _scheduler.canScheduleExactAlarms();
+    await _scheduler.schedule(
+      id: sunReminderId,
+      title: title,
+      body: body,
+      scheduledUtc: scheduledUtc,
+      exact: exact,
+    );
+  }
+
+  /// Cancels the sun-alignment reminder and clears the persisted record.
+  Future<void> cancelSunReminder() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_sunReminderUtcKey);
+    await prefs.remove(_sunReminderTitleKey);
+    await prefs.remove(_sunReminderBodyKey);
+    await _scheduler.cancel(sunReminderId);
+  }
+
   /// Recomputes and reschedules notifications from the engine, using the same
   /// adjusted times the UI shows. Notification ids are stable per prayer
   /// ([Prayer.index] for the at-time notification, [reminderIdBase] +
@@ -393,6 +433,22 @@ class NotificationService {
     }
 
     final tomorrowWall = todayWall.add(const Duration(days: 1));
+    final prefs = await SharedPreferences.getInstance();
+    // A persisted sun–qibla alignment reminder: cancelAll() wiped its
+    // schedule above, so restore it while its fire time is still ahead.
+    final sunUtc =
+        DateTime.tryParse(prefs.getString(_sunReminderUtcKey) ?? '');
+    final sunTitle = prefs.getString(_sunReminderTitleKey);
+    final sunBody = prefs.getString(_sunReminderBodyKey);
+    final bool restoreSun = sunUtc != null &&
+        sunUtc.isAfter(nowUtc) &&
+        sunTitle != null &&
+        sunBody != null;
+    if (!restoreSun && sunUtc != null) {
+      await prefs.remove(_sunReminderUtcKey);
+      await prefs.remove(_sunReminderTitleKey);
+      await prefs.remove(_sunReminderBodyKey);
+    }
     for (final prayer in Prayer.values) {
       if (!(settings.notificationToggles[prayer] ?? false)) continue;
       var fireUtc = prayerUtcFor(prayer, todayWall);
@@ -422,12 +478,25 @@ class NotificationService {
       }
     }
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_lastLatKey, coords.latitude);
     await prefs.setDouble(_lastLonKey, coords.longitude);
     await prefs.setString(_lastProfileKey, profile.id);
     await prefs.setInt(_lastOffsetMinutesKey, timeZoneOffset.inMinutes);
     await prefs.setString(_lastTimeZoneKey, DateTime.now().timeZoneName);
+    if (restoreSun) {
+      final sUtc = sunUtc;
+      final sTitle = sunTitle;
+      final sBody = sunBody;
+      if (sUtc != null && sTitle != null && sBody != null) {
+        await _scheduler.schedule(
+          id: sunReminderId,
+          title: sTitle,
+          body: sBody,
+          scheduledUtc: sUtc,
+          exact: exact,
+        );
+      }
+    }
   }
 
   /// Compares the persisted timezone name with the current one and, when it

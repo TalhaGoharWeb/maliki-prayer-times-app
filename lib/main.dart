@@ -28,12 +28,13 @@ Future<void> main() async {
   ));
 }
 
-/// Root of the Maliki prayer-times app (standalone, Milestone 2).
+/// Root of the Maliki prayer-times app (standalone).
 ///
 /// The [SettingsService] and [LocationService] are loaded once in [main] and
 /// passed down through constructors (no provider package). This shell listens
 /// to both services so every tab rebuilds when the location or settings
-/// change.
+/// change. The app chrome — top bar and bottom navigation — lives here;
+/// individual tab screens render body content only.
 class MalikiPrayerTimesApp extends StatefulWidget {
   final SettingsService settings;
   final LocationService location;
@@ -73,6 +74,112 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     if (mounted) setState(() {});
   }
 
+  String _screenTitle(AppLocalizations l10n) => switch (_index) {
+        0 => l10n.navHome,
+        1 => l10n.navMonthly,
+        2 => l10n.navQibla,
+        3 => l10n.navProfiles,
+        _ => l10n.navSettings,
+      };
+
+  void _openLocation(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LocationScreen(locationService: widget.location),
+      ),
+    );
+  }
+
+  /// The global top bar: mosque mark + "Maliki Prayer" wordmark, the current
+  /// screen title with the Arabic subtitle, and the location chip action.
+  PreferredSizeWidget _topBar(
+      BuildContext context, AppLocalizations l10n, ThemeData theme) {
+    final scheme = theme.colorScheme;
+    final loc = widget.location.current;
+    final shortName = loc == null
+        ? l10n.setLocation
+        : (loc.isDevice ? l10n.deviceLocationName : loc.name);
+    return AppBar(
+      toolbarHeight: 76,
+      titleSpacing: 16,
+      title: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: scheme.primary,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(Icons.mosque, color: scheme.onPrimary, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Maliki Prayer',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        _screenTitle(l10n).toUpperCase(),
+                        style: AppFonts.eyebrow(context).copyWith(
+                          color: scheme.secondary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      '  ·  ',
+                      style: AppFonts.eyebrow(context).copyWith(
+                        color: scheme.outline,
+                      ),
+                    ),
+                    const Flexible(
+                      child: Text(
+                        'أوقات الصلاة المالكية',
+                        style: TextStyle(
+                          fontFamily: AppFonts.arabic,
+                          fontSize: 13,
+                          color: Color(0xFF404944),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: 12),
+          child: Center(
+            child: _LocationChip(
+              label: shortName,
+              onTap: () => _openLocation(context),
+            ),
+          ),
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(height: 1, color: scheme.outlineVariant),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // A null locale lets Flutter resolve from the device locales against
@@ -102,16 +209,20 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
       home: Builder(
         builder: (context) {
           final l10n = AppLocalizations.of(context)!;
+          final theme = Theme.of(context);
           final notifications = widget.notifications;
           final scaffold = Scaffold(
-            body: _currentPage(),
+            appBar: _topBar(context, l10n, theme),
+            body: _currentPage(l10n),
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               currentIndex: _index,
               onTap: (i) => setState(() => _index = i),
+              selectedFontSize: 11,
+              unselectedFontSize: 11,
               items: [
                 BottomNavigationBarItem(
-                    icon: const Icon(Icons.home), label: l10n.navHome),
+                    icon: const Icon(Icons.house), label: l10n.navHome),
                 BottomNavigationBarItem(
                     icon: const Icon(Icons.calendar_month),
                     label: l10n.navMonthly),
@@ -138,10 +249,10 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     );
   }
 
-  Widget _currentPage() {
+  Widget _currentPage(AppLocalizations l10n) {
     // Device-timezone frame: every computation in this app uses
     // `DateTime.now().timeZoneOffset`. Manual far-away locations are
-    // therefore approximate — a documented Milestone 2 limitation.
+    // therefore approximate — a documented limitation.
     final offset = DateTime.now().timeZoneOffset;
     final loc = widget.location.current;
     final profile = widget.settings.effectiveProfile;
@@ -166,7 +277,10 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         ),
       2 => QiblaScreen(
           coordinates: coords,
-          locationName: loc.name,
+          locationName:
+              loc.isDevice ? l10n.deviceLocationName : loc.name,
+          timeZoneOffset: offset,
+          notifications: widget.notifications,
         ),
       3 => ProfilesScreen(
           settings: widget.settings,
@@ -180,6 +294,48 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
           notifications: widget.notifications,
         ),
     };
+  }
+}
+
+/// Compact location chip used in the top bar: near_me icon + short name.
+/// Tapping opens the location picker. Never a dead button.
+class _LocationChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _LocationChip({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.secondaryContainer,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.near_me, size: 16, color: scheme.onSecondaryContainer),
+              const SizedBox(width: 6),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 110),
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: scheme.onSecondaryContainer,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -276,6 +432,7 @@ class _ChooseLocationPrompt extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
     return Center(
       child: Card(
         margin: const EdgeInsets.all(24),
@@ -285,14 +442,25 @@ class _ChooseLocationPrompt extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: scheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(Icons.near_me,
+                    color: scheme.onSecondaryContainer, size: 24),
+              ),
+              const SizedBox(height: 16),
               Text(
                 l10n.chooseLocationTitle,
-                style: theme.textTheme.headlineSmall,
+                style: theme.textTheme.displaySmall,
               ),
               const SizedBox(height: 8),
               Text(l10n.chooseLocationBody, style: theme.textTheme.bodyMedium),
-              const SizedBox(height: 16),
-              FilledButton(
+              const SizedBox(height: 20),
+              FilledButton.icon(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -301,7 +469,8 @@ class _ChooseLocationPrompt extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text(l10n.setLocation),
+                icon: const Icon(Icons.add_location_alt),
+                label: Text(l10n.setLocation),
               ),
             ],
           ),

@@ -39,3 +39,42 @@ double qiblaBearingDegrees(double latitude, double longitude) {
   if (result.isNaN) return 0.0;
   return result;
 }
+
+/// 16-wind compass point for [bearingDegrees], e.g. 98.4 → 'ESE'.
+String compassPoint16(double bearingDegrees) {
+  const points = [
+    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
+  ];
+  final i = ((bearingDegrees % 360.0) / 22.5).round() % 16;
+  return points[i];
+}
+
+/// Great-circle distance from ([latitude], [longitude]) to the Kaaba,
+/// in kilometres (haversine, Earth radius 6371 km).
+double qiblaDistanceKm(double latitude, double longitude) {
+  const r = 6371.0;
+  final lat1 = latitude * math.pi / 180.0;
+  final lat2 = kaabaLatitude * math.pi / 180.0;
+  final dLat = (kaabaLatitude - latitude) * math.pi / 180.0;
+  final dLon = (kaabaLongitude - longitude) * math.pi / 180.0;
+  final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+      math.cos(lat1) * math.cos(lat2) * math.sin(dLon / 2) * math.sin(dLon / 2);
+  return 2 * r * math.asin(math.sqrt(a.clamp(0.0, 1.0)));
+}
+
+/// Rhumb-line (constant-bearing) bearing from ([latitude], [longitude]) to
+/// the Kaaba, in degrees clockwise from true north, 0..360.
+double qiblaRhumbBearingDeg(double latitude, double longitude) {
+  final lat1 = latitude * math.pi / 180.0;
+  final lat2 = kaabaLatitude * math.pi / 180.0;
+  var dLon = (kaabaLongitude - longitude) * math.pi / 180.0;
+  final dPhi = math.log(
+      math.tan(lat2 / 2 + math.pi / 4) / math.tan(lat1 / 2 + math.pi / 4));
+  // Handle the antimeridian wrap for the rhumb line.
+  if (dLon.abs() > math.pi) {
+    dLon = dLon > 0 ? -(2 * math.pi - dLon) : (2 * math.pi + dLon);
+  }
+  final bearing = math.atan2(dLon, dPhi) * 180.0 / math.pi;
+  return (bearing + 360.0) % 360.0;
+}

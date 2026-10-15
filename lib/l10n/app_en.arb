@@ -489,7 +489,7 @@
   "@fontsSection": {
     "description": "Settings section: fonts"
   },
-  "fontsNote": "Urdu text uses the bundled Nafees Nastaleeq font (CRULP). Its license permits redistribution, and its copyright notice ships with the app.",
+  "fontsNote": "Urdu text uses the bundled Nafees Nastaleeq font (CRULP). Latin and French use Source Serif 4 and Manrope. Arabic uses Amiri. All fonts are openly licensed; their notices ship with the app.",
   "@fontsNote": {
     "description": "Note about the bundled Urdu font (Nafees Nastaleeq, CRULP)"
   },
@@ -821,5 +821,229 @@
         "type": "String"
       }
     }
+  },
+  "heroEyebrow": "Next prayer · preferred time",
+  "@heroEyebrow": {
+    "description": "Redesign 2026-10-15: heroEyebrow"
+  },
+  "heroCountdownLabel": "Remaining",
+  "@heroCountdownLabel": {
+    "description": "Redesign 2026-10-15: heroCountdownLabel"
+  },
+  "prayerDescFajr": "True dawn · 18° solar depression",
+  "@prayerDescFajr": {
+    "description": "Redesign 2026-10-15: prayerDescFajr"
+  },
+  "prayerDescDhuhr": "After the sun passes its zenith",
+  "@prayerDescDhuhr": {
+    "description": "Redesign 2026-10-15: prayerDescDhuhr"
+  },
+  "prayerDescAsr": "First shadow — the Maliki position",
+  "@prayerDescAsr": {
+    "description": "Redesign 2026-10-15: prayerDescAsr"
+  },
+  "prayerDescMaghrib": "At the moment of sunset",
+  "@prayerDescMaghrib": {
+    "description": "Redesign 2026-10-15: prayerDescMaghrib"
+  },
+  "prayerDescIsha": "Red twilight fully gone · 17°",
+  "@prayerDescIsha": {
+    "description": "Redesign 2026-10-15: prayerDescIsha"
+  },
+  "presetHeader": "Historical Reference Horizons",
+  "@presetHeader": {
+    "description": "Redesign 2026-10-15: presetHeader"
+  },
+  "presetSub": "Canonical meridians of Maliki astronomy — tap one to compute with it.",
+  "@presetSub": {
+    "description": "Redesign 2026-10-15: presetSub"
+  },
+  "presetFezDesc": "Seat of the Qarawiyyin tradition",
+  "@presetFezDesc": {
+    "description": "Redesign 2026-10-15: presetFezDesc"
+  },
+  "presetCairoDesc": "Al-Azhar / Fustat meridian",
+  "@presetCairoDesc": {
+    "description": "Redesign 2026-10-15: presetCairoDesc"
+  },
+  "presetKairouanDesc": "Mosque of Uqba meridian",
+  "@presetKairouanDesc": {
+    "description": "Redesign 2026-10-15: presetKairouanDesc"
+  },
+  "presetCordobaDesc": "Andalusian meridian",
+  "@presetCordobaDesc": {
+    "description": "Redesign 2026-10-15: presetCordobaDesc"
+  },
+  "presetNouakchottDesc": "Desert horizon reference",
+  "@presetNouakchottDesc": {
+    "description": "Redesign 2026-10-15: presetNouakchottDesc"
+  },
+  "activeHorizon": "Active Horizon",
+  "@activeHorizon": {
+    "description": "Redesign 2026-10-15: activeHorizon"
+  },
+  "primaryBase": "Primary Base",
+  "@primaryBase": {
+    "description": "Redesign 2026-10-15: primaryBase"
+  },
+  "activeNow": "Currently active",
+  "@activeNow": {
+    "description": "Redesign 2026-10-15: activeNow"
+  },
+  "coordsLabel": "Coordinates",
+  "@coordsLabel": {
+    "description": "Redesign 2026-10-15: coordsLabel"
+  },
+  "datumLabel": "Datum",
+  "@datumLabel": {
+    "description": "Redesign 2026-10-15: datumLabel"
+  },
+  "wgs84Datum": "WGS-84",
+  "@wgs84Datum": {
+    "description": "Redesign 2026-10-15: wgs84Datum"
+  },
+  "verifiedZenith": "Verified Solar Zenith",
+  "@verifiedZenith": {
+    "description": "Redesign 2026-10-15: verifiedZenith"
+  },
+  "deviceGpsTitle": "Device GPS",
+  "@deviceGpsTitle": {
+    "description": "Redesign 2026-10-15: deviceGpsTitle"
+  },
+  "deviceGpsSub": "Use your phone's GPS for precise coordinates.",
+  "@deviceGpsSub": {
+    "description": "Redesign 2026-10-15: deviceGpsSub"
+  },
+  "saveCompute": "Save & Compute",
+  "@saveCompute": {
+    "description": "Redesign 2026-10-15: saveCompute"
+  },
+  "standardApplied": "Standard Maliki calculation applied",
+  "@standardApplied": {
+    "description": "Redesign 2026-10-15: standardApplied"
+  },
+  "kaabaAzimuth": "Kaaba azimuth",
+  "@kaabaAzimuth": {
+    "description": "Redesign 2026-10-15: kaabaAzimuth"
+  },
+  "greatCircle": "Great-circle route",
+  "@greatCircle": {
+    "description": "Redesign 2026-10-15: greatCircle"
+  },
+  "nauticalMiles": "{n} nautical mi",
+  "@nauticalMiles": {
+    "description": "Redesign 2026-10-15: nauticalMiles"
+  },
+  "kmValue": "{n} km",
+  "@kmValue": {
+    "description": "Redesign 2026-10-15: kmValue"
+  },
+  "rhumbLine": "Rhumb-line bearing",
+  "@rhumbLine": {
+    "description": "Redesign 2026-10-15: rhumbLine"
+  },
+  "trueNorthOffset": "True North Offset",
+  "@trueNorthOffset": {
+    "description": "Redesign 2026-10-15: trueNorthOffset"
+  },
+  "vsDueEast": "{d}° vs due east",
+  "@vsDueEast": {
+    "description": "Redesign 2026-10-15: vsDueEast"
+  },
+  "staticVector": "Static meridian vector",
+  "@staticVector": {
+    "description": "Redesign 2026-10-15: staticVector"
+  },
+  "northUp": "North up (0°)",
+  "@northUp": {
+    "description": "Redesign 2026-10-15: northUp"
+  },
+  "calibrationTitle": "Calibration notice",
+  "@calibrationTitle": {
+    "description": "Redesign 2026-10-15: calibrationTitle"
+  },
+  "calibrationBody": "Align this dial with a physical compass or known landmark — this screen does not track your movement.",
+  "@calibrationBody": {
+    "description": "Redesign 2026-10-15: calibrationBody"
+  },
+  "calibrationSteps": "Alignment steps",
+  "@calibrationSteps": {
+    "description": "Redesign 2026-10-15: calibrationSteps"
+  },
+  "step1": "Lay the phone flat on a non-metallic surface.",
+  "@step1": {
+    "description": "Redesign 2026-10-15: step1"
+  },
+  "step2": "Rotate until the dial's north matches a real compass.",
+  "@step2": {
+    "description": "Redesign 2026-10-15: step2"
+  },
+  "step3": "The teal arrow now points along the qibla azimuth.",
+  "@step3": {
+    "description": "Redesign 2026-10-15: step3"
+  },
+  "sunAlignTitle": "Sun-alignment method",
+  "@sunAlignTitle": {
+    "description": "Redesign 2026-10-15: sunAlignTitle"
+  },
+  "sunAlignBody": "Classical method: when the sun's azimuth equals the qibla bearing, a vertical object's shadow points along the qibla.",
+  "@sunAlignBody": {
+    "description": "Redesign 2026-10-15: sunAlignBody"
+  },
+  "sunAlignAt": "Sun matches the qibla at",
+  "@sunAlignAt": {
+    "description": "Redesign 2026-10-15: sunAlignAt"
+  },
+  "sunAlignNone": "No sun–qibla alignment while the sun is up today.",
+  "@sunAlignNone": {
+    "description": "Redesign 2026-10-15: sunAlignNone"
+  },
+  "sunAlignNote": "Local time, computed from today's solar position.",
+  "@sunAlignNote": {
+    "description": "Redesign 2026-10-15: sunAlignNote"
+  },
+  "remindMe": "Remind me",
+  "@remindMe": {
+    "description": "Redesign 2026-10-15: remindMe"
+  },
+  "reminderSet": "Reminder set for {time}",
+  "@reminderSet": {
+    "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunReminderTitle": "Qibla sun alignment",
+  "@sunReminderTitle": {
+    "description": "Redesign 2026-10-15: sunReminderTitle"
+  },
+  "sunReminderBody": "The sun's azimuth now matches the qibla bearing.",
+  "@sunReminderBody": {
+    "description": "Redesign 2026-10-15: sunReminderBody"
+  },
+  "juristicPresets": "Juristic Presets",
+  "@juristicPresets": {
+    "description": "Redesign 2026-10-15: juristicPresets"
+  },
+  "methodsAvailable": "{n} methods available",
+  "@methodsAvailable": {
+    "description": "Redesign 2026-10-15: methodsAvailable"
+  },
+  "applyActiveProfile": "Apply Active Profile",
+  "@applyActiveProfile": {
+    "description": "Redesign 2026-10-15: applyActiveProfile"
+  },
+  "activeBadge": "Active",
+  "@activeBadge": {
+    "description": "Redesign 2026-10-15: activeBadge"
+  },
+  "profileApplied": "Profile applied: {name}",
+  "@profileApplied": {
+    "description": "Redesign 2026-10-15: profileApplied"
+  },
+  "appVersion": "Version {v}",
+  "@appVersion": {
+    "description": "Redesign 2026-10-15: appVersion"
+  },
+  "footerNote": "Tawqīt Maliki — computed from the proposed profile (pending scholarly review).",
+  "@footerNote": {
+    "description": "Redesign 2026-10-15: footerNote"
   }
 }

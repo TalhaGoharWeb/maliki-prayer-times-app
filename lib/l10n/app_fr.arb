@@ -92,7 +92,7 @@
   "languageSection": "Langue",
   "systemDefault": "Défaut du système",
   "fontsSection": "Polices",
-  "fontsNote": "Le texte ourdou utilise la police Nafees Nastaleeq intégrée (CRULP). Sa licence autorise la redistribution, et sa notice de copyright est fournie avec l’application.",
+  "fontsNote": "Le texte ourdou utilise la police Nafees Nastaleeq intégrée (CRULP). Le latin et le français utilisent Source Serif 4 et Manrope. L’arabe utilise Amiri. Toutes les polices sont sous licence ouverte ; leurs notices sont fournies avec l’application.",
   "locationTitle": "Lieu",
   "currentLocation": "Lieu actuel",
   "noLocationChosen": "Aucun lieu choisi pour le moment.",
@@ -259,5 +259,229 @@
         "type": "String"
       }
     }
+  },
+  "heroEyebrow": "Prière suivante · temps préféré",
+  "@heroEyebrow": {
+    "description": "Redesign 2026-10-15: heroEyebrow"
+  },
+  "heroCountdownLabel": "Temps restant",
+  "@heroCountdownLabel": {
+    "description": "Redesign 2026-10-15: heroCountdownLabel"
+  },
+  "prayerDescFajr": "Aube véritable · dépression 18°",
+  "@prayerDescFajr": {
+    "description": "Redesign 2026-10-15: prayerDescFajr"
+  },
+  "prayerDescDhuhr": "Après le zénith solaire",
+  "@prayerDescDhuhr": {
+    "description": "Redesign 2026-10-15: prayerDescDhuhr"
+  },
+  "prayerDescAsr": "Première ombre — position malikite",
+  "@prayerDescAsr": {
+    "description": "Redesign 2026-10-15: prayerDescAsr"
+  },
+  "prayerDescMaghrib": "Au moment du coucher du soleil",
+  "@prayerDescMaghrib": {
+    "description": "Redesign 2026-10-15: prayerDescMaghrib"
+  },
+  "prayerDescIsha": "Disparition totale du crépuscule rouge · 17°",
+  "@prayerDescIsha": {
+    "description": "Redesign 2026-10-15: prayerDescIsha"
+  },
+  "presetHeader": "Horizons de référence historiques",
+  "@presetHeader": {
+    "description": "Redesign 2026-10-15: presetHeader"
+  },
+  "presetSub": "Méridiens canoniques de l'astronomie malikite — touchez pour calculer.",
+  "@presetSub": {
+    "description": "Redesign 2026-10-15: presetSub"
+  },
+  "presetFezDesc": "Berceau de la tradition qarawiyyin",
+  "@presetFezDesc": {
+    "description": "Redesign 2026-10-15: presetFezDesc"
+  },
+  "presetCairoDesc": "Méridien d'al-Azhar / Fustat",
+  "@presetCairoDesc": {
+    "description": "Redesign 2026-10-15: presetCairoDesc"
+  },
+  "presetKairouanDesc": "Méridien de la mosquée d'Uqba",
+  "@presetKairouanDesc": {
+    "description": "Redesign 2026-10-15: presetKairouanDesc"
+  },
+  "presetCordobaDesc": "Méridien andalou",
+  "@presetCordobaDesc": {
+    "description": "Redesign 2026-10-15: presetCordobaDesc"
+  },
+  "presetNouakchottDesc": "Référence de l'horizon désertique",
+  "@presetNouakchottDesc": {
+    "description": "Redesign 2026-10-15: presetNouakchottDesc"
+  },
+  "activeHorizon": "Horizon actif",
+  "@activeHorizon": {
+    "description": "Redesign 2026-10-15: activeHorizon"
+  },
+  "primaryBase": "Base principale",
+  "@primaryBase": {
+    "description": "Redesign 2026-10-15: primaryBase"
+  },
+  "activeNow": "Actuellement actif",
+  "@activeNow": {
+    "description": "Redesign 2026-10-15: activeNow"
+  },
+  "coordsLabel": "Coordonnées",
+  "@coordsLabel": {
+    "description": "Redesign 2026-10-15: coordsLabel"
+  },
+  "datumLabel": "Référentiel",
+  "@datumLabel": {
+    "description": "Redesign 2026-10-15: datumLabel"
+  },
+  "wgs84Datum": "WGS-84",
+  "@wgs84Datum": {
+    "description": "Redesign 2026-10-15: wgs84Datum"
+  },
+  "verifiedZenith": "Zénith solaire vérifié",
+  "@verifiedZenith": {
+    "description": "Redesign 2026-10-15: verifiedZenith"
+  },
+  "deviceGpsTitle": "GPS de l'appareil",
+  "@deviceGpsTitle": {
+    "description": "Redesign 2026-10-15: deviceGpsTitle"
+  },
+  "deviceGpsSub": "Utilisez le GPS de votre téléphone pour des coordonnées précises.",
+  "@deviceGpsSub": {
+    "description": "Redesign 2026-10-15: deviceGpsSub"
+  },
+  "saveCompute": "Enregistrer et calculer",
+  "@saveCompute": {
+    "description": "Redesign 2026-10-15: saveCompute"
+  },
+  "standardApplied": "Calcul malikite standard appliqué",
+  "@standardApplied": {
+    "description": "Redesign 2026-10-15: standardApplied"
+  },
+  "kaabaAzimuth": "Azimut de la Kaaba",
+  "@kaabaAzimuth": {
+    "description": "Redesign 2026-10-15: kaabaAzimuth"
+  },
+  "greatCircle": "Route orthodromique",
+  "@greatCircle": {
+    "description": "Redesign 2026-10-15: greatCircle"
+  },
+  "nauticalMiles": "{n} milles nautiques",
+  "@nauticalMiles": {
+    "description": "Redesign 2026-10-15: nauticalMiles"
+  },
+  "kmValue": "{n} km",
+  "@kmValue": {
+    "description": "Redesign 2026-10-15: kmValue"
+  },
+  "rhumbLine": "Relèvement loxodromique",
+  "@rhumbLine": {
+    "description": "Redesign 2026-10-15: rhumbLine"
+  },
+  "trueNorthOffset": "Écart au nord vrai",
+  "@trueNorthOffset": {
+    "description": "Redesign 2026-10-15: trueNorthOffset"
+  },
+  "vsDueEast": "{d}° par rapport à l'est",
+  "@vsDueEast": {
+    "description": "Redesign 2026-10-15: vsDueEast"
+  },
+  "staticVector": "Vecteur méridien statique",
+  "@staticVector": {
+    "description": "Redesign 2026-10-15: staticVector"
+  },
+  "northUp": "Nord en haut (0°)",
+  "@northUp": {
+    "description": "Redesign 2026-10-15: northUp"
+  },
+  "calibrationTitle": "Avis d'étalonnage",
+  "@calibrationTitle": {
+    "description": "Redesign 2026-10-15: calibrationTitle"
+  },
+  "calibrationBody": "Alignez ce cadran avec une vraie boussole ou un repère connu — cet écran ne suit pas vos mouvements.",
+  "@calibrationBody": {
+    "description": "Redesign 2026-10-15: calibrationBody"
+  },
+  "calibrationSteps": "Étapes d'alignement",
+  "@calibrationSteps": {
+    "description": "Redesign 2026-10-15: calibrationSteps"
+  },
+  "step1": "Posez le téléphone à plat sur une surface non métallique.",
+  "@step1": {
+    "description": "Redesign 2026-10-15: step1"
+  },
+  "step2": "Tournez jusqu'à ce que le nord du cadran corresponde à une vraie boussole.",
+  "@step2": {
+    "description": "Redesign 2026-10-15: step2"
+  },
+  "step3": "La flèche verte pointe maintenant vers la qibla.",
+  "@step3": {
+    "description": "Redesign 2026-10-15: step3"
+  },
+  "sunAlignTitle": "Méthode d'alignement solaire",
+  "@sunAlignTitle": {
+    "description": "Redesign 2026-10-15: sunAlignTitle"
+  },
+  "sunAlignBody": "Méthode classique : quand l'azimut du soleil égale celui de la qibla, l'ombre d'un objet vertical pointe vers la qibla.",
+  "@sunAlignBody": {
+    "description": "Redesign 2026-10-15: sunAlignBody"
+  },
+  "sunAlignAt": "Le soleil s'aligne avec la qibla à",
+  "@sunAlignAt": {
+    "description": "Redesign 2026-10-15: sunAlignAt"
+  },
+  "sunAlignNone": "Pas d'alignement soleil-qibla aujourd'hui pendant que le soleil est levé.",
+  "@sunAlignNone": {
+    "description": "Redesign 2026-10-15: sunAlignNone"
+  },
+  "sunAlignNote": "Heure locale, calculée d'après la position solaire du jour.",
+  "@sunAlignNote": {
+    "description": "Redesign 2026-10-15: sunAlignNote"
+  },
+  "remindMe": "Me rappeler",
+  "@remindMe": {
+    "description": "Redesign 2026-10-15: remindMe"
+  },
+  "reminderSet": "Rappel programmé pour {time}",
+  "@reminderSet": {
+    "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunReminderTitle": "Alignement solaire avec la qibla",
+  "@sunReminderTitle": {
+    "description": "Redesign 2026-10-15: sunReminderTitle"
+  },
+  "sunReminderBody": "L'azimut du soleil correspond maintenant à celui de la qibla.",
+  "@sunReminderBody": {
+    "description": "Redesign 2026-10-15: sunReminderBody"
+  },
+  "juristicPresets": "Préréglages jurisprudentiels",
+  "@juristicPresets": {
+    "description": "Redesign 2026-10-15: juristicPresets"
+  },
+  "methodsAvailable": "{n} méthodes disponibles",
+  "@methodsAvailable": {
+    "description": "Redesign 2026-10-15: methodsAvailable"
+  },
+  "applyActiveProfile": "Appliquer le profil actif",
+  "@applyActiveProfile": {
+    "description": "Redesign 2026-10-15: applyActiveProfile"
+  },
+  "activeBadge": "Actif",
+  "@activeBadge": {
+    "description": "Redesign 2026-10-15: activeBadge"
+  },
+  "profileApplied": "Profil appliqué : {name}",
+  "@profileApplied": {
+    "description": "Redesign 2026-10-15: profileApplied"
+  },
+  "appVersion": "Version {v}",
+  "@appVersion": {
+    "description": "Redesign 2026-10-15: appVersion"
+  },
+  "footerNote": "Tawqīt malikite — calculé d'après le profil proposé (en attente de révision savante).",
+  "@footerNote": {
+    "description": "Redesign 2026-10-15: footerNote"
   }
 }

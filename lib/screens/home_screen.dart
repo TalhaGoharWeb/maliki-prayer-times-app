@@ -11,16 +11,16 @@ import 'package:malikiprayertimes/screens/location_screen.dart';
 import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
+import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 
-/// Milestone 2 home screen: today's timetable for the user's chosen location
-/// (or a "choose your location" prompt when none is set), the next-prayer
-/// countdown, the Hijri date line, the Maliki two-tier bands, and the
-/// calculation-profile status label.
+/// Home tab: today's timetable with a next-prayer hero, the Maliki two-tier
+/// bands, and the calculation-profile status.
 ///
 /// Time frame: every computation here uses `DateTime.now().timeZoneOffset`
 /// (the device timezone). Manual far-away locations are therefore
-/// approximate — a documented Milestone 2 limitation.
+/// approximate — a documented limitation.
 ///
 /// The displayed prayer times are the engine times passed through
 /// [SettingsService.adjustedTime], so any ihtiyat (precautionary) adjustment
@@ -146,74 +146,81 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Timetable rows in display order: (prayer, localized label, Arabic name).
+  /// Timetable rows in display order with template icons and descriptors.
   ///
   /// The Maliki two-tier bands call this prayer "Subh"; the timetable keeps
   /// the app's existing "Fajr" label and the bands keep "Subh", per the
   /// established per-screen convention.
-  List<({Prayer prayer, String label, String arabic})> _prayerRows(
-    AppLocalizations l10n,
-  ) {
+  List<_PrayerRow> _prayerRows(AppLocalizations l10n) {
     return [
-      (prayer: Prayer.fajr, label: l10n.prayerFajr, arabic: 'الفجر'),
-      (prayer: Prayer.sunrise, label: l10n.prayerSunrise, arabic: 'الشروق'),
-      (prayer: Prayer.dhuhr, label: l10n.prayerDhuhr, arabic: 'الظهر'),
-      (prayer: Prayer.asr, label: l10n.prayerAsr, arabic: 'العصر'),
-      (prayer: Prayer.maghrib, label: l10n.prayerMaghrib, arabic: 'المغرب'),
-      (prayer: Prayer.isha, label: l10n.prayerIsha, arabic: 'العشاء'),
+      _PrayerRow(Prayer.fajr, l10n.prayerFajr, 'الفجر', Icons.bedtime,
+          l10n.prayerDescFajr),
+      _PrayerRow(Prayer.sunrise, l10n.prayerSunrise, 'الشروق', Icons.wb_sunny,
+          l10n.timetableMarkerNote,
+          isMarker: true),
+      _PrayerRow(Prayer.dhuhr, l10n.prayerDhuhr, 'الظهر', Icons.sunny,
+          l10n.prayerDescDhuhr),
+      _PrayerRow(Prayer.asr, l10n.prayerAsr, 'العصر', Icons.wb_twilight,
+          l10n.prayerDescAsr),
+      _PrayerRow(Prayer.maghrib, l10n.prayerMaghrib, 'المغرب', Icons.nights_stay,
+          l10n.prayerDescMaghrib),
+      _PrayerRow(Prayer.isha, l10n.prayerIsha, 'العشاء', Icons.dark_mode,
+          l10n.prayerDescIsha),
     ];
   }
 
   String _prayerLabel(AppLocalizations l10n, Prayer p) =>
       _prayerRows(l10n).firstWhere((r) => r.prayer == p).label;
 
-  String _hhmm(DateTime t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-
-  String _countdown(DateTime target) {
-    var remaining = target.difference(_now);
-    if (remaining.isNegative) remaining = Duration.zero;
-    final h = remaining.inHours;
-    final m = remaining.inMinutes % 60;
-    final s = remaining.inSeconds % 60;
-    return '${h.toString().padLeft(2, '0')}:'
-        '${m.toString().padLeft(2, '0')}:'
-        '${s.toString().padLeft(2, '0')}';
-  }
+  String _prayerArabic(Prayer p) => switch (p) {
+        Prayer.fajr => 'الفجر',
+        Prayer.sunrise => 'الشروق',
+        Prayer.dhuhr => 'الظهر',
+        Prayer.asr => 'العصر',
+        Prayer.maghrib => 'المغرب',
+        Prayer.isha => 'العشاء',
+      };
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Maliki Prayer Times')),
-      body: _times == null ? _locationPrompt(theme) : _timetable(theme),
-    );
+    return _times == null ? _locationPrompt() : _timetable();
   }
 
   /// Shown when no location is set yet: a prompt card that navigates to the
   /// location picker. No timetable is rendered.
-  Widget _locationPrompt(ThemeData theme) {
+  Widget _locationPrompt() {
+    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
     return Center(
       child: Card(
         margin: const EdgeInsets.all(24),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.chooseLocationTitle,
-                style: theme.textTheme.headlineSmall,
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: scheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(Icons.add_location_alt,
+                    color: scheme.onSecondaryContainer, size: 26),
               ),
+              const SizedBox(height: 16),
+              Text(l10n.chooseLocationTitle,
+                  style: theme.textTheme.displaySmall),
               const SizedBox(height: 8),
               Text(l10n.homePromptBody, style: theme.textTheme.bodyMedium),
-              const SizedBox(height: 16),
-              FilledButton(
+              const SizedBox(height: 20),
+              FilledButton.icon(
                 onPressed: _openLocationScreen,
-                child: Text(l10n.setLocation),
+                icon: const Icon(Icons.near_me),
+                label: Text(l10n.setLocation),
               ),
             ],
           ),
@@ -222,165 +229,584 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _timetable(ThemeData theme) {
+  Widget _timetable() {
+    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final times = _times!;
     final bands = _bands!;
     final settings = widget.settings;
-    final loc = widget.location.current!;
     final next = _nextPrayer();
     final hijri = gregorianToHijri(_civilDay!);
     final rows = _prayerRows(l10n);
+    final lang = Localizations.localeOf(context).languageCode;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       children: [
-        // Location chip: name + tap → location picker. The chip shrinks
-        // (ellipsizing the name) instead of overflowing at large text sizes.
-        Row(
-          children: [
-            Flexible(
+        // Location chip: current horizon, taps through to Location.
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          // Material ancestor for the chip's ink effects (the screen
+          // itself has no Scaffold).
+          child: Material(
+            type: MaterialType.transparency,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth:
+                    (MediaQuery.sizeOf(context).width - 32).clamp(0.0, 600.0),
+              ),
               child: ActionChip(
-                avatar: const Icon(Icons.place, size: 18),
+                avatar: Icon(Icons.near_me,
+                    size: 16, color: theme.colorScheme.secondary),
                 label: Text(
-                  loc.isDevice ? l10n.deviceLocationName : loc.name,
+                  widget.location.current?.name ?? l10n.setLocation,
+                  style: theme.textTheme.labelLarge,
                   overflow: TextOverflow.ellipsis,
                 ),
                 onPressed: _openLocationScreen,
               ),
             ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Hijri date line (tabular calendar, approximate).
+        Row(
+          children: [
+            Icon(Icons.calendar_today,
+                size: 14, color: theme.colorScheme.secondary),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                l10n.hijriDateLine(
+                  hijriMonthName(l10n, hijri.month),
+                  l10n.hijriCalendarNote,
+                ),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.secondary,
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 4),
-
-        // Hijri date line (tabular calendar, approximate).
-        Text(
-          l10n.hijriDateLine(
-            hijriMonthName(l10n, hijri.month),
-            l10n.hijriCalendarNote,
-          ),
-          style: theme.textTheme.bodySmall,
-        ),
         const SizedBox(height: 12),
 
-        // Next-prayer countdown card.
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.nextPrayerIn(
-                    _prayerLabel(l10n, next.prayer),
-                    _countdown(next.time),
-                  ),
-                  style: theme.textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.nextPrayerAt(_hhmm(next.time)),
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
+        _HeroCard(
+          next: next,
+          label: _prayerLabel(l10n, next.prayer),
+          arabic: _prayerArabic(next.prayer),
+          descriptor: rows
+              .firstWhere((r) => r.prayer == next.prayer)
+              .descriptor,
+          now: _now,
+          languageCode: lang,
+          sunsetHour: settings
+              .adjustedTime(Prayer.maghrib, times.timeFor(Prayer.maghrib))
+              .hour,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
 
-        // Today's timetable (engine times after adjustedTime).
-        Text(l10n.todaysTimes, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 4),
+        // Today's timetable.
+        _SectionHeader(
+            icon: Icons.view_timeline, title: l10n.todaysTimes),
+        const SizedBox(height: 8),
         ...rows.map((row) {
           final isNext = row.prayer == next.prayer;
-          final isSunrise = row.prayer == Prayer.sunrise;
-          return Card(
-            color: isNext ? theme.colorScheme.primaryContainer : null,
-            child: ListTile(
-              title: Text('${row.label}  ${row.arabic}'),
-              trailing: Text(
-                _hhmm(
-                  settings.adjustedTime(row.prayer, times.timeFor(row.prayer)),
-                ),
-                style: theme.textTheme.titleMedium,
-              ),
-              subtitle: isNext
-                  ? Text(l10n.nextPrayerBadge)
-                  : (isSunrise ? Text(l10n.timetableMarkerNote) : null),
+          final time = settings.adjustedTime(
+              row.prayer, times.timeFor(row.prayer));
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _PrayerRowCard(
+              row: row,
+              time: formatPrayerTime(time, lang,
+                  sunsetHour: settings
+                      .adjustedTime(
+                          Prayer.maghrib, times.timeFor(Prayer.maghrib))
+                      .hour),
+              isNext: isNext,
+              nextBadge: l10n.nextPrayerBadge,
             ),
           );
         }),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
 
         // Two-tier fiqh bands.
-        Text(l10n.bandsTitle, style: theme.textTheme.titleMedium),
+        _SectionHeader(icon: Icons.auto_stories, title: l10n.bandsTitle),
         const SizedBox(height: 4),
+        Text(
+          l10n.bandsInfoNote,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: Theme.of(context).colorScheme.secondary),
+        ),
+        const SizedBox(height: 8),
         ...bands.map((b) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${bandDisplayName(l10n, b.arabicName)}  ${b.arabicName}',
-                    style: theme.textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.preferredLabel(
-                      bandIkhtiyariText(l10n, b.arabicName, times),
-                    ),
-                    style: theme.textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    l10n.necessityLabel(
-                      bandDaruriText(l10n, b.arabicName, times),
-                    ),
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _BandCard(band: b, times: times),
           );
         }),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
 
         // Prominent calculation-profile status label.
-        Card(
-          color: theme.colorScheme.tertiaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.calculationProfileProposed,
-                  style: theme.textTheme.titleSmall,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  profileLabel(l10n, times.profile).name,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                ExpansionTile(
-                  title: Text(l10n.aboutProfile),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        l10n.aboutProfileText,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+        _ProfileStatusCard(times: times),
+      ],
+    );
+  }
+}
+
+class _PrayerRow {
+  final Prayer prayer;
+  final String label;
+  final String arabic;
+  final IconData icon;
+  final String descriptor;
+  final bool isMarker;
+
+  const _PrayerRow(this.prayer, this.label, this.arabic, this.icon,
+      this.descriptor,
+      {this.isMarker = false});
+}
+
+/// Section header: small icon + eyebrow-style title.
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const _SectionHeader({required this.icon, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: theme.colorScheme.secondary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            title.toUpperCase(),
+            style: AppFonts.eyebrow(context).copyWith(
+              color: theme.colorScheme.secondary,
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// The next-prayer hero: deep-primary card with the prayer name, its time,
+/// and a segmented live countdown.
+class _HeroCard extends StatelessWidget {
+  final ({Prayer prayer, DateTime time}) next;
+  final String label;
+  final String arabic;
+  final String descriptor;
+  final DateTime now;
+  final String? languageCode;
+  final int sunsetHour;
+
+  const _HeroCard({
+    required this.next,
+    required this.label,
+    required this.arabic,
+    required this.descriptor,
+    required this.now,
+    required this.languageCode,
+    required this.sunsetHour,
+  });
+
+  String _countdownParts() {
+    var remaining = next.time.difference(now);
+    if (remaining.isNegative) remaining = Duration.zero;
+    final h = remaining.inHours.toString().padLeft(2, '0');
+    final m = (remaining.inMinutes % 60).toString().padLeft(2, '0');
+    final s = (remaining.inSeconds % 60).toString().padLeft(2, '0');
+    return '$h:$m:$s';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+    final onHero = scheme.onPrimary;
+    final heroDim = scheme.onInverseSurface;
+
+    final parts = _countdownParts().split(':');
+    final localized =
+        parts.map((p) => localizeDigits(p, languageCode)).toList();
+    final heroTime =
+        formatPrayerTime(next.time, languageCode, sunsetHour: sunsetHour);
+
+    Widget digitBox(String digits) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: scheme.primaryContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          digits,
+          style: theme.textTheme.displaySmall?.copyWith(color: onHero),
+        ),
+      );
+    }
+
+    Widget colon() => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(':',
+              style:
+                  theme.textTheme.displaySmall?.copyWith(color: heroDim)),
+        );
+
+    return Card(
+      color: scheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.schedule, size: 14, color: scheme.inversePrimary),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.heroEyebrow.toUpperCase(),
+                    style: AppFonts.eyebrow(context).copyWith(
+                      color: scheme.inversePrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Flexible(
+                  child: Text(label,
+                      style: theme.textTheme.displayMedium
+                          ?.copyWith(color: onHero)),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  arabic,
+                  style: const TextStyle(
+                    fontFamily: AppFonts.arabic,
+                    fontSize: 22,
+                    color: Color(0xFFD9F7ED),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              heroTime,
+              style: theme.textTheme.displayLarge?.copyWith(color: onHero),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              descriptor,
+              style: theme.textTheme.bodySmall?.copyWith(color: heroDim),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.heroCountdownLabel.toUpperCase(),
+              style: AppFonts.eyebrow(context).copyWith(color: heroDim),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                digitBox(localized[0]),
+                colon(),
+                digitBox(localized[1]),
+                colon(),
+                digitBox(localized[2]),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One timetable row: icon medallion, names + descriptor, HH:MM readout.
+/// The next prayer is highlighted and carries a text badge (never color-only).
+class _PrayerRowCard extends StatelessWidget {
+  final _PrayerRow row;
+  final String time;
+  final bool isNext;
+  final String nextBadge;
+
+  const _PrayerRowCard({
+    required this.row,
+    required this.time,
+    required this.isNext,
+    required this.nextBadge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final highlighted = isNext;
+
+    final fg = highlighted ? scheme.onPrimary : scheme.onSurface;
+    final sub = highlighted ? scheme.onInverseSurface : scheme.onSurfaceVariant;
+
+    return Card(
+      color: highlighted ? scheme.primaryContainer : null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: highlighted
+                    ? scheme.primary
+                    : scheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                row.icon,
+                size: 22,
+                color: highlighted
+                    ? scheme.onPrimary
+                    : scheme.onSecondaryContainer,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          row.label,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: fg,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        row.arabic,
+                        style: TextStyle(
+                          fontFamily: AppFonts.arabic,
+                          fontSize: 15,
+                          color: sub,
+                        ),
+                      ),
+                      if (highlighted) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: scheme.tertiaryFixed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            nextBadge,
+                            style: AppFonts.badgeLabel(context).copyWith(
+                              color: scheme.onTertiaryFixed,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    row.descriptor,
+                    style: theme.textTheme.bodySmall?.copyWith(color: sub),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              time,
+              style: AppFonts.timeLabel(context).copyWith(color: fg),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One two-tier band card: name + informational Preferred/Necessity ranges.
+class _BandCard extends StatelessWidget {
+  final PrayerBand band;
+  final PrayerTimes times;
+
+  const _BandCard({required this.band, required this.times});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+
+    Widget rangeRow(String eyebrow, String text) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              eyebrow.toUpperCase(),
+              style: AppFonts.eyebrow(context).copyWith(
+                color: scheme.secondary,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(text, style: theme.textTheme.bodyMedium),
+          ],
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${bandDisplayName(l10n, band.arabicName)}  ${band.arabicName}',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: scheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.informationalChip,
+                    style: AppFonts.badgeLabel(context).copyWith(
+                      color: scheme.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            rangeRow(
+              l10n.preferredWord,
+              bandIkhtiyariText(l10n, band.arabicName, times),
+            ),
+            rangeRow(
+              l10n.necessityWord,
+              bandDaruriText(l10n, band.arabicName, times),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Calculation-profile status card in tertiary tones, with the PROPOSED badge
+/// and an expandable "About this profile" section.
+class _ProfileStatusCard extends StatelessWidget {
+  final PrayerTimes times;
+
+  const _ProfileStatusCard({required this.times});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+
+    return Card(
+      color: scheme.tertiaryFixed,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.tune, size: 16, color: scheme.onTertiaryFixed),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.calculationProfileProposed,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: scheme.onTertiaryFixed,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: scheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                l10n.proposedStatus,
+                style: AppFonts.badgeLabel(context).copyWith(
+                  color: scheme.onTertiaryContainer,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              profileLabel(l10n, times.profile).name,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: scheme.onTertiaryFixed,
+              ),
+            ),
+            Theme(
+              data: theme.copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(
+                  l10n.aboutProfile,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: scheme.onTertiaryFixed,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                iconColor: scheme.onTertiaryFixed,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      l10n.aboutProfileText,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.onTertiaryFixedVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
