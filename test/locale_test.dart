@@ -118,7 +118,9 @@ void main() {
 
   group('AppFonts', () {
     test('forLocale documents the fallback chain', () {
-      expect(AppFonts.forLocale(const Locale('ur')), 'Noto Nastaliq Urdu');
+      // Bundled Jameel Noori Nastaleeq for Urdu (user-directed 2026-10-15;
+      // rights unverified — see ATTRIBUTION.md).
+      expect(AppFonts.forLocale(const Locale('ur')), 'JameelNooriNastaleeq');
       expect(AppFonts.forLocale(const Locale('ar')), 'Amiri');
       expect(AppFonts.forLocale(const Locale('en')), isNull);
       expect(AppFonts.forLocale(const Locale('fr')), isNull);
@@ -127,11 +129,11 @@ void main() {
 
     test('themeFor applies the locale font without changing the design', () {
       final ur = AppFonts.themeFor(const Locale('ur'), seedColor: Colors.teal);
-      expect(ur.textTheme.bodyLarge?.fontFamily, 'Noto Nastaliq Urdu');
+      expect(ur.textTheme.bodyLarge?.fontFamily, 'JameelNooriNastaleeq');
       expect(ur.useMaterial3, isTrue);
       final en = AppFonts.themeFor(const Locale('en'), seedColor: Colors.teal);
       // No override → the Material default font (documented fallback chain).
-      expect(en.textTheme.bodyLarge?.fontFamily, isNot('Noto Nastaliq Urdu'));
+      expect(en.textTheme.bodyLarge?.fontFamily, isNot('JameelNooriNastaleeq'));
       // Same seed color → same color scheme regardless of locale.
       expect(ur.colorScheme.primary, en.colorScheme.primary);
     });
