@@ -12,6 +12,7 @@ import 'package:malikiprayertimes/screens/settings_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/utils/app_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _delegates = [
@@ -564,7 +565,7 @@ void main() {
       expect(find.text(l10n.aboutDeveloperName), findsOneWidget);
       expect(find.textContaining('muhaqqiqcreates@gmail.com'), findsOneWidget);
       // Version is single-sourced from the app-info const.
-      expect(find.text(l10n.appVersion('1.1.0')), findsOneWidget);
+      expect(find.text(l10n.appVersion(kAppVersion)), findsOneWidget);
       // The redundant profile card (and its section header) are gone.
       expect(find.text('Calculation profile'), findsNothing);
     });
