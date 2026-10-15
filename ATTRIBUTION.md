@@ -87,3 +87,22 @@ this app is presented as scholar-reviewed.
 
 Both passed the license gate (permissive: MIT/Apache-2.0/BSD — no
 copyleft, no proprietary terms, LICENSE files present and read).
+
+## Bundled font: Jameel Noori Nastaleeq (user-directed, rights unverified)
+
+- **File:** `assets/fonts/JameelNooriNastaleeq-v4.ttf` (copied 2026-10-15 from the
+  user's own radd-al-ilhad-app bundle), declared as family
+  `JameelNooriNastaleeq` in pubspec.yaml, used for Urdu (`ur`) locale text.
+- **License status: UNVERIFIED — personal-use-only per font sites.** Web research
+  on 2026-10-15 found: font download sites list it as "Personal Use Only"
+  (commercial use not permitted); multiple Urdu font sites state there is NO
+  official license document and advise independently verifying rights before
+  commercial-scale use. No redistribution license could be located.
+- **Decision:** bundled at the user's explicit in-chat direction on 2026-10-15
+  ("Just use Jameel noori nastaleeq font don't bother"), AFTER the user was
+  informed of the above findings and offered the verified alternative
+  (Nafees Nastaleeq, CRULP, explicit redistribution license), which they
+  declined. The residual licensing risk of distributing this font is the
+  user's accepted decision, recorded here per the license-safety paper trail.
+- **Action item:** if the user later obtains a redistribution license or
+  written permission, record its source/date here.
