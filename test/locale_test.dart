@@ -282,6 +282,140 @@ void main() {
     });
   });
 
+  group('urdu locale: no doubled prayer names', () {
+    testWidgets('home screen shows each Urdu prayer name once (no Arabic pair)',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'saved_location': jsonEncode({
+          'name': 'Nouakchott',
+          'latitude': 18.0858,
+          'longitude': -15.9785,
+          'isDevice': false,
+        }),
+      });
+      final settings = await SettingsService.load();
+      final location = await LocationService.load();
+      await settings.setLanguageCode('ur');
+
+      await tester.pumpWidget(
+          MalikiPrayerTimesApp(settings: settings, location: location));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Scroll through the whole home screen so lazily-built rows enter
+      // the tree, collecting every text fragment.
+      final seen = <String>{};
+      for (var i = 0; i < 10; i++) {
+        final texts = tester
+            .widgetList<Text>(find.byType(Text))
+            .map((t) => t.data ?? t.textSpan?.toPlainText() ?? '');
+        seen.addAll(texts);
+        await tester.drag(
+            find.byType(Scrollable).first, const Offset(0, -800));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      // Urdu name + Arabic companion must never read as a doubled name
+      // ("فجر الفجر"); the Urdu locale omits the companion entirely.
+      const urduPairs = [
+        'فجر الفجر',
+        'ظہر الظهر',
+        'عصر العصر',
+        'مغرب المغرب',
+        'عشاء العشاء',
+        'صبح الصبح',
+      ];
+      for (final text in seen) {
+        for (final pair in urduPairs) {
+          expect(text.contains(pair), isFalse,
+              reason: 'doubled name "$pair" in: "$text"');
+        }
+      }
+      expect(seen.any((t) => t.contains('فجر')), isTrue,
+          reason: 'sanity: Urdu prayer names are rendered');
+    });
+
+    testWidgets('english locale still shows the transliteration + Arabic pair',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'saved_location': jsonEncode({
+          'name': 'Nouakchott',
+          'latitude': 18.0858,
+          'longitude': -15.9785,
+          'isDevice': false,
+        }),
+      });
+      final settings = await SettingsService.load();
+      final location = await LocationService.load();
+      await settings.setLanguageCode('en');
+
+      await tester.pumpWidget(
+          MalikiPrayerTimesApp(settings: settings, location: location));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final seen = <String>{};
+      for (var i = 0; i < 10; i++) {
+        final texts = tester
+            .widgetList<Text>(find.byType(Text))
+            .map((t) => t.data ?? t.textSpan?.toPlainText() ?? '');
+        seen.addAll(texts);
+        await tester.drag(
+            find.byType(Scrollable).first, const Offset(0, -800));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      // Timetable rows render the pair as one string ("Asr  العصر"); the
+      // hero renders them as sibling Texts. Either form proves en keeps
+      // the transliteration + Arabic pair.
+      final pairPattern = RegExp(r'^(Fajr|Dhuhr|Asr|Maghrib|Isha)  ');
+      final hasRowPair = seen.any((t) =>
+          pairPattern.hasMatch(t) &&
+          ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء']
+              .any(t.contains));
+      final hasHeroLabel =
+          seen.any((t) => ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].contains(t));
+      final hasHeroArabic = seen.any((t) =>
+          ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'].contains(t.trim()));
+      expect(hasRowPair || (hasHeroLabel && hasHeroArabic), isTrue,
+          reason: 'sanity: en keeps the transliteration + Arabic pair');
+    });
+  });
+
+  group('urdu locale: coordinates render in the Latin font', () {
+    testWidgets('home header coords use Manrope so "." never misrenders',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'saved_location': jsonEncode({
+          'name': 'Device location',
+          'latitude': 30.44180,
+          'longitude': 73.75350,
+          'isDevice': true,
+        }),
+      });
+      final settings = await SettingsService.load();
+      final location = await LocationService.load();
+      await settings.setLanguageCode('ur');
+
+      await tester.pumpWidget(
+          MalikiPrayerTimesApp(settings: settings, location: location));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final coordsTexts = tester
+          .widgetList<Text>(find.byType(Text))
+          .where((t) => (t.data ?? '').contains('30.44180'))
+          .toList();
+      expect(coordsTexts, isNotEmpty,
+          reason: 'sanity: the coordinate line is rendered');
+      for (final t in coordsTexts) {
+        expect(t.data, contains('.'),
+            reason: 'raw coordinate string keeps the decimal point');
+        expect(t.style?.fontFamily, 'Manrope',
+            reason: 'coords pinned to the Latin font in Urdu UI');
+      }
+    });
+  });
+
   group('preset locations', () {
     testWidgets('tapping Cordoba saves its exact coordinates', (tester) async {
       SharedPreferences.setMockInitialValues({});
@@ -360,6 +494,48 @@ void main() {
             findsNothing,
             reason: 'no per-card explanation for $prayer');
       }
+    });
+  });
+
+  group('settings about sections', () {
+    testWidgets('about app + developer sections render; profile card removed',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final l10n =
+          await AppLocalizations.delegate.load(const Locale('en'));
+
+      // Tall viewport so every section builds at once.
+      tester.view.physicalSize = const Size(1080, 12000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: _delegates,
+          supportedLocales: _supportedLocales,
+          home: SettingsScreen(
+            settings: settings,
+            coordinates: const Coordinates(24.86, 67.0),
+            timeZoneOffset: const Duration(hours: 5),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text(l10n.aboutAppSection.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.aboutAppBody), findsOneWidget);
+      expect(
+          find.text(l10n.aboutDeveloperSection.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.aboutDeveloperName), findsOneWidget);
+      expect(find.textContaining('muhaqqiqcreates@gmail.com'), findsOneWidget);
+      // Version is single-sourced from the app-info const.
+      expect(find.text(l10n.appVersion('1.1.0')), findsOneWidget);
+      // The redundant profile card (and its section header) are gone.
+      expect(find.text('Calculation profile'), findsNothing);
     });
   });
 }

@@ -510,7 +510,7 @@ class _ActiveHorizonCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    loc.isDevice ? l10n.deviceLocationName : loc.name,
+                    loc.displayName(l10n.deviceLocationName),
                     style: theme.textTheme.displaySmall?.copyWith(
                       color: scheme.onPrimary,
                     ),
@@ -530,6 +530,9 @@ class _ActiveHorizonCard extends StatelessWidget {
                             '${loc.longitude.toStringAsFixed(5)}°',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: scheme.onInverseSurface,
+                              // Latin-script data: pin the Latin font so "."
+                              // never misrenders in Nastaleeq.
+                              fontFamily: AppFonts.latinSans,
                             ),
                           ),
                         ),

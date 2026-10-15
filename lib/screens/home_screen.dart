@@ -388,7 +388,7 @@ class _LocationHeader extends StatelessWidget {
     final current = location.current;
     final name = current == null
         ? l10n.setLocation
-        : (current.isDevice ? l10n.deviceLocationName : current.name);
+        : current.displayName(l10n.deviceLocationName);
     final coords = current == null
         ? null
         : '${current.latitude.toStringAsFixed(5)}, '
@@ -433,6 +433,9 @@ class _LocationHeader extends StatelessWidget {
                         coords,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: scheme.onSecondaryContainer,
+                          // Coordinates are Latin-script data: pin the Latin
+                          // font so "." never misrenders in Nastaleeq.
+                          fontFamily: AppFonts.latinSans,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

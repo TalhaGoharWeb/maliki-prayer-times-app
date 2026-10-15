@@ -84,7 +84,6 @@
   "sunriseMarkerRow": "الشروق (علامة)",
   "compareFootnote": "تأتي الفروق من زوايا الفجر والعشاء التي تستخدمها كل طريقة؛ والطرق نفسها مقترحة — بانتظار المراجعة العلمية.",
   "settingsTitle": "الإعدادات",
-  "calculationProfileSection": "طريقة الحساب",
   "adjustmentsSection": "تعديلات مواقيت الصلاة",
   "adjustmentsSectionNote": "يقدّم وقت العرض أو يؤخّره. استخدمه لمطابقة مواقيت مسجدك المحلي؛ فهو لا يغيّر الحساب الأساسي.",
   "sunriseNoAdjustmentNote": "الشروق علامة في الجدول وليس صلاة، فلا تعديل له.",
@@ -489,6 +488,72 @@
   "appVersion": "الإصدار {v}",
   "@appVersion": {
     "description": "Redesign 2026-10-15: appVersion"
+  },
+  "aboutAppSection": "عن التطبيق",
+  "@aboutAppSection": {
+    "description": "Settings 2026-10-15: aboutAppSection"
+  },
+  "aboutAppBody": "تطبيق لأوقات الصلاة وفق قواعد الفقه المالكي — أوقات من درجتين: الاختياري والاضطراري، والعصر عند المثل الأول، والمغرب والعشاء وفق المدارس المالكية — مع ملفات حسابية مبنية على البحث. جميع الملفات مقترحة — بانتظار المراجعة العلمية.",
+  "@aboutAppBody": {
+    "description": "Settings 2026-10-15: aboutAppBody"
+  },
+  "aboutDeveloperSection": "عن المطوّر",
+  "@aboutDeveloperSection": {
+    "description": "Settings 2026-10-15: aboutDeveloperSection"
+  },
+  "aboutDeveloperName": "Muhammad Talha Bin Fareed",
+  "@aboutDeveloperName": {
+    "description": "Settings 2026-10-15: aboutDeveloperName"
+  },
+  "aboutDeveloperContact": "التواصل: muhaqqiqcreates@gmail.com",
+  "@aboutDeveloperContact": {
+    "description": "Settings 2026-10-15: aboutDeveloperContact"
+  },
+  "checkForUpdates": "التحقق من التحديثات",
+  "@checkForUpdates": {
+    "description": "Settings/branding 2026-10-15: checkForUpdates"
+  },
+  "updateChecking": "جارٍ التحقق من التحديثات…",
+  "@updateChecking": {
+    "description": "Settings/branding 2026-10-15: updateChecking"
+  },
+  "updateUpToDate": "تطبيقك محدّث",
+  "@updateUpToDate": {
+    "description": "Settings/branding 2026-10-15: updateUpToDate"
+  },
+  "updateAvailable": "يتوفر تحديث: {v}",
+  "@updateAvailable": {
+    "description": "Settings/branding 2026-10-15: updateAvailable",
+    "placeholders": {
+      "v": {
+        "type": "String",
+        "example": "v1.1.0+2"
+      }
+    }
+  },
+  "updateDownload": "تنزيل",
+  "@updateDownload": {
+    "description": "Settings/branding 2026-10-15: updateDownload"
+  },
+  "updateCheckFailed": "تعذّر التحقق من التحديثات (غير متصل أو غير متاح)",
+  "@updateCheckFailed": {
+    "description": "Settings/branding 2026-10-15: updateCheckFailed"
+  },
+  "exitAppTitle": "إغلاق التطبيق؟",
+  "@exitAppTitle": {
+    "description": "Settings/branding 2026-10-15: exitAppTitle"
+  },
+  "exitAppMessage": "هل تريد إغلاق تطبيق أوقات الصلاة المالكية؟",
+  "@exitAppMessage": {
+    "description": "Settings/branding 2026-10-15: exitAppMessage"
+  },
+  "exitAppExit": "إغلاق",
+  "@exitAppExit": {
+    "description": "Settings/branding 2026-10-15: exitAppExit"
+  },
+  "exitAppCancel": "إلغاء",
+  "@exitAppCancel": {
+    "description": "Settings/branding 2026-10-15: exitAppCancel"
   },
   "footerNote": "توقيت مالكي — محسوب من الملف المقترح (بانتظار المراجعة الشرعية).",
   "@footerNote": {

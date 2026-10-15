@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Maliki deep green, shared with the in-app splash screen. -->
+    <color name="splash_green">#003527</color>
+</resources>

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.13.4
@@ -41,6 +41,9 @@ dependencies:
   flutter_local_notifications: ^22.3.2
   timezone: ^0.11.2
   sensors_plus: ^7.1.1
+  geocoding: ^5.0.0
+  package_info_plus: ^10.2.2
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +78,12 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
+
+  # App art: launcher source + splash logo (user-provided branding).
+  # Declared per-directory: Flutter bundles only the listed directory's
+  # top-level files (non-recursive).
+  assets:
+    - assets/branding/
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

@@ -84,7 +84,6 @@
   "sunriseMarkerRow": "Lever du soleil (repère)",
   "compareFootnote": "Les différences viennent des angles Fajr/Isha utilisés par chaque profil ; les profils eux-mêmes sont PROPOSÉS — en attente d’examen par des savants.",
   "settingsTitle": "Réglages",
-  "calculationProfileSection": "Profil de calcul",
   "adjustmentsSection": "Ajustements des horaires de prière",
   "adjustmentsSectionNote": "Avance ou retarde l’heure affichée. Utilisez-le pour correspondre aux horaires de votre mosquée locale ; cela ne change pas le calcul sous-jacent.",
   "sunriseNoAdjustmentNote": "Le lever du soleil est un repère d’horaire, pas une prière : aucun ajustement.",
@@ -489,6 +488,72 @@
   "appVersion": "Version {v}",
   "@appVersion": {
     "description": "Redesign 2026-10-15: appVersion"
+  },
+  "aboutAppSection": "À propos de l'application",
+  "@aboutAppSection": {
+    "description": "Settings 2026-10-15: aboutAppSection"
+  },
+  "aboutAppBody": "Une application d'horaires de prière appliquant les règles malikites des temps de prière — horaires à deux niveaux, ikhtiyari (préférentiel) et daruri (nécessité), Asr au premier mithl, Maghrib et Isha selon les écoles malikites — avec des profils de calcul fondés sur la recherche. Tous les profils sont PROPOSÉS — en attente de révision savante.",
+  "@aboutAppBody": {
+    "description": "Settings 2026-10-15: aboutAppBody"
+  },
+  "aboutDeveloperSection": "À propos du développeur",
+  "@aboutDeveloperSection": {
+    "description": "Settings 2026-10-15: aboutDeveloperSection"
+  },
+  "aboutDeveloperName": "Muhammad Talha Bin Fareed",
+  "@aboutDeveloperName": {
+    "description": "Settings 2026-10-15: aboutDeveloperName"
+  },
+  "aboutDeveloperContact": "Contact : muhaqqiqcreates@gmail.com",
+  "@aboutDeveloperContact": {
+    "description": "Settings 2026-10-15: aboutDeveloperContact"
+  },
+  "checkForUpdates": "Vérifier les mises à jour",
+  "@checkForUpdates": {
+    "description": "Settings/branding 2026-10-15: checkForUpdates"
+  },
+  "updateChecking": "Vérification des mises à jour…",
+  "@updateChecking": {
+    "description": "Settings/branding 2026-10-15: updateChecking"
+  },
+  "updateUpToDate": "Vous êtes à jour",
+  "@updateUpToDate": {
+    "description": "Settings/branding 2026-10-15: updateUpToDate"
+  },
+  "updateAvailable": "Mise à jour disponible : {v}",
+  "@updateAvailable": {
+    "description": "Settings/branding 2026-10-15: updateAvailable",
+    "placeholders": {
+      "v": {
+        "type": "String",
+        "example": "v1.1.0+2"
+      }
+    }
+  },
+  "updateDownload": "Télécharger",
+  "@updateDownload": {
+    "description": "Settings/branding 2026-10-15: updateDownload"
+  },
+  "updateCheckFailed": "Vérification impossible (hors ligne ou indisponible)",
+  "@updateCheckFailed": {
+    "description": "Settings/branding 2026-10-15: updateCheckFailed"
+  },
+  "exitAppTitle": "Quitter l'application ?",
+  "@exitAppTitle": {
+    "description": "Settings/branding 2026-10-15: exitAppTitle"
+  },
+  "exitAppMessage": "Voulez-vous fermer Maliki Prayer Times ?",
+  "@exitAppMessage": {
+    "description": "Settings/branding 2026-10-15: exitAppMessage"
+  },
+  "exitAppExit": "Quitter",
+  "@exitAppExit": {
+    "description": "Settings/branding 2026-10-15: exitAppExit"
+  },
+  "exitAppCancel": "Annuler",
+  "@exitAppCancel": {
+    "description": "Settings/branding 2026-10-15: exitAppCancel"
   },
   "footerNote": "Tawqīt malikite — calculé d'après le profil proposé (en attente de révision savante).",
   "@footerNote": {

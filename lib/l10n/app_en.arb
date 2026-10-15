@@ -447,10 +447,6 @@
   "@settingsTitle": {
     "description": "Settings screen title"
   },
-  "calculationProfileSection": "Calculation profile",
-  "@calculationProfileSection": {
-    "description": "Settings section: calculation profile"
-  },
   "adjustmentsSection": "Prayer time adjustments",
   "@adjustmentsSection": {
     "description": "Settings section: per-prayer adjustments"
@@ -1076,6 +1072,72 @@
   "appVersion": "Version {v}",
   "@appVersion": {
     "description": "Redesign 2026-10-15: appVersion"
+  },
+  "aboutAppSection": "About the app",
+  "@aboutAppSection": {
+    "description": "Settings 2026-10-15: aboutAppSection"
+  },
+  "aboutAppBody": "A prayer-times app implementing Maliki fiqh prayer-time rules — two-tier ikhtiyari (preferred) and daruri (necessity) times, Asr at the first mithl, Maghrib and Isha per the Maliki schools — with research-based calculation profiles. All profiles are PROPOSED — pending scholarly review.",
+  "@aboutAppBody": {
+    "description": "Settings 2026-10-15: aboutAppBody"
+  },
+  "aboutDeveloperSection": "About the developer",
+  "@aboutDeveloperSection": {
+    "description": "Settings 2026-10-15: aboutDeveloperSection"
+  },
+  "aboutDeveloperName": "Muhammad Talha Bin Fareed",
+  "@aboutDeveloperName": {
+    "description": "Settings 2026-10-15: aboutDeveloperName"
+  },
+  "aboutDeveloperContact": "Contact: muhaqqiqcreates@gmail.com",
+  "@aboutDeveloperContact": {
+    "description": "Settings 2026-10-15: aboutDeveloperContact"
+  },
+  "checkForUpdates": "Check for updates",
+  "@checkForUpdates": {
+    "description": "Settings/branding 2026-10-15: checkForUpdates"
+  },
+  "updateChecking": "Checking for updates…",
+  "@updateChecking": {
+    "description": "Settings/branding 2026-10-15: updateChecking"
+  },
+  "updateUpToDate": "You're up to date",
+  "@updateUpToDate": {
+    "description": "Settings/branding 2026-10-15: updateUpToDate"
+  },
+  "updateAvailable": "Update available: {v}",
+  "@updateAvailable": {
+    "description": "Settings/branding 2026-10-15: updateAvailable",
+    "placeholders": {
+      "v": {
+        "type": "String",
+        "example": "v1.1.0+2"
+      }
+    }
+  },
+  "updateDownload": "Download",
+  "@updateDownload": {
+    "description": "Settings/branding 2026-10-15: updateDownload"
+  },
+  "updateCheckFailed": "Couldn't check for updates (offline or unavailable)",
+  "@updateCheckFailed": {
+    "description": "Settings/branding 2026-10-15: updateCheckFailed"
+  },
+  "exitAppTitle": "Exit app?",
+  "@exitAppTitle": {
+    "description": "Settings/branding 2026-10-15: exitAppTitle"
+  },
+  "exitAppMessage": "Do you want to close Maliki Prayer Times?",
+  "@exitAppMessage": {
+    "description": "Settings/branding 2026-10-15: exitAppMessage"
+  },
+  "exitAppExit": "Exit",
+  "@exitAppExit": {
+    "description": "Settings/branding 2026-10-15: exitAppExit"
+  },
+  "exitAppCancel": "Cancel",
+  "@exitAppCancel": {
+    "description": "Settings/branding 2026-10-15: exitAppCancel"
   },
   "footerNote": "Tawqīt Maliki — computed from the proposed profile (pending scholarly review).",
   "@footerNote": {

@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
-import 'package:malikiprayertimes/screens/profile_labels.dart';
-import 'package:malikiprayertimes/screens/profiles_screen.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/update_service.dart';
+import 'package:malikiprayertimes/utils/app_info.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
 import 'package:malikiprayertimes/widgets/notification_settings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// User settings: active calculation profile, app language, per-prayer time
 /// adjustments, the precautionary-delay (ihtiyat) switch, adjustment reset,
@@ -24,12 +25,17 @@ class SettingsScreen extends StatelessWidget {
   /// When null, the notification section is hidden (e.g. in widget tests).
   final NotificationService? notifications;
 
+  /// Update checker for the "Check for updates" row; injectable in tests.
+  /// When null, a production [AppUpdateService] is used.
+  final AppUpdateService? updateService;
+
   const SettingsScreen({
     super.key,
     required this.settings,
     required this.coordinates,
     required this.timeZoneOffset,
     this.notifications,
+    this.updateService,
   });
 
   static const _adjustablePrayers = [
@@ -68,18 +74,6 @@ class SettingsScreen extends StatelessWidget {
         Prayer.isha => l10n.prayerDescIsha,
       };
 
-  void _openProfiles(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ProfilesScreen(
-          settings: settings,
-          coordinates: coordinates,
-          timeZoneOffset: timeZoneOffset,
-        ),
-      ),
-    );
-  }
-
   /// Language options: `null` = system default, then the four supported
   /// locales shown by their endonyms (standard practice).
   List<DropdownMenuItem<String?>> _languageItems(AppLocalizations l10n) {
@@ -106,65 +100,7 @@ class SettingsScreen extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           children: [
-            // (1) Jurisprudential profile.
-            _SectionHeader(
-                icon: Icons.menu_book,
-                title: l10n.calculationProfileSection),
-            const SizedBox(height: 8),
-            Card(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: () => _openProfiles(context),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: scheme.tertiaryFixed,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(Icons.menu_book,
-                            color: scheme.onTertiaryFixed, size: 22),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              profileLabel(l10n, settings.activeProfile).name,
-                              style: theme.textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: scheme.tertiaryContainer,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                l10n.proposedStatus.toUpperCase(),
-                                style: AppFonts.badgeLabel(context).copyWith(
-                                  color: scheme.onTertiaryContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.chevron_right, color: scheme.outline),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // (2) Language & localization.
+            // (1) Language & localization.
             _SectionHeader(
                 icon: Icons.translate, title: l10n.languageSection),
             const SizedBox(height: 8),
@@ -187,7 +123,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (3) Per-prayer adjustments.
+            // (2) Per-prayer adjustments.
             _SectionHeader(
                 icon: Icons.history_edu, title: l10n.adjustmentsSection),
             const SizedBox(height: 4),
@@ -228,7 +164,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (4) Precautionary delay (ihtiyat).
+            // (3) Precautionary delay (ihtiyat).
             _SectionHeader(
                 icon: Icons.verified, title: l10n.ihtiyatSection),
             const SizedBox(height: 8),
@@ -248,7 +184,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (5) Fonts.
+            // (4) Fonts.
             _SectionHeader(
                 icon: Icons.text_fields, title: l10n.fontsSection),
             const SizedBox(height: 8),
@@ -274,7 +210,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (6) Prayer notifications (Track A widget; hidden when no
+            // (5) Prayer notifications (Track A widget; hidden when no
             // NotificationService is provided, e.g. in widget tests).
             if (notifications != null) ...[
               NotificationSettingsSection(
@@ -286,7 +222,70 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 20),
             ],
 
-            // (7) Version + footer.
+            // (6) About the app.
+            _SectionHeader(
+                icon: Icons.info_outline, title: l10n.aboutAppSection),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.aboutAppBody,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    const Divider(height: 1),
+                    _UpdateCheckRow(
+                      service: updateService ?? AppUpdateService(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // (7) About the developer.
+            _SectionHeader(
+                icon: Icons.person_outline,
+                title: l10n.aboutDeveloperSection),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.aboutDeveloperName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.mail_outline,
+                            size: 16, color: scheme.secondary),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.aboutDeveloperContact,
+                            style: theme.textTheme.bodyMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // (8) Version + footer.
             Center(
               child: Container(
                 padding:
@@ -296,7 +295,7 @@ class SettingsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  l10n.appVersion('1.0.0'),
+                  l10n.appVersion(kAppVersion),
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -475,6 +474,152 @@ class _AdjustmentCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// "Check for updates" row inside the About-the-app card.
+///
+/// Taps [AppUpdateService.check] (injectable) and reports the outcome inline:
+/// up-to-date, available (with a Download button opening the release URL),
+/// or a graceful failure note. Never blocks the UI; the service never throws.
+class _UpdateCheckRow extends StatefulWidget {
+  final AppUpdateService service;
+
+  const _UpdateCheckRow({required this.service});
+
+  @override
+  State<_UpdateCheckRow> createState() => _UpdateCheckRowState();
+}
+
+class _UpdateCheckRowState extends State<_UpdateCheckRow> {
+  bool _checking = false;
+  UpdateCheckResult? _result;
+
+  Future<void> _runCheck() async {
+    setState(() {
+      _checking = true;
+      _result = null;
+    });
+    final result = await widget.service.check();
+    if (!mounted) return;
+    setState(() {
+      _checking = false;
+      _result = result;
+    });
+  }
+
+  Future<void> _openDownload(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+
+    Widget status;
+    if (_checking) {
+      status = Row(
+        children: [
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          const SizedBox(width: 10),
+          Expanded(child: Text(l10n.updateChecking)),
+        ],
+      );
+    } else if (_result != null) {
+      switch (_result!.outcome) {
+        case UpdateCheckOutcome.upToDate:
+          status = Row(
+            children: [
+              Icon(Icons.check_circle_outline,
+                  size: 18, color: scheme.secondary),
+              const SizedBox(width: 10),
+              Expanded(child: Text(l10n.updateUpToDate)),
+            ],
+          );
+        case UpdateCheckOutcome.available:
+          status = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.system_update,
+                      size: 18, color: scheme.tertiary),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.updateAvailable(
+                          _result!.latestTag ?? ''),
+                    ),
+                  ),
+                ],
+              ),
+              if (_result!.downloadUrl != null) ...[
+                const SizedBox(height: 8),
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: FilledButton.icon(
+                    onPressed: () => _openDownload(_result!.downloadUrl!),
+                    icon: const Icon(Icons.download, size: 18),
+                    label: Text(l10n.updateDownload),
+                  ),
+                ),
+              ],
+            ],
+          );
+        case UpdateCheckOutcome.unknown:
+          status = Row(
+            children: [
+              Icon(Icons.cloud_off_outlined,
+                  size: 18, color: scheme.outline),
+              const SizedBox(width: 10),
+              Expanded(child: Text(l10n.updateCheckFailed)),
+            ],
+          );
+      }
+    } else {
+      status = const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: _checking ? null : _runCheck,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                Icon(Icons.system_update,
+                    size: 20, color: scheme.secondary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.checkForUpdates,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: scheme.outline),
+              ],
+            ),
+          ),
+        ),
+        if (_checking || _result != null) ...[
+          const SizedBox(height: 4),
+          status,
+        ],
+      ],
     );
   }
 }

@@ -157,3 +157,38 @@ copyleft, no proprietary terms, LICENSE files present and read).
 - **Use:** accelerometer + magnetometer streams for the live Qibla compass
   heading. Abstracted behind `CompassService` so widget tests never touch
   platform channels.
+
+## geocoding (reverse geocoding for device location)
+
+- **Package:** geocoding 5.0.0 (geocoding_android 5.1.0, geocoding_darwin
+  1.0.3, geocoding_platform_interface 5.0.0) —
+  https://github.com/Baseflow/flutter-geocoding
+- **License:** MIT ("Copyright (c) 2018 Baseflow"). Verified 2026-10-15 by
+  reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/geocoding-5.0.0/LICENSE`): full MIT text.
+  Passed the license gate (permissive, no copyleft).
+- **Use:** reverse-geocodes a GPS fix to a human place name (city/locality)
+  shown in the home location header and Location screen. Abstracted behind
+  `PlaceNamer` so widget tests never touch platform channels; never throws
+  (failure falls back to the localized "Device location" label).
+
+## package_info_plus (installed version for the update check)
+
+- **Package:** package_info_plus 10.2.2 —
+  https://github.com/fluttercommunity/plus_plugins
+- **License:** BSD-3-Clause ("Copyright 2017 The Chromium Authors").
+  Verified 2026-10-15 by reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/package_info_plus-10.2.2/LICENSE`): full
+  BSD-3-Clause text. Passed the license gate (permissive, no copyleft).
+- **Use:** reads the installed build number so the in-app update check can
+  compare it against the latest GitHub release tag.
+
+## url_launcher (open the release download URL)
+
+- **Package:** url_launcher 6.3.1 — https://github.com/flutter/packages
+- **License:** BSD-3-Clause ("Copyright 2013 The Flutter Authors"). Verified
+  2026-10-15 by reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/url_launcher-6.3.1/LICENSE`): full
+  BSD-3-Clause text. Passed the license gate (permissive, no copyleft).
+- **Use:** opens the update download URL (release APK asset or release page)
+  in the external browser from Settings → Check for updates.

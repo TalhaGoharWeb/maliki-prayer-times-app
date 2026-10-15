@@ -84,7 +84,6 @@
   "sunriseMarkerRow": "طلوعِ آفتاب (علامت)",
   "compareFootnote": "فرق ہر پروفائل کے فجر/عشاء کے زاویوں سے آتا ہے؛ پروفائلز خود مجوزہ ہیں — علمی جائزے کے منتظر۔",
   "settingsTitle": "ترتیبات",
-  "calculationProfileSection": "حسابی پروفائل",
   "adjustmentsSection": "نماز کے اوقات میں ترامیم",
   "adjustmentsSectionNote": "ظاہر کردہ وقت کو پہلے یا بعد میں کرتا ہے۔ اپنی مقامی مسجد کے ٹائم ٹیبل سے ملانے کے لیے استعمال کریں؛ اس سے بنیادی حساب نہیں بدلتا۔",
   "sunriseNoAdjustmentNote": "طلوعِ آفتاب ٹائم ٹیبل کی علامت ہے، نماز نہیں، اس لیے اس میں کوئی ترمیم نہیں۔",
@@ -489,6 +488,72 @@
   "appVersion": "ورژن {v}",
   "@appVersion": {
     "description": "Redesign 2026-10-15: appVersion"
+  },
+  "aboutAppSection": "ایپ کے بارے میں",
+  "@aboutAppSection": {
+    "description": "Settings 2026-10-15: aboutAppSection"
+  },
+  "aboutAppBody": "مالکی فقہ کے نماز کے اوقات کے اصولوں پر مبنی ایپ — دو درجے کے اوقات: اختیاری (پسندیدہ) اور اضطراری (ضرورت)، پہلی مثل پر عصر، مالکی مکاتب کے مطابق مغرب و عشاء — تحقیقی حسابی پروفائلز کے ساتھ۔ تمام پروفائلز مجوزہ ہیں — علمی جائزہ باقی ہے۔",
+  "@aboutAppBody": {
+    "description": "Settings 2026-10-15: aboutAppBody"
+  },
+  "aboutDeveloperSection": "ڈیولپر کے بارے میں",
+  "@aboutDeveloperSection": {
+    "description": "Settings 2026-10-15: aboutDeveloperSection"
+  },
+  "aboutDeveloperName": "Muhammad Talha Bin Fareed",
+  "@aboutDeveloperName": {
+    "description": "Settings 2026-10-15: aboutDeveloperName"
+  },
+  "aboutDeveloperContact": "رابطہ: muhaqqiqcreates@gmail.com",
+  "@aboutDeveloperContact": {
+    "description": "Settings 2026-10-15: aboutDeveloperContact"
+  },
+  "checkForUpdates": "اپ ڈیٹس چیک کریں",
+  "@checkForUpdates": {
+    "description": "Settings/branding 2026-10-15: checkForUpdates"
+  },
+  "updateChecking": "اپ ڈیٹس چیک ہو رہی ہیں…",
+  "@updateChecking": {
+    "description": "Settings/branding 2026-10-15: updateChecking"
+  },
+  "updateUpToDate": "آپ کا ایپ تازہ ترین ہے",
+  "@updateUpToDate": {
+    "description": "Settings/branding 2026-10-15: updateUpToDate"
+  },
+  "updateAvailable": "نئی اپ ڈیٹ دستیاب ہے: {v}",
+  "@updateAvailable": {
+    "description": "Settings/branding 2026-10-15: updateAvailable",
+    "placeholders": {
+      "v": {
+        "type": "String",
+        "example": "v1.1.0+2"
+      }
+    }
+  },
+  "updateDownload": "ڈاؤن لوڈ",
+  "@updateDownload": {
+    "description": "Settings/branding 2026-10-15: updateDownload"
+  },
+  "updateCheckFailed": "اپ ڈیٹس چیک نہیں ہو سکیں (آف لائن یا دستیاب نہیں)",
+  "@updateCheckFailed": {
+    "description": "Settings/branding 2026-10-15: updateCheckFailed"
+  },
+  "exitAppTitle": "ایپ بند کریں؟",
+  "@exitAppTitle": {
+    "description": "Settings/branding 2026-10-15: exitAppTitle"
+  },
+  "exitAppMessage": "کیا آپ مالکی پریئر ٹائمز بند کرنا چاہتے ہیں؟",
+  "@exitAppMessage": {
+    "description": "Settings/branding 2026-10-15: exitAppMessage"
+  },
+  "exitAppExit": "بند کریں",
+  "@exitAppExit": {
+    "description": "Settings/branding 2026-10-15: exitAppExit"
+  },
+  "exitAppCancel": "منسوخ کریں",
+  "@exitAppCancel": {
+    "description": "Settings/branding 2026-10-15: exitAppCancel"
   },
   "footerNote": "توقیتِ مالکی — مجوزہ پروفائل سے محسوب (شرعی توثیق زیرِ التوا)۔",
   "@footerNote": {

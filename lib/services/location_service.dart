@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:geolocator/geolocator.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,6 +86,41 @@ class GeolocatorGpsReader implements GpsReader {
   }
 }
 
+/// Resolves GPS coordinates to a human place name (city/locality).
+/// Returns `null` when no name could be determined. The production
+/// implementation uses the geocoding plugin; tests inject a fake.
+abstract class PlaceNamer {
+  Future<String?> nameFor(double latitude, double longitude);
+}
+
+/// The real [PlaceNamer] backed by the geocoding plugin (MIT, Baseflow).
+/// Never throws: any platform or network failure surfaces as `null` so the
+/// UI falls back to the localized "Device location" label.
+class GeocodingPlaceNamer implements PlaceNamer {
+  const GeocodingPlaceNamer();
+
+  @override
+  Future<String?> nameFor(double latitude, double longitude) async {
+    try {
+      final placemarks = await geocoding.Geocoding()
+          .placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isEmpty) return null;
+      final p = placemarks.first;
+      for (final candidate in [
+        p.locality,
+        p.subAdministrativeArea,
+        p.administrativeArea,
+        p.country,
+      ]) {
+        if (candidate != null && candidate.isNotEmpty) return candidate;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
 /// Permission and service-state queries for location, separated from
 /// [GpsReader] so tests can drive every denial path without a device.
 abstract class LocationPermissionGateway {
@@ -156,8 +192,9 @@ class LocationService extends ChangeNotifier {
 
   final GpsReader _gpsReader;
   final LocationPermissionGateway _permissionGateway;
+  final PlaceNamer _placeNamer;
 
-  LocationService._(this._gpsReader, this._permissionGateway);
+  LocationService._(this._gpsReader, this._permissionGateway, this._placeNamer);
 
   /// Loads the service, restoring any previously persisted location.
   /// A missing or malformed entry falls back to a `null` [current];
@@ -165,10 +202,12 @@ class LocationService extends ChangeNotifier {
   static Future<LocationService> load({
     GpsReader? gpsReader,
     LocationPermissionGateway? permissionGateway,
+    PlaceNamer? placeNamer,
   }) async {
     final service = LocationService._(
       gpsReader ?? const GeolocatorGpsReader(),
       permissionGateway ?? const GeolocatorPermissionGateway(),
+      placeNamer ?? const GeocodingPlaceNamer(),
     );
     await service._restorePersisted();
     return service;
@@ -254,6 +293,7 @@ class LocationService extends ChangeNotifier {
         latitude: position.$1,
         longitude: position.$2,
         isDevice: true,
+        placeName: await _resolvePlaceName(position.$1, position.$2),
       );
       await _persist(location);
       current = location;
@@ -304,6 +344,7 @@ class LocationService extends ChangeNotifier {
         latitude: position.$1,
         longitude: position.$2,
         isDevice: true,
+        placeName: await _resolvePlaceName(position.$1, position.$2),
       );
       await _persist(location);
       current = location;
@@ -313,5 +354,16 @@ class LocationService extends ChangeNotifier {
       errorMessage = 'Could not refresh the device location ($e).';
     }
     notifyListeners();
+  }
+
+  /// Reverse-geocodes a fix to a human place name. Never throws: any
+  /// failure (sync or async) yields `null` and the UI falls back to
+  /// "Device location".
+  Future<String?> _resolvePlaceName(double latitude, double longitude) async {
+    try {
+      return await _placeNamer.nameFor(latitude, longitude);
+    } catch (_) {
+      return null;
+    }
   }
 }

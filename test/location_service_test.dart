@@ -30,13 +30,30 @@ class FakePermissionGateway implements LocationPermissionGateway {
   Future<LocationPermissionState> requestPermission() async => requested;
 }
 
+/// Test double for [PlaceNamer]: returns a scripted place name (or `null`,
+/// or throws to simulate a geocoding failure).
+class FakePlaceNamer implements PlaceNamer {
+  String? placeName;
+  bool throws = false;
+
+  FakePlaceNamer([this.placeName]);
+
+  @override
+  Future<String?> nameFor(double latitude, double longitude) async {
+    if (throws) throw Exception('geocoding unavailable');
+    return placeName;
+  }
+}
+
 Future<LocationService> _loadService({
   FakeGpsReader? gpsReader,
   FakePermissionGateway? gateway,
+  FakePlaceNamer? placeNamer,
 }) {
   return LocationService.load(
     gpsReader: gpsReader ?? FakeGpsReader(),
     permissionGateway: gateway ?? FakePermissionGateway(),
+    placeNamer: placeNamer ?? FakePlaceNamer(),
   );
 }
 
@@ -190,6 +207,66 @@ void main() {
       expect(service.current?.name, 'Nouakchott');
       expect(service.current?.isDevice, isFalse);
     });
+
+    test('device fix reverse-geocodes a place name and persists it',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        placeNamer: FakePlaceNamer('Lahore'),
+      );
+      await service.useDeviceLocation();
+
+      expect(service.current?.placeName, 'Lahore');
+      expect(service.current?.displayName('Device location'), 'Lahore');
+
+      // The name survives a reload (cached in prefs with the coordinates).
+      final reloaded = await _loadService();
+      expect(reloaded.current?.placeName, 'Lahore');
+    });
+
+    test('geocoding failure falls back to the generic device label',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        placeNamer: FakePlaceNamer(null),
+      );
+      await service.useDeviceLocation();
+
+      expect(service.current?.placeName, isNull);
+      expect(service.current?.displayName('Device location'),
+          'Device location');
+    });
+
+    test('geocoding exception never breaks the device-location flow',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final namer = FakePlaceNamer()..throws = true;
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        placeNamer: namer,
+      );
+      await service.useDeviceLocation(); // must not throw
+
+      expect(service.current?.placeName, isNull);
+      expect(service.current?.latitude, 30.4418);
+    });
+
+    test('refresh updates the cached place name on a new fix', () async {
+      SharedPreferences.setMockInitialValues({});
+      final namer = FakePlaceNamer('Lahore');
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        placeNamer: namer,
+      );
+      await service.useDeviceLocation();
+      expect(service.current?.placeName, 'Lahore');
+
+      namer.placeName = 'Kasur';
+      await service.refreshDeviceLocation();
+      expect(service.current?.placeName, 'Kasur');
+    });
   });
 
   group('SavedLocation', () {
@@ -212,6 +289,41 @@ void main() {
         {'name': 'X', 'latitude': 1.0, 'longitude': 2.0},
       );
       expect(restored.isDevice, isFalse);
+    });
+
+    test('placeName round-trips and legacy JSON without it reads as null',
+        () {
+      const withPlace = SavedLocation(
+        name: 'Device location',
+        latitude: 30.44,
+        longitude: 73.75,
+        isDevice: true,
+        placeName: 'Lahore',
+      );
+      expect(SavedLocation.fromJson(withPlace.toJson()).placeName, 'Lahore');
+
+      final legacy = SavedLocation.fromJson({
+        'name': 'Device location',
+        'latitude': 30.44,
+        'longitude': 73.75,
+        'isDevice': true,
+      });
+      expect(legacy.placeName, isNull);
+      expect(legacy.displayName('Device location'), 'Device location');
+    });
+
+    test('displayName prefers placeName for device locations', () {
+      const device = SavedLocation(
+        name: 'Device location',
+        latitude: 30.44,
+        longitude: 73.75,
+        isDevice: true,
+        placeName: 'Lahore',
+      );
+      expect(device.displayName('آلے کا مقام'), 'Lahore');
+
+      const manual = SavedLocation(name: 'Fez', latitude: 34.03, longitude: -5.0);
+      expect(manual.displayName('Device location'), 'Fez');
     });
   });
 }

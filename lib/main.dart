@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
@@ -9,6 +10,7 @@ import 'package:malikiprayertimes/screens/monthly_screen.dart';
 import 'package:malikiprayertimes/screens/profiles_screen.dart';
 import 'package:malikiprayertimes/screens/qibla_screen.dart';
 import 'package:malikiprayertimes/screens/settings_screen.dart';
+import 'package:malikiprayertimes/screens/splash_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
@@ -16,11 +18,22 @@ import 'package:malikiprayertimes/utils/fonts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Immediate deep-green brand splash while the services load; replaced by
+  // the main app below. Widget tests pump MalikiPrayerTimesApp directly and
+  // never see this.
+  runApp(
+    const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+    ),
+  );
   final settings = await SettingsService.load();
   final location = await LocationService.load();
   final notifications = NotificationService(
     scheduler: PluginNotificationScheduler(),
   );
+  // Brief brand moment before the home screen takes over.
+  await Future<void>.delayed(const Duration(milliseconds: 1500));
   runApp(MalikiPrayerTimesApp(
     settings: settings,
     location: location,
@@ -90,6 +103,29 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     );
   }
 
+  /// Exit confirmation shown on the home tab's back press.
+  Future<void> _confirmExit(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final exit = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.exitAppTitle),
+        content: Text(l10n.exitAppMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.exitAppCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.exitAppExit),
+          ),
+        ],
+      ),
+    );
+    if (exit == true) await SystemNavigator.pop();
+  }
+
   /// The global top bar.
   ///
   /// Two zones: the brand block (mosque mark + "Maliki Prayer" wordmark +
@@ -105,7 +141,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     final loc = widget.location.current;
     final locationName = loc == null
         ? l10n.setLocation
-        : (loc.isDevice ? l10n.deviceLocationName : loc.name);
+        : loc.displayName(l10n.deviceLocationName);
     // Taller at large text scales: the brand block can wrap to two lines.
     final textScale = MediaQuery.textScalerOf(context).scale(1.0);
     return AppBar(
@@ -246,12 +282,22 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
             ),
           );
           // Widget tests pass no NotificationService: skip bootstrapping.
-          if (notifications == null) return scaffold;
+          // On the home tab the system back button asks for exit
+          // confirmation; pushed inner screens keep normal back navigation
+          // (the top route handles its own pop before this scope is reached).
+          final scoped = PopScope(
+            canPop: _index != 0,
+            onPopInvokedWithResult: (didPop, _) {
+              if (!didPop && _index == 0) _confirmExit(context);
+            },
+            child: scaffold,
+          );
+          if (notifications == null) return scoped;
           return _NotificationBootstrap(
             notifications: notifications,
             settings: widget.settings,
             location: widget.location,
-            child: scaffold,
+            child: scoped,
           );
         },
       ),
@@ -286,8 +332,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         ),
       2 => QiblaScreen(
           coordinates: coords,
-          locationName:
-              loc.isDevice ? l10n.deviceLocationName : loc.name,
+          locationName: loc.displayName(l10n.deviceLocationName),
           timeZoneOffset: offset,
           notifications: widget.notifications,
         ),
