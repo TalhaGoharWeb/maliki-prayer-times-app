@@ -53,3 +53,17 @@ directly before any release.**
 
 The calculation profile is PROPOSED — pending scholarly review. Nothing in
 this app is presented as scholar-reviewed.
+
+## Milestone 2 runtime dependencies
+
+- **geolocator** — MIT — Baseflow/flutter-geolocator
+  (https://github.com/Baseflow/flutter-geolocator) — used for device GPS
+  fixes. License verified 2026-10-15 via repo metadata and multiple
+  independent license listings (pub.dev, Medium ecosystem survey, GitHub
+  community proposals all list MIT).
+- **shared_preferences** — BSD-3-Clause — flutter/packages
+  (https://github.com/flutter/packages/tree/main/packages/shared_preferences/shared_preferences)
+  — used for settings and location persistence. License verified 2026-10-15
+  via multiple independent license listings (pub.dev metadata for
+  `shared_preferences_ios`, plus independent third-party attribution files
+  all listing BSD-3-Clause).
