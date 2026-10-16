@@ -565,5 +565,152 @@
   "footerNote": "توقیتِ مالکی — فعال حسابی پروفائل سے محسوب۔",
   "@footerNote": {
     "description": "Redesign 2026-10-15: footerNote"
+  },
+  "whySheetTitle": "یہ وقت کیوں؟",
+  "@whySheetTitle": {
+    "description": "Why-this-time sheet title"
+  },
+  "whySheetNote": "اس وقت کے پیچھے مالکی موقف، اس ایپ کے قواعد کے ریکارڈ سے۔",
+  "@whySheetNote": {
+    "description": "Why-this-time sheet provenance note"
+  },
+  "whyFajr": "صادق سے شروع ہوتی ہے؛ یہاں سورج کے افق سے 18 درجے نیچے ہونے پر اندازہ لگایا گیا ہے — یہ ایم ڈبلیو ایل 1986 کا طریقہ ہے۔",
+  "@whyFajr": {
+    "description": "Why-this-time body: Fajr (R-SUBH-01)"
+  },
+  "whySunrise": "طلوعِ آفتاب فجر کا وقت ختم کرتا ہے؛ یہ خود نماز کا وقت نہیں۔",
+  "@whySunrise": {
+    "description": "Why-this-time body: sunrise (R-SUBH-03)"
+  },
+  "whyDhuhr": "سورج کے زوال کے فوراً بعد شروع ہوتی ہے؛ ایک منٹ احتیاط کا اضافہ کیا گیا ہے۔",
+  "@whyDhuhr": {
+    "description": "Why-this-time body: Dhuhr (R-DHUHR-01)"
+  },
+  "whyAsr": "پہلی مثل پر شروع ہوتی ہے — جب سایہ اپنی چیز کے برابر ہو جائے، زوال کا سایہ نکال کر (مشہور مالکی موقف)؛ اس کا پسندیدہ وقت اصفرار یعنی سورج کے زرد ہونے پر ختم ہوتا ہے۔",
+  "@whyAsr": {
+    "description": "Why-this-time body: Asr (R-DHUHR-02, R-ASR-01)"
+  },
+  "whyMaghrib": "مکمل غروبِ آفتاب پر شروع ہوتی ہے؛ اس کا پسندیدہ (مختار) وقت تنگ ہے — تقریباً 15 سے 20 منٹ۔",
+  "@whyMaghrib": {
+    "description": "Why-this-time body: Maghrib (R-MAGHRIB-01, R-MAGHRIB-02)"
+  },
+  "whyIsha": "سرخ شفق کے غائب ہونے پر شروع ہوتی ہے، یہاں 17 درجے پر اندازہ لگایا گیا ہے؛ اس کا پسندیدہ وقت رات کے پہلے تہائی پر ختم ہوتا ہے۔",
+  "@whyIsha": {
+    "description": "Why-this-time body: Isha (R-ISHA-01, R-ISHA-02)"
+  },
+  "navQada": "قضا",
+  "@navQada": {
+    "description": "Bottom navigation: qada tab"
+  },
+  "qadaTitle": "قضا ٹریکر",
+  "@qadaTitle": {
+    "description": "Qada screen title"
+  },
+  "qadaLogMissed": "چھوٹی نماز درج کریں",
+  "@qadaLogMissed": {
+    "description": "Qada: log a missed prayer button"
+  },
+  "qadaMarkDone": "مکمل کریں",
+  "@qadaMarkDone": {
+    "description": "Qada: mark an entry done"
+  },
+  "qadaRemaining": "{count} باقی",
+  "@qadaRemaining": {
+    "description": "Qada: remaining count for one prayer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaTotalRemaining": "کل باقی: {count}",
+  "@qadaTotalRemaining": {
+    "description": "Qada: total remaining count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaEmpty": "کوئی چھوٹی نماز درج نہیں ہے۔ جب کوئی نماز چھوٹ جائے تو یہاں درج کریں۔",
+  "@qadaEmpty": {
+    "description": "Qada: empty state"
+  },
+  "qadaPickPrayer": "نماز",
+  "@qadaPickPrayer": {
+    "description": "Qada: prayer picker label"
+  },
+  "qadaPickDate": "تاریخ",
+  "@qadaPickDate": {
+    "description": "Qada: date picker label"
+  },
+  "qadaSave": "محفوظ کریں",
+  "@qadaSave": {
+    "description": "Qada: save button"
+  },
+  "qadaCancel": "منسوخ کریں",
+  "@qadaCancel": {
+    "description": "Qada: cancel button"
+  },
+  "qadaCompleted": "مکمل شدہ",
+  "@qadaCompleted": {
+    "description": "Qada: completed section header"
+  },
+  "qadaDelete": "حذف کریں",
+  "@qadaDelete": {
+    "description": "Qada: delete entry"
+  },
+  "travelTitle": "سفر کا موڈ",
+  "@travelTitle": {
+    "description": "Travel mode title"
+  },
+  "travelToggle": "میں سفر پر ہوں",
+  "@travelToggle": {
+    "description": "Travel mode toggle label"
+  },
+  "travelToggleDesc": "ظہر، عصر اور عشاء 2 رکعت پڑھیں (مالکی قصر)",
+  "@travelToggleDesc": {
+    "description": "Travel mode toggle description"
+  },
+  "travelQasrInfo": "سفر کے موڈ میں ظہر، عصر اور عشاء مالکی قواعد کے مطابق 2 رکعت پڑھی جاتی ہیں (قصر)۔ نماز کے اوقات نہیں بدلتے۔",
+  "@travelQasrInfo": {
+    "description": "Travel mode qasr explanation"
+  },
+  "travelJamNote": "جمع: مالکی مذہب میں صرف پہلے وقت میں جمع کرنا جائز ہے (جمع تقدیم) — بارش، بیماری یا سفر کے لیے۔",
+  "@travelJamNote": {
+    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+  },
+  "travelDistanceNote": "مالکی مذہب میں سفر کی مسافت چار برید ہے — تقریباً 80 کلومیٹر۔ یہ اندازہ ہے۔",
+  "@travelDistanceNote": {
+    "description": "Travel distance note (four barid, approximate)"
+  },
+  "travelSuggestion": "آپ گھر سے تقریباً {km} کلومیٹر دور معلوم ہوتے ہیں۔ سفر کا موڈ چالو کریں؟",
+  "@travelSuggestion": {
+    "description": "Travel auto-suggest prompt",
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "travelBanner": "سفر کا موڈ: ظہر، عصر، عشاء 2 رکعت",
+  "@travelBanner": {
+    "description": "Travel mode home banner"
+  },
+  "travelEnable": "چالو کریں",
+  "@travelEnable": {
+    "description": "Travel suggestion: enable button"
+  },
+  "travelDismiss": "بند کریں",
+  "@travelDismiss": {
+    "description": "Travel suggestion: dismiss button"
+  },
+  "shareTimetable": "ٹائم ٹیبل شیئر کریں",
+  "@shareTimetable": {
+    "description": "Monthly: share timetable button"
+  },
+  "shareSubject": "نماز کا ٹائم ٹیبل",
+  "@shareSubject": {
+    "description": "Share sheet subject"
   }
 }

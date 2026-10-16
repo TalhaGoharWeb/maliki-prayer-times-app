@@ -1146,5 +1146,152 @@
   "footerNote": "Tawqīt Maliki — computed from the active calculation profile.",
   "@footerNote": {
     "description": "Redesign 2026-10-15: footerNote"
+  },
+  "whySheetTitle": "Why this time?",
+  "@whySheetTitle": {
+    "description": "Why-this-time sheet title"
+  },
+  "whySheetNote": "The Maliki position behind this time, from this app's rule registry.",
+  "@whySheetNote": {
+    "description": "Why-this-time sheet provenance note"
+  },
+  "whyFajr": "Begins at true dawn (al-fajr al-sadiq), estimated here at the sun reaching 18° below the horizon — the MWL 1986 convention used across West Africa.",
+  "@whyFajr": {
+    "description": "Why-this-time body: Fajr (R-SUBH-01)"
+  },
+  "whySunrise": "Sunrise ends the Fajr window. It is not a prayer time itself.",
+  "@whySunrise": {
+    "description": "Why-this-time body: sunrise (R-SUBH-03)"
+  },
+  "whyDhuhr": "Begins just after the sun passes its zenith (zawal). A 1-minute caution (ihtiyat) is added.",
+  "@whyDhuhr": {
+    "description": "Why-this-time body: Dhuhr (R-DHUHR-01)"
+  },
+  "whyAsr": "Begins at the first mithl — when a shadow equals its object's length, excluding the noon shadow (the mashhur Maliki position). Its preferred time ends at isfirar, the yellowing of the sun.",
+  "@whyAsr": {
+    "description": "Why-this-time body: Asr (R-DHUHR-02, R-ASR-01)"
+  },
+  "whyMaghrib": "Begins at complete sunset. Its preferred (mukhtar) window is narrow — about 15–20 minutes, the time needed to pray once its conditions are met.",
+  "@whyMaghrib": {
+    "description": "Why-this-time body: Maghrib (R-MAGHRIB-01, R-MAGHRIB-02)"
+  },
+  "whyIsha": "Begins at the disappearance of the red twilight (al-shafaq al-ahmar), estimated at 17° here. Its preferred time ends at the first third of the night.",
+  "@whyIsha": {
+    "description": "Why-this-time body: Isha (R-ISHA-01, R-ISHA-02)"
+  },
+  "navQada": "Qada",
+  "@navQada": {
+    "description": "Bottom navigation: qada tab"
+  },
+  "qadaTitle": "Qada tracker",
+  "@qadaTitle": {
+    "description": "Qada screen title"
+  },
+  "qadaLogMissed": "Log missed prayer",
+  "@qadaLogMissed": {
+    "description": "Qada: log a missed prayer button"
+  },
+  "qadaMarkDone": "Mark done",
+  "@qadaMarkDone": {
+    "description": "Qada: mark an entry done"
+  },
+  "qadaRemaining": "{count} remaining",
+  "@qadaRemaining": {
+    "description": "Qada: remaining count for one prayer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaTotalRemaining": "Total remaining: {count}",
+  "@qadaTotalRemaining": {
+    "description": "Qada: total remaining count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaEmpty": "No missed prayers logged. When you miss a prayer, log it here.",
+  "@qadaEmpty": {
+    "description": "Qada: empty state"
+  },
+  "qadaPickPrayer": "Prayer",
+  "@qadaPickPrayer": {
+    "description": "Qada: prayer picker label"
+  },
+  "qadaPickDate": "Date",
+  "@qadaPickDate": {
+    "description": "Qada: date picker label"
+  },
+  "qadaSave": "Save",
+  "@qadaSave": {
+    "description": "Qada: save button"
+  },
+  "qadaCancel": "Cancel",
+  "@qadaCancel": {
+    "description": "Qada: cancel button"
+  },
+  "qadaCompleted": "Completed",
+  "@qadaCompleted": {
+    "description": "Qada: completed section header"
+  },
+  "qadaDelete": "Delete",
+  "@qadaDelete": {
+    "description": "Qada: delete entry"
+  },
+  "travelTitle": "Travel mode",
+  "@travelTitle": {
+    "description": "Travel mode title"
+  },
+  "travelToggle": "I am travelling",
+  "@travelToggle": {
+    "description": "Travel mode toggle label"
+  },
+  "travelToggleDesc": "Shorten Dhuhr, Asr and Isha to 2 rak'ahs (Maliki qasr)",
+  "@travelToggleDesc": {
+    "description": "Travel mode toggle description"
+  },
+  "travelQasrInfo": "In travel mode, Dhuhr, Asr and Isha are shortened to 2 rak'ahs (qasr) under Maliki rules. Prayer times do not change.",
+  "@travelQasrInfo": {
+    "description": "Travel mode qasr explanation"
+  },
+  "travelJamNote": "Combining (jam'): the Maliki school permits joining at the earlier time only (jam' taqdim) — for rain, illness or travel.",
+  "@travelJamNote": {
+    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+  },
+  "travelDistanceNote": "The Maliki travel distance is four barid — about 80 km. This is an approximation; the classical measure is in barid, not kilometres.",
+  "@travelDistanceNote": {
+    "description": "Travel distance note (four barid, approximate)"
+  },
+  "travelSuggestion": "You seem to be about {km} km from home. Enable travel mode?",
+  "@travelSuggestion": {
+    "description": "Travel auto-suggest prompt",
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "travelBanner": "Travel mode: Dhuhr, Asr, Isha are 2 rak'ahs",
+  "@travelBanner": {
+    "description": "Travel mode home banner"
+  },
+  "travelEnable": "Enable",
+  "@travelEnable": {
+    "description": "Travel suggestion: enable button"
+  },
+  "travelDismiss": "Dismiss",
+  "@travelDismiss": {
+    "description": "Travel suggestion: dismiss button"
+  },
+  "shareTimetable": "Share timetable",
+  "@shareTimetable": {
+    "description": "Monthly: share timetable button"
+  },
+  "shareSubject": "Prayer timetable",
+  "@shareSubject": {
+    "description": "Share sheet subject"
   }
 }

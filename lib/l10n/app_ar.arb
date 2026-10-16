@@ -565,5 +565,152 @@
   "footerNote": "توقيت مالكي — محسوب من ملف الحساب النشط.",
   "@footerNote": {
     "description": "Redesign 2026-10-15: footerNote"
+  },
+  "whySheetTitle": "لماذا هذا الوقت؟",
+  "@whySheetTitle": {
+    "description": "Why-this-time sheet title"
+  },
+  "whySheetNote": "الموقف المالكي وراء هذا الوقت، من سجلّ القواعد في هذا التطبيق.",
+  "@whySheetNote": {
+    "description": "Why-this-time sheet provenance note"
+  },
+  "whyFajr": "يبدأ عند الفجر الصادق، ويقدَّر هنا ببلوغ الشمس 18 درجة تحت الأفق — وهي طريقة المجمع الفقهي 1986.",
+  "@whyFajr": {
+    "description": "Why-this-time body: Fajr (R-SUBH-01)"
+  },
+  "whySunrise": "الشروق ينهي وقت الفجر، وليس وقت صلاة بذاته.",
+  "@whySunrise": {
+    "description": "Why-this-time body: sunrise (R-SUBH-03)"
+  },
+  "whyDhuhr": "يبدأ بعد زوال الشمس مباشرة، مع إضافة دقيقة احتياط.",
+  "@whyDhuhr": {
+    "description": "Why-this-time body: Dhuhr (R-DHUHR-01)"
+  },
+  "whyAsr": "يبدأ عند المثل الأول — حين يساوي الظل طول الشيء دون ظل الزوال (المشهور عند المالكية)، وينتهي وقته المختار عند الاصفرار.",
+  "@whyAsr": {
+    "description": "Why-this-time body: Asr (R-DHUHR-02, R-ASR-01)"
+  },
+  "whyMaghrib": "يبدأ عند الغروب الكامل، ووقته المختار ضيق — نحو 15 إلى 20 دقيقة.",
+  "@whyMaghrib": {
+    "description": "Why-this-time body: Maghrib (R-MAGHRIB-01, R-MAGHRIB-02)"
+  },
+  "whyIsha": "يبدأ عند غروب الشفق الأحمر، ويقدَّر هنا بـ17 درجة، وينتهي وقته المختار عند الثلث الأول من الليل.",
+  "@whyIsha": {
+    "description": "Why-this-time body: Isha (R-ISHA-01, R-ISHA-02)"
+  },
+  "navQada": "القضاء",
+  "@navQada": {
+    "description": "Bottom navigation: qada tab"
+  },
+  "qadaTitle": "متابعة القضاء",
+  "@qadaTitle": {
+    "description": "Qada screen title"
+  },
+  "qadaLogMissed": "تسجيل صلاة فائتة",
+  "@qadaLogMissed": {
+    "description": "Qada: log a missed prayer button"
+  },
+  "qadaMarkDone": "تعليم كمكتملة",
+  "@qadaMarkDone": {
+    "description": "Qada: mark an entry done"
+  },
+  "qadaRemaining": "{count} متبقية",
+  "@qadaRemaining": {
+    "description": "Qada: remaining count for one prayer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaTotalRemaining": "المجموع المتبقي: {count}",
+  "@qadaTotalRemaining": {
+    "description": "Qada: total remaining count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaEmpty": "لا توجد صلوات فائتة مسجلة.",
+  "@qadaEmpty": {
+    "description": "Qada: empty state"
+  },
+  "qadaPickPrayer": "الصلاة",
+  "@qadaPickPrayer": {
+    "description": "Qada: prayer picker label"
+  },
+  "qadaPickDate": "التاريخ",
+  "@qadaPickDate": {
+    "description": "Qada: date picker label"
+  },
+  "qadaSave": "حفظ",
+  "@qadaSave": {
+    "description": "Qada: save button"
+  },
+  "qadaCancel": "إلغاء",
+  "@qadaCancel": {
+    "description": "Qada: cancel button"
+  },
+  "qadaCompleted": "مكتملة",
+  "@qadaCompleted": {
+    "description": "Qada: completed section header"
+  },
+  "qadaDelete": "حذف",
+  "@qadaDelete": {
+    "description": "Qada: delete entry"
+  },
+  "travelTitle": "وضع السفر",
+  "@travelTitle": {
+    "description": "Travel mode title"
+  },
+  "travelToggle": "أنا مسافر",
+  "@travelToggle": {
+    "description": "Travel mode toggle label"
+  },
+  "travelToggleDesc": "قصْر الظهر والعصر والعشاء إلى ركعتين",
+  "@travelToggleDesc": {
+    "description": "Travel mode toggle description"
+  },
+  "travelQasrInfo": "في وضع السفر تُقصَر الظهر والعصر والعشاء إلى ركعتين وفق القواعد المالكية، ولا تتغير مواقيت الصلاة.",
+  "@travelQasrInfo": {
+    "description": "Travel mode qasr explanation"
+  },
+  "travelJamNote": "الجمع عند المالكية جمع تقديم فقط — للمطر أو المرض أو السفر.",
+  "@travelJamNote": {
+    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+  },
+  "travelDistanceNote": "مسافة السفر عند المالكية أربعة بُرُد — نحو 80 كم، وهذا تقدير تقريبي.",
+  "@travelDistanceNote": {
+    "description": "Travel distance note (four barid, approximate)"
+  },
+  "travelSuggestion": "يبدو أنك على بعد {km} كم من المنزل. تفعيل وضع السفر؟",
+  "@travelSuggestion": {
+    "description": "Travel auto-suggest prompt",
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "travelBanner": "وضع السفر: الظهر والعصر والعشاء ركعتان",
+  "@travelBanner": {
+    "description": "Travel mode home banner"
+  },
+  "travelEnable": "تفعيل",
+  "@travelEnable": {
+    "description": "Travel suggestion: enable button"
+  },
+  "travelDismiss": "إغلاق",
+  "@travelDismiss": {
+    "description": "Travel suggestion: dismiss button"
+  },
+  "shareTimetable": "مشاركة الجدول",
+  "@shareTimetable": {
+    "description": "Monthly: share timetable button"
+  },
+  "shareSubject": "جدول صلوات الشهر",
+  "@shareSubject": {
+    "description": "Share sheet subject"
   }
 }

@@ -192,3 +192,15 @@ copyleft, no proprietary terms, LICENSE files present and read).
   BSD-3-Clause text. Passed the license gate (permissive, no copyleft).
 - **Use:** opens the update download URL (release APK asset or release page)
   in the external browser from Settings → Check for updates.
+
+## share_plus (monthly timetable sharing)
+
+- **Package:** share_plus 13.3.1 —
+  https://github.com/fluttercommunity/plus_plugins
+- **License:** BSD-3-Clause ("Copyright 2017, the Flutter project authors").
+  Verified 2026-10-16 by reading the LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/share_plus-13.3.1/LICENSE`): full
+  BSD-3-Clause text. Passed the license gate (permissive, no copyleft).
+- **Use:** opens the platform share sheet to share the monthly timetable
+  image rendered from the Monthly screen. Sharing is wrapped in an
+  injectable function so widget tests never touch platform channels.

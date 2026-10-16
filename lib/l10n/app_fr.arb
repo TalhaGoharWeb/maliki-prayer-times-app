@@ -565,5 +565,152 @@
   "footerNote": "Tawqīt malikite — calculé d’après le profil de calcul actif.",
   "@footerNote": {
     "description": "Redesign 2026-10-15: footerNote"
+  },
+  "whySheetTitle": "Pourquoi cette heure ?",
+  "@whySheetTitle": {
+    "description": "Why-this-time sheet title"
+  },
+  "whySheetNote": "La position malikite derrière cette heure, d'après le registre des règles de l'application.",
+  "@whySheetNote": {
+    "description": "Why-this-time sheet provenance note"
+  },
+  "whyFajr": "Commence à l'aube vraie, estimée ici à 18° sous l'horizon — la convention MWL 1986.",
+  "@whyFajr": {
+    "description": "Why-this-time body: Fajr (R-SUBH-01)"
+  },
+  "whySunrise": "Le lever du soleil termine le temps de Fajr ; ce n'est pas une heure de prière.",
+  "@whySunrise": {
+    "description": "Why-this-time body: sunrise (R-SUBH-03)"
+  },
+  "whyDhuhr": "Commence juste après le zénith solaire (zawal), avec une minute de précaution (ihtiyat).",
+  "@whyDhuhr": {
+    "description": "Why-this-time body: Dhuhr (R-DHUHR-01)"
+  },
+  "whyAsr": "Commence au premier mithl — quand l'ombre égale la taille de l'objet, hors ombre de midi (position malikite la plus connue). Son temps préféré finit à l'isfirar.",
+  "@whyAsr": {
+    "description": "Why-this-time body: Asr (R-DHUHR-02, R-ASR-01)"
+  },
+  "whyMaghrib": "Commence au coucher complet du soleil. Sa fenêtre préférée (mukhtar) est étroite — environ 15 à 20 minutes.",
+  "@whyMaghrib": {
+    "description": "Why-this-time body: Maghrib (R-MAGHRIB-01, R-MAGHRIB-02)"
+  },
+  "whyIsha": "Commence à la disparition du crépuscule rouge, estimée ici à 17°. Son temps préféré finit au premier tiers de la nuit.",
+  "@whyIsha": {
+    "description": "Why-this-time body: Isha (R-ISHA-01, R-ISHA-02)"
+  },
+  "navQada": "Qada",
+  "@navQada": {
+    "description": "Bottom navigation: qada tab"
+  },
+  "qadaTitle": "Suivi du qada",
+  "@qadaTitle": {
+    "description": "Qada screen title"
+  },
+  "qadaLogMissed": "Noter une prière manquée",
+  "@qadaLogMissed": {
+    "description": "Qada: log a missed prayer button"
+  },
+  "qadaMarkDone": "Marquer comme faite",
+  "@qadaMarkDone": {
+    "description": "Qada: mark an entry done"
+  },
+  "qadaRemaining": "{count} restantes",
+  "@qadaRemaining": {
+    "description": "Qada: remaining count for one prayer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaTotalRemaining": "Total restant : {count}",
+  "@qadaTotalRemaining": {
+    "description": "Qada: total remaining count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qadaEmpty": "Aucune prière manquée enregistrée.",
+  "@qadaEmpty": {
+    "description": "Qada: empty state"
+  },
+  "qadaPickPrayer": "Prière",
+  "@qadaPickPrayer": {
+    "description": "Qada: prayer picker label"
+  },
+  "qadaPickDate": "Date",
+  "@qadaPickDate": {
+    "description": "Qada: date picker label"
+  },
+  "qadaSave": "Enregistrer",
+  "@qadaSave": {
+    "description": "Qada: save button"
+  },
+  "qadaCancel": "Annuler",
+  "@qadaCancel": {
+    "description": "Qada: cancel button"
+  },
+  "qadaCompleted": "Terminées",
+  "@qadaCompleted": {
+    "description": "Qada: completed section header"
+  },
+  "qadaDelete": "Supprimer",
+  "@qadaDelete": {
+    "description": "Qada: delete entry"
+  },
+  "travelTitle": "Mode voyage",
+  "@travelTitle": {
+    "description": "Travel mode title"
+  },
+  "travelToggle": "Je suis en voyage",
+  "@travelToggle": {
+    "description": "Travel mode toggle label"
+  },
+  "travelToggleDesc": "Raccourcir Dhuhr, Asr et Isha à 2 rak'ahs (qasr malikite)",
+  "@travelToggleDesc": {
+    "description": "Travel mode toggle description"
+  },
+  "travelQasrInfo": "En mode voyage, Dhuhr, Asr et Isha se prient en 2 rak'ahs (qasr) selon les règles malikites. Les horaires ne changent pas.",
+  "@travelQasrInfo": {
+    "description": "Travel mode qasr explanation"
+  },
+  "travelJamNote": "Le regroupement (jam') : l'école malikite ne permet que le jam' taqdim — pour la pluie, la maladie ou le voyage.",
+  "@travelJamNote": {
+    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+  },
+  "travelDistanceNote": "La distance de voyage malikite est de quatre barid — environ 80 km (approximation).",
+  "@travelDistanceNote": {
+    "description": "Travel distance note (four barid, approximate)"
+  },
+  "travelSuggestion": "Vous semblez à environ {km} km de chez vous. Activer le mode voyage ?",
+  "@travelSuggestion": {
+    "description": "Travel auto-suggest prompt",
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "travelBanner": "Mode voyage : Dhuhr, Asr, Isha en 2 rak'ahs",
+  "@travelBanner": {
+    "description": "Travel mode home banner"
+  },
+  "travelEnable": "Activer",
+  "@travelEnable": {
+    "description": "Travel suggestion: enable button"
+  },
+  "travelDismiss": "Fermer",
+  "@travelDismiss": {
+    "description": "Travel suggestion: dismiss button"
+  },
+  "shareTimetable": "Partager l'horaire",
+  "@shareTimetable": {
+    "description": "Monthly: share timetable button"
+  },
+  "shareSubject": "Horaire des prières",
+  "@shareSubject": {
+    "description": "Share sheet subject"
   }
 }
