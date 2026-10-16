@@ -10,8 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter" alt="Flutter 3.47.5" />
-  <img src="https://img.shields.io/badge/tests-159%2F159-brightgreen" alt="159/159 tests" />
-  <img src="https://img.shields.io/badge/version-1.1.1%2B3-blue" alt="v1.1.1+3" />
+  <img src="https://img.shields.io/badge/tests-189%2F189-brightgreen" alt="189/189 tests" />
+  <img src="https://img.shields.io/badge/version-1.1.2%2B4-blue" alt="v1.1.2+4" />
   <img src="https://img.shields.io/badge/offline-first-success" alt="offline-first" />
   <img src="https://img.shields.io/badge/license-see%20ATTRIBUTION.md-lightgrey" alt="licenses" />
 </p>
@@ -92,7 +92,7 @@ lib/
 ├── screens/       # home, monthly, qibla, profiles, location, settings, splash
 ├── services/      # location, notifications, compass, update check, settings
 └── utils/         # Hijri dates, qibla math, solar scan, fonts, digits
-test/              # 159 widget + unit tests
+test/              # 189 widget + unit tests
 ```
 
 ## Getting started
@@ -102,7 +102,7 @@ test/              # 159 widget + unit tests
 flutter pub get
 flutter gen-l10n
 flutter analyze        # must be clean
-flutter test           # 159/159 green
+flutter test           # 189/189 green
 
 # Android
 flutter build apk --release
@@ -141,7 +141,7 @@ Developers and scholars are both welcome — this app gets better when code and 
 ### Developers
 
 - Fork the repo, branch from `master`, and open a pull request with a clear description.
-- `flutter analyze` must be clean and the full test suite green (`flutter test` — 159 tests).
+- `flutter analyze` must be clean and the full test suite green (`flutter test` — 189 tests).
 - Match the repo's hand code style — do **not** run bare `dart format` (read-only check:
   `dart format --output=none --set-exit-if-changed`).
 - Every new dependency must be license-checked **before** adoption (permissive only:
