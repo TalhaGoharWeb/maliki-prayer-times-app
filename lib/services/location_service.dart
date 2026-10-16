@@ -253,6 +253,18 @@ class LocationService extends ChangeNotifier {
     await prefs.setString(storageKey, jsonEncode(location.toJson()));
   }
 
+  /// One-shot device position for the travel-mode auto-suggest. Returns null
+  /// when permission is not already granted or the service is off — this
+  /// never triggers a permission prompt.
+  Future<(double, double)?> currentPositionIfPermitted() async {
+    if (await _permissionGateway.checkPermission() !=
+        LocationPermissionState.granted) {
+      return null;
+    }
+    if (!await _permissionGateway.isLocationServiceEnabled()) return null;
+    return _gpsReader.readPosition();
+  }
+
   /// Runs the device-location flow: checks the location service, asks for
   /// permission when needed, then reads one GPS fix and persists it as the
   /// current location. Never throws; on any failure it records

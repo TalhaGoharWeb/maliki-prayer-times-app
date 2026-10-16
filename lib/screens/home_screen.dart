@@ -11,10 +11,13 @@ import 'package:malikiprayertimes/screens/location_screen.dart';
 import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
+import 'package:malikiprayertimes/widgets/travel_banner.dart';
+import 'package:malikiprayertimes/widgets/why_time_sheet.dart';
 
 /// Home tab: today's timetable with a next-prayer hero, the Maliki two-tier
 /// bands, and the calculation-profile status.
@@ -30,7 +33,15 @@ class HomeScreen extends StatefulWidget {
   final SettingsService settings;
   final LocationService location;
 
-  const HomeScreen({super.key, required this.settings, required this.location});
+  /// Travel mode (Maliki qasr) state for the travel banner. Null in widget
+  /// tests; when null the banner stays hidden.
+  final TravelService? travel;
+
+  const HomeScreen(
+      {super.key,
+      required this.settings,
+      required this.location,
+      this.travel});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -264,6 +275,11 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: _openLocationScreen,
         ),
         const SizedBox(height: 12),
+        // Travel mode banner (Maliki qasr): visible only when enabled.
+        if (widget.travel?.isEnabled == true) ...[
+          const TravelBanner(),
+          const SizedBox(height: 12),
+        ],
         // Hijri date line (tabular calendar, approximate).
         Row(
           children: [
@@ -313,13 +329,19 @@ class _HomeScreenState extends State<HomeScreen> {
           final isNext = row.prayer == next.prayer;
           final time = settings.adjustedTime(
               row.prayer, times.timeFor(row.prayer));
+          final timeLabel = formatPrayerTime(time, lang);
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: _PrayerRowCard(
               row: row,
-              time: formatPrayerTime(time, lang),
+              time: timeLabel,
               isNext: isNext,
               nextBadge: l10n.nextPrayerBadge,
+              onTap: () => showWhyTimeSheet(
+                context: context,
+                prayer: row.prayer,
+                timeLabel: timeLabel,
+              ),
             ),
           );
         }),
@@ -642,12 +664,14 @@ class _PrayerRowCard extends StatelessWidget {
   final String time;
   final bool isNext;
   final String nextBadge;
+  final VoidCallback? onTap;
 
   const _PrayerRowCard({
     required this.row,
     required this.time,
     required this.isNext,
     required this.nextBadge,
+    this.onTap,
   });
 
   @override
@@ -661,111 +685,115 @@ class _PrayerRowCard extends StatelessWidget {
 
     return Card(
       color: highlighted ? scheme.primaryContainer : null,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: highlighted
-                    ? scheme.primary
-                    : scheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: highlighted
+                      ? scheme.primary
+                      : scheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  row.icon,
+                  size: 22,
+                  color: highlighted
+                      ? scheme.onPrimary
+                      : scheme.onSecondaryContainer,
+                ),
               ),
-              child: Icon(
-                row.icon,
-                size: 22,
-                color: highlighted
-                    ? scheme.onPrimary
-                    : scheme.onSecondaryContainer,
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Name, badge and time form one tight cluster: the time sits
-            // adjacent to the name instead of being stranded at the far
-            // edge by an expanding spacer (user feedback on the Urdu home
-            // screen). Loose flexibles shrink-wrap; the time's FittedBox
-            // is leading-aligned so it hugs the name in both LTR and RTL.
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: Text(
-                          row.label,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: fg,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (!omitArabicCompanion(context)) ...[
-                        const SizedBox(width: 8),
+              const SizedBox(width: 12),
+              // Name, badge and time form one tight cluster: the time sits
+              // adjacent to the name instead of being stranded at the far
+              // edge by an expanding spacer (user feedback on the Urdu home
+              // screen). Loose flexibles shrink-wrap; the time's FittedBox
+              // is leading-aligned so it hugs the name in both LTR and RTL.
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
                         Flexible(
                           fit: FlexFit.loose,
                           child: Text(
-                            row.arabic,
-                            style: TextStyle(
-                              fontFamily: AppFonts.arabic,
-                              fontSize: 15,
-                              color: sub,
+                            row.label,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: fg,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ],
-                      if (highlighted) ...[
-                        const SizedBox(width: 8),
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: scheme.tertiaryFixed,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                        if (!omitArabicCompanion(context)) ...[
+                          const SizedBox(width: 8),
+                          Flexible(
+                            fit: FlexFit.loose,
                             child: Text(
-                              nextBadge,
-                              style: AppFonts.badgeLabel(context).copyWith(
-                                color: scheme.onTertiaryFixed,
+                              row.arabic,
+                              style: TextStyle(
+                                fontFamily: AppFonts.arabic,
+                                fontSize: 15,
+                                color: sub,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
-                      ],
-                      const SizedBox(width: 10),
-                      // Shrink-to-fit: the readout scales down instead of
-                      // pushing the row into overflow at large text sizes.
-                      Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: AlignmentDirectional.centerStart,
-                          child: Text(
-                            time,
-                            style: AppFonts.timeLabel(context)
-                                .copyWith(color: fg),
+                        ],
+                        if (highlighted) ...[
+                          const SizedBox(width: 8),
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: scheme.tertiaryFixed,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                nextBadge,
+                                style: AppFonts.badgeLabel(context).copyWith(
+                                  color: scheme.onTertiaryFixed,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(width: 10),
+                        // Shrink-to-fit: the readout scales down instead of
+                        // pushing the row into overflow at large text sizes.
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(
+                              time,
+                              style: AppFonts.timeLabel(context)
+                                  .copyWith(color: fg),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    row.descriptor,
-                    style: theme.textTheme.bodySmall?.copyWith(color: sub),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      row.descriptor,
+                      style: theme.textTheme.bodySmall?.copyWith(color: sub),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

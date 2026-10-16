@@ -7,6 +7,7 @@ import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/band_texts.dart';
 import 'package:malikiprayertimes/screens/date_labels.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timetable_share.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
@@ -57,6 +58,10 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
   /// The map getter returns a fresh copy each call, so identity comparison
   /// can't detect a change — [didUpdateWidget] deep-compares against this.
   late Map<Prayer, int> _appliedAdjustments;
+
+  /// Keys the [RepaintBoundary] around the timetable grid so the grid can
+  /// be captured to a PNG for sharing.
+  final _timetableKey = GlobalKey();
 
   @override
   void initState() {
@@ -504,6 +509,20 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                         tooltip: l10n.nextMonth,
                         onPressed: () => _shiftMonth(1),
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.share_outlined),
+                        tooltip: l10n.shareTimetable,
+                        onPressed: () async {
+                          final png = await renderTimetablePng(_timetableKey);
+                          if (png != null && context.mounted) {
+                            await shareTimetable(
+                              pngBytes: png,
+                              fileName: 'timetable.png',
+                              subject: l10n.shareSubject,
+                            );
+                          }
+                        },
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -569,114 +588,117 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
           ),
         ),
         Expanded(
-          child: GridView.builder(
-            // Horizontal padding + spacing sized so a day cell is at
-            // least 48dp wide on a 360dp phone:
-            // (360 - 6 - 6 - 6*2) / 7 = 48.
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 6,
-              crossAxisSpacing: 2,
-              childAspectRatio: 0.72 / textScale,
-            ),
-            itemCount: leadingBlanks + _daysInMonth,
-            itemBuilder: (context, index) {
-              if (index < leadingBlanks) {
-                return const SizedBox.shrink();
-              }
-              final day = index - leadingBlanks + 1;
-              final times = _days[day - 1];
-              final today = DateTime.now();
-              final isToday = today.year == _year &&
-                  today.month == _month &&
-                  today.day == day;
-              // Today gets the filled primary treatment so it is
-              // unmistakable; other days stay quiet.
-              final dayFg = isToday ? scheme.onPrimary : scheme.onSurface;
-              final timeFg =
-                  isToday ? scheme.onPrimary : scheme.onSurfaceVariant;
-              // The estimated marker sits on the plain day-cell surface, so
-              // it needs the darker gold-brown onTertiaryFixedVariant
-              // (#5B4301, ~8:1) — onTertiaryContainer (#CEAC63) was only
-              // 2.06:1 and failed WCAG AA.
-              final markerFg =
-                  isToday ? scheme.onPrimary : scheme.onTertiaryFixedVariant;
-              // One clean announcement per day cell ("15 October 2026")
-              // instead of the raw day-number + time fragments; the cell
-              // is a button that opens the day's detail sheet.
-              return Semantics(
-                button: true,
-                label: materialL10n.formatFullDate(
-                  DateTime(_year, _month, day),
-                ),
-                excludeSemantics: true,
-                child: _DayCellMaterial(
-                  isToday: isToday,
-                  scheme: scheme,
-                  onTap: () => _showDaySheet(day),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Shrink-to-fit: at very large text sizes on
-                          // narrow phones the day number must not push
-                          // the row (or the column) into overflow.
-                          Flexible(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: AlignmentDirectional.centerStart,
-                              child: Text(
-                                localizeDigits('$day', lang),
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  color: dayFg,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (times.highLatitudeFallback)
+          child: RepaintBoundary(
+            key: _timetableKey,
+            child: GridView.builder(
+              // Horizontal padding + spacing sized so a day cell is at
+              // least 48dp wide on a 360dp phone:
+              // (360 - 6 - 6 - 6*2) / 7 = 48.
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                mainAxisSpacing: 6,
+                crossAxisSpacing: 2,
+                childAspectRatio: 0.72 / textScale,
+              ),
+              itemCount: leadingBlanks + _daysInMonth,
+              itemBuilder: (context, index) {
+                if (index < leadingBlanks) {
+                  return const SizedBox.shrink();
+                }
+                final day = index - leadingBlanks + 1;
+                final times = _days[day - 1];
+                final today = DateTime.now();
+                final isToday = today.year == _year &&
+                    today.month == _month &&
+                    today.day == day;
+                // Today gets the filled primary treatment so it is
+                // unmistakable; other days stay quiet.
+                final dayFg = isToday ? scheme.onPrimary : scheme.onSurface;
+                final timeFg =
+                    isToday ? scheme.onPrimary : scheme.onSurfaceVariant;
+                // The estimated marker sits on the plain day-cell surface, so
+                // it needs the darker gold-brown onTertiaryFixedVariant
+                // (#5B4301, ~8:1) — onTertiaryContainer (#CEAC63) was only
+                // 2.06:1 and failed WCAG AA.
+                final markerFg =
+                    isToday ? scheme.onPrimary : scheme.onTertiaryFixedVariant;
+                // One clean announcement per day cell ("15 October 2026")
+                // instead of the raw day-number + time fragments; the cell
+                // is a button that opens the day's detail sheet.
+                return Semantics(
+                  button: true,
+                  label: materialL10n.formatFullDate(
+                    DateTime(_year, _month, day),
+                  ),
+                  excludeSemantics: true,
+                  child: _DayCellMaterial(
+                    isToday: isToday,
+                    scheme: scheme,
+                    onTap: () => _showDaySheet(day),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Shrink-to-fit: at very large text sizes on
+                            // narrow phones the day number must not push
+                            // the row (or the column) into overflow.
                             Flexible(
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: Tooltip(
-                                  message: l10n.estimatedTooltip,
-                                  child: Text(
-                                    l10n.estimatedMarker,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: markerFg,
-                                    ),
+                                alignment: AlignmentDirectional.centerStart,
+                                child: Text(
+                                  localizeDigits('$day', lang),
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: dayFg,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
                             ),
-                        ],
-                      ),
-                      const Spacer(),
-                      // Single-line shrink-to-fit time labels: on a
-                      // 7-column grid the labels must never wrap into
-                      // extra lines (or overflow) at large text scales.
-                      // Full-size times remain one tap away in the day
-                      // detail sheet.
-                      _CellTime(
-                        text: l10n.dayCellFajr(localizeDigits(
-                            _hhmm(_adjusted(Prayer.fajr, times.fajr)), lang)),
-                        color: timeFg,
-                      ),
-                      _CellTime(
-                        text: l10n.dayCellMaghrib(localizeDigits(
-                            _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
-                            lang)),
-                        color: timeFg,
-                      ),
-                    ],
+                            if (times.highLatitudeFallback)
+                              Flexible(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: Tooltip(
+                                    message: l10n.estimatedTooltip,
+                                    child: Text(
+                                      l10n.estimatedMarker,
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: markerFg,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const Spacer(),
+                        // Single-line shrink-to-fit time labels: on a
+                        // 7-column grid the labels must never wrap into
+                        // extra lines (or overflow) at large text scales.
+                        // Full-size times remain one tap away in the day
+                        // detail sheet.
+                        _CellTime(
+                          text: l10n.dayCellFajr(localizeDigits(
+                              _hhmm(_adjusted(Prayer.fajr, times.fajr)), lang)),
+                          color: timeFg,
+                        ),
+                        _CellTime(
+                          text: l10n.dayCellMaghrib(localizeDigits(
+                              _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
+                              lang)),
+                          color: timeFg,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         Padding(

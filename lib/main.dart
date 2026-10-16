@@ -8,12 +8,14 @@ import 'package:malikiprayertimes/screens/home_screen.dart';
 import 'package:malikiprayertimes/screens/location_screen.dart';
 import 'package:malikiprayertimes/screens/monthly_screen.dart';
 import 'package:malikiprayertimes/screens/profiles_screen.dart';
+import 'package:malikiprayertimes/screens/qada_screen.dart';
 import 'package:malikiprayertimes/screens/qibla_screen.dart';
 import 'package:malikiprayertimes/screens/settings_screen.dart';
 import 'package:malikiprayertimes/screens/splash_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,9 +33,11 @@ Future<void> main() async {
     ),
   );
   // Load in parallel — never sequential awaits on the launch path.
-  final (settings, location) = await (
+  final travel = TravelService();
+  final (settings, location, _) = await (
     SettingsService.load(),
     LocationService.load(),
+    travel.load(),
   ).wait;
   final notifications = NotificationService(
     scheduler: PluginNotificationScheduler(),
@@ -50,6 +54,7 @@ Future<void> main() async {
     settings: settings,
     location: location,
     notifications: notifications,
+    travel: travel,
   ));
 }
 
@@ -67,11 +72,16 @@ class MalikiPrayerTimesApp extends StatefulWidget {
   /// Null in widget tests, where no real notification plugin exists.
   final NotificationService? notifications;
 
+  /// Travel mode (Maliki qasr) state. Null in widget tests; when null the
+  /// travel section, banner and auto-suggest stay hidden.
+  final TravelService? travel;
+
   const MalikiPrayerTimesApp({
     super.key,
     required this.settings,
     required this.location,
     this.notifications,
+    this.travel,
   });
 
   @override
@@ -84,12 +94,62 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
   /// Guard so the notification permission prompt appears exactly once.
   static const _notifAskedKey = 'notif_permission_asked_v1';
 
+  /// The travel auto-suggest dialog is offered at most once per launch.
+  bool _travelSuggestShown = false;
+
   @override
   void initState() {
     super.initState();
     widget.settings.addListener(_onServicesChanged);
     widget.location.addListener(_onServicesChanged);
+    widget.travel?.addListener(_onServicesChanged);
     _askNotificationPermissionOnce();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeSuggestTravel());
+  }
+
+  /// Suggests travel mode when the device is far from the saved home
+  /// location. Only runs when permission was already granted — this never
+  /// triggers a permission prompt — and at most once per launch.
+  Future<void> _maybeSuggestTravel() async {
+    final travel = widget.travel;
+    if (travel == null || travel.isEnabled || _travelSuggestShown) return;
+    final home = widget.location.current;
+    if (home == null) return;
+    _travelSuggestShown = true;
+    final pos = await widget.location.currentPositionIfPermitted();
+    if (pos == null || !mounted) return;
+    final km = TravelService.haversineKm(
+      home.latitude,
+      home.longitude,
+      pos.$1,
+      pos.$2,
+    );
+    if (km < TravelService.kTravelSuggestKm) return;
+    final l10n = AppLocalizations.of(context)!;
+    final enable = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.travelTitle),
+        content: Text(l10n.travelSuggestion(km.round())),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.travelDismiss),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.travelEnable),
+          ),
+        ],
+      ),
+    );
+    if (enable == true) {
+      await travel.setEnabled(
+        true,
+        homeLat: home.latitude,
+        homeLng: home.longitude,
+      );
+    }
   }
 
   /// Asks for notification permission right after the splash closes, once
@@ -107,6 +167,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
   void dispose() {
     widget.settings.removeListener(_onServicesChanged);
     widget.location.removeListener(_onServicesChanged);
+    widget.travel?.removeListener(_onServicesChanged);
     super.dispose();
   }
 
@@ -119,7 +180,8 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         1 => l10n.navMonthly,
         2 => l10n.navQibla,
         3 => l10n.navProfiles,
-        _ => l10n.navSettings,
+        4 => l10n.navSettings,
+        _ => l10n.navQada,
       };
 
   void _openLocation(BuildContext context) {
@@ -304,6 +366,9 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
                 BottomNavigationBarItem(
                     icon: const Icon(Icons.settings),
                     label: l10n.navSettings),
+                BottomNavigationBarItem(
+                    icon: const Icon(Icons.history_outlined),
+                    label: l10n.navQada),
               ],
             ),
           );
@@ -342,7 +407,13 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
       return HomeScreen(
         settings: widget.settings,
         location: widget.location,
+        travel: widget.travel,
       );
+    }
+    // The qada tracker needs no location: show it before the
+    // choose-location prompt.
+    if (_index == 5) {
+      return const QadaScreen();
     }
     // The non-Home tabs need coordinates: show the choose-location prompt
     // instead of silently falling back to a default city.
@@ -373,6 +444,8 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
           coordinates: coords,
           timeZoneOffset: offset,
           notifications: widget.notifications,
+          travelService: widget.travel,
+          locationService: widget.location,
         ),
     };
   }

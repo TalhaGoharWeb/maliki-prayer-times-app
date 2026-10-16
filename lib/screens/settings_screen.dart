@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/services/update_service.dart';
 import 'package:malikiprayertimes/utils/app_info.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
@@ -13,8 +15,8 @@ import 'package:malikiprayertimes/widgets/notification_settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// User settings: app language, per-prayer time adjustments, the
-/// precautionary-delay (ihtiyat) switch, adjustment reset, fonts note,
-/// app version, and the notification section.
+/// precautionary-delay (ihtiyat) switch, adjustment reset, travel mode
+/// (Maliki qasr), fonts note, app version, and the notification section.
 class SettingsScreen extends StatelessWidget {
   final SettingsService settings;
   final Coordinates coordinates;
@@ -27,6 +29,15 @@ class SettingsScreen extends StatelessWidget {
   /// When null, a production [AppUpdateService] is used.
   final AppUpdateService? updateService;
 
+  /// Travel mode (Maliki qasr) state for the Travel section. When null the
+  /// section is hidden (e.g. in widget tests).
+  final TravelService? travelService;
+
+  /// Source of the saved home location seeded into [TravelService] on the
+  /// first enable. When null (or no location saved), enabling travel stores
+  /// no home and the travel suggestion stays dormant.
+  final LocationService? locationService;
+
   const SettingsScreen({
     super.key,
     required this.settings,
@@ -34,6 +45,8 @@ class SettingsScreen extends StatelessWidget {
     required this.timeZoneOffset,
     this.notifications,
     this.updateService,
+    this.travelService,
+    this.locationService,
   });
 
   static const _adjustablePrayers = [
@@ -92,6 +105,7 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final travel = travelService;
     return ListenableBuilder(
       listenable: settings,
       builder: (context, _) {
@@ -182,7 +196,91 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (4) Fonts.
+            // (4) Travel mode (Maliki qasr).
+            if (travel != null) ...[
+              ListenableBuilder(
+                listenable: travel,
+                builder: (context, _) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionHeader(
+                        icon: Icons.flight_takeoff_outlined,
+                        title: l10n.travelToggle),
+                    const SizedBox(height: 8),
+                    Card(
+                      child: SwitchListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        title: Text(l10n.travelToggle,
+                            style: theme.textTheme.titleSmall),
+                        subtitle: Text(
+                          l10n.travelToggleDesc,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        value: travel.isEnabled,
+                        onChanged: (v) async {
+                          // Seed the stored home from the saved location on
+                          // first enable; TravelService keeps it afterwards.
+                          final saved = locationService?.current;
+                          await travel.setEnabled(
+                            v,
+                            homeLat: v ? saved?.latitude : null,
+                            homeLng: v ? saved?.longitude : null,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Card(
+                      color: scheme.tertiaryFixed,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.flight_takeoff_outlined,
+                                    size: 18,
+                                    color: scheme.onTertiaryFixedVariant),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    l10n.travelQasrInfo,
+                                    style:
+                                        theme.textTheme.bodySmall?.copyWith(
+                                      color: scheme.onTertiaryFixed,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              l10n.travelJamNote,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: scheme.onTertiaryFixed,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              l10n.travelDistanceNote,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: scheme.onTertiaryFixed,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // (5) Fonts.
             _SectionHeader(
                 icon: Icons.text_fields, title: l10n.fontsSection),
             const SizedBox(height: 8),
@@ -208,7 +306,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (5) Prayer notifications (Track A widget; hidden when no
+            // (6) Prayer notifications (Track A widget; hidden when no
             // NotificationService is provided, e.g. in widget tests).
             if (notifications != null) ...[
               NotificationSettingsSection(
@@ -220,7 +318,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 20),
             ],
 
-            // (6) About the app.
+            // (7) About the app.
             _SectionHeader(
                 icon: Icons.info_outline, title: l10n.aboutAppSection),
             const SizedBox(height: 8),
@@ -245,7 +343,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (7) About the developer.
+            // (8) About the developer.
             _SectionHeader(
                 icon: Icons.person_outline,
                 title: l10n.aboutDeveloperSection),
@@ -283,7 +381,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // (8) Version + footer.
+            // (9) Version + footer.
             Center(
               child: Container(
                 padding:
