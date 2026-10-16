@@ -1293,5 +1293,397 @@
   "shareSubject": "Prayer timetable",
   "@shareSubject": {
     "description": "Share sheet subject"
+  },
+  "reviewTitle": "Review record",
+  "@reviewTitle": {
+    "description": "Review record screen title"
+  },
+  "reviewIntro": "These questions about the app's calculation profile were put to qualified Maliki scholars. Each recorded answer appears here with the scholar's name and date. Nothing here is a fatwa, and nothing here may be cited as scholarly approval.",
+  "@reviewIntro": {
+    "description": "Intro text of the review record screen"
+  },
+  "reviewGroupAstronomy": "Astronomical conventions",
+  "@reviewGroupAstronomy": {
+    "description": "Review record group header: astronomical conventions (Q1-Q4)"
+  },
+  "reviewGroupFiqh": "Maliki jurisprudential mappings",
+  "@reviewGroupFiqh": {
+    "description": "Review record group header: Maliki jurisprudential mappings (Q5-Q11)"
+  },
+  "reviewGroupRegional": "Mauritanian and regional questions",
+  "@reviewGroupRegional": {
+    "description": "Review record group header: Mauritanian and regional questions (Q12-Q14)"
+  },
+  "reviewGroupPresentation": "Presentation and integrity",
+  "@reviewGroupPresentation": {
+    "description": "Review record group header: presentation and integrity (Q15-Q18)"
+  },
+  "reviewGroupPass2": "Pass-2 unresolved items",
+  "@reviewGroupPass2": {
+    "description": "Review record group header: pass-2 unresolved items (P1-P8)"
+  },
+  "reviewStatusProposed": "Awaiting review",
+  "@reviewStatusProposed": {
+    "description": "Status badge: item awaiting scholarly review"
+  },
+  "reviewStatusReviewed": "Under review — answer recorded",
+  "@reviewStatusReviewed": {
+    "description": "Status badge: scholar's answer recorded"
+  },
+  "reviewStatusEndorsed": "Endorsed",
+  "@reviewStatusEndorsed": {
+    "description": "Status badge: endorsed (shown only when a formal ruling is recorded)"
+  },
+  "reviewSharePacket": "Share review packet",
+  "@reviewSharePacket": {
+    "description": "Button: share the review packet"
+  },
+  "reviewReviewer": "Reviewer",
+  "@reviewReviewer": {
+    "description": "Label: reviewer name"
+  },
+  "reviewReviewDate": "Review date",
+  "@reviewReviewDate": {
+    "description": "Label: review date"
+  },
+  "reviewAnswer": "Answer",
+  "@reviewAnswer": {
+    "description": "Label: scholar's answer"
+  },
+  "reviewPacketTitle": "Maliki prayer-times app — scholarly review packet",
+  "@reviewPacketTitle": {
+    "description": "Review packet document title"
+  },
+  "reviewPacketIntro": "The questions below are the app's scholarly review register: the 18-question checklist and the 8 pass-2 unresolved items. They are asked of qualified Maliki scholars — priority to Mauritanian scholars familiar with the living Maliki tradition of the region, then to qualified Maliki scholars from other historically Maliki regions. Each item states why it matters and the current evidence status. Nothing in this document is a fatwa, and nothing in it may be cited as scholarly approval.",
+  "@reviewPacketIntro": {
+    "description": "Review packet document intro"
+  },
+  "reviewPacketWhy": "Why it matters",
+  "@reviewPacketWhy": {
+    "description": "Review packet section label: why it matters"
+  },
+  "reviewPacketEvidence": "Current evidence status",
+  "@reviewPacketEvidence": {
+    "description": "Review packet section label: current evidence status"
+  },
+  "reviewPacketAnswerPrompt": "Scholar's answer (name, date, and the scholar's own words)",
+  "@reviewPacketAnswerPrompt": {
+    "description": "Review packet per-item answer prompt for the scholar"
+  },
+  "reviewPacketDate": "Packet date",
+  "@reviewPacketDate": {
+    "description": "Review packet label: packet date"
+  },
+  "reviewQ1Question": "Is approximating al-fajr al-sadiq by an 18° solar depression (the MWL 1986 convention) acceptable for a Maliki timetable, and under what conditions would you require a different angle?",
+  "@reviewQ1Question": {
+    "description": "D7 review item Q1: review question"
+  },
+  "reviewQ1Why": "Fixes the app's default Fajr parameter; the answer determines whether 18° stands, moves, or must be user-visible as a choice.",
+  "@reviewQ1Why": {
+    "description": "D7 review item Q1: why-it-matters"
+  },
+  "reviewQ1Evidence": "Institutional convention only. No classical Maliki text gives a degree angle. Dawn-observation studies measured fajr sadiq at 14.5°–18.5° (astronomical fact, not fiqh).",
+  "@reviewQ1Evidence": {
+    "description": "D7 review item Q1: evidence status"
+  },
+  "reviewQ2Question": "Is approximating the disappearance of the red twilight by 17° acceptable as the Isha onset, given the Maliki position that shafaq is the redness?",
+  "@reviewQ2Question": {
+    "description": "D7 review item Q2: review question"
+  },
+  "reviewQ2Why": "Fixes the app's default Isha parameter; the answer must also confirm the red-vs-white premise the engine encodes.",
+  "@reviewQ2Why": {
+    "description": "D7 review item Q2: why-it-matters"
+  },
+  "reviewQ2Evidence": "The red shafaq is fiqh-verified (Risala; Khalil: «مِنْ غُرُوبِ حُمْرَةِ الشَّفَقِ»); the 17° figure is an institutional convention (MWL 1986).",
+  "@reviewQ2Evidence": {
+    "description": "D7 review item Q2: evidence status"
+  },
+  "reviewQ3Question": "Are the +0–2 min ihtiyat adjustments on Maghrib and the +1–2 min on Dhuhr appropriate, excessive, or insufficient — and should they be fixed, configurable, or removed?",
+  "@reviewQ3Question": {
+    "description": "D7 review item Q3: review question"
+  },
+  "reviewQ3Why": "Ihtiyat is a profile parameter applied before rounding; the answer sets its value and its user-visibility.",
+  "@reviewQ3Why": {
+    "description": "D7 review item Q3: why-it-matters"
+  },
+  "reviewQ3Evidence": "Operational convention (MWL fatwa +2 min; searchtruth +1 min) — no fiqh mandate found.",
+  "@reviewQ3Evidence": {
+    "description": "D7 review item Q3: evidence status"
+  },
+  "reviewQ4Question": "Is nearest-minute rounding acceptable for displayed times, or do you require ceiling (always round up) or another convention?",
+  "@reviewQ4Question": {
+    "description": "D7 review item Q4: review question"
+  },
+  "reviewQ4Why": "Rounding is applied to every displayed time; the answer is a documented profile setting.",
+  "@reviewQ4Why": {
+    "description": "D7 review item Q4: why-it-matters"
+  },
+  "reviewQ4Evidence": "Operational convention (prayer-library/timetable standard).",
+  "@reviewQ4Evidence": {
+    "description": "D7 review item Q4: evidence status"
+  },
+  "reviewQ5Question": "Is Asr shadow factor 1 (first mithl, excluding the zawal shadow) the correct Maliki beginning of Asr for the app's default — and should the Hanafi factor-2 option be offered at all, even labeled as a non-Maliki comparison?",
+  "@reviewQ5Question": {
+    "description": "D7 review item Q5: review question"
+  },
+  "reviewQ5Why": "The single most fiqh-verified parameter in the profile; the answer confirms or corrects it, and decides whether factor 2 appears anywhere in a Maliki app.",
+  "@reviewQ5Why": {
+    "description": "D7 review item Q5: why-it-matters"
+  },
+  "reviewQ5Evidence": "Fiqh-verified mashhur — every text excludes zill al-zawal (Tahdhib, Risala, Khalil, Dardir, Mawahib, Qawanin).",
+  "@reviewQ5Evidence": {
+    "description": "D7 review item Q5: evidence status"
+  },
+  "reviewQ6Question": "Is the Subh two-tier display (ikhtiyari to isfar as an informational band; daruri to sunrise) the correct presentation — or do you require the well-known position of Malik (ikhtiyari to sunrise, no band)?",
+  "@reviewQ6Question": {
+    "description": "D7 review item Q6: review question"
+  },
+  "reviewQ6Why": "Decides the Subh screen's two-tier vs. single-tier presentation.",
+  "@reviewQ6Why": {
+    "description": "D7 review item Q6: why-it-matters"
+  },
+  "reviewQ6Evidence": "Recognized internal disagreement: mashhur = two-tier; minority = no daruri; Malik-transmitted position = ikhtiyari to sunrise.",
+  "@reviewQ6Evidence": {
+    "description": "D7 review item Q6: evidence status"
+  },
+  "reviewQ7Question": "Is the Maghrib default correct as the narrow mashhur view (sunset + ~15–20 min band), with the al-Baji extended view offered as a labeled alternative — or should the extended view be the default?",
+  "@reviewQ7Question": {
+    "description": "D7 review item Q7: review question"
+  },
+  "reviewQ7Why": "Changes the Maghrib display band by roughly an hour at temperate latitudes.",
+  "@reviewQ7Why": {
+    "description": "D7 review item Q7: why-it-matters"
+  },
+  "reviewQ7Evidence": "Recognized internal disagreement — narrow = mashhur (Risala, Khalil, Qawanin); extended to shafaq-setting = well-attested (al-Baji, Muwatta' wording).",
+  "@reviewQ7Evidence": {
+    "description": "D7 review item Q7: evidence status"
+  },
+  "reviewQ8Question": "Is the Isha preferred-end correct as the first third of the night, with the Ibn Habib midnight variant offered as a labeled alternative — or should midnight be the default?",
+  "@reviewQ8Question": {
+    "description": "D7 review item Q8: review question"
+  },
+  "reviewQ8Why": "Moves the “preferred until” marker for Isha.",
+  "@reviewQ8Why": {
+    "description": "D7 review item Q8: why-it-matters"
+  },
+  "reviewQ8Evidence": "Recognized internal disagreement: mashhur = first third; Ibn Habib = midnight (Muslim 612).",
+  "@reviewQ8Evidence": {
+    "description": "D7 review item Q8: evidence status"
+  },
+  "reviewQ9Question": "Is the Asr preferred-end display (“preferred until yellowing,” approximated by the 2×-shadow point or a solar-elevation proxy, explicitly labeled approximate) acceptable — or do you require a different treatment of isfirar?",
+  "@reviewQ9Question": {
+    "description": "D7 review item Q9: review question"
+  },
+  "reviewQ9Why": "Isfirar has no clock-time in the sources; the answer decides whether the app may show the proxy band at all, and under what labeling.",
+  "@reviewQ9Why": {
+    "description": "D7 review item Q9: why-it-matters"
+  },
+  "reviewQ9Evidence": "Observational, unquantified — “yellowing judged in the earth and walls, not in the sun itself”; no fiqh source gives a clock offset.",
+  "@reviewQ9Evidence": {
+    "description": "D7 review item Q9: evidence status"
+  },
+  "reviewQ10Question": "Are the daruri endpoints (Subh → sunrise; Dhuhr/Asr → sunset; Maghrib/Isha → true dawn) and the “caught by one rak'a” semantics correctly stated for display purposes?",
+  "@reviewQ10Question": {
+    "description": "D7 review item Q10: review question"
+  },
+  "reviewQ10Why": "The absolute-end markers on every prayer card.",
+  "@reviewQ10Why": {
+    "description": "D7 review item Q10: why-it-matters"
+  },
+  "reviewQ10Evidence": "Fiqh-verified via Khalil's matn and Aqrab; Qawanin confirms Subh has no daruri on the mashhur.",
+  "@reviewQ10Evidence": {
+    "description": "D7 review item Q10: evidence status"
+  },
+  "reviewQ11Question": "Is the combining feature (Dhuhr→Asr and Maghrib→Isha as taqdim only, for rain/illness/hardship) correctly scoped — and is there anything in its presentation you would change or remove?",
+  "@reviewQ11Question": {
+    "description": "D7 review item Q11: review question"
+  },
+  "reviewQ11Why": "The app's traveler/excuse mode; a wrong scope here would dispense a personal ruling the app cannot give.",
+  "@reviewQ11Why": {
+    "description": "D7 review item Q11: why-it-matters"
+  },
+  "reviewQ11Evidence": "Secondary-attested — Bin Bayyah's transmission of al-Qarafi via virtualmosque.com (index-level, re-verify); taqdim-only combining per islamweb fatwa 6846 (index-level).",
+  "@reviewQ11Evidence": {
+    "description": "D7 review item Q11: evidence status"
+  },
+  "reviewQ12Question": "Is there any Mauritanian scholarly convention on prayer-time calculation that this profile has missed — in particular, any position of Muhammad al-Hasan Ould al-Dedew, any mahadra teaching, or any official Mauritanian timetable methodology — that should change the default?",
+  "@reviewQ12Question": {
+    "description": "D7 review item Q12: review question"
+  },
+  "reviewQ12Why": "The Mauritanian Scholarly Profile investigation cannot proceed on assumptions; a negative or positive answer both close the item.",
+  "@reviewQ12Why": {
+    "description": "D7 review item Q12: why-it-matters"
+  },
+  "reviewQ12Evidence": "Unresolved — explicit negative findings so far (no recorded ruling found from Ould al-Dedew; no ministry methodology published; no documented muwaqqit tradition).",
+  "@reviewQ12Evidence": {
+    "description": "D7 review item Q12: evidence status"
+  },
+  "reviewQ13Question": "For Mauritania specifically, is the proposed default (MWL 18/17 + Standard/Maliki Asr) acceptable, with the in-app note that no distinct official Mauritanian method is published?",
+  "@reviewQ13Question": {
+    "description": "D7 review item Q13: review question"
+  },
+  "reviewQ13Why": "Decides the default profile for the app's West-African users and the honesty wording of the method screen.",
+  "@reviewQ13Why": {
+    "description": "D7 review item Q13: why-it-matters"
+  },
+  "reviewQ13Evidence": "Inference — ministry times are consistent with MWL 18/17 + ~1–2 min, but the method is unpublished.",
+  "@reviewQ13Evidence": {
+    "description": "D7 review item Q13: evidence status"
+  },
+  "reviewQ14Question": "Is the high-latitude default (middleOfTheNight; seventhOfTheNight above 48°) acceptable for diaspora users — or do you require the MWL council's three-category logic to be applied differently?",
+  "@reviewQ14Question": {
+    "description": "D7 review item Q14: review question"
+  },
+  "reviewQ14Why": "Fixes the fallback behavior for European/North-American users where 18°/17° twilight never occurs.",
+  "@reviewQ14Why": {
+    "description": "D7 review item Q14: why-it-matters"
+  },
+  "reviewQ14Evidence": "Institutional convention — no Maliki body found prescribing any high-latitude method.",
+  "@reviewQ14Evidence": {
+    "description": "D7 review item Q14: evidence status"
+  },
+  "reviewQ15Question": "Does the two-tier (ikhtiyari/daruri) display, with the warning that delaying into daruri without excuse is sinful (Khalil: «وأثم المؤخر له إلا لعذر»), present the doctrine faithfully without frightening or misleading users?",
+  "@reviewQ15Question": {
+    "description": "D7 review item Q15: review question"
+  },
+  "reviewQ15Why": "The exact wording of the app's daruri markers in four languages.",
+  "@reviewQ15Why": {
+    "description": "D7 review item Q15: why-it-matters"
+  },
+  "reviewQ15Evidence": "Fiqh-verified wording («واثم الا لعذر» confirmed as matn); tone is a presentation decision.",
+  "@reviewQ15Evidence": {
+    "description": "D7 review item Q15: evidence status"
+  },
+  "reviewQ16Question": "Is the separation maintained throughout between (a) fiqh definitions, (b) astronomical models, (c) computational approximations, and (d) operational conventions — i.e., does the app ever present an approximation as a religious ruling?",
+  "@reviewQ16Question": {
+    "description": "D7 review item Q16: review question"
+  },
+  "reviewQ16Why": "The core integrity audit of every user-facing string and the “Why this time?” sheet.",
+  "@reviewQ16Why": {
+    "description": "D7 review item Q16: why-it-matters"
+  },
+  "reviewQ16Evidence": "Proposed separation documented; needs the scholar's read of the actual screens.",
+  "@reviewQ16Evidence": {
+    "description": "D7 review item Q16: evidence status"
+  },
+  "reviewQ17Question": "Are the named alternatives (Egyptian 19.5/17.5, UOIF 12/12, Moonsighting 18/18, midnight-Isha, extended-Maghrib, custom angles) presented with sufficient labeling that no user could mistake one for the reviewed default?",
+  "@reviewQ17Question": {
+    "description": "D7 review item Q17: review question"
+  },
+  "reviewQ17Why": "Prevents a user from adopting a different convention thinking it is the Maliki default.",
+  "@reviewQ17Why": {
+    "description": "D7 review item Q17: why-it-matters"
+  },
+  "reviewQ17Evidence": "Labeling scheme proposed; needs the scholar's judgment.",
+  "@reviewQ17Evidence": {
+    "description": "D7 review item Q17: evidence status"
+  },
+  "reviewQ18Question": "What corrections, additions, or deletions do you require before this profile may be called reviewed — and do you permit your name to be associated with the reviewed version?",
+  "@reviewQ18Question": {
+    "description": "D7 review item Q18: review question"
+  },
+  "reviewQ18Why": "The closing question — it produces the correction list and the name-permission that unblock the “reviewed” label.",
+  "@reviewQ18Why": {
+    "description": "D7 review item Q18: why-it-matters"
+  },
+  "reviewQ18Evidence": "Unasked — no scholar has yet been approached.",
+  "@reviewQ18Evidence": {
+    "description": "D7 review item Q18: evidence status"
+  },
+  "reviewP1Question": "Extract and verify al-Dasuqi's glosses on الفجر الصادق / غروب حمرة الشفق / «وعلى جماعة آخره» in Hashiyat al-Dasuqi 'ala al-Sharh al-Kabir.",
+  "@reviewP1Question": {
+    "description": "D7 review item P1: review question"
+  },
+  "reviewP1Why": "Dasuqi is the standard gloss on Dardir; his wording would settle or sharpen the fajr/shafaq definitions.",
+  "@reviewP1Why": {
+    "description": "D7 review item P1: why-it-matters"
+  },
+  "reviewP1Evidence": "Located, not extracted — shamela.ws/book/21604 (Dar al-Fikr, 4 vols) and the islamweb library copy were located 2026-10-16; specific pages not yet read.",
+  "@reviewP1Evidence": {
+    "description": "D7 review item P1: evidence status"
+  },
+  "reviewP2Question": "Read the prayer-times chapter of al-Kafi fi Fiqh Ahl al-Madinah (Ibn 'Abd al-Barr) in the primary text.",
+  "@reviewP2Question": {
+    "description": "D7 review item P2: review question"
+  },
+  "reviewP2Why": "Ibn 'Abd al-Barr is a foundational Maliki authority; his chapter would corroborate or refine the matn positions, particularly on isfar and the shared windows.",
+  "@reviewP2Why": {
+    "description": "D7 review item P2: why-it-matters"
+  },
+  "reviewP2Evidence": "Edition verified, text unread — ed. Dr. Muhammad Ahid Ould Maddik al-Mauritani, Maktabat al-Riyad al-Haditha, 1978.",
+  "@reviewP2Evidence": {
+    "description": "D7 review item P2: evidence status"
+  },
+  "reviewP3Question": "Read the continuation pages of al-Hattab's Mawahib al-Jalil muwaqit chapter on islamweb covering 'isha/shafaq and fajr/subh.",
+  "@reviewP3Question": {
+    "description": "D7 review item P3: review question"
+  },
+  "reviewP3Why": "The Mawahib is the school's great commentary on Khalil; these sections likely contain the most detailed classical discussion of the two twilight boundaries the app must approximate.",
+  "@reviewP3Why": {
+    "description": "D7 review item P3: why-it-matters"
+  },
+  "reviewP3Evidence": "Partially read — the 'isha/fajr continuation pages exist on islamweb but their URLs were not located without guessing.",
+  "@reviewP3Evidence": {
+    "description": "D7 review item P3: evidence status"
+  },
+  "reviewP4Question": "Collate the matn wording at the daruri passage — «واثم الا لعذر» is confirmed as matn; the possible «وعلى جماعة آخره» variant needs checking against Dardir/Dasuqi.",
+  "@reviewP4Question": {
+    "description": "D7 review item P4: review question"
+  },
+  "reviewP4Why": "The daruri-sin wording appears in the app's two-tier display; the matn must be quoted exactly.",
+  "@reviewP4Why": {
+    "description": "D7 review item P4: why-it-matters"
+  },
+  "reviewP4Evidence": "Unresolved textual variant.",
+  "@reviewP4Evidence": {
+    "description": "D7 review item P4: evidence status"
+  },
+  "reviewP5Question": "Obtain the Mauritanian ministry's calculation methodology — angles, method name, asr convention, ihtiyat — from an official source.",
+  "@reviewP5Question": {
+    "description": "D7 review item P5: review question"
+  },
+  "reviewP5Why": "Closes the inference gap behind the Mauritanian Scholarly Profile investigation.",
+  "@reviewP5Why": {
+    "description": "D7 review item P5: why-it-matters"
+  },
+  "reviewP5Evidence": "Unpublished; MWL 18/17 + ~1–2 min is inference only.",
+  "@reviewP5Evidence": {
+    "description": "D7 review item P5: evidence status"
+  },
+  "reviewP6Question": "Determine whether Bin Bayyah, Ould Dedew, or Ould 'Adud has a recorded position on prayer-time calculation conventions (angles, methods) — distinct from their general fiqh teachings.",
+  "@reviewP6Question": {
+    "description": "D7 review item P6: review question"
+  },
+  "reviewP6Why": "A recorded position would anchor the Mauritanian profile; continued silence must be recorded as a negative finding, not filled.",
+  "@reviewP6Why": {
+    "description": "D7 review item P6: why-it-matters"
+  },
+  "reviewP6Evidence": "No web evidence found — may exist in offline Arabic print or lessons.",
+  "@reviewP6Evidence": {
+    "description": "D7 review item P6: evidence status"
+  },
+  "reviewP7Question": "Identify the scholar al-Hattab cites for latitude-specific prayer-time tables («أبو مقرع») in the Mawahib passage.",
+  "@reviewP7Question": {
+    "description": "D7 review item P7: review question"
+  },
+  "reviewP7Why": "Historical completeness of the miqat record; does not affect any app parameter.",
+  "@reviewP7Why": {
+    "description": "D7 review item P7: why-it-matters"
+  },
+  "reviewP7Evidence": "Recorded as printed, not investigated.",
+  "@reviewP7Evidence": {
+    "description": "D7 review item P7: evidence status"
+  },
+  "reviewP8Question": "Obtain the printed text of the verses of al-'Allama Muhammad Mawlud's al-Kafaf quoted in Sheikh Muhammad Mahmud al-Shinqiti's Risala commentary (the Baheth transcription is garbled at that point).",
+  "@reviewP8Question": {
+    "description": "D7 review item P8: review question"
+  },
+  "reviewP8Why": "The verses bear on the Subh daruri question (Q6); a clean text lets the register quote them accurately.",
+  "@reviewP8Why": {
+    "description": "D7 review item P8: why-it-matters"
+  },
+  "reviewP8Evidence": "Transcription garbled; printed nazm not consulted.",
+  "@reviewP8Evidence": {
+    "description": "D7 review item P8: evidence status"
   }
 }

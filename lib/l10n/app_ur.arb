@@ -712,5 +712,397 @@
   "shareSubject": "نماز کا ٹائم ٹیبل",
   "@shareSubject": {
     "description": "Share sheet subject"
+  },
+  "reviewTitle": "جائزے کا ریکارڈ",
+  "@reviewTitle": {
+    "description": "Review record screen title"
+  },
+  "reviewIntro": "ایپ کے حسابی پروفائل کے بارے میں یہ سوالات اہل مالکی علماء کے سامنے رکھے گئے۔ ہر درج شدہ جواب یہاں عالم کے نام اور تاریخ کے ساتھ نظر آئے گا۔ یہاں کوئی چیز فتویٰ نہیں، اور کسی چیز کو علمی تصدیق کے طور پر پیش نہیں کیا جا سکتا۔",
+  "@reviewIntro": {
+    "description": "Intro text of the review record screen"
+  },
+  "reviewGroupAstronomy": "فلکیاتی اصطلاحات",
+  "@reviewGroupAstronomy": {
+    "description": "Review record group header: astronomical conventions (Q1-Q4)"
+  },
+  "reviewGroupFiqh": "مالکی فقہی اطلاقات",
+  "@reviewGroupFiqh": {
+    "description": "Review record group header: Maliki jurisprudential mappings (Q5-Q11)"
+  },
+  "reviewGroupRegional": "موریتانی اور علاقائی سوالات",
+  "@reviewGroupRegional": {
+    "description": "Review record group header: Mauritanian and regional questions (Q12-Q14)"
+  },
+  "reviewGroupPresentation": "پیشکش اور دیانت",
+  "@reviewGroupPresentation": {
+    "description": "Review record group header: presentation and integrity (Q15-Q18)"
+  },
+  "reviewGroupPass2": "دوسرے مرحلے کے حل طلب نکات",
+  "@reviewGroupPass2": {
+    "description": "Review record group header: pass-2 unresolved items (P1-P8)"
+  },
+  "reviewStatusProposed": "جائزے کا منتظر",
+  "@reviewStatusProposed": {
+    "description": "Status badge: item awaiting scholarly review"
+  },
+  "reviewStatusReviewed": "جائزہ جاری — جواب درج ہو گیا",
+  "@reviewStatusReviewed": {
+    "description": "Status badge: scholar's answer recorded"
+  },
+  "reviewStatusEndorsed": "تائید شدہ",
+  "@reviewStatusEndorsed": {
+    "description": "Status badge: endorsed (shown only when a formal ruling is recorded)"
+  },
+  "reviewSharePacket": "جائزہ پیکٹ شیئر کریں",
+  "@reviewSharePacket": {
+    "description": "Button: share the review packet"
+  },
+  "reviewReviewer": "جائزہ لینے والا",
+  "@reviewReviewer": {
+    "description": "Label: reviewer name"
+  },
+  "reviewReviewDate": "جائزے کی تاریخ",
+  "@reviewReviewDate": {
+    "description": "Label: review date"
+  },
+  "reviewAnswer": "جواب",
+  "@reviewAnswer": {
+    "description": "Label: scholar's answer"
+  },
+  "reviewPacketTitle": "مالکی نمازوں کے اوقات کی ایپ — علمی جائزہ پیکٹ",
+  "@reviewPacketTitle": {
+    "description": "Review packet document title"
+  },
+  "reviewPacketIntro": "نیچے دیے گئے سوالات ایپ کا علمی جائزہ رجسٹر ہیں: اٹھارہ سوالات کی فہرست اور دوسرے مرحلے کے آٹھ حل طلب نکات۔ یہ اہل مالکی علماء کے سامنے رکھے جاتے ہیں — ترجیح ان موریتانی علماء کو جو خطے کی زندہ مالکی روایت سے واقف ہیں، پھر دیگر تاریخی مالکی علاقوں کے اہل مالکی علماء کو۔ ہر نکتے کے ساتھ اس کی اہمیت کی وجہ اور شواہد کی موجودہ صورتحال درج ہے۔ اس دستاویز میں کوئی چیز فتویٰ نہیں، اور کسی چیز کو علمی تصدیق کے طور پر پیش نہیں کیا جا سکتا۔",
+  "@reviewPacketIntro": {
+    "description": "Review packet document intro"
+  },
+  "reviewPacketWhy": "یہ کیوں اہم ہے",
+  "@reviewPacketWhy": {
+    "description": "Review packet section label: why it matters"
+  },
+  "reviewPacketEvidence": "شواہد کی موجودہ صورتحال",
+  "@reviewPacketEvidence": {
+    "description": "Review packet section label: current evidence status"
+  },
+  "reviewPacketAnswerPrompt": "عالم کا جواب (نام، تاریخ اور عالم کے اپنے الفاظ)",
+  "@reviewPacketAnswerPrompt": {
+    "description": "Review packet per-item answer prompt for the scholar"
+  },
+  "reviewPacketDate": "پیکٹ کی تاریخ",
+  "@reviewPacketDate": {
+    "description": "Review packet label: packet date"
+  },
+  "reviewQ1Question": "کیا الفجر الصادق کا 18 درجے شمسی انخفاض (رابطہ عالم اسلامی 1986 کی اصطلاح) سے تقریب مالکی نمازوں کے جدول کے لیے قابل قبول ہے، اور کن شرائط میں آپ مختلف زاویے کا مطالبہ کریں گے؟",
+  "@reviewQ1Question": {
+    "description": "D7 review item Q1: review question"
+  },
+  "reviewQ1Why": "یہ ایپ کا طے شدہ فجر کا معاملہ طے کرتا ہے؛ جواب طے کرے گا کہ 18 درجے قائم رہے گا، بدلے گا، یا اسے صارف کے سامنے ایک انتخاب کے طور پر دکھانا ہوگا۔",
+  "@reviewQ1Why": {
+    "description": "D7 review item Q1: why-it-matters"
+  },
+  "reviewQ1Evidence": "صرف ادارتی اصطلاح۔ کلاسیکی مالکی نصوص میں ڈگریوں میں کوئی زاویہ نہیں۔ فجر کے مشاہداتی مطالعات میں فجر صادق 14.5 سے 18.5 درجے کے درمیان ناپا گیا (فلکیاتی حقیقت، فقہی نہیں)۔",
+  "@reviewQ1Evidence": {
+    "description": "D7 review item Q1: evidence status"
+  },
+  "reviewQ2Question": "کیا سرخ شفق کے غروب کا 17 درجے سے تقریب عشاء کی ابتدا کے طور پر قابل قبول ہے، جبکہ مالکی موقف یہ ہے کہ شفق سرخی ہے؟",
+  "@reviewQ2Question": {
+    "description": "D7 review item Q2: review question"
+  },
+  "reviewQ2Why": "یہ ایپ کا طے شدہ عشاء کا معاملہ طے کرتا ہے؛ جواب کو اس سرخ بمقابلہ سفید کی بنیاد کی بھی تصدیق کرنی ہوگی جو انجن میں شامل ہے۔",
+  "@reviewQ2Why": {
+    "description": "D7 review item Q2: why-it-matters"
+  },
+  "reviewQ2Evidence": "سرخ شفق فقہی طور پر ثابت ہے (رسالہ؛ خلیل: «مِنْ غُرُوبِ حُمْرَةِ الشَّفَقِ»)؛ 17 درجے کا عدد ادارتی اصطلاح ہے (رابطہ عالم اسلامی 1986)۔",
+  "@reviewQ2Evidence": {
+    "description": "D7 review item Q2: evidence status"
+  },
+  "reviewQ3Question": "کیا مغرب پر 0 سے 2 منٹ اور ظہر پر 1 سے 2 منٹ کی احتیاط کی ایڈجسٹمنٹ مناسب، ضرورت سے زیادہ، یا ناکافی ہیں — اور کیا انہیں طے شدہ رکھا جائے، قابل ترتیب بنایا جائے، یا ہٹا دیا جائے؟",
+  "@reviewQ3Question": {
+    "description": "D7 review item Q3: review question"
+  },
+  "reviewQ3Why": "احتیاط پروفائل کا ایک معاملہ ہے جو راؤنڈنگ سے پہلے لگایا جاتا ہے؛ جواب اس کی قدر اور صارف کے سامنے اس کی نمائش طے کرے گا۔",
+  "@reviewQ3Why": {
+    "description": "D7 review item Q3: why-it-matters"
+  },
+  "reviewQ3Evidence": "عملی اصطلاح (رابطہ کا فتویٰ +2 منٹ؛ searchtruth ‏+1 منٹ) — کوئی فقہی سند نہیں ملی۔",
+  "@reviewQ3Evidence": {
+    "description": "D7 review item Q3: evidence status"
+  },
+  "reviewQ4Question": "کیا دکھائے گئے اوقات کے لیے قریب ترین منٹ تک راؤنڈنگ قابل قبول ہے، یا آپ ہمیشہ اوپر کی طرف (ceiling) یا کسی اور اصطلاح کا مطالبہ کرتے ہیں؟",
+  "@reviewQ4Question": {
+    "description": "D7 review item Q4: review question"
+  },
+  "reviewQ4Why": "راؤنڈنگ ہر دکھائے گئے وقت پر لگائی جاتی ہے؛ جواب پروفائل کی ایک دستاویزی ترتیب ہے۔",
+  "@reviewQ4Why": {
+    "description": "D7 review item Q4: why-it-matters"
+  },
+  "reviewQ4Evidence": "عملی اصطلاح (نماز لائبریریوں اور جدولوں کا معیار)۔",
+  "@reviewQ4Evidence": {
+    "description": "D7 review item Q4: evidence status"
+  },
+  "reviewQ5Question": "کیا عصر کا سایہ فیکٹر 1 (پہلا مثل، زوال کا سایہ خارج) ایپ کے طے شدہ کے لیے عصر کی مالکی ابتدا صحیح ہے — اور کیا حنفی فیکٹر 2 کا آپشن بالکل پیش کیا جائے، چاہے 'غیر مالکی موازنہ' کے لیبل کے ساتھ؟",
+  "@reviewQ5Question": {
+    "description": "D7 review item Q5: review question"
+  },
+  "reviewQ5Why": "پروفائل کا فقہی طور پر سب سے زیادہ ثابت معاملہ؛ جواب اس کی تصدیق یا تصحیح کرے گا، اور طے کرے گا کہ فیکٹر 2 مالکی ایپ میں کہیں نظر آئے یا نہیں۔",
+  "@reviewQ5Why": {
+    "description": "D7 review item Q5: why-it-matters"
+  },
+  "reviewQ5Evidence": "فقہی طور پر ثابت مشہور — ہر نص زوال کے سائے کو خارج کرتا ہے (تہذیب، رسالہ، خلیل، دردر، مواہب، قوانین)۔",
+  "@reviewQ5Evidence": {
+    "description": "D7 review item Q5: evidence status"
+  },
+  "reviewQ6Question": "کیا صبح کی دو درجے والی پیشکش (اختیاری اسفار تک بطور معلوماتی پٹی؛ ضروری طلوع آفتاب تک) صحیح پیشکش ہے — یا آپ امام مالک کے معروف قول (اختیاری طلوع آفتاب تک، بغیر پٹی) کا مطالبہ کرتے ہیں؟",
+  "@reviewQ6Question": {
+    "description": "D7 review item Q6: review question"
+  },
+  "reviewQ6Why": "یہ صبح کی اسکرین کی دو درجے بمقابلہ ایک درجے پیشکش طے کرتا ہے۔",
+  "@reviewQ6Why": {
+    "description": "D7 review item Q6: why-it-matters"
+  },
+  "reviewQ6Evidence": "تسلیم شدہ داخلی اختلاف: مشہور = دو درجے؛ اقلیت = کوئی ضروری نہیں؛ امام مالک سے منقول قول = اختیاری طلوع آفتاب تک۔",
+  "@reviewQ6Evidence": {
+    "description": "D7 review item Q6: evidence status"
+  },
+  "reviewQ7Question": "کیا مغرب کا طے شدہ مشہور تنگ رائے (غروب + تقریباً 15 تا 20 منٹ کی پٹی) کے طور پر صحیح ہے، جبکہ باجی کی وسیع رائے لیبل شدہ متبادل کے طور پر پیش کی جائے — یا وسیع رائے کو طے شدہ ہونا چاہیے؟",
+  "@reviewQ7Question": {
+    "description": "D7 review item Q7: review question"
+  },
+  "reviewQ7Why": "یہ معتدل عرض بلد پر مغرب کی دکھائی گئی پٹی کو تقریباً ایک گھنٹہ بدل دیتا ہے۔",
+  "@reviewQ7Why": {
+    "description": "D7 review item Q7: why-it-matters"
+  },
+  "reviewQ7Evidence": "تسلیم شدہ داخلی اختلاف — تنگ = مشہور (رسالہ، خلیل، قوانین)؛ شفق کے غروب تک وسیع = معتبر اسناد سے ثابت (باجی، موطا کا لفظ)۔",
+  "@reviewQ7Evidence": {
+    "description": "D7 review item Q7: evidence status"
+  },
+  "reviewQ8Question": "کیا عشاء کی پسندیدہ انتہا رات کے پہلے تہائی کے طور پر صحیح ہے، جبکہ ابن حبیب کی آدھی رات والی روایت لیبل شدہ متبادل کے طور پر پیش کی جائے — یا آدھی رات کو طے شدہ ہونا چاہیے؟",
+  "@reviewQ8Question": {
+    "description": "D7 review item Q8: review question"
+  },
+  "reviewQ8Why": "یہ عشاء کے 'پسندیدہ حتیٰ' کے نشان کو حرکت دیتا ہے۔",
+  "@reviewQ8Why": {
+    "description": "D7 review item Q8: why-it-matters"
+  },
+  "reviewQ8Evidence": "تسلیم شدہ داخلی اختلاف: مشہور = پہلا تہائی؛ ابن حبیب = آدھی رات (مسلم 612)۔",
+  "@reviewQ8Evidence": {
+    "description": "D7 review item Q8: evidence status"
+  },
+  "reviewQ9Question": "کیا عصر کی پسندیدہ انتہا کی پیشکش ('اصفرار تک پسندیدہ'، دگنے سائے کے نقطے یا شمسی ارتفاع کے متبادل سے تقریب، صراحتاً تقریبی کا لیبل) قابل قبول ہے — یا آپ اصفرار کے لیے مختلف برتاؤ کا مطالبہ کرتے ہیں؟",
+  "@reviewQ9Question": {
+    "description": "D7 review item Q9: review question"
+  },
+  "reviewQ9Why": "اصفرار کا مصادر میں گھڑی کے وقت میں کوئی وقت نہیں؛ جواب طے کرے گا کہ ایپ یہ تقریبی پٹی دکھا سکتی ہے یا نہیں، اور کس لیبل کے ساتھ۔",
+  "@reviewQ9Why": {
+    "description": "D7 review item Q9: why-it-matters"
+  },
+  "reviewQ9Evidence": "مشاہداتی، غیر مقدر — 'اصفرار کا فیصلہ زمین اور دیواروں میں ہوتا ہے، خود سورج میں نہیں'؛ کوئی فقہی مصدر گھڑی کی ایڈجسٹمنٹ نہیں دیتا۔",
+  "@reviewQ9Evidence": {
+    "description": "D7 review item Q9: evidence status"
+  },
+  "reviewQ10Question": "کیا ضروری کی انتہائیں (صبح ← طلوع آفتاب؛ ظہر/عصر ← غروب؛ مغرب/عشاء ← فجر صادق) اور 'ایک رکعت سے پا لینے' کی دلالت دکھانے کے مقصد کے لیے صحیح بیان کی گئی ہیں؟",
+  "@reviewQ10Question": {
+    "description": "D7 review item Q10: review question"
+  },
+  "reviewQ10Why": "ہر نماز کے کارڈ پر مطلق انتہا کے نشان۔",
+  "@reviewQ10Why": {
+    "description": "D7 review item Q10: why-it-matters"
+  },
+  "reviewQ10Evidence": "خلیل کے متن اور اقرب سے فقہی طور پر ثابت؛ قوانین تصدیق کرتے ہیں کہ مشہور پر صبح کا کوئی ضروری نہیں۔",
+  "@reviewQ10Evidence": {
+    "description": "D7 review item Q10: evidence status"
+  },
+  "reviewQ11Question": "کیا جمع کی خصوصیت (ظہر←عصر اور مغرب←عشاء صرف جمع تقدیم، بارش/بیماری/مشقت کے لیے) صحیح دائرے میں ہے — اور کیا اس کی پیشکش میں کوئی چیز ہے جسے آپ بدلیں یا ہٹائیں گے؟",
+  "@reviewQ11Question": {
+    "description": "D7 review item Q11: review question"
+  },
+  "reviewQ11Why": "ایپ کا مسافر/معذور موڈ؛ یہاں دائرے کی غلطی ایسا ذاتی حکم دے گی جو ایپ نہیں دے سکتی۔",
+  "@reviewQ11Why": {
+    "description": "D7 review item Q11: why-it-matters"
+  },
+  "reviewQ11Evidence": "ثانوی توثیق — virtualmosque.com کے ذریعے قرافی کی ذخیرہ سے ابن بیہ کی نقل (فہرست کی سطح، دوبارہ تصدیق درکار)؛ صرف جمع تقدیم islamweb فتویٰ 6846 کے مطابق (فہرست کی سطح)۔",
+  "@reviewQ11Evidence": {
+    "description": "D7 review item Q11: evidence status"
+  },
+  "reviewQ12Question": "کیا نمازوں کے اوقات کے حساب پر کوئی موریتانی علمی اصطلاح ہے جو اس پروفائل سے رہ گئی ہو — خصوصاً محمد الحسن ولد الددو کا کوئی موقف، کوئی محظری تدریس، یا جدولوں کی کوئی سرکاری موریتانی طریقہ کار — جو طے شدہ کو بدل دے؟",
+  "@reviewQ12Question": {
+    "description": "D7 review item Q12: review question"
+  },
+  "reviewQ12Why": "'موریتانی علمی پروفائل' کی تحقیق مفروضات پر نہیں چل سکتی؛ منفی یا مثبت دونوں جواب اس نکتے کو بند کرتے ہیں۔",
+  "@reviewQ12Why": {
+    "description": "D7 review item Q12: why-it-matters"
+  },
+  "reviewQ12Evidence": "حل طلب — اب تک صریح منفی نتائج (ولد الددو کا کوئی درج شدہ حکم نہیں؛ وزارت کی کوئی شائع شدہ طریقہ کار نہیں؛ کوئی دستاویزی موقت روایت نہیں)۔",
+  "@reviewQ12Evidence": {
+    "description": "D7 review item Q12: evidence status"
+  },
+  "reviewQ13Question": "موریتانیہ کے لیے خاص طور پر، کیا تجویز کردہ طے شدہ (رابطہ 18/17 + معیاری/مالکی عصر) قابل قبول ہے، ساتھ میں ایپ میں یہ نوٹ کہ کوئی ممتاز سرکاری موریتانی طریقہ شائع شدہ نہیں؟",
+  "@reviewQ13Question": {
+    "description": "D7 review item Q13: review question"
+  },
+  "reviewQ13Why": "یہ ایپ کے مغربی افریقی صارفین کے لیے طے شدہ پروفائل اور طریقہ کار اسکرین کی دیانت دار عبارت طے کرتا ہے۔",
+  "@reviewQ13Why": {
+    "description": "D7 review item Q13: why-it-matters"
+  },
+  "reviewQ13Evidence": "استدلال — وزارت کے اوقات رابطہ 18/17 + تقریباً 1 تا 2 منٹ سے مطابقت رکھتے ہیں، لیکن طریقہ کار غیر شائع شدہ ہے۔",
+  "@reviewQ13Evidence": {
+    "description": "D7 review item Q13: evidence status"
+  },
+  "reviewQ14Question": "کیا بلند عرض بلد کا طے شدہ (آدھی رات؛ 48 درجے سے اوپر رات کا ساتواں حصہ) بیرون ملک مقیم صارفین کے لیے قابل قبول ہے — یا آپ رابطہ کونسل کی تین قسموں والی منطق کے مختلف اطلاق کا مطالبہ کرتے ہیں؟",
+  "@reviewQ14Question": {
+    "description": "D7 review item Q14: review question"
+  },
+  "reviewQ14Why": "یہ یورپی/شمالی امریکی صارفین کے لیے متبادل برتاؤ طے کرتا ہے جہاں 18/17 درجے کا شفق کبھی نہیں ہوتا۔",
+  "@reviewQ14Why": {
+    "description": "D7 review item Q14: why-it-matters"
+  },
+  "reviewQ14Evidence": "ادارتی اصطلاح — بلند عرض بلد کے کسی طریقے کو لازم قرار دینے والی کوئی مالکی اتھارٹی نہیں ملی۔",
+  "@reviewQ14Evidence": {
+    "description": "D7 review item Q14: evidence status"
+  },
+  "reviewQ15Question": "کیا دو درجے (اختیاری/ضروری) کی پیشکش، اس تنبیہ کے ساتھ کہ بلا عذر ضروری تک تاخیر گناہ ہے (خلیل: «وأثم المؤخر له إلا لعذر»)، مذہب کو دیانت داری سے پیش کرتی ہے بغیر صارفین کو ڈرائے یا گمراہ کیے؟",
+  "@reviewQ15Question": {
+    "description": "D7 review item Q15: review question"
+  },
+  "reviewQ15Why": "چاروں زبانوں میں ایپ کے ضروری کے نشانوں کی عین عبارت۔",
+  "@reviewQ15Why": {
+    "description": "D7 review item Q15: why-it-matters"
+  },
+  "reviewQ15Evidence": "عبارت فقہی طور پر ثابت ہے («واثم الا لعذر» متن کے طور پر مؤکد)؛ لہجہ پیشکش کا فیصلہ ہے۔",
+  "@reviewQ15Evidence": {
+    "description": "D7 review item Q15: evidence status"
+  },
+  "reviewQ16Question": "کیا ہر جگہ (الف) فقہی تعریفات، (ب) فلکیاتی ماڈلز، (ج) حسابی تقریبات، اور (د) عملی اصطلاحات کے درمیان فرق قائم ہے — یعنی کیا ایپ کبھی کسی تقریب کو شرعی حکم کے طور پر پیش کرتی ہے؟",
+  "@reviewQ16Question": {
+    "description": "D7 review item Q16: review question"
+  },
+  "reviewQ16Why": "ہر صارف کو نظر آنے والی عبارت اور 'یہ وقت کیوں؟' شیٹ کا بنیادی دیانت آڈٹ۔",
+  "@reviewQ16Why": {
+    "description": "D7 review item Q16: why-it-matters"
+  },
+  "reviewQ16Evidence": "تجویز کردہ فرق دستاویزی ہے؛ عالم کی اصل اسکرینوں کی پڑھت درکار ہے۔",
+  "@reviewQ16Evidence": {
+    "description": "D7 review item Q16: evidence status"
+  },
+  "reviewQ17Question": "کیا نامزد متبادل (مصری 19.5/17.5، UOIF ‏12/12، Moonsighting ‏18/18، آدھی رات کی عشاء، وسیع مغرب، مخصوص زاویے) اتنے لیبل کے ساتھ پیش کیے گئے ہیں کہ کوئی صارف انہیں جائزہ شدہ طے شدہ نہ سمجھے؟",
+  "@reviewQ17Question": {
+    "description": "D7 review item Q17: review question"
+  },
+  "reviewQ17Why": "یہ روکتا ہے کہ صارف مختلف اصطلاح اپنائے یہ سمجھتے ہوئے کہ یہ مالکی طے شدہ ہے۔",
+  "@reviewQ17Why": {
+    "description": "D7 review item Q17: why-it-matters"
+  },
+  "reviewQ17Evidence": "لیبل کا خاکہ تجویز کردہ ہے؛ عالم کے فیصلے کی ضرورت ہے۔",
+  "@reviewQ17Evidence": {
+    "description": "D7 review item Q17: evidence status"
+  },
+  "reviewQ18Question": "اس پروفائل کو 'جائزہ شدہ' کہنے سے پہلے آپ کن تصحیحات، اضافوں یا حذف کا مطالبہ کرتے ہیں — اور کیا آپ اجازت دیتے ہیں کہ آپ کا نام جائزہ شدہ نسخے سے منسلک ہو؟",
+  "@reviewQ18Question": {
+    "description": "D7 review item Q18: review question"
+  },
+  "reviewQ18Why": "اختتامی سوال — یہ تصحیحات کی فہرست اور نام کی اجازت دیتا ہے جو 'جائزہ شدہ' لیبل کو کھولتے ہیں۔",
+  "@reviewQ18Why": {
+    "description": "D7 review item Q18: why-it-matters"
+  },
+  "reviewQ18Evidence": "ابھی پوچھا نہیں گیا — ابھی تک کسی عالم سے رابطہ نہیں ہوا۔",
+  "@reviewQ18Evidence": {
+    "description": "D7 review item Q18: evidence status"
+  },
+  "reviewP1Question": "حاشیۃ الدسوقی علی الشرح الکبیر میں «الفجر الصادق» / «غروب حمرۃ الشفق» / «وعلی جماعۃ آخرہ» پر دسوقی کی حواشی نکالیں اور ان کی تصدیق کریں۔",
+  "@reviewP1Question": {
+    "description": "D7 review item P1: review question"
+  },
+  "reviewP1Why": "دسوقی دردر پر معتمد حاشیہ ہے؛ اس کی عبارت فجر اور شفق کی تعریفوں کو حتمی یا مضبوط کرے گی۔",
+  "@reviewP1Why": {
+    "description": "D7 review item P1: why-it-matters"
+  },
+  "reviewP1Evidence": "مقام معلوم، استخراج باقی — shamela.ws/book/21604 (دار الفکر، 4 جلدیں) اور islamweb لائبریری کی نقل 2026-10-16 کو ملی؛ مخصوص صفحات ابھی نہیں پڑھے گئے۔",
+  "@reviewP1Evidence": {
+    "description": "D7 review item P1: evidence status"
+  },
+  "reviewP2Question": "الکافی فی فقہ اہل المدینہ (ابن عبد البر) کا نمازوں کے اوقات کا باب اصل متن میں پڑھیں۔",
+  "@reviewP2Question": {
+    "description": "D7 review item P2: review question"
+  },
+  "reviewP2Why": "ابن عبد البر بنیادی مالکی اتھارٹی ہیں؛ ان کا باب متنی مواقف کی تائید یا تضبیط کرے گا، خصوصاً اسفار اور مشترکہ اوقات میں۔",
+  "@reviewP2Why": {
+    "description": "D7 review item P2: why-it-matters"
+  },
+  "reviewP2Evidence": "ایڈیشن کی تصدیق ہو گئی، متن نہیں پڑھا — طبع د. محمد احید ولد مادیک الموریتانی، مکتبۃ الریاض الحدیثہ، 1978۔",
+  "@reviewP2Evidence": {
+    "description": "D7 review item P2: evidence status"
+  },
+  "reviewP3Question": "حطاب کی مواہب الجلیل کے مواقیت الصلاۃ باب کے تتمہ صفحات islamweb پر پڑھیں جو عشاء/شفق اور فجر/صبح سے متعلق ہیں۔",
+  "@reviewP3Question": {
+    "description": "D7 review item P3: review question"
+  },
+  "reviewP3Why": "مواہب خلیل پر مدرسے کی عظیم شرح ہے؛ ان حصوں میں غالباً دونوں شفق کی حدوں کی سب سے مفصل کلاسیکی بحث ہے جن کا تقریب کرنا ہے۔",
+  "@reviewP3Why": {
+    "description": "D7 review item P3: why-it-matters"
+  },
+  "reviewP3Evidence": "جزوی پڑھا گیا — عشاء/فجر کے تتمہ صفحات islamweb پر موجود ہیں لیکن ان کے روابط بغیر اندازے کے نہیں ملے۔",
+  "@reviewP3Evidence": {
+    "description": "D7 review item P3: evidence status"
+  },
+  "reviewP4Question": "ضروری کے مبحث میں متنی عبارت کا مقابلہ کریں — «واثم الا لعذر» متن کے طور پر مؤکد ہے؛ ممکنہ روایت «وعلی جماعۃ آخرہ» کی دردر/دسوقی پر جانچ درکار ہے۔",
+  "@reviewP4Question": {
+    "description": "D7 review item P4: review question"
+  },
+  "reviewP4Why": "تاخیر کے گناہ کی عبارت دو درجے کی پیشکش میں نظر آتی ہے؛ متن عین نقل ہونا چاہیے۔",
+  "@reviewP4Why": {
+    "description": "D7 review item P4: why-it-matters"
+  },
+  "reviewP4Evidence": "حل طلب متنی اختلاف۔",
+  "@reviewP4Evidence": {
+    "description": "D7 review item P4: evidence status"
+  },
+  "reviewP5Question": "موریتانی وزارت کی حسابی طریقہ کار — زاویے، طریقے کا نام، عصر کی اصطلاح، احتیاط — سرکاری مصدر سے حاصل کریں۔",
+  "@reviewP5Question": {
+    "description": "D7 review item P5: review question"
+  },
+  "reviewP5Why": "'موریتانی علمی پروفائل' کی تحقیق کے پیچھے استدلال کا خلا بند کرتا ہے۔",
+  "@reviewP5Why": {
+    "description": "D7 review item P5: why-it-matters"
+  },
+  "reviewP5Evidence": "غیر شائع شدہ؛ رابطہ 18/17 + تقریباً 1 تا 2 منٹ صرف استدلال ہے۔",
+  "@reviewP5Evidence": {
+    "description": "D7 review item P5: evidence status"
+  },
+  "reviewP6Question": "طے کریں کہ کیا ابن بیہ، ولد الددو، یا ولد عدود کا حسابی اصطلاحات (زاویے، طریقے) پر کوئی درج شدہ موقف ہے — ان کی عمومی فقہی تدریس سے ممتاز۔",
+  "@reviewP6Question": {
+    "description": "D7 review item P6: review question"
+  },
+  "reviewP6Why": "درج شدہ موقف موریتانی پروفائل کو بنیاد دے گا؛ مسلسل خاموشی منفی نتیجے کے طور پر درج ہونی چاہیے، پُر نہیں کی جانی چاہیے۔",
+  "@reviewP6Why": {
+    "description": "D7 review item P6: why-it-matters"
+  },
+  "reviewP6Evidence": "ویب پر کوئی شواہد نہیں ملے — آف لائن عربی مطبوعات یا دروس میں ہو سکتا ہے۔",
+  "@reviewP6Evidence": {
+    "description": "D7 review item P6: evidence status"
+  },
+  "reviewP7Question": "مواهب کے متن میں عرض بلد کے حساب سے مضبوط جدولوں کے لیے حطاب جس عالم کا حوالہ دیتے ہیں («ابو مقرع») اس کی شناخت کریں۔",
+  "@reviewP7Question": {
+    "description": "D7 review item P7: review question"
+  },
+  "reviewP7Why": "میقات کے ریکارڈ کی تاریخی تکمیل؛ ایپ کے کسی معاملے پر اثر نہیں۔",
+  "@reviewP7Why": {
+    "description": "D7 review item P7: why-it-matters"
+  },
+  "reviewP7Evidence": "جیسا مطبوع ہے ویسا درج، تحقیق نہیں ہوئی۔",
+  "@reviewP7Evidence": {
+    "description": "D7 review item P7: evidence status"
+  },
+  "reviewP8Question": "علامہ محمد مولود کے الکفاف کے اشعار کا مطبوع متن حاصل کریں جو شیخ محمد محمود الشنقیطی کی رسالہ کی شرح میں نقل ہیں (باحث کی نقل وہاں بگڑی ہوئی ہے)۔",
+  "@reviewP8Question": {
+    "description": "D7 review item P8: review question"
+  },
+  "reviewP8Why": "اشعار صبح کے ضروری کے سوال (Q6) سے متعلق ہیں؛ صاف متن ان کے درست نقل کی اجازت دے گا۔",
+  "@reviewP8Why": {
+    "description": "D7 review item P8: why-it-matters"
+  },
+  "reviewP8Evidence": "نقل بگڑی ہوئی؛ مطبوع نظم نہیں دیکھی گئی۔",
+  "@reviewP8Evidence": {
+    "description": "D7 review item P8: evidence status"
   }
 }

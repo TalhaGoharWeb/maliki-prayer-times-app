@@ -712,5 +712,397 @@
   "shareSubject": "Horaire des prières",
   "@shareSubject": {
     "description": "Share sheet subject"
+  },
+  "reviewTitle": "Registre de révision",
+  "@reviewTitle": {
+    "description": "Review record screen title"
+  },
+  "reviewIntro": "Ces questions sur le profil de calcul de l'application ont été soumises à des savants malikites qualifiés. Chaque réponse enregistrée figure ici avec le nom du savant et la date. Rien ici n'est une fatwa, et rien ne peut être cité comme une approbation savante.",
+  "@reviewIntro": {
+    "description": "Intro text of the review record screen"
+  },
+  "reviewGroupAstronomy": "Conventions astronomiques",
+  "@reviewGroupAstronomy": {
+    "description": "Review record group header: astronomical conventions (Q1-Q4)"
+  },
+  "reviewGroupFiqh": "Correspondances jurisprudentielles malikites",
+  "@reviewGroupFiqh": {
+    "description": "Review record group header: Maliki jurisprudential mappings (Q5-Q11)"
+  },
+  "reviewGroupRegional": "Questions mauritaniennes et régionales",
+  "@reviewGroupRegional": {
+    "description": "Review record group header: Mauritanian and regional questions (Q12-Q14)"
+  },
+  "reviewGroupPresentation": "Présentation et intégrité",
+  "@reviewGroupPresentation": {
+    "description": "Review record group header: presentation and integrity (Q15-Q18)"
+  },
+  "reviewGroupPass2": "Points non résolus (deuxième passe)",
+  "@reviewGroupPass2": {
+    "description": "Review record group header: pass-2 unresolved items (P1-P8)"
+  },
+  "reviewStatusProposed": "En attente de révision",
+  "@reviewStatusProposed": {
+    "description": "Status badge: item awaiting scholarly review"
+  },
+  "reviewStatusReviewed": "En cours de révision — réponse enregistrée",
+  "@reviewStatusReviewed": {
+    "description": "Status badge: scholar's answer recorded"
+  },
+  "reviewStatusEndorsed": "Approuvé",
+  "@reviewStatusEndorsed": {
+    "description": "Status badge: endorsed (shown only when a formal ruling is recorded)"
+  },
+  "reviewSharePacket": "Partager le dossier de révision",
+  "@reviewSharePacket": {
+    "description": "Button: share the review packet"
+  },
+  "reviewReviewer": "Réviseur",
+  "@reviewReviewer": {
+    "description": "Label: reviewer name"
+  },
+  "reviewReviewDate": "Date de révision",
+  "@reviewReviewDate": {
+    "description": "Label: review date"
+  },
+  "reviewAnswer": "Réponse",
+  "@reviewAnswer": {
+    "description": "Label: scholar's answer"
+  },
+  "reviewPacketTitle": "Application d'horaires de prière malikite — dossier de révision savante",
+  "@reviewPacketTitle": {
+    "description": "Review packet document title"
+  },
+  "reviewPacketIntro": "Les questions ci-dessous constituent le registre de révision savante de l'application : la liste des dix-huit questions et les huit points non résolus de la deuxième passe. Elles sont adressées à des savants malikites qualifiés — en priorité à des savants mauritaniens familiers de la tradition malikite vivante de la région, puis à des savants malikites qualifiés d'autres régions historiquement malikites. Chaque point indique pourquoi il importe et l'état actuel des preuves. Rien dans ce document n'est une fatwa, et rien ne peut en être cité comme une approbation savante.",
+  "@reviewPacketIntro": {
+    "description": "Review packet document intro"
+  },
+  "reviewPacketWhy": "Pourquoi c'est important",
+  "@reviewPacketWhy": {
+    "description": "Review packet section label: why it matters"
+  },
+  "reviewPacketEvidence": "État actuel des preuves",
+  "@reviewPacketEvidence": {
+    "description": "Review packet section label: current evidence status"
+  },
+  "reviewPacketAnswerPrompt": "Réponse du savant (nom, date, et les propres mots du savant)",
+  "@reviewPacketAnswerPrompt": {
+    "description": "Review packet per-item answer prompt for the scholar"
+  },
+  "reviewPacketDate": "Date du dossier",
+  "@reviewPacketDate": {
+    "description": "Review packet label: packet date"
+  },
+  "reviewQ1Question": "L'approximation de l'aube véridique (al-fajr al-sadiq) par une dépression solaire de 18° (convention MWL 1986) est-elle acceptable pour un horaire malikite, et à quelles conditions exigeriez-vous un angle différent ?",
+  "@reviewQ1Question": {
+    "description": "D7 review item Q1: review question"
+  },
+  "reviewQ1Why": "Fixe le paramètre Fajr par défaut de l'application ; la réponse détermine si 18° est maintenu, modifié, ou doit être présenté comme un choix visible.",
+  "@reviewQ1Why": {
+    "description": "D7 review item Q1: why-it-matters"
+  },
+  "reviewQ1Evidence": "Convention institutionnelle uniquement. Aucun texte malikite classique ne donne d'angle en degrés. Les études d'observation de l'aube ont mesuré fajr sadiq entre 14,5° et 18,5° (fait astronomique, non fiqh).",
+  "@reviewQ1Evidence": {
+    "description": "D7 review item Q1: evidence status"
+  },
+  "reviewQ2Question": "L'approximation de la disparition du crépuscule rouge par 17° est-elle acceptable comme début du 'Isha, étant donné la position malikite selon laquelle le shafaq est la rougeur ?",
+  "@reviewQ2Question": {
+    "description": "D7 review item Q2: review question"
+  },
+  "reviewQ2Why": "Fixe le paramètre 'Isha par défaut ; la réponse doit aussi confirmer le présupposé rouge-contre-blanc encodé dans le moteur.",
+  "@reviewQ2Why": {
+    "description": "D7 review item Q2: why-it-matters"
+  },
+  "reviewQ2Evidence": "Le shafaq rouge est établi en fiqh (Risala ; Khalil : «مِنْ غُرُوبِ حُمْرَةِ الشَّفَقِ») ; le chiffre de 17° est une convention institutionnelle (MWL 1986).",
+  "@reviewQ2Evidence": {
+    "description": "D7 review item Q2: evidence status"
+  },
+  "reviewQ3Question": "Les ajustements d'ihtiyat de +0 à 2 min sur le Maghrib et de +1 à 2 min sur le Dhuhr sont-ils appropriés, excessifs ou insuffisants — et doivent-ils être fixes, configurables ou supprimés ?",
+  "@reviewQ3Question": {
+    "description": "D7 review item Q3: review question"
+  },
+  "reviewQ3Why": "L'ihtiyat est un paramètre du profil appliqué avant l'arrondi ; la réponse fixe sa valeur et sa visibilité.",
+  "@reviewQ3Why": {
+    "description": "D7 review item Q3: why-it-matters"
+  },
+  "reviewQ3Evidence": "Convention opérationnelle (fatwa MWL +2 min ; searchtruth +1 min) — aucun fondement fiqh trouvé.",
+  "@reviewQ3Evidence": {
+    "description": "D7 review item Q3: evidence status"
+  },
+  "reviewQ4Question": "L'arrondi à la minute la plus proche est-il acceptable pour les heures affichées, ou exigez-vous l'arrondi au plafond (toujours vers le haut) ou une autre convention ?",
+  "@reviewQ4Question": {
+    "description": "D7 review item Q4: review question"
+  },
+  "reviewQ4Why": "L'arrondi s'applique à chaque heure affichée ; la réponse est un réglage documenté du profil.",
+  "@reviewQ4Why": {
+    "description": "D7 review item Q4: why-it-matters"
+  },
+  "reviewQ4Evidence": "Convention opérationnelle (standard des bibliothèques et horaires de prière).",
+  "@reviewQ4Evidence": {
+    "description": "D7 review item Q4: evidence status"
+  },
+  "reviewQ5Question": "Le facteur d'ombre 1 pour le 'Asr (premier mithl, ombre du zawal exclue) est-il le début malikite correct du 'Asr par défaut — et l'option hanafite du facteur 2 doit-elle être proposée, même étiquetée « comparaison non malikite » ?",
+  "@reviewQ5Question": {
+    "description": "D7 review item Q5: review question"
+  },
+  "reviewQ5Why": "Le paramètre le plus établi en fiqh du profil ; la réponse le confirme ou le corrige, et décide si le facteur 2 figure dans une application malikite.",
+  "@reviewQ5Why": {
+    "description": "D7 review item Q5: why-it-matters"
+  },
+  "reviewQ5Evidence": "Mashhur établi en fiqh — tous les textes excluent zill al-zawal (Tahdhib, Risala, Khalil, Dardir, Mawahib, Qawanin).",
+  "@reviewQ5Evidence": {
+    "description": "D7 review item Q5: evidence status"
+  },
+  "reviewQ6Question": "L'affichage du Subh à deux niveaux (ikhtiyari jusqu'à l'isfar en bande informative ; daruri jusqu'au lever du soleil) est-il la présentation correcte — ou exigez-vous la position bien connue de Malik (ikhtiyari jusqu'au lever du soleil, sans bande) ?",
+  "@reviewQ6Question": {
+    "description": "D7 review item Q6: review question"
+  },
+  "reviewQ6Why": "Décide de la présentation de l'écran Subh à un ou deux niveaux.",
+  "@reviewQ6Why": {
+    "description": "D7 review item Q6: why-it-matters"
+  },
+  "reviewQ6Evidence": "Désaccord interne reconnu : mashhur = deux niveaux ; minorité = pas de daruri ; position transmise de Malik = ikhtiyari jusqu'au lever du soleil.",
+  "@reviewQ6Evidence": {
+    "description": "D7 review item Q6: evidence status"
+  },
+  "reviewQ7Question": "La valeur par défaut du Maghrib est-elle correcte selon la vue étroite du mashhur (coucher du soleil + bande d'environ 15 à 20 min), avec la vue élargie d'al-Baji proposée comme alternative étiquetée — ou la vue élargie devrait-elle être la valeur par défaut ?",
+  "@reviewQ7Question": {
+    "description": "D7 review item Q7: review question"
+  },
+  "reviewQ7Why": "Modifie la bande d'affichage du Maghrib d'environ une heure aux latitudes tempérées.",
+  "@reviewQ7Why": {
+    "description": "D7 review item Q7: why-it-matters"
+  },
+  "reviewQ7Evidence": "Désaccord interne reconnu — étroit = mashhur (Risala, Khalil, Qawanin) ; élargi jusqu'à la disparition du shafaq = bien attesté (al-Baji, formulation du Muwatta').",
+  "@reviewQ7Evidence": {
+    "description": "D7 review item Q7: evidence status"
+  },
+  "reviewQ8Question": "La fin préférée du 'Isha est-elle correcte au premier tiers de la nuit, avec la variante d'Ibn Habib (minuit) proposée comme alternative étiquetée — ou minuit devrait-il être la valeur par défaut ?",
+  "@reviewQ8Question": {
+    "description": "D7 review item Q8: review question"
+  },
+  "reviewQ8Why": "Déplace le marqueur « préféré jusqu'à » du 'Isha.",
+  "@reviewQ8Why": {
+    "description": "D7 review item Q8: why-it-matters"
+  },
+  "reviewQ8Evidence": "Désaccord interne reconnu : mashhur = premier tiers ; Ibn Habib = minuit (Muslim 612).",
+  "@reviewQ8Evidence": {
+    "description": "D7 review item Q8: evidence status"
+  },
+  "reviewQ9Question": "L'affichage de la fin préférée du 'Asr (« préféré jusqu'au jaunissement », approximé par le point d'ombre double ou un proxy d'élévation solaire, explicitement étiqueté approximatif) est-il acceptable — ou exigez-vous un autre traitement de l'isfirar ?",
+  "@reviewQ9Question": {
+    "description": "D7 review item Q9: review question"
+  },
+  "reviewQ9Why": "L'isfirar n'a pas d'heure d'horloge dans les sources ; la réponse décide si l'application peut afficher la bande proxy, et sous quelle étiquette.",
+  "@reviewQ9Why": {
+    "description": "D7 review item Q9: why-it-matters"
+  },
+  "reviewQ9Evidence": "Observationnel, non quantifié — « le jaunissement se juge sur la terre et les murs, non dans le soleil lui-même » ; aucune source fiqh ne donne de décalage horaire.",
+  "@reviewQ9Evidence": {
+    "description": "D7 review item Q9: evidence status"
+  },
+  "reviewQ10Question": "Les bornes daruri (Subh → lever du soleil ; Dhuhr/'Asr → coucher du soleil ; Maghrib/'Isha → aube véridique) et la sémantique du « rattrapé par une rak'a » sont-elles correctement énoncées pour l'affichage ?",
+  "@reviewQ10Question": {
+    "description": "D7 review item Q10: review question"
+  },
+  "reviewQ10Why": "Les marqueurs de fin absolue sur chaque carte de prière.",
+  "@reviewQ10Why": {
+    "description": "D7 review item Q10: why-it-matters"
+  },
+  "reviewQ10Evidence": "Établi en fiqh par le matn de Khalil et l'Aqrab ; le Qawanin confirme que le Subh n'a pas de daruri selon le mashhur.",
+  "@reviewQ10Evidence": {
+    "description": "D7 review item Q10: evidence status"
+  },
+  "reviewQ11Question": "La fonction de regroupement (Dhuhr→'Asr et Maghrib→'Isha en taqdim uniquement, pour pluie/maladie/difficulté) est-elle correctement délimitée — et y a-t-il dans sa présentation quelque chose à changer ou à retirer ?",
+  "@reviewQ11Question": {
+    "description": "D7 review item Q11: review question"
+  },
+  "reviewQ11Why": "Le mode voyageur/excuse de l'application ; une mauvaise délimitation dispenserait un avis personnel que l'application ne peut donner.",
+  "@reviewQ11Why": {
+    "description": "D7 review item Q11: why-it-matters"
+  },
+  "reviewQ11Evidence": "Attestation secondaire — transmission de Bin Bayyah d'al-Qarafi via virtualmosque.com (niveau index, à revérifier) ; regroupement en taqdim uniquement selon la fatwa islamweb 6846 (niveau index).",
+  "@reviewQ11Evidence": {
+    "description": "D7 review item Q11: evidence status"
+  },
+  "reviewQ12Question": "Existe-t-il une convention savante mauritanienne sur le calcul des horaires de prière que ce profil aurait manquée — en particulier une position de Muhammad al-Hasan Ould al-Dedew, un enseignement de mahadra, ou une méthodologie officielle mauritanienne des horaires — qui devrait changer la valeur par défaut ?",
+  "@reviewQ12Question": {
+    "description": "D7 review item Q12: review question"
+  },
+  "reviewQ12Why": "L'enquête sur le « profil savant mauritanien » ne peut reposer sur des suppositions ; une réponse négative ou positive clôt le point.",
+  "@reviewQ12Why": {
+    "description": "D7 review item Q12: why-it-matters"
+  },
+  "reviewQ12Evidence": "Non résolu — constats négatifs explicites jusqu'ici (aucune décision enregistrée d'Ould al-Dedew ; aucune méthodologie ministérielle publiée ; aucune tradition de muwaqqit documentée).",
+  "@reviewQ12Evidence": {
+    "description": "D7 review item Q12: evidence status"
+  },
+  "reviewQ13Question": "Pour la Mauritanie spécifiquement, la valeur par défaut proposée (MWL 18/17 + 'Asr standard/malikite) est-elle acceptable, avec la note dans l'application qu'aucune méthode officielle mauritanienne distincte n'est publiée ?",
+  "@reviewQ13Question": {
+    "description": "D7 review item Q13: review question"
+  },
+  "reviewQ13Why": "Décide du profil par défaut pour les utilisateurs ouest-africains et de la formulation honnête de l'écran de méthodologie.",
+  "@reviewQ13Why": {
+    "description": "D7 review item Q13: why-it-matters"
+  },
+  "reviewQ13Evidence": "Inférence — les horaires du ministère sont compatibles avec MWL 18/17 + environ 1 à 2 min, mais la méthode n'est pas publiée.",
+  "@reviewQ13Evidence": {
+    "description": "D7 review item Q13: evidence status"
+  },
+  "reviewQ14Question": "La valeur par défaut pour les hautes latitudes (middleOfTheNight ; seventhOfTheNight au-dessus de 48°) est-elle acceptable pour les utilisateurs de la diaspora — ou exigez-vous une application différente de la logique à trois catégories du conseil MWL ?",
+  "@reviewQ14Question": {
+    "description": "D7 review item Q14: review question"
+  },
+  "reviewQ14Why": "Fixe le comportement de repli pour les utilisateurs européens/nord-américains où le crépuscule 18°/17° n'existe jamais.",
+  "@reviewQ14Why": {
+    "description": "D7 review item Q14: why-it-matters"
+  },
+  "reviewQ14Evidence": "Convention institutionnelle — aucune autorité malikite trouvée prescrivant une méthode pour les hautes latitudes.",
+  "@reviewQ14Evidence": {
+    "description": "D7 review item Q14: evidence status"
+  },
+  "reviewQ15Question": "L'affichage à deux niveaux (ikhtiyari/daruri), avec l'avertissement que retarder dans le daruri sans excuse est un péché (Khalil : «وأثم المؤخر له إلا لعذر»), présente-t-il la doctrine fidèlement sans effrayer ni tromper les utilisateurs ?",
+  "@reviewQ15Question": {
+    "description": "D7 review item Q15: review question"
+  },
+  "reviewQ15Why": "La formulation exacte des marqueurs daruri de l'application en quatre langues.",
+  "@reviewQ15Why": {
+    "description": "D7 review item Q15: why-it-matters"
+  },
+  "reviewQ15Evidence": "Formulation établie en fiqh («واثم الا لعذر» confirmé comme matn) ; le ton est une décision de présentation.",
+  "@reviewQ15Evidence": {
+    "description": "D7 review item Q15: evidence status"
+  },
+  "reviewQ16Question": "La séparation est-elle maintenue partout entre (a) les définitions fiqh, (b) les modèles astronomiques, (c) les approximations de calcul et (d) les conventions opérationnelles — c'est-à-dire l'application présente-t-elle jamais une approximation comme une décision religieuse ?",
+  "@reviewQ16Question": {
+    "description": "D7 review item Q16: review question"
+  },
+  "reviewQ16Why": "L'audit d'intégrité central de chaque chaîne visible et de la fiche « Pourquoi cette heure ? ».",
+  "@reviewQ16Why": {
+    "description": "D7 review item Q16: why-it-matters"
+  },
+  "reviewQ16Evidence": "Séparation proposée documentée ; nécessite la lecture par le savant des écrans réels.",
+  "@reviewQ16Evidence": {
+    "description": "D7 review item Q16: evidence status"
+  },
+  "reviewQ17Question": "Les alternatives nommées (égyptien 19,5/17,5, UOIF 12/12, Moonsighting 18/18, 'Isha de minuit, Maghrib élargi, angles personnalisés) sont-elles présentées avec un étiquetage suffisant pour qu'aucun utilisateur ne les prenne pour la valeur par défaut révisée ?",
+  "@reviewQ17Question": {
+    "description": "D7 review item Q17: review question"
+  },
+  "reviewQ17Why": "Empêche qu'un utilisateur adopte une convention différente en la croyant la valeur malikite par défaut.",
+  "@reviewQ17Why": {
+    "description": "D7 review item Q17: why-it-matters"
+  },
+  "reviewQ17Evidence": "Schéma d'étiquetage proposé ; nécessite le jugement du savant.",
+  "@reviewQ17Evidence": {
+    "description": "D7 review item Q17: evidence status"
+  },
+  "reviewQ18Question": "Quelles corrections, ajouts ou suppressions exigez-vous avant que ce profil puisse être appelé révisé — et permettez-vous que votre nom soit associé à la version révisée ?",
+  "@reviewQ18Question": {
+    "description": "D7 review item Q18: review question"
+  },
+  "reviewQ18Why": "La question de clôture — elle produit la liste des corrections et l'autorisation du nom qui débloquent l'étiquette « révisé ».",
+  "@reviewQ18Why": {
+    "description": "D7 review item Q18: why-it-matters"
+  },
+  "reviewQ18Evidence": "Non posée — aucun savant n'a encore été approché.",
+  "@reviewQ18Evidence": {
+    "description": "D7 review item Q18: evidence status"
+  },
+  "reviewP1Question": "Extraire et vérifier les gloses d'al-Dasuqi sur « الفجر الصادق » / « غروب حمرة الشفق » / «وعلى جماعة آخره» dans la Hashiya d'al-Dasuqi sur al-Sharh al-Kabir.",
+  "@reviewP1Question": {
+    "description": "D7 review item P1: review question"
+  },
+  "reviewP1Why": "Dasuqi est la glose de référence sur Dardir ; sa formulation trancherait ou affinerait les définitions du fajr et du shafaq.",
+  "@reviewP1Why": {
+    "description": "D7 review item P1: why-it-matters"
+  },
+  "reviewP1Evidence": "Localisé, non extrait — shamela.ws/book/21604 (Dar al-Fikr, 4 vol.) et la copie de la bibliothèque islamweb localisés le 2026-10-16 ; pages précises non encore lues.",
+  "@reviewP1Evidence": {
+    "description": "D7 review item P1: evidence status"
+  },
+  "reviewP2Question": "Lire le chapitre des horaires de prière d'al-Kafi fi Fiqh Ahl al-Madinah (Ibn 'Abd al-Barr) dans le texte primaire.",
+  "@reviewP2Question": {
+    "description": "D7 review item P2: review question"
+  },
+  "reviewP2Why": "Ibn 'Abd al-Barr est une autorité malikite fondatrice ; son chapitre corroborerait ou affinerait les positions du matn, notamment sur l'isfar et les fenêtres partagées.",
+  "@reviewP2Why": {
+    "description": "D7 review item P2: why-it-matters"
+  },
+  "reviewP2Evidence": "Édition vérifiée, texte non lu — éd. Dr Muhammad Ahid Ould Maddik al-Mauritani, Maktabat al-Riyad al-Haditha, 1978.",
+  "@reviewP2Evidence": {
+    "description": "D7 review item P2: evidence status"
+  },
+  "reviewP3Question": "Lire les pages de continuation du chapitre des muwaqit d'al-Hattab dans Mawahib al-Jalil sur islamweb couvrant le 'isha/shafaq et le fajr/subh.",
+  "@reviewP3Question": {
+    "description": "D7 review item P3: review question"
+  },
+  "reviewP3Why": "Le Mawahib est le grand commentaire de l'école sur Khalil ; ces sections contiennent probablement la discussion classique la plus détaillée des deux bornes crépusculaires à approximer.",
+  "@reviewP3Why": {
+    "description": "D7 review item P3: why-it-matters"
+  },
+  "reviewP3Evidence": "Partiellement lu — les pages de continuation 'isha/fajr existent sur islamweb mais leurs URL n'ont pas été localisées sans deviner.",
+  "@reviewP3Evidence": {
+    "description": "D7 review item P3: evidence status"
+  },
+  "reviewP4Question": "Collationner la formulation du matn au passage du daruri — «واثم الا لعذر» est confirmé comme matn ; la variante possible «وعلى جماعة آخره» doit être vérifiée sur Dardir/Dasuqi.",
+  "@reviewP4Question": {
+    "description": "D7 review item P4: review question"
+  },
+  "reviewP4Why": "La formulation du péché du retard figure dans l'affichage à deux niveaux ; le matn doit être cité exactement.",
+  "@reviewP4Why": {
+    "description": "D7 review item P4: why-it-matters"
+  },
+  "reviewP4Evidence": "Variante textuelle non résolue.",
+  "@reviewP4Evidence": {
+    "description": "D7 review item P4: evidence status"
+  },
+  "reviewP5Question": "Obtenir la méthodologie de calcul du ministère mauritanien — angles, nom de méthode, convention du 'Asr, ihtiyat — d'une source officielle.",
+  "@reviewP5Question": {
+    "description": "D7 review item P5: review question"
+  },
+  "reviewP5Why": "Comble le fossé d'inférence derrière l'enquête sur le « profil savant mauritanien ».",
+  "@reviewP5Why": {
+    "description": "D7 review item P5: why-it-matters"
+  },
+  "reviewP5Evidence": "Non publié ; MWL 18/17 + environ 1 à 2 min n'est qu'une inférence.",
+  "@reviewP5Evidence": {
+    "description": "D7 review item P5: evidence status"
+  },
+  "reviewP6Question": "Déterminer si Bin Bayyah, Ould Dedew ou Ould 'Adud a une position enregistrée sur les conventions de calcul (angles, méthodes) — distincte de leurs enseignements fiqh généraux.",
+  "@reviewP6Question": {
+    "description": "D7 review item P6: review question"
+  },
+  "reviewP6Why": "Une position enregistrée ancrerait le profil mauritanien ; un silence persistant doit être consigné comme constat négatif, non comblé.",
+  "@reviewP6Why": {
+    "description": "D7 review item P6: why-it-matters"
+  },
+  "reviewP6Evidence": "Aucune preuve web trouvée — peut exister dans l'imprimé arabe hors ligne ou les leçons.",
+  "@reviewP6Evidence": {
+    "description": "D7 review item P6: evidence status"
+  },
+  "reviewP7Question": "Identifier le savant cité par al-Hattab pour les tables d'horaires calibrées par latitude («أبو مقرع») dans le passage du Mawahib.",
+  "@reviewP7Question": {
+    "description": "D7 review item P7: review question"
+  },
+  "reviewP7Why": "Complétude historique du dossier miqat ; n'affecte aucun paramètre de l'application.",
+  "@reviewP7Why": {
+    "description": "D7 review item P7: why-it-matters"
+  },
+  "reviewP7Evidence": "Enregistré tel qu'imprimé, non investigué.",
+  "@reviewP7Evidence": {
+    "description": "D7 review item P7: evidence status"
+  },
+  "reviewP8Question": "Obtenir le texte imprimé des vers d'al-Kafaf de al-'Allama Muhammad Mawlud cités dans le commentaire de Cheikh Muhammad Mahmud al-Shinqiti sur la Risala (la transcription Baheth est corrompue à cet endroit).",
+  "@reviewP8Question": {
+    "description": "D7 review item P8: review question"
+  },
+  "reviewP8Why": "Les vers portent sur la question du daruri du Subh (Q6) ; un texte propre permet de les citer avec exactitude.",
+  "@reviewP8Why": {
+    "description": "D7 review item P8: why-it-matters"
+  },
+  "reviewP8Evidence": "Transcription corrompue ; le nazm imprimé non consulté.",
+  "@reviewP8Evidence": {
+    "description": "D7 review item P8: evidence status"
   }
 }

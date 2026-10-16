@@ -712,5 +712,397 @@
   "shareSubject": "جدول صلوات الشهر",
   "@shareSubject": {
     "description": "Share sheet subject"
+  },
+  "reviewTitle": "سجل المراجعة",
+  "@reviewTitle": {
+    "description": "Review record screen title"
+  },
+  "reviewIntro": "عُرضت هذه الأسئلة حول ملف الحساب في التطبيق على علماء مالكية مؤهلين. تُسجَّل كل إجابة هنا مع اسم العالم وتاريخها. لا شيء هنا فتوى، ولا يجوز الاستشهاد بشيء منه كاعتماد علمي.",
+  "@reviewIntro": {
+    "description": "Intro text of the review record screen"
+  },
+  "reviewGroupAstronomy": "اصطلاحات فلكية",
+  "@reviewGroupAstronomy": {
+    "description": "Review record group header: astronomical conventions (Q1-Q4)"
+  },
+  "reviewGroupFiqh": "إسقاطات فقهية مالكية",
+  "@reviewGroupFiqh": {
+    "description": "Review record group header: Maliki jurisprudential mappings (Q5-Q11)"
+  },
+  "reviewGroupRegional": "أسئلة موريتانية وإقليمية",
+  "@reviewGroupRegional": {
+    "description": "Review record group header: Mauritanian and regional questions (Q12-Q14)"
+  },
+  "reviewGroupPresentation": "العرض والنزاهة",
+  "@reviewGroupPresentation": {
+    "description": "Review record group header: presentation and integrity (Q15-Q18)"
+  },
+  "reviewGroupPass2": "بنود غير محلولة من المرحلة الثانية",
+  "@reviewGroupPass2": {
+    "description": "Review record group header: pass-2 unresolved items (P1-P8)"
+  },
+  "reviewStatusProposed": "بانتظار المراجعة",
+  "@reviewStatusProposed": {
+    "description": "Status badge: item awaiting scholarly review"
+  },
+  "reviewStatusReviewed": "قيد المراجعة — سُجِّل الجواب",
+  "@reviewStatusReviewed": {
+    "description": "Status badge: scholar's answer recorded"
+  },
+  "reviewStatusEndorsed": "مُقَرّ",
+  "@reviewStatusEndorsed": {
+    "description": "Status badge: endorsed (shown only when a formal ruling is recorded)"
+  },
+  "reviewSharePacket": "مشاركة حزمة المراجعة",
+  "@reviewSharePacket": {
+    "description": "Button: share the review packet"
+  },
+  "reviewReviewer": "المراجع",
+  "@reviewReviewer": {
+    "description": "Label: reviewer name"
+  },
+  "reviewReviewDate": "تاريخ المراجعة",
+  "@reviewReviewDate": {
+    "description": "Label: review date"
+  },
+  "reviewAnswer": "الجواب",
+  "@reviewAnswer": {
+    "description": "Label: scholar's answer"
+  },
+  "reviewPacketTitle": "تطبيق مواقيت الصلاة المالكي — حزمة المراجعة العلمية",
+  "@reviewPacketTitle": {
+    "description": "Review packet document title"
+  },
+  "reviewPacketIntro": "الأسئلة أدناه هي سجل المراجعة العلمية للتطبيق: قائمة الثمانية عشر سؤالًا وثمانية بنود غير محلولة من المرحلة الثانية. تُوجَّه إلى علماء مالكية مؤهلين — الأولوية لعلماء موريتانيا العارفين بالتقليد المالكي الحي في المنطقة، ثم لعلماء مالكية مؤهلين من مناطق مالكية تاريخية أخرى. يذكر كل بند سبب أهميته والحالة الراهنة للأدلة. لا شيء في هذه الوثيقة فتوى، ولا يجوز الاستشهاد بشيء منها كاعتماد علمي.",
+  "@reviewPacketIntro": {
+    "description": "Review packet document intro"
+  },
+  "reviewPacketWhy": "سبب الأهمية",
+  "@reviewPacketWhy": {
+    "description": "Review packet section label: why it matters"
+  },
+  "reviewPacketEvidence": "الحالة الراهنة للأدلة",
+  "@reviewPacketEvidence": {
+    "description": "Review packet section label: current evidence status"
+  },
+  "reviewPacketAnswerPrompt": "جواب العالم (الاسم والتاريخ وكلام العالم بنصه)",
+  "@reviewPacketAnswerPrompt": {
+    "description": "Review packet per-item answer prompt for the scholar"
+  },
+  "reviewPacketDate": "تاريخ الحزمة",
+  "@reviewPacketDate": {
+    "description": "Review packet label: packet date"
+  },
+  "reviewQ1Question": "هل يُقبَل تقريب الفجر الصادق بانخفاض شمسي قدره 18 درجة (اصطلاح رابطة العالم الإسلامي 1986) لجدول مواقيت مالكي، وما الشروط التي تشترط فيها زاوية مختلفة؟",
+  "@reviewQ1Question": {
+    "description": "D7 review item Q1: review question"
+  },
+  "reviewQ1Why": "يثبّت معامل الفجر الافتراضي في التطبيق؛ والجواب يحدد هل تبقى زاوية 18 درجة أم تتغير أم يجب عرضها كخيار ظاهر للمستخدم.",
+  "@reviewQ1Why": {
+    "description": "D7 review item Q1: why-it-matters"
+  },
+  "reviewQ1Evidence": "اصطلاح مؤسسي فقط. لا يوجد في النصوص المالكية الكلاسيكية زاوية بالدرجات. دراسات رصد الفجر قاست الفجر الصادق بين 14.5 و18.5 درجة (حقيقة فلكية لا فقهية).",
+  "@reviewQ1Evidence": {
+    "description": "D7 review item Q1: evidence status"
+  },
+  "reviewQ2Question": "هل يُقبَل تقريب اختفاء الشفق الأحمر بزاوية 17 درجة كبداية للعشاء، مع التسليم بموقف المالكية أن الشفق هو الحمرة؟",
+  "@reviewQ2Question": {
+    "description": "D7 review item Q2: review question"
+  },
+  "reviewQ2Why": "يثبّت معامل العشاء الافتراضي في التطبيق؛ ويجب أن يؤكد الجواب أيضًا مقدمة الحمرة مقابل البياض التي يشفرها المحرك.",
+  "@reviewQ2Why": {
+    "description": "D7 review item Q2: why-it-matters"
+  },
+  "reviewQ2Evidence": "الشفق الأحمر ثابت فقهيًا (الرسالة؛ خليل: «مِنْ غُرُوبِ حُمْرَةِ الشَّفَقِ»)؛ ورقم 17 درجة اصطلاح مؤسسي (رابطة العالم الإسلامي 1986).",
+  "@reviewQ2Evidence": {
+    "description": "D7 review item Q2: evidence status"
+  },
+  "reviewQ3Question": "هل تعديلات الاحتياط (+0–2 دقيقة على المغرب و+1–2 دقيقة على الظهر) مناسبة أم مفرطة أم ناقصة — وهل يجب تثبيتها أم جعلها قابلة للضبط أم إزالتها؟",
+  "@reviewQ3Question": {
+    "description": "D7 review item Q3: review question"
+  },
+  "reviewQ3Why": "الاحتياط معامل في الملف يُطبَّق قبل التقريب؛ والجواب يحدد قيمته ومدى ظهوره للمستخدم.",
+  "@reviewQ3Why": {
+    "description": "D7 review item Q3: why-it-matters"
+  },
+  "reviewQ3Evidence": "اصطلاح تشغيلي (فتوى الرابطة +2 دقيقة؛ searchtruth ‏+1 دقيقة) — ولم يُعثر على مستند فقهي.",
+  "@reviewQ3Evidence": {
+    "description": "D7 review item Q3: evidence status"
+  },
+  "reviewQ4Question": "هل التقريب إلى أقرب دقيقة مقبول للأوقات المعروضة، أم تشترط التقريب إلى الأعلى دائمًا أم اصطلاحًا آخر؟",
+  "@reviewQ4Question": {
+    "description": "D7 review item Q4: review question"
+  },
+  "reviewQ4Why": "التقريب يُطبَّق على كل وقت معروض؛ والجواب إعداد موثق في الملف.",
+  "@reviewQ4Why": {
+    "description": "D7 review item Q4: why-it-matters"
+  },
+  "reviewQ4Evidence": "اصطلاح تشغيلي (معيار مكتبات الحساب والجداول).",
+  "@reviewQ4Evidence": {
+    "description": "D7 review item Q4: evidence status"
+  },
+  "reviewQ5Question": "هل معامل ظل العصر 1 (المثل الأول، باستثناء ظل الزوال) هو بداية العصر المالكية الصحيحة للوضع الافتراضي — وهل يُعرَض خيار المعامل 2 الحنفي أصلًا ولو موسومًا بغير المالكي؟",
+  "@reviewQ5Question": {
+    "description": "D7 review item Q5: review question"
+  },
+  "reviewQ5Why": "أكثر معاملات الملف توثيقًا فقهيًا؛ والجواب يؤكده أو يصححه، ويقرر هل يظهر المعامل 2 في تطبيق مالكي.",
+  "@reviewQ5Why": {
+    "description": "D7 review item Q5: why-it-matters"
+  },
+  "reviewQ5Evidence": "مشهور ثابت فقهيًا — كل النصوص تستثني ظل الزوال (التهذيب، الرسالة، خليل، الدردير، المواهب، القوانين).",
+  "@reviewQ5Evidence": {
+    "description": "D7 review item Q5: evidence status"
+  },
+  "reviewQ6Question": "هل عرض الصبح على مستويين (الاختياري إلى الإسفار كنطاق إعلامي؛ والضروري إلى الشروق) هو العرض الصحيح — أم تشترط القول المشهور عن مالك (الاختياري إلى الشروق بلا نطاق)؟",
+  "@reviewQ6Question": {
+    "description": "D7 review item Q6: review question"
+  },
+  "reviewQ6Why": "يقرر عرض شاشة الصبح بمستويين أم بمستوى واحد.",
+  "@reviewQ6Why": {
+    "description": "D7 review item Q6: why-it-matters"
+  },
+  "reviewQ6Evidence": "خلاف داخلي معتبر: المشهور = مستويان؛ والأقل = لا ضروري؛ والمنقول عن مالك = الاختياري إلى الشروق.",
+  "@reviewQ6Evidence": {
+    "description": "D7 review item Q6: evidence status"
+  },
+  "reviewQ7Question": "هل الافتراضي للمغرب صحيح على الرأي المشهور الضيق (الغروب + نطاق 15–20 دقيقة تقريبًا)، مع عرض رأي الباجي الموسَّع كبديل موسوم — أم يجب أن يكون الموسَّع هو الافتراضي؟",
+  "@reviewQ7Question": {
+    "description": "D7 review item Q7: review question"
+  },
+  "reviewQ7Why": "يغيّر نطاق عرض المغرب بنحو ساعة عند خطوط العرض المعتدلة.",
+  "@reviewQ7Why": {
+    "description": "D7 review item Q7: why-it-matters"
+  },
+  "reviewQ7Evidence": "خلاف داخلي معتبر — الضيق = المشهور (الرسالة، خليل، القوانين)؛ والموسَّع إلى مغيب الشفق = ثابت بأسانيد معتبرة (الباجي، لفظ الموطأ).",
+  "@reviewQ7Evidence": {
+    "description": "D7 review item Q7: evidence status"
+  },
+  "reviewQ8Question": "هل نهاية العشاء المفضلة صحيحة على الثلث الأول من الليل، مع عرض رواية ابن حبيب (منتصف الليل) كبديل موسوم — أم يجب أن يكون منتصف الليل هو الافتراضي؟",
+  "@reviewQ8Question": {
+    "description": "D7 review item Q8: review question"
+  },
+  "reviewQ8Why": "يحرّك علامة «يُفضَّل حتى» للعشاء.",
+  "@reviewQ8Why": {
+    "description": "D7 review item Q8: why-it-matters"
+  },
+  "reviewQ8Evidence": "خلاف داخلي معتبر: المشهور = الثلث الأول؛ وابن حبيب = منتصف الليل (مسلم 612).",
+  "@reviewQ8Evidence": {
+    "description": "D7 review item Q8: evidence status"
+  },
+  "reviewQ9Question": "هل عرض نهاية العصر المفضلة («يُفضَّل حتى الاصفرار»، بتقريب نقطة الظل المضاعف أو بديل الارتفاع الشمسي، موسومًا صراحة بالتقريبية) مقبول — أم تشترط معالجة مختلفة للاصفرار؟",
+  "@reviewQ9Question": {
+    "description": "D7 review item Q9: review question"
+  },
+  "reviewQ9Why": "الاصفرار لا وقت له بالساعات في المصادر؛ والجواب يقرر هل يجوز للتطبيق عرض نطاق التقريب أصلًا وبأي وسم.",
+  "@reviewQ9Why": {
+    "description": "D7 review item Q9: why-it-matters"
+  },
+  "reviewQ9Evidence": "رصدي غير مقدَّر — «الاصفرار يُحكَم في الأرض والجدران لا في الشمس نفسها»؛ ولا مصدر فقهي يعطي إزاحة بالساعات.",
+  "@reviewQ9Evidence": {
+    "description": "D7 review item Q9: evidence status"
+  },
+  "reviewQ10Question": "هل نهايات الضروري (الصبح ← الشروق؛ الظهر/العصر ← الغروب؛ المغرب/العشاء ← الفجر الصادق) ودلالة «أُدرِك بركعة» مصاغة صحيحًا لأغراض العرض؟",
+  "@reviewQ10Question": {
+    "description": "D7 review item Q10: review question"
+  },
+  "reviewQ10Why": "علامات النهاية المطلقة على كل بطاقة صلاة.",
+  "@reviewQ10Why": {
+    "description": "D7 review item Q10: why-it-matters"
+  },
+  "reviewQ10Evidence": "ثابت فقهيًا بمتن خليل والأقرب؛ والقوانين تؤكد أن لا ضروري للصبح على المشهور.",
+  "@reviewQ10Evidence": {
+    "description": "D7 review item Q10: evidence status"
+  },
+  "reviewQ11Question": "هل خاصية الجمع (الظهر←العصر والمغرب←العشاء جمع تقديم فقط، للمطر أو المرض أو المشقة) مضبوطة النطاق صحيحًا — وهل في عرضها ما تغيّره أو تزيله؟",
+  "@reviewQ11Question": {
+    "description": "D7 review item Q11: review question"
+  },
+  "reviewQ11Why": "وضع المسافر/المعذور في التطبيق؛ وخطأ النطاق هنا يصدر حكمًا شخصيًا لا يملك التطبيق إصداره.",
+  "@reviewQ11Why": {
+    "description": "D7 review item Q11: why-it-matters"
+  },
+  "reviewQ11Evidence": "موثَّق ثانويًا — نقل ابن بيه عن القرافي في الذخيرة عبر virtualmosque.com (على مستوى الفهرسة، يُعاد التحقق)؛ وجمع التقديم فقط بفتوى islamweb رقم 6846 (على مستوى الفهرسة).",
+  "@reviewQ11Evidence": {
+    "description": "D7 review item Q11: evidence status"
+  },
+  "reviewQ12Question": "هل يوجد اصطلاح علمي موريتاني في حساب مواقيت الصلاة غاب عن هذا الملف — خصوصًا أي موقف لمحمد الحسن ولد الددو، أو تدريس محظري، أو منهجية رسمية موريتانية للجداول — يستوجب تغيير الافتراضي؟",
+  "@reviewQ12Question": {
+    "description": "D7 review item Q12: review question"
+  },
+  "reviewQ12Why": "التحقيق في «الملف العلمي الموريتاني» لا يجوز أن يُبنى على الافتراضات؛ والجواب السلبي أو الإيجابي يُغلق البند.",
+  "@reviewQ12Why": {
+    "description": "D7 review item Q12: why-it-matters"
+  },
+  "reviewQ12Evidence": "غير محلول — نتائج سلبية صريحة حتى الآن (لا حكم مسجل لولد الددو؛ لا منهجية منشورة للوزارة؛ لا تقليد موقّت موثق).",
+  "@reviewQ12Evidence": {
+    "description": "D7 review item Q12: evidence status"
+  },
+  "reviewQ13Question": "بالنسبة لموريتانيا تحديدًا، هل الافتراضي المقترح (رابطة العالم الإسلامي 18/17 + عصر معياري/مالكي) مقبول، مع الملاحظة داخل التطبيق أنه لا توجد منهجية موريتانية رسمية متميزة منشورة؟",
+  "@reviewQ13Question": {
+    "description": "D7 review item Q13: review question"
+  },
+  "reviewQ13Why": "يقرر الملف الافتراضي لمستخدمي التطبيق في غرب أفريقيا وصياغة الصدق في شاشة المنهجية.",
+  "@reviewQ13Why": {
+    "description": "D7 review item Q13: why-it-matters"
+  },
+  "reviewQ13Evidence": "استدلال — أوقات الوزارة متوافقة مع 18/17 + نحو 1–2 دقيقة، لكن المنهجية غير منشورة.",
+  "@reviewQ13Evidence": {
+    "description": "D7 review item Q13: evidence status"
+  },
+  "reviewQ14Question": "هل الافتراضي لخطوط العرض العالية (منتصف الليل؛ سُبع الليل فوق 48°) مقبول لمستخدمي الشتات — أم تشترط تطبيق منطق الفئات الثلاث لمجلس الرابطة بشكل مختلف؟",
+  "@reviewQ14Question": {
+    "description": "D7 review item Q14: review question"
+  },
+  "reviewQ14Why": "يثبّت سلوك الاحتياط لمستخدمي أوروبا/أمريكا الشمالية حيث لا يقع شفق 18/17 درجة أبدًا.",
+  "@reviewQ14Why": {
+    "description": "D7 review item Q14: why-it-matters"
+  },
+  "reviewQ14Evidence": "اصطلاح مؤسسي — لم يُعثر على جهة مالكية تشترط أي طريقة لخطوط العرض العالية.",
+  "@reviewQ14Evidence": {
+    "description": "D7 review item Q14: evidence status"
+  },
+  "reviewQ15Question": "هل العرض على مستويين (الاختياري/الضروري)، مع التحذير أن التأخير إلى الضروري بلا عذر إثم (خليل: «وأثم المؤخر له إلا لعذر»)، يعرض المذهب بأمانة دون تخويف المستخدمين أو تضليلهم؟",
+  "@reviewQ15Question": {
+    "description": "D7 review item Q15: review question"
+  },
+  "reviewQ15Why": "الصياغة الدقيقة لعلامات الضروري في التطبيق باللغات الأربع.",
+  "@reviewQ15Why": {
+    "description": "D7 review item Q15: why-it-matters"
+  },
+  "reviewQ15Evidence": "الصياغة ثابتة فقهيًا («واثم الا لعذر» مؤكد كمتن)؛ والنبرة قرار عرض.",
+  "@reviewQ15Evidence": {
+    "description": "D7 review item Q15: evidence status"
+  },
+  "reviewQ16Question": "هل الفصل قائم في كل المواضع بين (أ) التعريفات الفقهية، و(ب) النماذج الفلكية، و(ج) التقريبات الحسابية، و(د) الاصطلاحات التشغيلية — أي هل يعرض التطبيق تقريبًا ما كحكم شرعي؟",
+  "@reviewQ16Question": {
+    "description": "D7 review item Q16: review question"
+  },
+  "reviewQ16Why": "التدقيق الجوهري لكل نص يواجه المستخدم وورقة «لماذا هذا الوقت؟».",
+  "@reviewQ16Why": {
+    "description": "D7 review item Q16: why-it-matters"
+  },
+  "reviewQ16Evidence": "الفصل المقترح موثق؛ ويحتاج إلى قراءة العالم للشاشات الفعلية.",
+  "@reviewQ16Evidence": {
+    "description": "D7 review item Q16: evidence status"
+  },
+  "reviewQ17Question": "هل البدائل المسماة (المصري 19.5/17.5، وUOIF ‏12/12، وMoonsighting ‏18/18، وعشاء منتصف الليل، والمغرب الموسع، والزوايا المخصصة) معروضة بوسم كافٍ بحيث لا يظن أي مستخدم أحدها الافتراضي المراجَع؟",
+  "@reviewQ17Question": {
+    "description": "D7 review item Q17: review question"
+  },
+  "reviewQ17Why": "يمنع أن يعتمد المستخدم اصطلاحًا مختلفًا ظانًّا أنه الافتراضي المالكي.",
+  "@reviewQ17Why": {
+    "description": "D7 review item Q17: why-it-matters"
+  },
+  "reviewQ17Evidence": "مخطط الوسم مقترح؛ ويحتاج إلى حكم العالم.",
+  "@reviewQ17Evidence": {
+    "description": "D7 review item Q17: evidence status"
+  },
+  "reviewQ18Question": "ما التصحيحات أو الإضافات أو الحذوفات التي تشترطها قبل أن يجوز تسمية هذا الملف «مراجَعًا» — وهل تأذن باقتران اسمك بالنسخة المراجَعة؟",
+  "@reviewQ18Question": {
+    "description": "D7 review item Q18: review question"
+  },
+  "reviewQ18Why": "السؤال الختامي — ينتج قائمة التصحيحات وإذن الاسم اللذين يفتحان وسم «مراجَع».",
+  "@reviewQ18Why": {
+    "description": "D7 review item Q18: why-it-matters"
+  },
+  "reviewQ18Evidence": "لم يُسأَل بعد — لم يُتواصَل مع أي عالم حتى الآن.",
+  "@reviewQ18Evidence": {
+    "description": "D7 review item Q18: evidence status"
+  },
+  "reviewP1Question": "استخرج وتحقق من حواشي الدسوقي على «الفجر الصادق» و«غروب حمرة الشفق» و«وعلى جماعة آخره» في حاشية الدسوقي على الشرح الكبير.",
+  "@reviewP1Question": {
+    "description": "D7 review item P1: review question"
+  },
+  "reviewP1Why": "الدسوقي هو الحاشية المعتمدة على الدردير؛ وصياغته تحسم تعريفي الفجر والشفق أو تضبطهما.",
+  "@reviewP1Why": {
+    "description": "D7 review item P1: why-it-matters"
+  },
+  "reviewP1Evidence": "محدد الموقع، غير مستخرج — وُجدت نسختا shamela.ws/book/21604 (دار الفكر، 4 مجلدات) ونسخة مكتبة islamweb بتاريخ 2026-10-16؛ والصفحات المحددة لم تُقرأ بعد.",
+  "@reviewP1Evidence": {
+    "description": "D7 review item P1: evidence status"
+  },
+  "reviewP2Question": "اقرأ باب مواقيت الصلاة من «الكافي في فقه أهل المدينة» لابن عبد البر في النص الأصلي.",
+  "@reviewP2Question": {
+    "description": "D7 review item P2: review question"
+  },
+  "reviewP2Why": "ابن عبد البر مرجع مالكي مؤسس؛ وبابه يؤيد أو يضبط مواقف المتن، خصوصًا في الإسفار والنوافذ المشتركة.",
+  "@reviewP2Why": {
+    "description": "D7 review item P2: why-it-matters"
+  },
+  "reviewP2Evidence": "الطبعة متحقق منها، والنص غير مقروء — طبعة د. محمد أحيد ولد ماديك الموريتاني، مكتبة الرياض الحديثة، 1978.",
+  "@reviewP2Evidence": {
+    "description": "D7 review item P2: evidence status"
+  },
+  "reviewP3Question": "اقرأ الصفحات التالية من باب مواقيت الصلاة في «مواهب الجليل» للحطاب على islamweb فيما يخص العشاء/الشفق والفجر/الصبح.",
+  "@reviewP3Question": {
+    "description": "D7 review item P3: review question"
+  },
+  "reviewP3Why": "المواهب هو الشرح الكبير للمدرسة على خليل؛ وهذه الأقسام تحوي على الأرجح أدق بحث كلاسيكي في حدَّي الشفق اللذين يجب تقريبهما.",
+  "@reviewP3Why": {
+    "description": "D7 review item P3: why-it-matters"
+  },
+  "reviewP3Evidence": "مقروء جزئيًا — صفحات تتمة العشاء/الفجر موجودة على islamweb لكن روابطها لم تُحدَّد دون تخمين.",
+  "@reviewP3Evidence": {
+    "description": "D7 review item P3: evidence status"
+  },
+  "reviewP4Question": "قابل صياغة المتن عند مبحث الضروري — «واثم الا لعذر» مؤكد كمتن؛ والرواية المحتملة «وعلى جماعة آخره» تحتاج المقابلة على الدردير والدسوقي.",
+  "@reviewP4Question": {
+    "description": "D7 review item P4: review question"
+  },
+  "reviewP4Why": "صياغة إثم التأخير تظهر في عرض المستويين؛ ويجب نقل المتن بدقة.",
+  "@reviewP4Why": {
+    "description": "D7 review item P4: why-it-matters"
+  },
+  "reviewP4Evidence": "اختلاف نصي غير محلول.",
+  "@reviewP4Evidence": {
+    "description": "D7 review item P4: evidence status"
+  },
+  "reviewP5Question": "احصل على منهجية حساب الوزارة الموريتانية — الزوايا واسم الطريقة واصطلاح العصر والاحتياط — من مصدر رسمي.",
+  "@reviewP5Question": {
+    "description": "D7 review item P5: review question"
+  },
+  "reviewP5Why": "يسد فجوة الاستدلال خلف التحقيق في «الملف العلمي الموريتاني».",
+  "@reviewP5Why": {
+    "description": "D7 review item P5: why-it-matters"
+  },
+  "reviewP5Evidence": "غير منشور؛ و18/17 + نحو 1–2 دقيقة استدلال فقط.",
+  "@reviewP5Evidence": {
+    "description": "D7 review item P5: evidence status"
+  },
+  "reviewP6Question": "حدد هل لابن بيه أو ولد الددو أو ولد عدود موقف مسجل في اصطلاحات الحساب (الزوايا والطرق) — متميزًا عن تدريسهم الفقهي العام.",
+  "@reviewP6Question": {
+    "description": "D7 review item P6: review question"
+  },
+  "reviewP6Why": "الموقف المسجل يؤسس الملف الموريتاني؛ والصمت المستمر يُسجَّل كنتيجة سلبية لا يُملأ.",
+  "@reviewP6Why": {
+    "description": "D7 review item P6: why-it-matters"
+  },
+  "reviewP6Evidence": "لا دليل على الويب — وقد يوجد في المطبوعات العربية أو الدروس.",
+  "@reviewP6Evidence": {
+    "description": "D7 review item P6: evidence status"
+  },
+  "reviewP7Question": "حدّد هوية العالم الذي يستشهد به الحطاب في جداول المواقيت المضبوطة على خط العرض («أبو مقرع») في نص المواهب.",
+  "@reviewP7Question": {
+    "description": "D7 review item P7: review question"
+  },
+  "reviewP7Why": "تمام تاريخي لسجل علم الميقات؛ ولا يؤثر في أي معامل في التطبيق.",
+  "@reviewP7Why": {
+    "description": "D7 review item P7: why-it-matters"
+  },
+  "reviewP7Evidence": "مسجل كما في المطبوع، غير مُحقَّق.",
+  "@reviewP7Evidence": {
+    "description": "D7 review item P7: evidence status"
+  },
+  "reviewP8Question": "احصل على النص المطبوع لأبيات «الكفاف» للعلامة محمد مولود المقتبسة في شرح الشيخ محمد محمود الشنقيطي على الرسالة (نسخة الباحث مشوهة عندها).",
+  "@reviewP8Question": {
+    "description": "D7 review item P8: review question"
+  },
+  "reviewP8Why": "الأبيات تتعلق بسؤال ضروري الصبح (Q6)؛ والنص السليم يتيح نقلها بدقة.",
+  "@reviewP8Why": {
+    "description": "D7 review item P8: why-it-matters"
+  },
+  "reviewP8Evidence": "النسخ مشوه؛ والنظم المطبوع لم يُراجَع.",
+  "@reviewP8Evidence": {
+    "description": "D7 review item P8: evidence status"
   }
 }
