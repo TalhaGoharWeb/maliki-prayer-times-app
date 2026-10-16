@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -35,9 +38,9 @@ android {
     // committed). Falls back to the pinned TEST key when absent so any
     // checkout still builds installable test APKs.
     val keystorePropsFile = rootProject.file("key.properties")
-    val keystoreProps = java.util.Properties()
+    val keystoreProps = Properties()
     if (keystorePropsFile.exists()) {
-        keystoreProps.load(java.io.FileInputStream(keystorePropsFile))
+        keystoreProps.load(FileInputStream(keystorePropsFile))
     }
 
     signingConfigs {

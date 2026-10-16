@@ -41,6 +41,21 @@ jobs:
       - run: flutter gen-l10n
       - run: flutter analyze
       - run: flutter test
+
+      # Production signing: the release keystore lives in Actions secrets
+      # (never in the repo). Writes android/key.properties (git-ignored)
+      # so the Gradle build picks the prodkey signingConfig.
+      - name: Set up production keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/release.keystore
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=release.keystore
+          EOF
+          chmod 600 android/key.properties android/release.keystore
+
       - run: flutter build apk --release
 
       - name: Create GitHub release with APK
