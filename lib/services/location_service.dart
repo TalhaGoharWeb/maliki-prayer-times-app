@@ -68,8 +68,17 @@ abstract class GpsReader {
 /// The real [GpsReader] backed by the geolocator plugin. Never throws:
 /// any platform error surfaces as `null` so the permission flow in
 /// [LocationService] can report it gracefully.
+///
+/// The fix request carries a [gpsTimeLimit]: when no fix arrives in time
+/// (indoors, poor sky view) geolocator throws [TimeoutException], which is
+/// caught below and surfaces as `null`, so the service reports
+/// [LocationErrorKind.positionUnknown] instead of hanging forever.
 class GeolocatorGpsReader implements GpsReader {
   const GeolocatorGpsReader();
+
+  /// Longest we wait for a single GPS fix. Test fakes mirror this timeout
+  /// so the no-hang contract is covered without a device.
+  static const gpsTimeLimit = Duration(seconds: 25);
 
   @override
   Future<(double, double)?> readPosition() async {
@@ -77,6 +86,7 @@ class GeolocatorGpsReader implements GpsReader {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
+          timeLimit: gpsTimeLimit,
         ),
       );
       return (position.latitude, position.longitude);
@@ -169,6 +179,11 @@ class GeolocatorPermissionGateway implements LocationPermissionGateway {
 class LocationService extends ChangeNotifier {
   /// Key under which the location is persisted in shared_preferences.
   static const String storageKey = 'saved_location';
+
+  /// Longest we wait for the platform reverse-geocoder before falling back
+  /// to the generic "Device location" label. The name is cosmetic; the fix
+  /// itself is persisted before this wait starts.
+  static const Duration _placeNameTimeout = Duration(seconds: 10);
 
   /// The currently chosen location, or `null` until one is chosen.
   SavedLocation? current;
@@ -288,15 +303,33 @@ class LocationService extends ChangeNotifier {
         return;
       }
 
-      final location = SavedLocation(
+      // Persist the fix FIRST: the coordinates are the point of this flow.
+      // The human-readable place name is cosmetic and resolves afterwards
+      // (with its own timeout), updating the saved entry if one arrives, so
+      // a slow platform geocoder can never delay or lose the fix.
+      var location = SavedLocation(
         name: 'Device location',
         latitude: position.$1,
         longitude: position.$2,
         isDevice: true,
-        placeName: await _resolvePlaceName(position.$1, position.$2),
       );
       await _persist(location);
       current = location;
+      notifyListeners();
+
+      final placeName = await _resolvePlaceName(position.$1, position.$2);
+      if (placeName != null && placeName.isNotEmpty) {
+        location = SavedLocation(
+          name: 'Device location',
+          latitude: position.$1,
+          longitude: position.$2,
+          isDevice: true,
+          placeName: placeName,
+        );
+        await _persist(location);
+        current = location;
+        notifyListeners();
+      }
     } catch (e) {
       errorKind = LocationErrorKind.unexpectedUse;
       errorDetail = '$e';
@@ -307,8 +340,12 @@ class LocationService extends ChangeNotifier {
   }
 
   /// Stores a manually entered location as the current location.
+  /// Clears any previous error state: a successful save means there is no
+  /// longer a failure to report.
   Future<void> useManualLocation(SavedLocation location) async {
     errorMessage = null;
+    errorKind = LocationErrorKind.none;
+    errorDetail = null;
     await _persist(location);
     current = location;
     notifyListeners();
@@ -358,10 +395,13 @@ class LocationService extends ChangeNotifier {
 
   /// Reverse-geocodes a fix to a human place name. Never throws: any
   /// failure (sync or async) yields `null` and the UI falls back to
-  /// "Device location".
+  /// "Device location". Bounded by [_placeNameTimeout] so a hanging
+  /// platform geocoder can delay the cosmetic name but never the fix.
   Future<String?> _resolvePlaceName(double latitude, double longitude) async {
     try {
-      return await _placeNamer.nameFor(latitude, longitude);
+      return await _placeNamer
+          .nameFor(latitude, longitude)
+          .timeout(_placeNameTimeout, onTimeout: () => null);
     } catch (_) {
       return null;
     }

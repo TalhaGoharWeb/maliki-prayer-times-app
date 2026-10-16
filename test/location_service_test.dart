@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
@@ -45,10 +47,43 @@ class FakePlaceNamer implements PlaceNamer {
   }
 }
 
+/// Test double for [GpsReader] whose fix never arrives on its own: the
+/// timeout converts the hang into `null`, mirroring how
+/// [GeolocatorGpsReader]'s [LocationSettings.timeLimit] surfaces a
+/// [TimeoutException] as `null`. The production 25 s value is pinned by the
+/// test below; the short timeout here keeps the suite fast.
+class TimeoutGpsReader implements GpsReader {
+  @override
+  Future<(double, double)?> readPosition() =>
+      Completer<(double, double)?>().future.timeout(
+            const Duration(milliseconds: 50),
+            onTimeout: () => null,
+          );
+}
+
+/// Test double for [PlaceNamer] that never resolves, simulating a platform
+/// geocoder hanging on a flaky network. The service's own 10 s timeout
+/// must bound it.
+class HangingPlaceNamer implements PlaceNamer {
+  @override
+  Future<String?> nameFor(double latitude, double longitude) =>
+      Completer<String?>().future;
+}
+
+/// Test double for [PlaceNamer] whose answer is gated by a completer, so
+/// the test controls exactly when the name arrives.
+class GatedPlaceNamer implements PlaceNamer {
+  final Completer<String?> gate = Completer<String?>();
+
+  @override
+  Future<String?> nameFor(double latitude, double longitude) =>
+      gate.future;
+}
+
 Future<LocationService> _loadService({
-  FakeGpsReader? gpsReader,
-  FakePermissionGateway? gateway,
-  FakePlaceNamer? placeNamer,
+  GpsReader? gpsReader,
+  LocationPermissionGateway? gateway,
+  PlaceNamer? placeNamer,
 }) {
   return LocationService.load(
     gpsReader: gpsReader ?? FakeGpsReader(),
@@ -251,6 +286,114 @@ void main() {
 
       expect(service.current?.placeName, isNull);
       expect(service.current?.latitude, 30.4418);
+    });
+
+    test('the GPS fix timeout is 25 seconds', () {
+      expect(GeolocatorGpsReader.gpsTimeLimit, const Duration(seconds: 25));
+    });
+
+    test('a GPS fix that never arrives ends in positionUnknown, not a hang',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService(
+        gpsReader: TimeoutGpsReader(),
+        gateway: FakePermissionGateway(),
+        placeNamer: FakePlaceNamer(),
+      );
+
+      await service.useDeviceLocation(); // must complete, never hang
+
+      expect(service.errorKind, LocationErrorKind.positionUnknown);
+      expect(service.errorMessage, isNotNull);
+      expect(service.current, isNull,
+          reason: 'a failed attempt must not touch the current location');
+    });
+
+    test('the GPS fix is persisted before the place name resolves',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final namer = GatedPlaceNamer();
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gateway: FakePermissionGateway(),
+        placeNamer: namer,
+      );
+
+      final pending = service.useDeviceLocation(); // don't await yet
+      // Let the flow run until it parks on the gated geocoder.
+      for (var i = 0; i < 100 && service.current == null; i++) {
+        await Future<void>.delayed(Duration.zero);
+      }
+
+      // The name is still unresolved, but the fix is already live and
+      // persisted: the name is cosmetic, the coordinates are not.
+      expect(service.current, isNotNull);
+      expect(service.current?.latitude, 30.4418);
+      expect(service.current?.longitude, 73.7535);
+      expect(service.current?.isDevice, isTrue);
+      expect(service.current?.placeName, isNull);
+
+      // The name arrives later and updates the saved entry.
+      namer.gate.complete('Lahore');
+      await pending;
+      expect(service.current?.placeName, 'Lahore');
+
+      final reloaded = await _loadService();
+      expect(reloaded.current?.latitude, 30.4418);
+      expect(reloaded.current?.placeName, 'Lahore');
+    });
+
+    test('a hanging geocoder is bounded by the place-name timeout',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gateway: FakePermissionGateway(),
+        placeNamer: HangingPlaceNamer(),
+      );
+
+      final stopwatch = Stopwatch()..start();
+      await service.useDeviceLocation(); // must complete, never hang
+      stopwatch.stop();
+
+      // Bounded by the 10 s geocode timeout (generous upper bound so the
+      // assertion itself never flakes on a loaded machine).
+      expect(stopwatch.elapsed, lessThan(const Duration(seconds: 30)));
+      expect(service.errorKind, LocationErrorKind.none);
+      expect(service.current?.latitude, 30.4418);
+      expect(service.current?.isDevice, isTrue);
+      expect(service.current?.placeName, isNull,
+          reason: 'no name arrived; the generic label applies');
+
+      final reloaded = await _loadService();
+      expect(reloaded.current?.latitude, 30.4418);
+      expect(reloaded.current?.placeName, isNull);
+    });
+
+    test('successful manual save clears a stale errorKind', () async {
+      SharedPreferences.setMockInitialValues({});
+      final gateway = FakePermissionGateway()
+        ..checked = LocationPermissionState.denied
+        ..requested = LocationPermissionState.denied;
+      final service = await _loadService(
+        gpsReader: FakeGpsReader((18.0, -16.0)),
+        gateway: gateway,
+      );
+
+      await service.useDeviceLocation(); // fails: permission denied
+      expect(service.errorKind, LocationErrorKind.permissionDenied);
+      expect(service.errorMessage, isNotNull);
+
+      await service.useManualLocation(
+        const SavedLocation(
+            name: 'Nouakchott', latitude: 18.0, longitude: -16.0),
+      );
+
+      expect(service.errorKind, LocationErrorKind.none,
+          reason: 'a successful save leaves no error to report');
+      expect(service.errorMessage, isNull);
+      expect(service.errorDetail, isNull);
+      expect(service.current?.name, 'Nouakchott');
     });
 
     test('refresh updates the cached place name on a new fix', () async {

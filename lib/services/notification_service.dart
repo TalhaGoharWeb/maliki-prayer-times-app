@@ -290,6 +290,14 @@ class NotificationTexts {
       };
 }
 
+/// Derives the UTC offset for a local civil [date] from the device
+/// timezone. Used as the default [NotificationService.rescheduleAll]
+/// per-date offset so a DST transition between today and tomorrow schedules
+/// each day in its own frame instead of pinning every date to today's
+/// offset.
+Duration _deviceOffsetForDate(DateTime date) =>
+    DateTime(date.year, date.month, date.day).timeZoneOffset;
+
 /// Schedules prayer-time notifications from the calculation engine.
 ///
 /// ## Scheduling model
@@ -401,12 +409,19 @@ class NotificationService {
   ///
   /// [now] is the current instant (UTC or local); it defaults to
   /// [DateTime.now] and exists so tests can use a fixed clock.
+  ///
+  /// [timeZoneOffsetForDate] derives the UTC offset for each target civil
+  /// date. It defaults to the device timezone's offset for that date (so a
+  /// DST transition between today and tomorrow is honored per date); tests
+  /// inject a fake zone here. [timeZoneOffset] still frames "today" and is
+  /// what gets persisted under the last-offset key.
   Future<void> rescheduleAll({
     required Coordinates coords,
     required PrayerProfile profile,
     required SettingsService settings,
     required Duration timeZoneOffset,
     required NotificationTexts texts,
+    Duration Function(DateTime date)? timeZoneOffsetForDate,
     DateTime? now,
   }) async {
     await _scheduler.cancelAll();
@@ -417,18 +432,23 @@ class NotificationService {
         DateTime.utc(nowWall.year, nowWall.month, nowWall.day);
     final reminderMinutes = settings.reminderOffsetMinutes;
     final exact = await _scheduler.canScheduleExactAlarms();
+    final offsetForDate = timeZoneOffsetForDate ?? _deviceOffsetForDate;
 
     DateTime prayerUtcFor(Prayer prayer, DateTime date) {
+      // Each target date is computed in its own offset frame, so a DST
+      // transition overnight does not pin tomorrow to today's offset.
+      final offset = offsetForDate(date);
       final times = calculatePrayerTimes(
         coordinates: coords,
         date: date,
-        timeZoneOffset: timeZoneOffset,
+        timeZoneOffset: offset,
         profile: profile,
       );
       // `adjustedTime` returns a UTC-kind DateTime whose fields are
-      // wall-clock values; subtract the offset to recover the true instant.
+      // wall-clock values; subtract the date's own offset to recover the
+      // true instant.
       return settings.adjustedTime(prayer, times.timeFor(prayer)).subtract(
-            timeZoneOffset,
+            offset,
           );
     }
 

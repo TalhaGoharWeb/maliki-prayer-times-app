@@ -88,6 +88,85 @@ void main() {
       }
     });
 
+    test('each scheduled date uses its own UTC offset across a DST change',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      // Fake zone: 2026-10-24 runs at UTC+2, clocks fall back to UTC+1
+      // overnight into 2026-10-25.
+      final queriedDays = <int>{};
+      Duration offsetFor(DateTime date) {
+        queriedDays.add(date.day);
+        return date.day == 25
+            ? const Duration(hours: 1)
+            : const Duration(hours: 2);
+      }
+
+      // 12:00 UTC on Oct 24 = 14:00 wall in the +2 frame: Isha is still
+      // upcoming today (+2) while Fajr has rolled to tomorrow (+1).
+      final now = DateTime.utc(2026, 10, 24, 12, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: const Duration(hours: 2),
+        timeZoneOffsetForDate: offsetFor,
+        texts: _texts(),
+        now: now,
+      );
+
+      // Both civil dates went through the per-date seam: tomorrow is not
+      // pinned to today's offset.
+      expect(queriedDays, containsAll({24, 25}));
+
+      DateTime prayerUtc(Prayer p, DateTime date, Duration off) {
+        final times = calculatePrayerTimes(
+          coordinates: _nouakchott,
+          date: date,
+          timeZoneOffset: off,
+          profile: PrayerProfiles.defaultProfile,
+        );
+        return settings.adjustedTime(p, times.timeFor(p)).subtract(off);
+      }
+
+      DateTime wall(Prayer p, DateTime date, Duration off) {
+        final times = calculatePrayerTimes(
+          coordinates: _nouakchott,
+          date: date,
+          timeZoneOffset: off,
+          profile: PrayerProfiles.defaultProfile,
+        );
+        return settings.adjustedTime(p, times.timeFor(p));
+      }
+
+      final byId = {for (final s in fake.scheduled) s.id: s.scheduledUtc};
+      final today = DateTime.utc(2026, 10, 24);
+      final tomorrow = DateTime.utc(2026, 10, 25);
+
+      // Post-transition date scheduled in its own +1 frame...
+      final fajrTomorrow =
+          prayerUtc(Prayer.fajr, tomorrow, const Duration(hours: 1));
+      expect(byId[Prayer.fajr.index], fajrTomorrow);
+      // ...pre-transition date keeps today's +2 frame.
+      expect(byId[Prayer.isha.index],
+          prayerUtc(Prayer.isha, today, const Duration(hours: 2)));
+
+      // Guard against inconsistent offset application: mixing tomorrow's
+      // wall frame with today's offset (or vice versa) would shift the
+      // instant by exactly the 1h DST delta.
+      final mixedEarly = wall(Prayer.fajr, tomorrow, const Duration(hours: 1))
+          .subtract(const Duration(hours: 2));
+      final mixedLate = wall(Prayer.fajr, tomorrow, const Duration(hours: 2))
+          .subtract(const Duration(hours: 1));
+      expect(mixedEarly.difference(fajrTomorrow), const Duration(hours: -1));
+      expect(mixedLate.difference(fajrTomorrow), const Duration(hours: 1));
+      expect(byId[Prayer.fajr.index], isNot(mixedEarly));
+      expect(byId[Prayer.fajr.index], isNot(mixedLate));
+    });
+
     test('past prayer times are skipped, nothing fires immediately', () async {
       SharedPreferences.setMockInitialValues({});
       final settings = await SettingsService.load();
