@@ -31,11 +31,27 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // TEST ONLY keystore (android/test-key.keystore, credentials "android").
+        // It exists so every test APK I build carries the SAME signature and
+        // installs as an update over the previous test build. The sandbox's
+        // auto-generated debug keystore does not survive VM replacements,
+        // which caused "package conflicts with an existing package" install
+        // failures. NEVER use this key for a production/Play release.
+        create("testkey") {
+            storeFile = file("../test-key.keystore")
+            storePassword = "android"
+            keyAlias = "testkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Signing with the pinned test key for now, so `flutter run --release` works
+            // and successive test builds update cleanly on device.
+            signingConfig = signingConfigs.getByName("testkey")
         }
     }
 }
