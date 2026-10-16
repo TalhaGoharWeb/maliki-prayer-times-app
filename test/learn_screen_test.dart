@@ -49,10 +49,11 @@ Future<void> _pumpLearn(
   await tester.pumpAndSettle();
 }
 
-/// Tall frame (16000 logical px): the whole 27-block teaching section lays
-/// out, so every block's badge-free evidence line exists in the element
-/// tree.
-const _tallFrame = Size(1080, 48000);
+/// Tall frame (72000 logical px): the whole 27-block teaching section lays
+/// out with every tile expanded, so every block's evidence line exists in
+/// the element tree. (The expanded content grew past the old 48000px frame
+/// when source-citation lines were added to the passages.)
+const _tallFrame = Size(1080, 216000);
 
 /// Expands every teaching block so Arabic passages, bodies, and evidence
 /// references enter the tree.

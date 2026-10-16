@@ -169,6 +169,7 @@ class LearnScreen extends StatelessWidget {
         title: Text(block.title, style: theme.textTheme.titleSmall),
         children: [
           if (block.arabic.isNotEmpty) ...[
+            _sourceLine(context, block.source),
             _arabicQuote(context, block.arabic),
             const SizedBox(height: 10),
           ],
@@ -181,6 +182,25 @@ class LearnScreen extends StatelessWidget {
           const SizedBox(height: 10),
           _evidenceLine(context, block.refs),
         ],
+      ),
+    );
+  }
+
+  /// The exact book the passage is quoted from: "من كتاب: …", in Amiri,
+  /// RTL, small and set in the secondary color so it reads as a citation
+  /// line above the quotation itself. Hidden when [source] is empty.
+  Widget _sourceLine(BuildContext context, String source) {
+    if (source.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        'من كتاب: $source',
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.right,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontFamily: AppFonts.arabic,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
       ),
     );
   }

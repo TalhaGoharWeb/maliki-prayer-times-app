@@ -56,7 +56,14 @@ class LearnBlock {
   /// Evidence references, e.g. "D1 §2.3 · D4 A3.1". Never empty.
   final String refs;
 
-  const LearnBlock(this.title, this.arabic, this.body, this.refs);
+  /// Exact classical book the [arabic] passage is quoted from, e.g.
+  /// «الرسالة» or «مختصر خليل» — traced through the D4 evidence
+  /// references in [refs]. Empty when the source book could not be
+  /// determined from the research evidence (never guessed).
+  final String source;
+
+  const LearnBlock(this.title, this.arabic, this.body, this.refs,
+      {this.source = ''});
 }
 
 /// The localized content of one Learn section.
@@ -145,6 +152,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'appears. On the mashhur its necessity time (daruri) continues '
               'to sunrise; a minority holds Subh has no daruri at all.',
           'D1 §2.3 · D4 A3.1',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'Dhuhr — from zawal to the first mithl',
@@ -157,6 +165,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'sunset. The Khalil passage above is the school’s compressed '
               'definition, verified verbatim from the printed matn.',
           'D1 §2.4 · D4 A4.1 · A2.1',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'Asr — the first mithl, to the yellowing',
@@ -169,6 +178,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'sunset. This is the one place where the software rule (shadow '
               'factor 1) coincides exactly with the text-established rule.',
           'D1 §2.5 · D4 A4.1 · A6.5',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'Maghrib — sunset, one narrow time (mashhur)',
@@ -180,6 +190,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'al-Baji’s choice) extends it to the disappearance of the red '
               'twilight — noted here as an alternative, not the default.',
           'D1 §2.6 · D4 A3.4 · A6.7',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'Isha — the red twilight, to the first third of the night',
@@ -192,6 +203,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               '(Ibn Habib’s qawl: to midnight). The necessity time continues '
               'to dawn, and Maghrib and Isha share the final four rak‘as.',
           'D1 §2.7 · D4 A3.5 · A2.4',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'The two tiers: mukhtar and daruri',
@@ -206,6 +218,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'Mudawwana era used earlier vocabulary such as "first/last of '
               'the time" and "no harm".',
           'D1 §2.2 · §2.8 · D4 A4.1 · A2.6',
+          source: '«مختصر خليل»',
         ),
       ],
     ),
@@ -227,6 +240,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'known "by repeated observation". An astronomer’s observational '
               'parameter — not a Maliki ruling.',
           'D1 §4.1 · D4 D3.4',
+          source: '«تشريح الأفلاك»',
         ),
         LearnBlock(
           'Ibn al-Samh al-Mahri (d. 426H)',
@@ -309,55 +323,51 @@ const Map<String, Map<String, LearnContent>> _content = {
         LearnBlock(
           'Why can the "preferred until" marker fall before Isha in summer?',
           '',
-          'At high latitudes such as France, the twilight — the natural sign '
-              'for Isha — may not disappear until after the first third of '
-              'the night has passed, so the calculated end of the preferred '
-              'period (one-third of the night) can land earlier than the Isha '
-              'time itself. Example from Paris, 17 May: Maghrib 21:31, end of '
-              'the first third 23:30, Isha 23:51, Fajr 03:30. The established '
-              'view of the four schools is to wait for the real Isha time '
-              'even when it falls after midnight — a substitute sign is '
-              'considered only when the sign is absent, not when it exists '
-              '(Imam Ibn Hajar, as quoted in the Tawqit review).',
+          'At high latitudes — France, for instance — the twilight that opens Isha '
+              'sometimes lingers past the first third of the night. The preferred '
+              'period still ends at that third, so its calculated end can land before '
+              'Isha itself begins. On 17 May in Paris, for example: Maghrib at 21:31, '
+              'the first third ending at 23:30, Isha only at 23:51, Fajr at 03:30. The '
+              'four schools agree on waiting for the genuine Isha time even when it '
+              'falls past midnight; as Imam Ibn Hajar put it, a substitute sign is '
+              'considered only when the real sign is absent, never when it is present.',
           'Tawqit Instagram review, Post 1 · D1 §2.7',
         ),
         LearnBlock(
           'Why do times differ between apps?',
           '',
-          'Most differences are different conventions, not different fiqh: '
-              'different Fajr/Isha angles (18° vs 20° and the rest), '
-              'different precautionary (ihtiyat) minutes, and different '
-              'high-latitude fallbacks. Two cautions from the research: '
-              'preset labels are not always trustworthy (the UOIF 12°/12° '
-              'label is disputed against a claimed 15°/15° reality), and the '
-              'methods of Muslim Pro and IslamicFinder are not publicly '
-              'documented, so their timetables cannot be used as validation '
-              'truth.',
+          'Look past the labels and you will usually find the same fiqh with '
+              'different software conventions: one app opens Fajr at 18°, another at '
+              '20°; one adds precautionary minutes, another adds none; each handles '
+              'high latitudes in its own way. Two things deserve care. Preset labels '
+              'are not always what they claim — the UOIF 12°/12° label, for example, is '
+              'disputed against a claimed 15°/15° reality. And where the method itself '
+              'is unpublished, as with Muslim Pro and IslamicFinder, their timetables '
+              'cannot be used to judge anyone else’s.',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
         ),
         LearnBlock(
           'What does daruri (necessity time) mean?',
           '',
-          'After the preferred (mukhtar) time ends, a necessity window '
-              'remains for those with an excuse — Khalil: the daruri follows '
-              'the mukhtar, to sunrise for Subh, to sunset for Dhuhr and '
-              'Asr, to dawn for Maghrib and Isha. Delaying into it without '
-              'excuse is sinful. A prayer is still caught in it with one '
-              'rak‘a, and all of it counts as on-time (ada’). On the mashhur '
-              'Subh keeps this tier; a minority holds it has none.',
+          'When the preferred time closes, the door does not shut for the excused — '
+              'a necessity window opens after it. Khalil’s formulation: the daruri '
+              'follows the mukhtar — to sunrise for Subh, to sunset for Dhuhr and Asr, '
+              'to dawn for Maghrib and Isha. Stepping into it without excuse is sinful, '
+              'but one rak‘a caught inside it still counts as prayer performed on time '
+              '(ada’). On the mashhur, Subh keeps this tier as well; a minority holds '
+              'that it has none.',
           'D1 §2.8 · D4 A4.1 · A7.2',
         ),
         LearnBlock(
           'What is ihtiyat?',
           '',
-          'A precautionary offset added to the computed times — for example '
-              '+1 minute on Dhuhr and Maghrib. It is a convention for '
-              'caution, never part of the fiqh definition; fiqh boundaries in '
-              'this app never move when the ihtiyat toggle changes. The '
-              'classical tradition already distinguished the legal noon (the '
-              'sun’s disk past the meridian) from the astronomical noon (the '
-              'sun’s center past the meridian) by about half a degree — '
-              'about two minutes of time.',
+          'A small precautionary shift added on top of the computed times — +1 '
+              'minute on Dhuhr and Maghrib, say. It belongs to caution, not to fiqh: '
+              'move the ihtiyat switch in this app and none of the legal boundaries '
+              'move with it. The idea has classical company — the older tradition '
+              'already kept the legal noon (the sun’s disk crossing the meridian) '
+              'separate from the astronomical noon (its center crossing it), by about '
+              'half a degree, roughly two minutes.',
           'D1 §4.4 · D4 A6.2',
         ),
       ],
@@ -468,6 +478,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'مشہور پر اس کا وقتِ ضرورت طلوع آفتاب تک رہتا ہے؛ اقلیتی قول '
               'کے مطابق صبح کا کوئی وقتِ ضرورت نہیں۔',
           'D1 §2.3 · D4 A3.1',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'ظہر — زوال سے مثل اول تک',
@@ -480,6 +491,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'تک رہتا ہے۔ اوپر خلیل کا متن مذہب کی مختصر تعریف ہے، مطبوعہ '
               'متن سے لفظ بہ لفظ تصدیق شدہ۔',
           'D1 §2.4 · D4 A4.1 · A2.1',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'عصر — مثل اول سے اصفرار تک',
@@ -492,6 +504,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'یہ وہ واحد مقام ہے جہاں سوفٹ ویئر کا قاعدہ (سایہ فیکٹر 1) '
               'نص سے ثابت قاعدے سے بالکل مطابقت رکھتا ہے۔',
           'D1 §2.5 · D4 A4.1 · A6.5',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'مغرب — غروب آفتاب، ایک تنگ وقت (مشہور)',
@@ -502,6 +515,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               '(اشہب، باجی کا اختیار) اسے سرخ شفق کے خاتمے تک پھیلاتا ہے — '
               'یہاں یہ متبادل کے طور پر نوٹ شدہ ہے، ڈیفالٹ نہیں۔',
           'D1 §2.6 · D4 A3.4 · A6.7',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'عشاء — سرخ شفق سے رات کے پہلے ثلث تک',
@@ -513,6 +527,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'ناپا ہوا (ابن حبیب کا قول: آدھی رات تک)۔ وقتِ ضرورت فجر تک '
               'رہتا ہے، اور مغرب و عشاء آخری چار رکعتوں میں مشترک ہیں۔',
           'D1 §2.7 · D4 A3.5 · A2.4',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'دو درجے: مختار اور ضروری',
@@ -525,6 +540,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'کی ترتیب ہے — مدونہ کے دور میں «وقت کا اول/آخر» اور «لا بأس» '
               'جیسی ابتدائی اصطلاحات تھیں۔',
           'D1 §2.2 · §2.8 · D4 A4.1 · A2.6',
+          source: '«مختصر خليل»',
         ),
       ],
     ),
@@ -543,6 +559,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'العاملی بھی اسی 18° کو «تجربے سے معلوم شدہ» لکھتے ہیں۔ یہ ایک '
               'فلکیات دان کا مشاہداتی پیمانہ ہے — مالکی حکم نہیں۔',
           'D1 §4.1 · D4 D3.4',
+          source: '«تشريح الأفلاك»',
         ),
         LearnBlock(
           'ابن السمہ المہری (وفات 426ھ)',
@@ -621,49 +638,49 @@ const Map<String, Map<String, LearnContent>> _content = {
         LearnBlock(
           'گرمیوں میں «ترجیحی خاتمہ» کا نشان عشاء سے پہلے کیوں آ سکتا ہے؟',
           '',
-          'فرانس جیسے بلند عرض البلد پر شفق — عشاء کی طبعی علامت — رات کے '
-              'پہلے ثلث کے گزرنے کے بعد تک ختم نہیں ہوتی، اس لیے ترجیحی مدت '
-              'کا حسابی خاتمہ (رات کا ایک تہائی) خود عشاء کے وقت سے پہلے آ '
-              'سکتا ہے۔ پیرس کی مثال، 17 مئی: مغرب 21:31، پہلے ثلث کا خاتمہ '
-              '23:30، عشاء 23:51، فجر 03:30۔ چاروں مذاہب کا معروف موقف یہ '
-              'ہے کہ آدھی رات کے بعد بھی اصل عشاء کے وقت کا انتظار کیا جائے '
-              '— متبادل علامت کا اعتبار صرف اس وقت ہوتا ہے جب علامت موجود '
-              'نہ ہو، جب موجود ہو تو نہیں (امام ابن حجر، Tawqit جائزے میں '
-              'منقول)۔',
+          'فرانس جیسے بلند عرض البلد پر گرمیوں کی بعض راتوں میں شفق — عشاء کی قدرتی '
+              'علامت — رات کے پہلے ثلث کے گزرنے کے بعد بھی باقی رہتی ہے۔ ترجیحی مدت تو '
+              'پہلے ثلث پر ختم ہوتی ہے، اس لیے اس کا حسابی خاتمہ کبھی خود عشاء کے وقت '
+              'سے پہلے بھی آ سکتا ہے۔ 17 مئی کو پیرس میں مثلاً: مغرب 21:31، پہلے ثلث کا '
+              'خاتمہ 23:30، عشاء 23:51، فجر 03:30۔ چاروں مذاہب کا متفقہ موقف یہ ہے کہ '
+              'آدھی رات گزر جانے پر بھی اصل عشاء کے وقت کا انتظار کیا جائے؛ امام ابن '
+              'حجر کے الفاظ میں، متبادل علامت کا اعتبار وہاں ہوتا ہے جہاں اصل علامت '
+              'موجود نہ ہو، نہ کہ جہاں وہ موجود ہو۔',
           'Tawqit Instagram review, Post 1 · D1 §2.7',
         ),
         LearnBlock(
           'ایپس کے اوقات آپس میں کیوں مختلف ہوتے ہیں؟',
           '',
-          'زیادہ تر فرق مختلف کنونشنز کا ہے، مختلف فقہ کا نہیں: فجر/عشاء کے '
-              'مختلف زاویے (18° بمقابلہ 20° وغیرہ)، احتیاط کے مختلف منٹ، اور '
-              'قطبی عرض البلد کے مختلف فال بیک۔ تحقیق کی دو تنبیہات: پری '
-              'سیٹ کے لیبل ہمیشہ قابل اعتماد نہیں (UOIF 12°/12° کا لیبل 15°/'
-              '15° کے دعوے کے خلاف متنازع ہے)، اور Muslim Pro اور '
-              'IslamicFinder کے حساب کے طریقے عوامی طور پر دستاویزی نہیں، '
-              'اس لیے ان کے جدول توثیق کی بنیاد نہیں بن سکتے۔',
+          'ناموں کو ایک طرف رکھ کر دیکھیں تو عام طور پر ایک ہی فقہ ملتی ہے، بس سافٹ '
+              'ویئر کی کنونشنز الگ الگ ہیں: ایک ایپ فجر 18° پر کھولتی ہے، دوسری 20° پر؛ '
+              'ایک احتیاطی منٹ شامل کرتی ہے، دوسری نہیں؛ اور قطبی عرض البلد کا معاملہ '
+              'ہر ایک کا اپنا۔ دو باتیں توجہ کی مستحق ہیں: پری سیٹ کے نام ہمیشہ وہ نہیں '
+              'ہوتے جو وہ دعویٰ کرتے ہیں — مثلاً UOIF کا 12°/12° لیبل 15°/15° کے دعوے '
+              'کے خلاف متنازع ہے۔ اور جہاں طریقۂ حساب ہی شائع شدہ نہ ہو، جیسے Muslim '
+              'Pro اور IslamicFinder، وہاں ان کے جدول کسی اور کے اوقات کی جانچ کے لیے '
+              'استعمال نہیں ہو سکتے۔',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
         ),
         LearnBlock(
           'وقتِ ضرورت (ضروری) سے کیا مراد ہے؟',
           '',
-          'وقتِ مختار کے ختم ہونے کے بعد عذر والوں کے لیے ضرورت کی ایک کھڑکی '
-              'باقی رہتی ہے — خلیل: ضروری مختار کے بعد ہے، صبح کے لیے طلوع '
-              'تک، ظہر و عصر کے لیے غروب تک، مغرب و عشاء کے لیے فجر تک۔ بغیر '
-              'عذر کے اس میں تاخیر گناہ ہے۔ اس میں بھی نماز ایک رکعت سے پائی '
-              'جاتی ہے، اور سب ادا شمار ہوتا ہے۔ مشہور پر صبح یہ درجہ رکھتی '
-              'ہے؛ اقلیتی قول کے مطابق اس کا کوئی ضروری نہیں۔',
+          'جب ترجیحی وقت ختم ہو جائے تو عذر والوں کے لیے دروازہ بند نہیں ہوتا — اس '
+              'کے بعد ضرورت کا ایک وقفہ کھلتا ہے۔ خلیل کا فرمان: ضروری مختار کے بعد آتا '
+              'ہے — صبح کے لیے طلوع تک، ظہر و عصر کے لیے غروب تک، مغرب و عشاء کے لیے '
+              'فجر تک۔ بغیر عذر اس میں داخل ہونا گناہ ہے، مگر اس کے اندر ایک رکعت پانے '
+              'پر بھی نماز وقت پر ادا شمار ہوتی ہے۔ مشہور کے مطابق صبح بھی یہ درجہ '
+              'رکھتی ہے؛ اقلیتی قول اس کے لیے ضروری نہیں مانتا۔',
           'D1 §2.8 · D4 A4.1 · A7.2',
         ),
         LearnBlock(
           'احتیاط کیا ہے؟',
           '',
-          'حساب شدہ اوقات میں شامل کیا گیا احتیاطی اضافہ — مثلاً ظہر اور مغرب '
-              'پر +1 منٹ۔ یہ احتیاط کی کنونشن ہے، فقہی تعریف کا حصہ کبھی '
-              'نہیں؛ اس ایپ میں احتیاط کا بٹن بدلنے سے فقہی حدیں نہیں بدلتیں۔ '
-              'کلاسیکی روایت پہلے ہی زوالِ شرعی (قرصِ شمس کا نصف النہار سے '
-              'ڈھلنا) اور زوالِ اصطلاحی (مرکزِ شمس کا گزرنا) میں تقریباً نصف '
-              'درجے — یعنی تقریباً دو منٹ — کا فرق کرتی تھی۔',
+          'حساب شدہ اوقات کے اوپر لگایا گیا ایک چھوٹا سا احتیاطی اضافہ — مثلاً ظہر '
+              'اور مغرب پر +1 منٹ۔ اس کا تعلق احتیاط سے ہے، فقہ سے نہیں: اس ایپ میں '
+              'احتیاط کا بٹن بدلنے سے فقہی حدیں اپنی جگہ رہتی ہیں۔ یہ خیال کلاسیکی '
+              'روایت میں بھی موجود تھا — پہلے ہی زوالِ شرعی (قرصِ شمس کا نصف النہار سے '
+              'ڈھلنا) اور زوالِ اصطلاحی (مرکزِ شمس کا گزرنا) الگ الگ تھے، تقریباً نصف '
+              'درجے کا فرق، یعنی لگ بھگ دو منٹ۔',
           'D1 §4.4 · D4 A6.2',
         ),
       ],
@@ -771,6 +788,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'الضوء بحيث إذا سلّم المصلي بدا حاجب الشمس. وعلى المشهور يمتد '
               'وقته الضروري إلى الطلوع؛ وقيل: لا ضروري له أصلاً.',
           'D1 §2.3 · D4 A3.1',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'الظهر — من الزوال إلى المثل الأول',
@@ -782,6 +800,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'من متن خليل هو تعريف المذهب المختصر، مُتحقق منه حرفياً من '
               'المطبوع.',
           'D1 §2.4 · D4 A4.1 · A2.1',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'العصر — المثل الأول، إلى الاصفرار',
@@ -793,6 +812,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'يتطابق فيه قاعدة البرنامج (العامل 1) مع القاعدة الثابتة بالنص '
               'تماماً.',
           'D1 §2.5 · D4 A4.1 · A6.5',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'المغرب — الغروب، وقت واحد ضيق (المشهور)',
@@ -802,6 +822,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'ثانٍ معروف (أشهب، واختاره الباجي) يمدّه إلى مغيب الشفق الأحمر '
               '— مذكور هنا كبديل، لا كأصل.',
           'D1 §2.6 · D4 A3.4 · A6.7',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'العشاء — الشفق الأحمر، إلى الثلث الأول من الليل',
@@ -813,6 +834,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'الفجر الصادق (وقول ابن حبيب: إلى منتصف الليل). والضروري إلى '
               'الفجر، ويشترك المغرب والعشاء في الأربع ركعات الأخيرة.',
           'D1 §2.7 · D4 A3.5 · A2.4',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'المرتبتان: المختار والضروري',
@@ -824,6 +846,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'عصر المدونة فكان يستعمل ألفاظاً أقدم كـ«أول الوقت/آخره» و«لا '
               'بأس».',
           'D1 §2.2 · §2.8 · D4 A4.1 · A2.6',
+          source: '«مختصر خليل»',
         ),
       ],
     ),
@@ -842,6 +865,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'أنها معلومة «بالتجربة المتكررة». معامل رصد فلكي — لا حكم '
               'مالكي.',
           'D1 §4.1 · D4 D3.4',
+          source: '«تشريح الأفلاك»',
         ),
         LearnBlock(
           'ابن السمح المهري (ت. 426هـ)',
@@ -916,46 +940,44 @@ const Map<String, Map<String, LearnContent>> _content = {
         LearnBlock(
           'لماذا قد تسبق علامة "نهاية المفضل" العشاء في الصيف؟',
           '',
-          'في العروض العالية كفرنسا قد لا يغيب الشفق — العلامة الطبيعية '
-              'للعشاء — إلا بعد انقضاء الثلث الأول من الليل، فيقع نهاية '
-              'المدة المفضلة المحسوبة (ثلث الليل) قبل وقت العشاء نفسه. مثال '
-              'باريس، 17 مايو: المغرب 21:31، نهاية الثلث الأول 23:30، العشاء '
-              '23:51، الفجر 03:30. والمعتمد عند المذاهب الأربعة انتظار وقت '
-              'العشاء الحقيقي ولو بعد منتصف الليل — ولا يُنظر في علامة بديلة '
-              'إلا عند غياب العلامة لا عند وجودها (الإمام ابن حجر، كما نُقل '
-              'في مراجعة Tawqit).',
+          'في العروض العالية — كفرنسا مثلاً — يتأخر غياب الشفق، وهو العلامة '
+              'الطبيعية للعشاء، أحياناً إلى ما بعد انقضاء الثلث الأول من الليل. والمدة '
+              'المفضلة تنتهي عند ذلك الثلث، فيقع خاتمها المحسوب قبل وقت العشاء نفسه. '
+              'ففي باريس يوم 17 مايو: المغرب 21:31، ونهاية الثلث الأول 23:30، والعشاء '
+              '23:51، والفجر 03:30. والمعتمد عند المذاهب الأربعة انتظار وقت العشاء '
+              'الحقيقي ولو جاوز منتصف الليل؛ فكما قال الإمام ابن حجر، لا يُنظر في علامة '
+              'بديلة إلا حيث تغيب العلامة الأصلية، لا حيث تكون حاضرة.',
           'Tawqit Instagram review, Post 1 · D1 §2.7',
         ),
         LearnBlock(
           'لماذا تختلف الأوقات بين التطبيقات؟',
           '',
-          'أغلب الفروق فروق أعراف لا فروق فقه: زوايا فجر/عشاء مختلفة (18° '
-              'مقابل 20° وغيرها)، ودقائق احتياط مختلفة، وسياسات عروض عالية '
-              'مختلفة. وتحذيران من البحث: تسميات الأعراف ليست دائماً موثوقة '
-              '(تسمية UOIF بـ12°/12° متنازع عليها مقابل دعوى 15°/15°)، ومنهجا '
-              'Muslim Pro وIslamicFinder غير موثقين علناً فلا تصلح جداولهما '
-              'حقيقةً للتحقق.',
+          'وراء التسميات ستجد غالباً فقهاً واحداً وأعرافاً برمجية مختلفة: تطبيق '
+              'يفتتح الفجر على 18° وآخر على 20°؛ هذا يضيف دقائق احتياط وذاك لا يضيف؛ '
+              'وكلٌّ يعالج العروض العالية على طريقته. وأمران يستحقان الانتباه: تسميات '
+              'الأعراف ليست دائماً ما تدّعيه — فتسمية UOIF بـ12°/12° مثلاً متنازع عليها '
+              'مقابل دعوى 15°/15°. وحيث لا يُنشَر منهج الحساب أصلاً، كما في Muslim Pro '
+              'وIslamicFinder، فلا تصلح جداولهما لاختبار جداول غيرهما.',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
         ),
         LearnBlock(
           'ما معنى الضروري (وقت الضرورة)؟',
           '',
-          'بعد انتهاء الوقت المختار تبقى نافذة ضرورة لأهل العذر — قال خليل: '
-              'الضروري بعد المختار، للطلوع في الصبح، وللغروب في الظهرين، '
-              'وللفجر في العشاءين. والتأخير إليه بغير عذر إثم. وتُدرك الصلاة '
-              'فيه بركعة، والكل أداء. وعلى المشهور يحتفظ الصبح بهذه المرتبة؛ '
-              'وقيل: لا ضروري له.',
+          'إذا انقضى الوقت المختار لم يُغلَق الباب دون المعذور — بل تُفتح بعده '
+              'نافذة ضرورة. وقول خليل: الضروري بعد المختار، للطلوع في الصبح، وللغروب في '
+              'الظهرين، وللفجر في العشاءين. والدخول إليه بغير عذر إثم، غير أن ركعة '
+              'تُدرَك فيه تُحتسَب صلاةً مؤداةً في وقتها. وعلى المشهور يحتفظ الصبح بهذه '
+              'المرتبة أيضاً؛ وقيل: لا ضروري له.',
           'D1 §2.8 · D4 A4.1 · A7.2',
         ),
         LearnBlock(
           'ما هو الاحتياط؟',
           '',
-          'إزاحة احتياطية تُضاف إلى الأوقات المحسوبة — مثل +1 دقيقة على '
-              'الظهر والمغرب. عرفٌ للاحتياط، وليس جزءاً من التعريف الفقهي '
-              'أبداً؛ وحدود الفقه في هذا التطبيق لا تتحرك بتبديل الاحتياط. '
-              'وقد فرّق التراث الكلاسيكي أصلاً بين الزوال الشرعي (ميل قرص '
-              'الشمس عن خط وسط السماء) والزوال الاصطلاحي (ميل مركزها) بنحو '
-              'نصف درجة — أي نحو دقيقتين من الزمن.',
+          'إزاحة احتياطية صغيرة تُضاف فوق الأوقات المحسوبة — دقيقة واحدة على الظهر '
+              'والمغرب مثلاً. وهي من باب الاحتياط لا من الفقه: بدّل مفتاح الاحتياط في '
+              'هذا التطبيق فلن تتحرك الحدود الفقهية معه. وللفكرة سلف في التراث — فقد '
+              'فرّق القدماء أصلاً بين الزوال الشرعي (ميل قرص الشمس عن خط وسط السماء) '
+              'والزوال الاصطلاحي (ميل مركزها) بنحو نصف درجة، أي نحو دقيقتين من الزمن.',
           'D1 §4.4 · D4 A6.2',
         ),
       ],
@@ -1063,6 +1085,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'continue jusqu’au lever du soleil ; un avis minoritaire lui '
               'refuse tout daruri.',
           'D1 §2.3 · D4 A3.1',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'Dhuhr — du zawal au premier mithl',
@@ -1076,6 +1099,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'définition condensée de l’école, vérifiée verbatim sur le '
               'matn imprimé.',
           'D1 §2.4 · D4 A4.1 · A2.1',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           '‘Asr — le premier mithl, jusqu’au jaunissement',
@@ -1089,6 +1113,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'où la règle logicielle (facteur d’ombre 1) coïncide exactement '
               'avec la règle établie par les textes.',
           'D1 §2.5 · D4 A4.1 · A6.5',
+          source: '«مختصر خليل»',
         ),
         LearnBlock(
           'Maghrib — le coucher, un temps étroit unique (mashhur)',
@@ -1100,6 +1125,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'choix d’al-Baji) l’étend à la disparition du crépuscule rouge '
               '— noté ici comme alternative, pas comme défaut.',
           'D1 §2.6 · D4 A3.4 · A6.7',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'Isha — le crépuscule rouge, jusqu’au premier tiers de la nuit',
@@ -1113,6 +1139,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'continue jusqu’à l’aube, et Maghrib et Isha partagent les '
               'quatre dernières rak‘as.',
           'D1 §2.7 · D4 A3.5 · A2.4',
+          source: '«الرسالة»',
         ),
         LearnBlock(
           'Les deux degrés : mukhtar et daruri',
@@ -1127,6 +1154,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'la Mudawwana usait d’un vocabulaire plus ancien comme '
               '« début/fin du temps » et « pas de mal ».',
           'D1 §2.2 · §2.8 · D4 A4.1 · A2.6',
+          source: '«مختصر خليل»',
         ),
       ],
     ),
@@ -1149,6 +1177,7 @@ const Map<String, Map<String, LearnContent>> _content = {
               'répétée ». Un paramètre d’observation d’astronome — pas une '
               'règle malikite.',
           'D1 §4.1 · D4 D3.4',
+          source: '«تشريح الأفلاك»',
         ),
         LearnBlock(
           'Ibn al-Samh al-Mahri (m. 426H)',
@@ -1236,57 +1265,52 @@ const Map<String, Map<String, LearnContent>> _content = {
           'Pourquoi le repère « fin préférée » peut-il précéder l’Isha en '
               'été ?',
           '',
-          'Aux hautes latitudes comme la France, le crépuscule — le signe '
-              'naturel de l’Isha — peut ne disparaître qu’après l’écoulement '
-              'du premier tiers de la nuit, de sorte que la fin calculée de '
-              'la période préférée (un tiers de la nuit) tombe avant l’heure '
-              'de l’Isha elle-même. Exemple de Paris, 17 mai : Maghrib '
-              '21h31, fin du premier tiers 23h30, Isha 23h51, Fajr 03h30. '
-              'L’avis établi des quatre écoles est d’attendre l’heure réelle '
-              'de l’Isha même après minuit — un signe de substitution n’est '
-              'envisagé que lorsque le signe est absent, pas quand il '
-              'existe (imam Ibn Hajar, cité dans la revue Tawqit).',
+          'Aux hautes latitudes — la France, par exemple — le crépuscule qui ouvre '
+              'l’Isha s’attarde parfois au-delà du premier tiers de la nuit. Or la '
+              'période préférée s’achève à ce tiers : sa fin calculée peut donc tomber '
+              'avant l’heure de l’Isha elle-même. À Paris, le 17 mai : Maghrib à 21h31, '
+              'fin du premier tiers à 23h30, Isha à 23h51, Fajr à 03h30. Les quatre '
+              'écoles s’accordent à attendre l’heure réelle de l’Isha, même passée '
+              'minuit ; comme le dit l’imam Ibn Hajar, un signe de substitution n’a de '
+              'sens que là où le vrai signe fait défaut, jamais là où il est présent.',
           'Tawqit Instagram review, Post 1 · D1 §2.7',
         ),
         LearnBlock(
           'Pourquoi les heures diffèrent-elles d’une application à l’autre ?',
           '',
-          'La plupart des écarts sont des conventions différentes, pas un '
-              'fiqh différent : des angles Fajr/Isha différents (18° contre '
-              '20° et autres), des minutes d’ihtiyat différentes, et des '
-              'secours de hautes latitudes différents. Deux mises en garde '
-              'de la recherche : les étiquettes de préréglages ne sont pas '
-              'toujours fiables (l’étiquette UOIF 12°/12° est contestée face '
-              'à une réalité alléguée de 15°/15°), et les méthodes de Muslim '
-              'Pro et d’IslamicFinder ne sont pas documentées publiquement, '
-              'donc leurs horaires ne peuvent servir de vérité de validation.',
+          'Derrière les étiquettes, on retrouve le plus souvent le même fiqh '
+              'habillé de conventions logicielles différentes : un Fajr à 18° ici, à '
+              '20° là ; des minutes d’ihtiyat ajoutées ou non ; et des traitements des '
+              'hautes latitudes propres à chacun. Deux points méritent l’attention. Les '
+              'étiquettes de préréglages ne tiennent pas toujours leurs promesses — '
+              'l’étiquette UOIF 12°/12°, par exemple, est contestée face à une réalité '
+              'alléguée de 15°/15°. Et quand la méthode elle-même reste inédite, comme '
+              'chez Muslim Pro et IslamicFinder, leurs horaires ne peuvent juger ceux '
+              'des autres.',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
         ),
         LearnBlock(
           'Que signifie daruri (temps de nécessité) ?',
           '',
-          'Après la fin du temps préféré (mukhtar), une fenêtre de '
-              'nécessité reste pour ceux qui ont une excuse — Khalil : le '
-              'daruri suit le mukhtar, jusqu’au lever pour le Subh, jusqu’au '
-              'coucher pour Dhuhr et ‘Asr, jusqu’à l’aube pour Maghrib et '
-              'Isha. Le retarder sans excuse est pécheur. La prière y est '
-              'encore atteinte avec une rak‘a, et le tout compte comme '
-              'accompli à temps (ada’). Selon le mashhur, le Subh garde ce '
-              'degré ; un avis minoritaire lui refuse tout daruri.',
+          'Quand le temps préféré s’achève, la porte ne se ferme pas pour l’excusé '
+              '— une fenêtre de nécessité s’ouvre après lui. La formule de Khalil : le '
+              'daruri suit le mukhtar — jusqu’au lever pour le Subh, jusqu’au coucher '
+              'pour Dhuhr et ‘Asr, jusqu’à l’aube pour Maghrib et Isha. Y entrer sans '
+              'excuse est fautif, mais une rak‘a accomplie à l’intérieur compte encore '
+              'comme prière faite à temps (ada’). Selon le mashhur, le Subh garde aussi '
+              'ce degré ; un avis minoritaire le lui refuse.',
           'D1 §2.8 · D4 A4.1 · A7.2',
         ),
         LearnBlock(
           'Qu’est-ce que l’ihtiyat ?',
           '',
-          'Un décalage de précaution ajouté aux heures calculées — par '
-              'exemple +1 minute sur Dhuhr et Maghrib. C’est une convention '
-              'de prudence, jamais une partie de la définition fiqh ; les '
-              'bornes fiqh de cette application ne bougent pas quand '
-              'l’interrupteur d’ihtiyat change. La tradition classique '
-              'distinguait déjà le midi légal (le disque du soleil passé le '
-              'méridien) du midi astronomique (le centre du soleil passé le '
-              'méridien) d’environ un demi-degré — environ deux minutes de '
-              'temps.',
+          'Un petit décalage de précaution posé sur les heures calculées — +1 '
+              'minute sur Dhuhr et Maghrib, par exemple. Il relève de la prudence, non '
+              'du fiqh : actionnez l’interrupteur d’ihtiyat dans cette application et '
+              'aucune borne légale ne bougera avec lui. L’idée a des ancêtres — la '
+              'tradition classique distinguait déjà le midi légal (le disque du soleil '
+              'passé le méridien) du midi astronomique (son centre passé le méridien), '
+              'd’environ un demi-degré, soit deux minutes de temps.',
           'D1 §4.4 · D4 A6.2',
         ),
       ],
