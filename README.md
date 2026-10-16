@@ -10,8 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter" alt="Flutter 3.47.5" />
-  <img src="https://img.shields.io/badge/tests-141%2F141-brightgreen" alt="141/141 tests" />
-  <img src="https://img.shields.io/badge/version-1.1.0+2-blue" alt="v1.1.0+2" />
+  <img src="https://img.shields.io/badge/tests-159%2F159-brightgreen" alt="159/159 tests" />
+  <img src="https://img.shields.io/badge/version-1.1.1%2B3-blue" alt="v1.1.1+3" />
   <img src="https://img.shields.io/badge/offline-first-success" alt="offline-first" />
   <img src="https://img.shields.io/badge/license-see%20ATTRIBUTION.md-lightgrey" alt="licenses" />
 </p>
@@ -27,13 +27,17 @@ a validated calculation profile, and an app around it.
 
 The headline Maliki rules the engine implements:
 
-| Prayer | Ikhtiyari (preferred) | Daruri (necessity) |
-|---|---|---|
-| Fajr | True dawn | Until isfar (clear light) → sunrise |
-| Dhuhr | Just after transit | Until first mithl (shadow = 1×) |
-| Asr | **First mithl** — the mashhur Maliki start | Until sunset |
-| Maghrib | Sunset, narrow window (~15–20 min) | Until red-twilight disappearance (al-Baji's view noted as internal disagreement) |
-| Isha | Disappearance of the **red** shafaq | Until first third of night (Ibn Habib: midnight) → dawn |
+| Prayer | Beginning | Ikhtiyari (preferred) end | Daruri (necessity) end |
+|---|---|---|---|
+| Fajr | True dawn | Isfar (clear brightening) — informational, no clock time | Sunrise |
+| Dhuhr | After solar transit (+1–2 min ihtiyat — an operational precaution, not the definition) | Asr begins (first mithl, shadow = 1×) | Sunset |
+| Asr | First mithl (Maliki factor 1 — never the Hanafi factor 2) | Isfirar (yellowing) — informational | Sunset |
+| Maghrib | Sunset | Narrow window (~15–20 min after sunset) | True dawn |
+| Isha | Disappearance of the **red** shafaq | First third of the night (Ibn Habib: midnight — shown as a labeled alternative in-app) | True dawn |
+
+The al-Baji view — that Maghrib's *preferred* window extends to red-twilight disappearance — is a
+recognized internal disagreement about the preferred window, not the necessity end (which remains
+true dawn on the mashhur position).
 
 Every prayer therefore shows **two times** in the app — the preferred window and the necessity window —
 instead of a single line. Combining (jamʿ) follows the Maliki taqdim-only basis via al-Qarafi's
@@ -43,7 +47,7 @@ instead of a single line. Combining (jamʿ) follows the Maliki taqdim-only basis
 
 | Profile | Fajr | Isha | Asr | Basis |
 |---|---|---|---|---|
-| **Maliki — MWL West Africa** (default) | 18° | 17° (red twilight) | factor 1 | 1986 MWL Fiqh Council decision (signatory: Mauritanian scholar Ould ʿAdud) |
+| **Maliki — MWL West Africa** (default) | 18° | 17° (red twilight) | factor 1 | MWL Islamic Fiqh Council decision (9th session, 1986); the related 1983 (3rd session) high-latitude opinion was signed by Mauritanian scholar Ould ʿAdud |
 | Maliki — Egyptian (19.5/17.5) | 19.5° | 17.5° | factor 1 | Egyptian General Authority of Survey convention |
 | Maliki — UOIF (12/12) | 12° | 12° | factor 1 | UOIF (France) convention |
 
@@ -67,11 +71,7 @@ Angles are astronomical conventions, not fiqh rulings.
 
 ## Screenshots
 
-| Home (Urdu) | Monthly | Qibla |
-|---|---|---|
-| Two-tier bands, Hijri date on the hero card | Full-month grid, Hijri subtitles | Live compass, distance & bearing |
-
-*(Screenshots from the 1.1.0 test builds.)*
+Screenshots will be added here from a release build.
 
 ## Tech
 
@@ -92,7 +92,7 @@ lib/
 ├── screens/       # home, monthly, qibla, profiles, location, settings, splash
 ├── services/      # location, notifications, compass, update check, settings
 └── utils/         # Hijri dates, qibla math, solar scan, fonts, digits
-test/              # 141 widget + unit tests
+test/              # 159 widget + unit tests
 ```
 
 ## Getting started
@@ -102,7 +102,7 @@ test/              # 141 widget + unit tests
 flutter pub get
 flutter gen-l10n
 flutter analyze        # must be clean
-flutter test           # 141/141 green
+flutter test           # 159/159 green
 
 # Android
 flutter build apk --release
@@ -141,7 +141,7 @@ Developers and scholars are both welcome — this app gets better when code and 
 ### Developers
 
 - Fork the repo, branch from `master`, and open a pull request with a clear description.
-- `flutter analyze` must be clean and the full test suite green (`flutter test` — 144 tests).
+- `flutter analyze` must be clean and the full test suite green (`flutter test` — 159 tests).
 - Match the repo's hand code style — do **not** run bare `dart format` (read-only check:
   `dart format --output=none --set-exit-if-changed`).
 - Every new dependency must be license-checked **before** adoption (permissive only:
