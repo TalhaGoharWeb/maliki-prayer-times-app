@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
+import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/screens/home_screen.dart';
@@ -16,6 +17,7 @@ import 'package:malikiprayertimes/screens/qibla_screen.dart';
 import 'package:malikiprayertimes/screens/settings_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -224,11 +226,13 @@ void main() {
 
     testWidgets('monthly: nav buttons and every day cell labeled',
         (tester) async {
+      final (settings, _) = await _services();
       await tester.pumpWidget(_wrap(
           MonthlyScreen(
               coordinates: _coords,
               profile: PrayerProfiles.all[0],
-              timeZoneOffset: _offset),
+              timeZoneOffset: _offset,
+              settings: settings),
           1.0));
       await tester.pump();
       expect(tester.takeException(), isNull);
@@ -359,11 +363,13 @@ void main() {
 
     testWidgets('monthly bands use computed/informational text chips',
         (tester) async {
+      final (settings, _) = await _services();
       await tester.pumpWidget(_wrap(
           MonthlyScreen(
               coordinates: _coords,
               profile: PrayerProfiles.all[0],
-              timeZoneOffset: _offset),
+              timeZoneOffset: _offset,
+              settings: settings),
           1.0));
       await tester.pump();
       await tester.tap(_dayCells().first);
@@ -385,11 +391,13 @@ void main() {
 
     testWidgets('high-latitude estimate flag is text, not color-only',
         (tester) async {
+      final (settings, _) = await _services();
       await tester.pumpWidget(_wrap(
           MonthlyScreen(
               coordinates: _tromso,
               profile: PrayerProfiles.all[0],
               timeZoneOffset: const Duration(hours: 1),
+              settings: settings,
               initialMonth: DateTime(2026, 6)),
           1.0));
       await tester.pump();
@@ -407,7 +415,8 @@ void main() {
         'monthly': MonthlyScreen(
             coordinates: _coords,
             profile: PrayerProfiles.all[0],
-            timeZoneOffset: _offset),
+            timeZoneOffset: _offset,
+            settings: settings),
         'home': HomeScreen(settings: settings, location: location),
         'settings': SettingsScreen(
             settings: settings, coordinates: _coords, timeZoneOffset: _offset),
@@ -446,11 +455,13 @@ void main() {
     testWidgets('monthly day cells are at least 48x48 on a 360dp phone',
         (tester) async {
       _usePhoneSize(tester);
+      final (settings, _) = await _services();
       await tester.pumpWidget(_wrap(
           MonthlyScreen(
               coordinates: _coords,
               profile: PrayerProfiles.all[0],
-              timeZoneOffset: _offset),
+              timeZoneOffset: _offset,
+              settings: settings),
           1.0));
       await tester.pump();
       expect(tester.takeException(), isNull);
@@ -487,7 +498,8 @@ void main() {
           MonthlyScreen(
               coordinates: _coords,
               profile: PrayerProfiles.all[0],
-              timeZoneOffset: _offset),
+              timeZoneOffset: _offset,
+              settings: settings),
           1.0));
       await tester.pump();
       for (final b in find.byType(IconButton).evaluate()) {
@@ -558,6 +570,128 @@ void main() {
         final r = ratio(entry.value.$1, entry.value.$2);
         debugPrint('contrast ${entry.key}: ${r.toStringAsFixed(2)}:1');
         expect(r, greaterThanOrEqualTo(4.5), reason: entry.key);
+      }
+    });
+  });
+
+  group('wave-1 reliability fixes (REL-01/REL-02, E-03)', () {
+    String hhmm(DateTime t) =>
+        '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+    Widget monthlyFor(SettingsService settings,
+            {required PrayerProfile profile}) =>
+        _wrap(
+            MonthlyScreen(
+                coordinates: _coords,
+                profile: profile,
+                timeZoneOffset: _offset,
+                settings: settings,
+                initialMonth: DateTime(2026, 10)),
+            1.0);
+
+    /// Raw engine Fajr for the first visible day, using the same per-date
+    /// offset derivation the screen applies.
+    DateTime rawDayOneFajr(PrayerProfile profile) => calculatePrayerTimes(
+          coordinates: _coords,
+          date: DateTime(2026, 10, 1),
+          timeZoneOffset: DateTime(2026, 10, 1).timeZoneOffset,
+          profile: profile,
+        ).fajr;
+
+    testWidgets('REL-01: +15 min Fajr adjustment reaches the cell and the day sheet',
+        (tester) async {
+      final (settings, _) = await _services();
+      await tester.pumpWidget(
+          monthlyFor(settings, profile: PrayerProfiles.all[0]));
+      await tester.pump();
+
+      // Mutate the adjustments on the same SettingsService instance and
+      // re-deliver the widget: didUpdateWidget must recompute the grid.
+      await settings.setAdjustment(Prayer.fajr, 15);
+      await tester.pumpWidget(
+          monthlyFor(settings, profile: PrayerProfiles.all[0]));
+      await tester.pump();
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final expected =
+          rawDayOneFajr(PrayerProfiles.all[0]).add(const Duration(minutes: 15));
+      expect(
+          find.text(l10n.dayCellFajr(localizeDigits(hhmm(expected), 'en'))),
+          findsWidgets,
+          reason: 'day-1 cell must show the adjusted Fajr');
+
+      await tester.tap(_dayCells().first);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text(localizeDigits(hhmm(expected), 'en')), findsOneWidget,
+          reason: 'day sheet Fajr row must show the adjusted time');
+    });
+
+    testWidgets('REL-02: delivering a new profile recomputes the monthly grid',
+        (tester) async {
+      final (settings, _) = await _services();
+      await tester.pumpWidget(monthlyFor(settings,
+          profile: PrayerProfiles.malikiMwlWestAfrica));
+      await tester.pump();
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      String fajrCell(PrayerProfile p) => l10n.dayCellFajr(
+          localizeDigits(hhmm(rawDayOneFajr(p)), 'en'));
+
+      expect(find.text(fajrCell(PrayerProfiles.malikiMwlWestAfrica)),
+          findsWidgets);
+      // The Egyptian profile uses a steeper Fajr angle: didUpdateWidget must
+      // reload the grid instead of showing the stale profile's times.
+      // Assertions are scoped to the day-1 cell — other days of the month
+      // may coincidentally share an HH:MM readout.
+      final dayOneCell = _dayCells().first;
+      await tester.pumpWidget(
+          monthlyFor(settings, profile: PrayerProfiles.malikiEgyptian));
+      await tester.pump();
+      expect(
+          find.descendant(
+              of: dayOneCell,
+              matching: find.text(fajrCell(PrayerProfiles.malikiEgyptian))),
+          findsOneWidget,
+          reason: 'grid must recompute for the new profile');
+      expect(
+          find.descendant(
+              of: dayOneCell,
+              matching:
+                  find.text(fajrCell(PrayerProfiles.malikiMwlWestAfrica))),
+          findsNothing,
+          reason: 'stale profile times must be gone');
+    });
+
+    testWidgets('E-03: home shows the estimate notice on a fallback day',
+        (tester) async {
+      const southPole = Coordinates(-80.0, 0.0);
+      final (settings, location) = await _services();
+      await location.useManualLocation(const SavedLocation(
+          name: 'South Pole', latitude: -80.0, longitude: 0.0));
+      await tester.pumpWidget(
+          _wrap(HomeScreen(settings: settings, location: location), 1.0));
+      // Home runs a 1-second countdown timer: pump manually instead of
+      // pumpAndSettle (which would time out on the periodic timer).
+      await tester.pump(const Duration(milliseconds: 200));
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      // The engine's fallback verdict is date-dependent (polar seasons), so
+      // probe the same computation HomeScreen performs and assert the notice
+      // matches the verdict either way — never a vacuous pass.
+      final now = DateTime.now();
+      final probe = calculatePrayerTimes(
+        coordinates: southPole,
+        date: DateTime(now.year, now.month, now.day),
+        timeZoneOffset: DateTime.now().timeZoneOffset,
+        profile: settings.effectiveProfile,
+      );
+      if (probe.highLatitudeFallback) {
+        expect(find.text(l10n.highLatitudeNote), findsWidgets,
+            reason: 'estimate notice must show on a fallback day');
+      } else {
+        expect(find.text(l10n.highLatitudeNote), findsNothing,
+            reason: 'no estimate notice on a normal day');
       }
     });
   });

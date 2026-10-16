@@ -52,6 +52,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Duration get _offset => DateTime.now().timeZoneOffset;
 
+  /// Device UTC offset for [date], falling back to today's offset when
+  /// derivation is unavailable.
+  Duration _offsetForDate(DateTime date) {
+    try {
+      return DateTime(date.year, date.month, date.day).timeZoneOffset;
+    } catch (_) {
+      return _offset;
+    }
+  }
+
   Coordinates? get _coordinates {
     final loc = widget.location.current;
     return loc == null ? null : Coordinates(loc.latitude, loc.longitude);
@@ -135,10 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
       final t = settings.adjustedTime(p, times.timeFor(p));
       if (t.isAfter(_now)) return (prayer: p, time: t);
     }
+    final tomorrowDate = _civilDay!.add(const Duration(days: 1));
     final tomorrow = calculatePrayerTimes(
       coordinates: _coordinates!,
-      date: _civilDay!.add(const Duration(days: 1)),
-      timeZoneOffset: _offset,
+      date: tomorrowDate,
+      // Per-date offset: tomorrow's UTC offset can differ from today's
+      // across a DST transition.
+      timeZoneOffset: _offsetForDate(tomorrowDate),
       profile: settings.effectiveProfile,
     );
     return (
@@ -284,6 +297,13 @@ class _HomeScreenState extends State<HomeScreen> {
           hijriDate: localizeDigits(formatHijriDate(l10n, hijri), lang),
         ),
         const SizedBox(height: 20),
+
+        // High-latitude estimate notice: the engine flags these times as
+        // approximations — same pattern as the monthly day sheet.
+        if (times.highLatitudeFallback) ...[
+          _EstimateNotice(text: l10n.highLatitudeNote),
+          const SizedBox(height: 12),
+        ],
 
         // Today's timetable.
         _SectionHeader(
@@ -897,6 +917,42 @@ class _ProfileStatusCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Tertiary-toned notice for high-latitude estimation — same pattern as the
+/// monthly day sheet.
+class _EstimateNotice extends StatelessWidget {
+  final String text;
+
+  const _EstimateNotice({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryFixed,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline,
+              size: 16, color: scheme.onTertiaryFixed),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onTertiaryFixed,
+                  ),
+            ),
+          ),
+        ],
       ),
     );
   }

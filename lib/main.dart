@@ -353,6 +353,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
           coordinates: coords,
           profile: profile,
           timeZoneOffset: offset,
+          settings: widget.settings,
         ),
       2 => QiblaScreen(
           coordinates: coords,

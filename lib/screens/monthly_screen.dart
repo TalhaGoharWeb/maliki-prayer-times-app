@@ -6,6 +6,7 @@ import 'package:malikiprayertimes/fiqh/maliki_rules.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/band_texts.dart';
 import 'package:malikiprayertimes/screens/date_labels.dart';
+import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
@@ -27,6 +28,10 @@ class MonthlyScreen extends StatefulWidget {
   final PrayerProfile profile;
   final Duration timeZoneOffset;
 
+  /// Settings supply the per-prayer adjustments (ihtiyat) applied to the
+  /// displayed times, matching the home timetable.
+  final SettingsService settings;
+
   /// The month to show first; defaults to the current month.
   final DateTime? initialMonth;
 
@@ -35,6 +40,7 @@ class MonthlyScreen extends StatefulWidget {
     required this.coordinates,
     required this.profile,
     required this.timeZoneOffset,
+    required this.settings,
     this.initialMonth,
   });
 
@@ -47,6 +53,11 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
   late int _month;
   late List<PrayerTimes> _days; // index 0 == day 1
 
+  /// Snapshot of the per-prayer adjustments the grid was last built with.
+  /// The map getter returns a fresh copy each call, so identity comparison
+  /// can't detect a change — [didUpdateWidget] deep-compares against this.
+  late Map<Prayer, int> _appliedAdjustments;
+
   @override
   void initState() {
     super.initState();
@@ -56,17 +67,62 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     _loadMonth();
   }
 
+  @override
+  void didUpdateWidget(covariant MonthlyScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Recompute when the profile, the zone offset, or the per-prayer
+    // adjustments change while the screen is open. The guard prevents
+    // reload loops; profile comparison is by identity because profiles are
+    // immutable engine constants (a toggled ihtiyat yields a new instance).
+    if (widget.profile != oldWidget.profile ||
+        widget.timeZoneOffset != oldWidget.timeZoneOffset ||
+        !_adjustmentsEqual(_appliedAdjustments, widget.settings.adjustments)) {
+      setState(_loadMonth);
+    }
+  }
+
   int get _daysInMonth => DateTime(_year, _month + 1, 0).day;
 
   void _loadMonth() {
     _days = List.generate(_daysInMonth, (i) {
+      final date = DateTime(_year, _month, i + 1);
       return calculatePrayerTimes(
         coordinates: widget.coordinates,
-        date: DateTime(_year, _month, i + 1),
-        timeZoneOffset: widget.timeZoneOffset,
+        date: date,
+        // Per-date device offset: one offset for the whole month shifts
+        // displayed times by an hour across DST transitions.
+        timeZoneOffset: _offsetForDate(date),
         profile: widget.profile,
       );
     });
+    _appliedAdjustments = Map.of(widget.settings.adjustments);
+  }
+
+  /// The device UTC offset for [date], falling back to the
+  /// constructor-supplied offset when derivation is unavailable.
+  Duration _offsetForDate(DateTime date) {
+    try {
+      return date.timeZoneOffset;
+    } catch (_) {
+      return widget.timeZoneOffset;
+    }
+  }
+
+  /// The user-visible time for [prayer]: the raw engine time shifted by the
+  /// configured per-prayer adjustment (ihtiyat), matching the home
+  /// timetable. The two-tier band texts keep the raw engine times, also
+  /// matching home.
+  DateTime _adjusted(Prayer prayer, DateTime computed) =>
+      widget.settings.adjustedTime(prayer, computed);
+
+  /// Deep equality for per-prayer adjustment maps (the getter returns a
+  /// fresh copy each call, so identity comparison never works).
+  static bool _adjustmentsEqual(Map<Prayer, int> a, Map<Prayer, int> b) {
+    if (a.length != b.length) return false;
+    for (final entry in a.entries) {
+      if (b[entry.key] != entry.value) return false;
+    }
+    return true;
   }
 
   void _shiftMonth(int delta) {
@@ -114,12 +170,36 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     final hijri = gregorianToHijri(gregorian);
     final lang = Localizations.localeOf(context).languageCode;
     final rows = [
-      (label: l10n.prayerFajr, arabic: 'الفجر', time: times.fajr),
-      (label: l10n.prayerSunrise, arabic: 'الشروق', time: times.sunrise),
-      (label: l10n.prayerDhuhr, arabic: 'الظهر', time: times.dhuhr),
-      (label: l10n.prayerAsr, arabic: 'العصر', time: times.asr),
-      (label: l10n.prayerMaghrib, arabic: 'المغرب', time: times.maghrib),
-      (label: l10n.prayerIsha, arabic: 'العشاء', time: times.isha),
+      (
+        label: l10n.prayerFajr,
+        arabic: 'الفجر',
+        time: _adjusted(Prayer.fajr, times.fajr)
+      ),
+      (
+        label: l10n.prayerSunrise,
+        arabic: 'الشروق',
+        time: _adjusted(Prayer.sunrise, times.sunrise)
+      ),
+      (
+        label: l10n.prayerDhuhr,
+        arabic: 'الظهر',
+        time: _adjusted(Prayer.dhuhr, times.dhuhr)
+      ),
+      (
+        label: l10n.prayerAsr,
+        arabic: 'العصر',
+        time: _adjusted(Prayer.asr, times.asr)
+      ),
+      (
+        label: l10n.prayerMaghrib,
+        arabic: 'المغرب',
+        time: _adjusted(Prayer.maghrib, times.maghrib)
+      ),
+      (
+        label: l10n.prayerIsha,
+        arabic: 'العشاء',
+        time: _adjusted(Prayer.isha, times.isha)
+      ),
     ];
 
     showModalBottomSheet<void>(
@@ -563,13 +643,14 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                       // Full-size times remain one tap away in the day
                       // detail sheet.
                       _CellTime(
-                        text: l10n.dayCellFajr(
-                            localizeDigits(_hhmm(times.fajr), lang)),
+                        text: l10n.dayCellFajr(localizeDigits(
+                            _hhmm(_adjusted(Prayer.fajr, times.fajr)), lang)),
                         color: timeFg,
                       ),
                       _CellTime(
-                        text: l10n.dayCellMaghrib(
-                            localizeDigits(_hhmm(times.maghrib), lang)),
+                        text: l10n.dayCellMaghrib(localizeDigits(
+                            _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
+                            lang)),
                         color: timeFg,
                       ),
                     ],
