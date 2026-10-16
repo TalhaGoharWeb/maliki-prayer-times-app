@@ -31,6 +31,15 @@ android {
         versionName = flutter.versionName
     }
 
+    // Production signing: reads android/key.properties (git-ignored, never
+    // committed). Falls back to the pinned TEST key when absent so any
+    // checkout still builds installable test APKs.
+    val keystorePropsFile = rootProject.file("key.properties")
+    val keystoreProps = java.util.Properties()
+    if (keystorePropsFile.exists()) {
+        keystoreProps.load(java.io.FileInputStream(keystorePropsFile))
+    }
+
     signingConfigs {
         // TEST ONLY keystore (android/test-key.keystore, credentials "android").
         // It exists so every test APK I build carries the SAME signature and
@@ -44,14 +53,24 @@ android {
             keyAlias = "testkey"
             keyPassword = "android"
         }
+        if (keystorePropsFile.exists()) {
+            create("prodkey") {
+                storeFile = file("../${keystoreProps["storeFile"]}")
+                storePassword = keystoreProps["storePassword"] as String
+                keyAlias = keystoreProps["keyAlias"] as String
+                keyPassword = keystoreProps["keyPassword"] as String
+            }
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the pinned test key for now, so `flutter run --release` works
-            // and successive test builds update cleanly on device.
-            signingConfig = signingConfigs.getByName("testkey")
+            // Production key when key.properties exists, test key otherwise.
+            signingConfig = if (keystorePropsFile.exists()) {
+                signingConfigs.getByName("prodkey")
+            } else {
+                signingConfigs.getByName("testkey")
+            }
         }
     }
 }
