@@ -11,10 +11,12 @@ a design proposal.
    that date's own timeline. A null event means the sun never reaches that
    altitude on that date (high latitude; exactly ±90° latitude always yields
    null).
-2. **Fallback estimates** — null or rejected events are replaced by
-   middle-of-night estimates (`HighLatitudeRule.middleOfNight`), and the
-   `highLatitudeFallback` flag is set. If sunrise or sunset is null, the
-   whole day is forced onto the estimate path (polar coherence — see below).
+2. **Fallback estimates** — when a twilight event (Fajr/Isha) has no
+   solution but a real night frame exists (persistent twilight), the
+   user-chosen [HighLatitudeFallback] method estimates them and the
+   `highLatitudeFallback` flag is set. When the sun never reaches the
+   horizon at all (polar day/night), the result is a typed no-solution
+   (see below) — never fabricated times.
 3. **Ihtiyat** — `dhuhrIhtiyatMinutes` is added to solar noon and
    `maghribIhtiyatMinutes` to sunset (default profile: +1 minute each; both
    become 0 when the user disables ihtiyat in settings).
@@ -91,39 +93,64 @@ Asr altitude: `atan(1 / (t + tan(|latitude − declination|)))` with
 is accepted only if it falls strictly between Dhuhr and Maghrib; otherwise
 the midpoint `(dhuhr + maghrib) / 2` is used and the fallback flag is set.
 
-## Fallback (middleOfNight) — definition and triggers
+## Fallback chooser — definition and triggers (Phase 5)
+
+The user selects one of four fallback methods in Settings (persisted;
+default [HighLatitudeFallback.middleOfNight], per adhan `recommended()`).
+Every method is an institutional/software convention — never a Maliki
+ruling — and the UI names the method in effect wherever fallback times
+are shown, with a change affordance.
 
 All values below are UTC hours on one absolute timeline measured from 00:00
 UTC of the requested date; yesterday's events shift by −24 and tomorrow's
-by +24.
+by +24. Each twilight event uses the solar night it belongs to (D5 §3.7):
+`N_fajr = sunrise − prevSunsetAbs` (yesterday's sunset shifted −24, or
+`sunrise − 12` when yesterday's sunset is also null) and
+`N_isha = tomorrowSunriseAbs − sunset` (tomorrow's sunrise shifted +24, or
+`sunset + 12` when tomorrow's sunrise is null); either night is replaced
+by 12 when it is ≤ 0 or NaN.
 
-- **Sunrise/sunset null** → `sunrise = noon − 6`, `sunset = noon + 6`,
-  fallback flagged.
-- **Fajr null** → `fajr = sunrise − night/2`, where `night = sunrise −
-  prevSunsetAbs` (`prevSunsetAbs` = yesterday's sunset shifted −24, or
-  `sunrise − 12` if yesterday's sunset is also null); if `night ≤ 0` or NaN,
-  `night = 12`. Fallback flagged.
-- **Isha null** → `isha = sunset + night/2`, where `night = tomorrowFajr −
-  sunset` (tomorrow's Fajr shifted +24, itself fallback-estimated if null);
-  if `night ≤ 0` or NaN, `night = 12`. Fallback flagged. If the estimated
-  Isha lands at/after the third-of-night marker, the marker is pushed to
-  `isha + 30 min` (clamped to the midpoint toward tomorrow's Fajr if needed)
-  so ordering stays sane.
-- **Asr rejected** → `asr = (dhuhr + maghrib) / 2`. Fallback flagged.
+- **Middle of night** — `fajr = sunrise − N_fajr/2`,
+  `isha = sunset + N_isha/2` (D5 §3.7).
+- **One-seventh of night** — `fajr = sunrise − N_fajr/7`,
+  `isha = sunset + N_isha/7` (D5 §3.7).
+- **Angle-based** — `fajr = sunrise − (fajrAngle/60)·N_fajr`,
+  `isha = sunset + (ishaAngle/60)·N_isha` (D5 §3.7; the profile's own
+  twilight angles).
+- **Nearest day** — the whole day is borrowed from the nearest civil date
+  within ±183 days on which every event has a solution (past preferred on
+  equidistant ties); the source date is recorded on
+  `PrayerTimes.nearestDaySourceDate` and the UI shows it next to the
+  borrowed times. Borrowed times render in the displayed date's offset
+  frame — a documented engineering convention. When no solvable day is
+  found within ±183 days (the poles), the middle-of-night convention
+  stands in, still named honestly as the method in effect.
 
-`highLatitudeFallback` is true if ANY of the above triggered on the day.
+A method engages only when its twilight event actually lacks a solution;
+a solvable Fajr/Isha is always kept. `PrayerTimes.fallbackMethod` names
+the method in effect (null on a fully computed day); the Asr-midpoint
+fallback (`asr = (dhuhr + maghrib) / 2` when the shadow rule is rejected)
+is a separate software convention and does not change the named method.
 
-## Polar coherence (E-01 fix)
+## No-solution days (Phase 5 — replaces the old polar coherence)
 
-When either horizon event is null (polar day/night), the whole day is
-forced onto the coherent estimate path: Fajr, Isha, AND Asr take their
-fallback estimates even if a real twilight crossing or a shadow-rule value
-exists for them. Previously, real twilight crossings (possible while the
-sun's maximum altitude lies between −18°/−17° and −0.833°) were mixed with
-synthetic `noon±6` horizon times, producing an incoherent day (verified:
-80°N on 21 Dec 2026 showed Fajr 08:03 after "sunrise" 05:58 and Isha 15:24
-before Maghrib 17:59). A shadow-based Asr is likewise undefined when the
-sun never rises, so it takes the midpoint estimate on this path.
+When the sun never reaches the horizon (polar day/night: sunrise or
+sunset null), no fallback can be constructed from a nonexistent
+sunset/sunrise, and the engine returns `PrayerTimesNoSolution` with the
+reason (`polarDay` — transit altitude above the horizon; `polarNight` —
+below it). The old noon±6 synthetic-horizon estimate path (E-01 "polar
+coherence") is deleted: a calculation failure never produces a
+plausible-but-unsupported time. The UI renders an honest empty state
+("Prayer times cannot be computed for this date and location") with the
+fallback chooser one tap away.
+
+The single exception is an explicit user choice of the nearest-day
+method: with no night frame and `fallback == nearestDay`, the borrowed
+day is shown — labeled with its source date — because the user asked for
+that convention. Polar-night twilight Fajr/Isha that are mathematically
+solvable are still suppressed under the default: showing them alongside
+a frameless Dhuhr/Asr is the legal-policy question D5 §5 E5 leaves to
+scholarly review, and suppress-and-flag is the honest default.
 
 ## DST / time-zone offset handling
 
@@ -155,4 +182,5 @@ today's offset for every computed date (known issue E-02, not fixed here).
   12` guards), and the universal ordering invariant
   `fajr < sunrise < dhuhr < asr < maghrib < isha < ishaPreferredEnd`
   (`test/engine_test.dart: expectOrdering`) is asserted across vectors
-  including 70°N/80°N polar-night cases.
+  including persistent-twilight fallback days. Polar days are typed
+  no-solutions by construction — no ordering to assert.

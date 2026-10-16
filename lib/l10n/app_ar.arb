@@ -49,6 +49,109 @@
   "previousMonth": "الشهر السابق",
   "nextMonth": "الشهر التالي",
   "highLatitudeNote": "بعض مواقيت هذا اليوم تقديرية: لا تبلغ الشمس الزوايا المحددة هنا، فاستُخدم تقريب لخطوط العرض العالية.",
+  "highLatSectionTitle": "البديل لخطوط العرض العالية",
+  "@highLatSectionTitle": {
+    "description": "Settings section title: high-latitude fallback chooser"
+  },
+  "highLatSectionNote": "يُستخدم حيث لا تبلغ الشمس زوايا الشفق أبدًا. كل طريقة أدناه اصطلاح، وليست حكمًا مالكيًّا.",
+  "@highLatSectionNote": {
+    "description": "Note under the high-latitude fallback settings section"
+  },
+  "highLatMethodMiddleOfNight": "منتصف الليل",
+  "@highLatMethodMiddleOfNight": {
+    "description": "Fallback method name: middle of night"
+  },
+  "highLatDescMiddleOfNight": "يُحدَّد الفجر والعشاء معًا عند منتصف الليل.",
+  "@highLatDescMiddleOfNight": {
+    "description": "One-line description of the middle-of-night fallback"
+  },
+  "highLatMethodOneSeventh": "سُبع الليل",
+  "@highLatMethodOneSeventh": {
+    "description": "Fallback method name: one-seventh of night"
+  },
+  "highLatDescOneSeventh": "الفجر قبل الشروق والعشاء بعد الغروب بسُبع الليل.",
+  "@highLatDescOneSeventh": {
+    "description": "One-line description of the one-seventh fallback"
+  },
+  "highLatMethodAngleBased": "على أساس الزاوية",
+  "@highLatMethodAngleBased": {
+    "description": "Fallback method name: angle-based"
+  },
+  "highLatDescAngleBased": "الفجر قبل الشروق والعشاء بعد الغروب بجزء من الليل يتناسب مع زاوية الشفق (الزاوية ÷ 60).",
+  "@highLatDescAngleBased": {
+    "description": "One-line description of the angle-based fallback"
+  },
+  "highLatMethodNearestDay": "أقرب يوم",
+  "@highLatMethodNearestDay": {
+    "description": "Fallback method name: nearest day"
+  },
+  "highLatDescNearestDay": "تُستخدم مواقيت أقرب يوم ذي ليل طبيعي — ويُعرض ذلك التاريخ.",
+  "@highLatDescNearestDay": {
+    "description": "One-line description of the nearest-day fallback"
+  },
+  "highLatConventionBadge": "اصطلاح، وليس حكمًا مالكيًّا",
+  "@highLatConventionBadge": {
+    "description": "Label marking a fallback method as a convention, never a Maliki ruling"
+  },
+  "highLatActiveLabel": "النشط: {method}",
+  "@highLatActiveLabel": {
+    "description": "Shows the active high-latitude fallback method",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorTitle": "بديل العروض العالية: {method}",
+  "@highLatIndicatorTitle": {
+    "description": "Fallback indicator naming the method in effect",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorAction": "تغيير",
+  "@highLatIndicatorAction": {
+    "description": "Action label opening the fallback chooser"
+  },
+  "noTimesTitle": "تعذّر حساب مواقيت الصلاة",
+  "@noTimesTitle": {
+    "description": "Honest empty-state title for a no-solution day"
+  },
+  "noTimesPolarDay": "في هذا التاريخ لا تغرب الشمس هنا، فلا يوجد ليل تُحسب منه الفجر والمغرب والعشاء.",
+  "@noTimesPolarDay": {
+    "description": "Explanation for polar-day no-solution"
+  },
+  "noTimesPolarNight": "في هذا التاريخ لا تشرق الشمس هنا، فلا يوجد إطار شمسي لليوم.",
+  "@noTimesPolarNight": {
+    "description": "Explanation for polar-night no-solution"
+  },
+  "noTimesChooseMethod": "اختر طريقة البديل",
+  "@noTimesChooseMethod": {
+    "description": "Button opening the fallback chooser"
+  },
+  "noTimesCell": "لا مواقيت",
+  "@noTimesCell": {
+    "description": "Monthly cell label for a no-solution day"
+  },
+  "noTimesCellTooltip": "تعذّر حساب مواقيت الصلاة لهذا التاريخ والموقع",
+  "@noTimesCellTooltip": {
+    "description": "Tooltip for a no-solution monthly cell"
+  },
+  "nextPrayerUnavailable": "تعذّر حساب وقت الصلاة التالية لهذا الموقع حاليًّا.",
+  "@nextPrayerUnavailable": {
+    "description": "Hero note when tomorrow has no solar frame"
+  },
+  "nearestDayFrom": "مواقيت {date}",
+  "@nearestDayFrom": {
+    "description": "Notes the source date of nearest-day borrowed times",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "bandsInfoNote": "أشرطة معلوماتية تصف نوافذ وقت الاختيار ووقت الضرورة — ليست مواقيت أذان ولا تُشغّل أي عدّاد أبدًا.",
   "preferredWord": "وقت الاختيار",
   "necessityWord": "النهاية القصوى",

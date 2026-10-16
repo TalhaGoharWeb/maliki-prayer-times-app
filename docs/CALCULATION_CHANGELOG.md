@@ -34,7 +34,7 @@ change is measured against this entry.
 | High-latitude fallback | middle-of-night estimates when a solar event has no solution (polar coherence: whole day on the estimate path when the sun never reaches the horizon); flagged in the UI | convention | v1.2.0+5 (baseline) |
 | Time-zone frame | all displayed times use the device timezone; manual far-away locations are approximate (documented limitation) | convention | v1.2.0+5 (baseline) |
 
-## v1.3.0+6 (unreleased — Phases 2–3: location exactness + profiles & regions)
+## v1.3.0+6 (unreleased — Phases 2–5: location exactness + profiles & regions + teaching + high-latitude honesty)
 
 | parameter | value | status | changed-since |
 |---|---|---|---|
@@ -43,3 +43,4 @@ change is measured against this entry.
 | Calculation profiles | new "Maliki — Morocco Habous" preset added (Fajr 19°, Isha 17°): institutional preset, NOT a fiqh ruling; methodology unpublished (D1). No engine math changed | convention | v1.3.0+6 (unreleased) |
 | Profile evidence badges | every profile shows per-parameter evidence status (D9): MWL West Africa 18/17 = provisional convention (default); Habous 19/17 and Egyptian 19.5/17.5 = institutional preset; UOIF 12/12 = disputed (12° vs claimed 15°); Asr factor 1 = fiqh-derived on all profiles | convention | v1.3.0+6 (unreleased) |
 | Regional auto-adapt | "Recommended settings": a one-time, dismissible dialog suggests the regional preset matching the detected location (Maghreb → Habous; West Africa → MWL West Africa; Egypt → Egyptian; France → UOIF with its disputed badge); the user confirms — nothing switches silently | convention | v1.3.0+6 (unreleased) |
+| High-latitude fallback | user-chosen method (default: middle-of-night, per adhan `recommended()`): middle-of-night / one-seventh / angle-based estimates from the night frame (D5 §3.7 math), or nearest-day borrowing with the source date shown; no night frame (polar day/night) → typed NoSolution with an honest empty state, never fabricated times; the old noon±6 synthetic-horizon path is deleted; the active method is named wherever fallback times appear, with a change affordance | convention | v1.3.0+6 (unreleased) |

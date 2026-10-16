@@ -301,10 +301,12 @@ const Map<String, Map<String, MethodologyText>> _content = {
           'rounding.',
     ),
     'high-lat': MethodologyText(
-      'High-latitude fallback: middle-of-night estimates',
-      'Flagged "est." in the UI, never applied silently',
-      'No Maliki body was found prescribing any high-latitude method — the '
-          'choice is a documented policy decision.',
+      'High-latitude fallback: user-chosen method',
+      'Named in the UI with a change affordance, never applied silently',
+      'Four conventions (middle-of-night default, one-seventh, angle-based, '
+          'nearest-day) — no Maliki body was found prescribing any of them. '
+          'No night frame (polar day/night) is a typed no-solution: the UI '
+          'shows an honest empty state, never fabricated times.',
     ),
     'asr-fallback': MethodologyText(
       'Asr fallback: midpoint of Dhuhr–Maghrib',
@@ -442,10 +444,13 @@ const Map<String, Map<String, MethodologyText>> _content = {
           'ہوتی ہیں۔',
     ),
     'high-lat': MethodologyText(
-      'قطبی عرض البلد فال بیک: آدھی رات کا تخمینہ',
-      'UI میں "تخمینی" کا نشان، کبھی خفیہ نہیں',
-      'کوئی مالکی ادارہ کسی قطبی طریقے کی تجویز میں نہیں ملا — انتخاب '
-          'دستاویزی پالیسی فیصلہ ہے۔',
+      'قطبی عرضِ بلد کا متبادل: صارف کا منتخب کردہ طریقہ',
+      'UI میں نام کے ساتھ، تبدیلی کی سہولت — کبھی خفیہ نہیں',
+      'چار کنونشن (نصفِ شب بطور ڈیفالٹ، ساتواں حصہ، زاویے کے تناسب سے، '
+          'قریب ترین دن) — کوئی مالکی ادارہ ان میں سے کسی کی تجویز میں نہیں '
+          'ملا؛ یہ ایک دستاویزی پالیسی فیصلہ ہے۔ رات کا ڈھانچہ نہ ہو (قطبی '
+          'دن/رات) تو باقاعدہ "حل نہیں" ہے: UI ایماندار خالی حالت دکھاتا '
+          'ہے، گھڑے ہوئے اوقات کبھی نہیں۔',
     ),
     'asr-fallback': MethodologyText(
       'عصر فال بیک: ظہر–مغرب کا وسط',
@@ -578,10 +583,13 @@ const Map<String, Map<String, MethodologyText>> _content = {
       'عرف عرض؛ تعديلات الدقائق الكاملة اليدوية تتبادل مع التقريب.',
     ),
     'high-lat': MethodologyText(
-      'احتياطي العروض العالية: تقديرات منتصف الليل',
-      'يُعلَّم "تقديري" في الواجهة، لا يُطبق خفية أبداً',
-      'لم يُعثر على هيئة مالكية تشرّع أي طريقة للعروض العالية — الاختيار قرار '
-          'سياسة موثق.',
+      'بديل العروض العالية: طريقة يختارها المستخدم',
+      'يُسمَّى في الواجهة مع إمكانية التغيير، لا يُطبق خفية أبداً',
+      'أربعة اصطلاحات (منتصف الليل افتراضيًّا، سُبع الليل، على أساس الزاوية، '
+          'أقرب يوم) — لم يُعثر على هيئة مالكية تشرّع أيًّا منها؛ الاختيار '
+          'قرار سياسة موثق. غياب الإطار الليلي (اليوم/الليل القطبي) حالة '
+          '"لا حل" مُعلنة: تعرض الواجهة حالة فارغة صادقة، لا أوقات مُختلقة '
+          'أبدًا.',
     ),
     'asr-fallback': MethodologyText(
       'احتياطي العصر: منتصف الظهر–المغرب',
@@ -719,10 +727,13 @@ const Map<String, Map<String, MethodologyText>> _content = {
           'commutent avec l’arrondi.',
     ),
     'high-lat': MethodologyText(
-      'Secours hautes latitudes : estimations milieu de nuit',
-      'Signalé « est. » dans l’UI, jamais appliqué en silence',
-      'Aucun organisme malikite prescrivant une méthode de hautes latitudes '
-          'n’a été trouvé — le choix est une décision de politique documentée.',
+      'Secours hautes latitudes : méthode choisie par l’utilisateur',
+      'Nommée dans l’UI avec option de changement, jamais appliquée en silence',
+      'Quatre conventions (milieu de nuit par défaut, septième, basée sur '
+          'l’angle, jour le plus proche) — aucun organisme malikite n’en '
+          'prescrit aucune. Sans cadre nocturne (jour/nuit polaire), état '
+          '« sans solution » déclaré : l’UI affiche un état vide honnête, '
+          'jamais d’horaires inventés.',
     ),
     'asr-fallback': MethodologyText(
       'Secours ‘Asr : milieu Dhuhr–Maghrib',

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,7 @@ class SettingsService extends ChangeNotifier {
   static const _notificationTogglesKey = 'notification_toggles';
   static const _reminderOffsetKey = 'reminder_offset_minutes';
   static const _regionSuggestionShownKey = 'region_suggestion_shown';
+  static const _highLatitudeFallbackKey = 'high_latitude_fallback';
 
   /// Language codes the app can be switched to. `null` means "system
   /// default" and is always allowed.
@@ -54,6 +56,15 @@ class SettingsService extends ChangeNotifier {
   /// Minutes before each prayer time at which a reminder notification fires.
   /// One of [allowedReminderOffsets]; 0 = no early reminder.
   int _reminderOffsetMinutes = 0;
+
+  /// The high-latitude fallback method used when a solar event has no
+  /// solution (see [HighLatitudeFallback]). Defaults to
+  /// [HighLatitudeFallback.middleOfNight] (per adhan `recommended()`).
+  /// Every method is a software/institutional convention — never a Maliki
+  /// ruling — and the UI names the active method wherever fallback times
+  /// are shown.
+  HighLatitudeFallback _highLatitudeFallback =
+      HighLatitudeFallback.middleOfNight;
 
   /// Whether the one-time regional-preset suggestion dialog ("Recommended
   /// settings") has already been shown on this install. Once true it is
@@ -106,6 +117,10 @@ class SettingsService extends ChangeNotifier {
   /// The UI language code, or `null` for the system default.
   String? get languageCode => _languageCode;
 
+  /// The high-latitude fallback method. Defaults to
+  /// [HighLatitudeFallback.middleOfNight].
+  HighLatitudeFallback get highLatitudeFallback => _highLatitudeFallback;
+
   /// Whether the one-time regional-preset suggestion dialog has been shown
   /// on this install. Defaults to false.
   bool get regionSuggestionShown => _regionSuggestionShown;
@@ -132,6 +147,17 @@ class SettingsService extends ChangeNotifier {
 
     service._regionSuggestionShown =
         prefs.getBool(_regionSuggestionShownKey) ?? false;
+
+    final storedFallback = prefs.getString(_highLatitudeFallbackKey);
+    HighLatitudeFallback? parsed;
+    for (final m in HighLatitudeFallback.values) {
+      if (m.name == storedFallback) {
+        parsed = m;
+        break;
+      }
+    }
+    service._highLatitudeFallback =
+        parsed ?? HighLatitudeFallback.middleOfNight;
 
     final storedOffset = prefs.getInt(_reminderOffsetKey);
     if (storedOffset != null &&
@@ -189,6 +215,7 @@ class SettingsService extends ChangeNotifier {
       jsonEncode({for (final p in Prayer.values) p.name: _adjustments[p]}),
     );
     await prefs.setBool(_ihtiyatKey, _ihtiyatEnabled);
+    await prefs.setString(_highLatitudeFallbackKey, _highLatitudeFallback.name);
     await prefs.setInt(_reminderOffsetKey, _reminderOffsetMinutes);
     await prefs.setString(
       _notificationTogglesKey,
@@ -252,6 +279,17 @@ class SettingsService extends ChangeNotifier {
     if (code != null && !supportedLanguageCodes.contains(code)) return;
     if (_languageCode == code) return;
     _languageCode = code;
+    await _persist();
+    notifyListeners();
+  }
+
+  /// Selects the high-latitude fallback method applied when a solar event
+  /// has no solution. Unknown values are impossible via the enum; the
+  /// choice persists and notifies listeners so visible timetables
+  /// recompute.
+  Future<void> setHighLatitudeFallback(HighLatitudeFallback method) async {
+    if (_highLatitudeFallback == method) return;
+    _highLatitudeFallback = method;
     await _persist();
     notifyListeners();
   }

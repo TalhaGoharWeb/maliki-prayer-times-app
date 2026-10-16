@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
@@ -145,12 +146,13 @@ void main() {
       final offset = TimezoneService.offsetFor(effective, date);
       expect(offset, const Duration(hours: -4));
 
-      final times = calculatePrayerTimes(
+      final times = (calculatePrayerTimes(
         coordinates: coords,
         date: date,
         timeZoneOffset: offset,
         profile: PrayerProfiles.defaultProfile,
-      );
+      ) as PrayerTimesComputed)
+          .times;
 
       // The engine returns UTC-kind DateTimes whose fields are wall-clock
       // values. Recover each true UTC instant (wall - offset) and re-render
@@ -170,12 +172,13 @@ void main() {
       // the bug Phase 2 closes.
       final deviceFrameOffset =
           TimezoneService.offsetFor('Asia/Karachi', date);
-      final deviceFrameTimes = calculatePrayerTimes(
+      final deviceFrameTimes = (calculatePrayerTimes(
         coordinates: coords,
         date: date,
         timeZoneOffset: deviceFrameOffset,
         profile: PrayerProfiles.defaultProfile,
-      );
+      ) as PrayerTimesComputed)
+          .times;
       expect(deviceFrameTimes.fajr, isNot(times.fajr),
           reason: 'device frame must differ from the location zone frame');
     });
@@ -188,12 +191,13 @@ void main() {
       final coords = Coordinates(40.7128, -74.0060);
       final offset = TimezoneService.offsetFor(zoneId, date);
       expect(offset, const Duration(hours: -4));
-      final times = calculatePrayerTimes(
+      final times = (calculatePrayerTimes(
         coordinates: coords,
         date: date,
         timeZoneOffset: offset,
         profile: PrayerProfiles.defaultProfile,
-      );
+      ) as PrayerTimesComputed)
+          .times;
       final wall = times.dhuhr;
       final rendered =
           TimezoneService.zoneWallTime(wall.subtract(offset), zoneId);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/fiqh/maliki_rules.dart';
@@ -14,6 +15,7 @@ import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
 import 'package:malikiprayertimes/widgets/adjustment_chip.dart';
+import 'package:malikiprayertimes/widgets/high_latitude_chooser.dart';
 
 /// Monthly view: a month grid of computed prayer times.
 ///
@@ -64,12 +66,19 @@ class MonthlyScreen extends StatefulWidget {
 class _MonthlyScreenState extends State<MonthlyScreen> {
   late int _year;
   late int _month;
-  late List<PrayerTimes> _days; // index 0 == day 1
+
+  /// One typed engine result per day; index 0 == day 1. A no-solution day
+  /// renders an honest "no times" cell and sheet — never fabricated times.
+  late List<PrayerTimesResult> _days;
 
   /// Snapshot of the per-prayer adjustments the grid was last built with.
   /// The map getter returns a fresh copy each call, so identity comparison
   /// can't detect a change — [didUpdateWidget] deep-compares against this.
   late Map<Prayer, int> _appliedAdjustments;
+
+  /// The high-latitude fallback method the grid was last built with;
+  /// [didUpdateWidget] reloads the month when the user changes it.
+  late HighLatitudeFallback _appliedFallback;
 
   /// Keys the [RepaintBoundary] around the timetable grid so the grid can
   /// be captured to a PNG for sharing.
@@ -96,6 +105,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
         widget.timeZoneOffset != oldWidget.timeZoneOffset ||
         widget.zoneId != oldWidget.zoneId ||
         widget.elevationMeters != oldWidget.elevationMeters ||
+        widget.settings.highLatitudeFallback != _appliedFallback ||
         !_adjustmentsEqual(_appliedAdjustments, widget.settings.adjustments)) {
       setState(_loadMonth);
     }
@@ -114,9 +124,11 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
         timeZoneOffset: _offsetForDate(date),
         profile: widget.profile,
         elevationMeters: widget.elevationMeters,
+        fallback: widget.settings.highLatitudeFallback,
       );
     });
     _appliedAdjustments = Map.of(widget.settings.adjustments);
+    _appliedFallback = widget.settings.highLatitudeFallback;
   }
 
   /// The location-zone UTC offset for [date] (DST-correct per date),
@@ -224,13 +236,21 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   void _showDaySheet(int day) {
-    final l10n = AppLocalizations.of(context)!;
-    final materialL10n = MaterialLocalizations.of(context);
-    final times = _days[day - 1];
+    final screenContext = context;
+    final l10n = AppLocalizations.of(screenContext)!;
+    final materialL10n = MaterialLocalizations.of(screenContext);
+    final result = _days[day - 1];
+    // A typed no-solution day gets the honest sheet — never fabricated
+    // times.
+    if (result is PrayerTimesNoSolution) {
+      _showNoSolutionSheet(day, result.reason);
+      return;
+    }
+    final times = (result as PrayerTimesComputed).times;
     final bands = malikiPrayerBands(times);
     final gregorian = DateTime(_year, _month, day);
     final hijri = gregorianToHijri(gregorian);
-    final lang = Localizations.localeOf(context).languageCode;
+    final lang = Localizations.localeOf(screenContext).languageCode;
     final rows = [
       (
         prayer: Prayer.fajr,
@@ -271,14 +291,15 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     ];
 
     showModalBottomSheet<void>(
-      context: context,
+      context: screenContext,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+      backgroundColor:
+          Theme.of(screenContext).colorScheme.surfaceContainerLowest,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) {
-        final theme = Theme.of(context);
+      builder: (sheetContext) {
+        final theme = Theme.of(sheetContext);
         final scheme = theme.colorScheme;
         return DraggableScrollableSheet(
           expand: false,
@@ -316,7 +337,18 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                 ),
                 if (times.highLatitudeFallback) ...[
                   const SizedBox(height: 12),
-                  _EstimateNotice(text: l10n.highLatitudeNote),
+                  // Names the method in effect; tapping opens the chooser.
+                  // The day sheet is rebuilt after the choice so the new
+                  // method's times show immediately.
+                  HighLatitudeIndicator(
+                    times: times,
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      await showHighLatitudeChooser(
+                          screenContext, widget.settings);
+                      if (mounted) _showDaySheet(day);
+                    },
+                  ),
                 ],
                 const SizedBox(height: 12),
                 Divider(height: 1, color: scheme.outlineVariant),
@@ -466,6 +498,101 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  /// Honest bottom sheet for a no-solution day: explains why no times
+  /// exist and offers the fallback chooser. After the user picks, the
+  /// sheet closes and the day sheet reopens so newly computable times
+  /// (e.g. nearest-day) show immediately.
+  void _showNoSolutionSheet(int day, NoSolutionReason reason) {
+    final screenContext = context;
+    final l10n = AppLocalizations.of(screenContext)!;
+    final materialL10n = MaterialLocalizations.of(screenContext);
+    final gregorian = DateTime(_year, _month, day);
+    showModalBottomSheet<void>(
+      context: screenContext,
+      isScrollControlled: true,
+      backgroundColor:
+          Theme.of(screenContext).colorScheme.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        final theme = Theme.of(sheetContext);
+        final scheme = theme.colorScheme;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: scheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  materialL10n.formatFullDate(gregorian),
+                  style: theme.textTheme.displaySmall,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      reason == NoSolutionReason.polarDay
+                          ? Icons.wb_sunny
+                          : Icons.bedtime,
+                      size: 20,
+                      color: scheme.secondary,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.noTimesTitle,
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            reason == NoSolutionReason.polarDay
+                                ? l10n.noTimesPolarDay
+                                : l10n.noTimesPolarNight,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: () async {
+                    Navigator.of(sheetContext).pop();
+                    await showHighLatitudeChooser(
+                        screenContext, widget.settings);
+                    if (mounted) _showDaySheet(day);
+                  },
+                  icon: const Icon(Icons.tune),
+                  label: Text(l10n.noTimesChooseMethod),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -687,7 +814,11 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                   return const SizedBox.shrink();
                 }
                 final day = index - leadingBlanks + 1;
-                final times = _days[day - 1];
+                final result = _days[day - 1];
+                // A typed no-solution day has no times at all — the cell
+                // says so honestly instead of showing fabricated times.
+                final times =
+                    result is PrayerTimesComputed ? result.times : null;
                 final today = DateTime.now();
                 final isToday = today.year == _year &&
                     today.month == _month &&
@@ -709,16 +840,21 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                 // displayed time carries an adjustment, the announcement says
                 // so and a subtle dot marks the adjusted line — a marker,
                 // not clutter (program Part A §2.3).
-                final fajrAdjusted = _hasAdjustment(Prayer.fajr);
-                final maghribAdjusted = _hasAdjustment(Prayer.maghrib);
+                final fajrAdjusted =
+                    times != null && _hasAdjustment(Prayer.fajr);
+                final maghribAdjusted =
+                    times != null && _hasAdjustment(Prayer.maghrib);
                 final cellLabel = materialL10n.formatFullDate(
                   DateTime(_year, _month, day),
                 );
+                final cellSemantics = times == null
+                    ? '$cellLabel, ${l10n.noTimesCell}'
+                    : (fajrAdjusted || maghribAdjusted)
+                        ? '$cellLabel, ${l10n.adjustmentMarkerSemantics}'
+                        : cellLabel;
                 return Semantics(
                   button: true,
-                  label: (fajrAdjusted || maghribAdjusted)
-                      ? '$cellLabel, ${l10n.adjustmentMarkerSemantics}'
-                      : cellLabel,
+                  label: cellSemantics,
                   excludeSemantics: true,
                   child: _DayCellMaterial(
                     isToday: isToday,
@@ -746,7 +882,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                                 ),
                               ),
                             ),
-                            if (times.highLatitudeFallback)
+                            if (times != null && times.highLatitudeFallback)
                               Flexible(
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
@@ -765,26 +901,35 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                           ],
                         ),
                         const Spacer(),
-                        // Single-line shrink-to-fit time labels: on a
-                        // 7-column grid the labels must never wrap into
-                        // extra lines (or overflow) at large text scales.
-                        // Full-size times remain one tap away in the day
-                        // detail sheet.
-                        _CellTime(
-                          text: l10n.dayCellFajr(localizeDigits(
-                              _hhmm(_adjusted(Prayer.fajr, times.fajr)), lang)),
-                          color: timeFg,
-                          adjusted: fajrAdjusted,
-                          markerTooltip: l10n.adjustmentMarkerSemantics,
-                        ),
-                        _CellTime(
-                          text: l10n.dayCellMaghrib(localizeDigits(
-                              _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
-                              lang)),
-                          color: timeFg,
-                          adjusted: maghribAdjusted,
-                          markerTooltip: l10n.adjustmentMarkerSemantics,
-                        ),
+                        // A no-solution day shows an honest label instead of
+                        // fabricated times; the full explanation is one tap
+                        // away in the day sheet.
+                        if (times == null)
+                          Tooltip(
+                            message: l10n.noTimesCellTooltip,
+                            child: _CellTime(
+                              text: l10n.noTimesCell,
+                              color: timeFg,
+                            ),
+                          )
+                        else ...[
+                          _CellTime(
+                            text: l10n.dayCellFajr(localizeDigits(
+                                _hhmm(_adjusted(Prayer.fajr, times.fajr)),
+                                lang)),
+                            color: timeFg,
+                            adjusted: fajrAdjusted,
+                            markerTooltip: l10n.adjustmentMarkerSemantics,
+                          ),
+                          _CellTime(
+                            text: l10n.dayCellMaghrib(localizeDigits(
+                                _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
+                                lang)),
+                            color: timeFg,
+                            adjusted: maghribAdjusted,
+                            markerTooltip: l10n.adjustmentMarkerSemantics,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -940,41 +1085,6 @@ class _MiniChip extends StatelessWidget {
       child: Text(
         text,
         style: AppFonts.badgeLabel(context).copyWith(color: foreground),
-      ),
-    );
-  }
-}
-
-/// Tertiary-toned notice for high-latitude estimation.
-class _EstimateNotice extends StatelessWidget {
-  final String text;
-
-  const _EstimateNotice({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: scheme.tertiaryFixed,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.info_outline,
-              size: 16, color: scheme.onTertiaryFixed),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onTertiaryFixed,
-                  ),
-            ),
-          ),
-        ],
       ),
     );
   }

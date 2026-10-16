@@ -1,9 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 
-/// Convenience wrapper around [calculatePrayerTimes].
+/// Convenience wrapper around [calculatePrayerTimes]. Unwraps the typed
+/// result; a no-solution day fails loudly here — tests that expect
+/// [PrayerTimesNoSolution] assert on the raw result instead.
 PrayerTimes times(
   double lat,
   double lon,
@@ -12,13 +15,17 @@ PrayerTimes times(
   int day,
   Duration offset, [
   PrayerProfile? profile,
-]) =>
-    calculatePrayerTimes(
-      coordinates: Coordinates(lat, lon),
-      date: DateTime(year, month, day),
-      timeZoneOffset: offset,
-      profile: profile ?? PrayerProfiles.defaultProfile,
-    );
+  HighLatitudeFallback fallback = HighLatitudeFallback.middleOfNight,
+]) {
+  final result = calculatePrayerTimes(
+    coordinates: Coordinates(lat, lon),
+    date: DateTime(year, month, day),
+    timeZoneOffset: offset,
+    profile: profile ?? PrayerProfiles.defaultProfile,
+    fallback: fallback,
+  );
+  return (result as PrayerTimesComputed).times;
+}
 
 /// Universal ordering invariant:
 /// fajr < sunrise < dhuhr < asr < maghrib < isha,
@@ -165,34 +172,37 @@ void main() {
     });
   });
 
-  group('polar-night coherence (E-01)', () {
-    // Regression: before the fix, 70-84.6°N in deep winter mixed REAL
-    // twilight crossings (the sun's max altitude sits between −18° and
-    // −0.833°) with SYNTHETIC noon±6 horizon times — 80°N on 21 Dec 2026
-    // showed fajr 08:03 > sunrise 05:58 and isha 15:24 < maghrib 17:59.
+  group('polar frames are typed no-solutions (Phase 5)', () {
+    // The old polar-coherence estimate path (noon±6 synthetic horizons)
+    // is gone: when the sun never reaches the horizon, the engine returns
+    // a typed no-solution instead of fabricated times. The E-01 chimera
+    // regression (mixed real twilight + synthetic horizon) cannot recur
+    // because the mixed state is no longer constructible.
+    PrayerTimesResult raw(
+            double lat, int month, int day, HighLatitudeFallback fb) =>
+        calculatePrayerTimes(
+          coordinates: Coordinates(lat, 0.0),
+          date: DateTime(2026, month, day),
+          timeZoneOffset: Duration.zero,
+          fallback: fb,
+        );
 
-    test('70N on 21 Dec: whole day estimated, ordering holds', () {
-      final t = times(70.0, 0.0, 2026, 12, 21, Duration.zero);
-      expect(t.highLatitudeFallback, isTrue);
-      expectOrdering(t);
+    test('80N on 21 Dec (polar night): NoSolution, not estimates', () {
+      final r = raw(80.0, 12, 21, HighLatitudeFallback.middleOfNight);
+      expect(r, isA<PrayerTimesNoSolution>());
+      expect((r as PrayerTimesNoSolution).reason,
+          NoSolutionReason.polarNight);
     });
 
-    test('80N on 21 Dec: chimera gone — fajr < sunrise < ... < maghrib < isha',
-        () {
-      final t = times(80.0, 0.0, 2026, 12, 21, Duration.zero);
-      expect(t.highLatitudeFallback, isTrue);
-      expectOrdering(t);
-      // The two crossings that were inverted before the fix.
-      expect(t.fajr.isBefore(t.sunrise), isTrue,
-          reason: 'estimated fajr before synthetic sunrise');
-      expect(t.isha.isAfter(t.maghrib), isTrue,
-          reason: 'estimated isha after synthetic maghrib');
+    test('80N on 21 Jun (polar day): NoSolution, not estimates', () {
+      final r = raw(80.0, 6, 21, HighLatitudeFallback.middleOfNight);
+      expect(r, isA<PrayerTimesNoSolution>());
+      expect((r as PrayerTimesNoSolution).reason, NoSolutionReason.polarDay);
     });
 
-    test('80N on 21 Jun (polar day): stays coherent', () {
-      final t = times(80.0, 0.0, 2026, 6, 21, Duration.zero);
-      expect(t.highLatitudeFallback, isTrue);
-      expectOrdering(t);
+    test('70N on 21 Dec (polar night): NoSolution', () {
+      final r = raw(70.0, 12, 21, HighLatitudeFallback.middleOfNight);
+      expect(r, isA<PrayerTimesNoSolution>());
     });
   });
 

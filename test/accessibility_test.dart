@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
@@ -49,7 +50,6 @@ const _supportedLocales = [
 ];
 
 const _coords = Coordinates(24.86, 67.0); // Karachi
-const _tromso = Coordinates(69.65, 18.96); // triggers high-latitude fallback
 const _offset = Duration(hours: 5);
 
 /// Narrow-phone logical size used for the touch-target and large-text
@@ -408,10 +408,14 @@ void main() {
 
     testWidgets('high-latitude estimate flag is text, not color-only',
         (tester) async {
+      // Fixture: London in June — a full month of persistent-twilight
+      // fallback days (the old Tromsø-June fixture is now a no-solution
+      // month, which renders no markers at all).
+      const london = Coordinates(51.5, -0.12);
       final (settings, _) = await _services();
       await tester.pumpWidget(_wrap(
           MonthlyScreen(
-              coordinates: _tromso,
+              coordinates: london,
               profile: PrayerProfiles.all[0],
               timeZoneOffset: const Duration(hours: 1),
               settings: settings,
@@ -624,10 +628,14 @@ void main() {
       // Reads the marker color from the RENDERED widget rather than from
       // the scheme constants: if the screen code ever regresses to the
       // old onTertiaryContainer marker (2.06:1), this test fails.
+      // Fixture: London in June — a full month of persistent-twilight
+      // fallback days (the old Tromsø-June fixture is now a no-solution
+      // month, which renders no markers at all).
+      const london = Coordinates(51.5, -0.12);
       final (settings, _) = await _services();
       await tester.pumpWidget(_wrap(
           MonthlyScreen(
-              coordinates: _tromso,
+              coordinates: london,
               profile: PrayerProfiles.all[0],
               timeZoneOffset: const Duration(hours: 1),
               settings: settings,
@@ -664,12 +672,15 @@ void main() {
 
     /// Raw engine Fajr for the first visible day, using the same per-date
     /// offset derivation the screen applies.
-    DateTime rawDayOneFajr(PrayerProfile profile) => calculatePrayerTimes(
+    DateTime rawDayOneFajr(PrayerProfile profile) =>
+        (calculatePrayerTimes(
           coordinates: _coords,
           date: DateTime(2026, 10, 1),
           timeZoneOffset: DateTime(2026, 10, 1).timeZoneOffset,
           profile: profile,
-        ).fajr;
+        ) as PrayerTimesComputed)
+            .times
+            .fajr;
 
     testWidgets('REL-01: +15 min Fajr adjustment reaches the cell and the day sheet',
         (tester) async {
@@ -736,7 +747,7 @@ void main() {
           reason: 'stale profile times must be gone');
     });
 
-    testWidgets('E-03: home shows the estimate notice on a fallback day',
+    testWidgets('E-03: home shows the honest state on a no-solution day',
         (tester) async {
       const southPole = Coordinates(-80.0, 0.0);
       final (settings, location) = await _services();
@@ -749,9 +760,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
 
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-      // The engine's fallback verdict is date-dependent (polar seasons), so
-      // probe the same computation HomeScreen performs and assert the notice
-      // matches the verdict either way — never a vacuous pass.
+      // The engine's verdict is date-dependent (polar seasons), so probe
+      // the same computation HomeScreen performs and assert the UI matches
+      // the verdict either way — never a vacuous pass.
       final now = DateTime.now();
       final probe = calculatePrayerTimes(
         coordinates: southPole,
@@ -759,12 +770,20 @@ void main() {
         timeZoneOffset: DateTime.now().timeZoneOffset,
         profile: settings.effectiveProfile,
       );
-      if (probe.highLatitudeFallback) {
-        expect(find.text(l10n.highLatitudeNote), findsWidgets,
-            reason: 'estimate notice must show on a fallback day');
+      if (probe is PrayerTimesNoSolution) {
+        expect(find.text(l10n.noTimesTitle), findsOneWidget,
+            reason: 'honest empty state must show on a no-solution day');
+        expect(find.text(l10n.noTimesChooseMethod), findsOneWidget,
+            reason: 'the fallback chooser must be one tap away');
       } else {
-        expect(find.text(l10n.highLatitudeNote), findsNothing,
-            reason: 'no estimate notice on a normal day');
+        final times = (probe as PrayerTimesComputed).times;
+        if (times.highLatitudeFallback) {
+          expect(find.text(l10n.highLatConventionBadge), findsWidgets,
+              reason: 'fallback indicator must show on a fallback day');
+        } else {
+          expect(find.text(l10n.highLatConventionBadge), findsNothing,
+              reason: 'no fallback indicator on a normal day');
+        }
       }
     });
   });

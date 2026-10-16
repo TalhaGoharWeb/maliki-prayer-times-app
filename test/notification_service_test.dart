@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
@@ -32,12 +33,13 @@ Map<int, DateTime> _expected({
   final reminder = settings.reminderOffsetMinutes;
 
   DateTime prayerUtcFor(Prayer p, DateTime date) {
-    final times = calculatePrayerTimes(
+    final times = (calculatePrayerTimes(
       coordinates: _nouakchott,
       date: date,
       timeZoneOffset: _offset,
       profile: PrayerProfiles.defaultProfile,
-    );
+    ) as PrayerTimesComputed)
+        .times;
     return settings.adjustedTime(p, times.timeFor(p)).subtract(_offset);
   }
 
@@ -123,22 +125,24 @@ void main() {
       expect(queriedDays, containsAll({24, 25}));
 
       DateTime prayerUtc(Prayer p, DateTime date, Duration off) {
-        final times = calculatePrayerTimes(
+        final times = (calculatePrayerTimes(
           coordinates: _nouakchott,
           date: date,
           timeZoneOffset: off,
           profile: PrayerProfiles.defaultProfile,
-        );
+        ) as PrayerTimesComputed)
+            .times;
         return settings.adjustedTime(p, times.timeFor(p)).subtract(off);
       }
 
       DateTime wall(Prayer p, DateTime date, Duration off) {
-        final times = calculatePrayerTimes(
+        final times = (calculatePrayerTimes(
           coordinates: _nouakchott,
           date: date,
           timeZoneOffset: off,
           profile: PrayerProfiles.defaultProfile,
-        );
+        ) as PrayerTimesComputed)
+            .times;
         return settings.adjustedTime(p, times.timeFor(p));
       }
 
@@ -259,12 +263,13 @@ void main() {
       final settings = await SettingsService.load();
       await settings.setReminderOffsetMinutes(10);
 
-      final times = calculatePrayerTimes(
+      final times = (calculatePrayerTimes(
         coordinates: _nouakchott,
         date: DateTime.utc(2026, 10, 15),
         timeZoneOffset: _offset,
         profile: PrayerProfiles.defaultProfile,
-      );
+      ) as PrayerTimesComputed)
+          .times;
       final dhuhrUtc =
           settings.adjustedTime(Prayer.dhuhr, times.dhuhr).subtract(_offset);
       // 5 minutes before Dhuhr: its reminder (10 min before) already passed.

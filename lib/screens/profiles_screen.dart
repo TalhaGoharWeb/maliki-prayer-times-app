@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
@@ -108,13 +109,19 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     final offset = _offsetForToday();
     final now = DateTime.now().toUtc().add(offset);
     final day = DateTime(now.year, now.month, now.day);
-    PrayerTimes timesFor(PrayerProfile p) => calculatePrayerTimes(
-          coordinates: widget.coordinates,
-          date: day,
-          timeZoneOffset: offset,
-          profile: p,
-          elevationMeters: widget.elevationMeters,
-        );
+    PrayerTimes? timesFor(PrayerProfile p) {
+      final result = calculatePrayerTimes(
+        coordinates: widget.coordinates,
+        date: day,
+        timeZoneOffset: offset,
+        profile: p,
+        elevationMeters: widget.elevationMeters,
+        fallback: widget.settings.highLatitudeFallback,
+      );
+      // A no-solution day (polar day/night) has no comparable times —
+      // the compare rows show an honest label instead.
+      return result is PrayerTimesComputed ? result.times : null;
+    }
     final timesA = timesFor(_profileA);
     final timesB = timesFor(_profileB);
 
@@ -274,15 +281,28 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                         label: Text(l10n.tableDiffHeader.toUpperCase())),
                   ],
                   rows: _prayerRows.map((prayer) {
-                    final a = timesA.timeFor(prayer);
-                    final b = timesB.timeFor(prayer);
+                    final a = timesA?.timeFor(prayer);
+                    final b = timesB?.timeFor(prayer);
+                    // A no-solution day (polar day/night) has no comparable
+                    // times — the row says so honestly instead of showing
+                    // fabricated times.
+                    if (a == null || b == null) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(_rowLabel(l10n, prayer))),
+                          DataCell(Text(l10n.noTimesCell)),
+                          DataCell(Text(l10n.noTimesCell)),
+                          const DataCell(Text('—')),
+                        ],
+                      );
+                    }
                     return DataRow(
                       cells: [
                         DataCell(Text(_rowLabel(l10n, prayer))),
-                        DataCell(Text(
-                            localizeDigits(_hhmm(a), lang))),
-                        DataCell(Text(
-                            localizeDigits(_hhmm(b), lang))),
+                        DataCell(
+                            Text(localizeDigits(_hhmm(a), lang))),
+                        DataCell(
+                            Text(localizeDigits(_hhmm(b), lang))),
                         DataCell(Text(_diffMinutes(l10n, a, b))),
                       ],
                     );

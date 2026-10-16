@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
@@ -440,21 +441,26 @@ class NotificationService {
     final exact = await _scheduler.canScheduleExactAlarms();
     final offsetForDate = timeZoneOffsetForDate ?? _deviceOffsetForDate;
 
-    DateTime prayerUtcFor(Prayer prayer, DateTime date) {
+    DateTime? prayerUtcFor(Prayer prayer, DateTime date) {
       // Each target date is computed in its own offset frame, so a DST
       // transition overnight does not pin tomorrow to today's offset.
       final offset = offsetForDate(date);
-      final times = calculatePrayerTimes(
+      final result = calculatePrayerTimes(
         coordinates: coords,
         date: date,
         timeZoneOffset: offset,
         profile: profile,
         elevationMeters: elevationMeters,
+        fallback: settings.highLatitudeFallback,
       );
+      // A no-solution day (polar day/night) has nothing to schedule: a
+      // calculation failure never produces a plausible-but-unsupported
+      // time, so the notification is skipped, not guessed.
+      if (result is! PrayerTimesComputed) return null;
       // `adjustedTime` returns a UTC-kind DateTime whose fields are
       // wall-clock values; subtract the date's own offset to recover the
       // true instant.
-      return settings.adjustedTime(prayer, times.timeFor(prayer)).subtract(
+      return settings.adjustedTime(prayer, result.times.timeFor(prayer)).subtract(
             offset,
           );
     }
@@ -479,10 +485,10 @@ class NotificationService {
     for (final prayer in Prayer.values) {
       if (!(settings.notificationToggles[prayer] ?? false)) continue;
       var fireUtc = prayerUtcFor(prayer, todayWall);
-      if (!fireUtc.isAfter(nowUtc)) {
+      if (fireUtc == null || !fireUtc.isAfter(nowUtc)) {
         fireUtc = prayerUtcFor(prayer, tomorrowWall);
       }
-      if (!fireUtc.isAfter(nowUtc)) continue;
+      if (fireUtc == null || !fireUtc.isAfter(nowUtc)) continue;
       await _scheduler.schedule(
         id: prayer.index,
         title: texts.titleFor(prayer),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/fiqh/maliki_rules.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
@@ -19,6 +20,7 @@ import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
 import 'package:malikiprayertimes/widgets/adjustment_chip.dart';
+import 'package:malikiprayertimes/widgets/high_latitude_chooser.dart';
 import 'package:malikiprayertimes/widgets/travel_banner.dart';
 import 'package:malikiprayertimes/widgets/why_time_sheet.dart';
 
@@ -46,12 +48,18 @@ class HomeScreen extends StatefulWidget {
   /// widget-test behavior).
   final String? zoneId;
 
+  /// Test-only clock override: when set, the screen treats this as "now"
+  /// for the civil day, the timetable, and the countdown. Null in
+  /// production.
+  final DateTime? nowForTesting;
+
   const HomeScreen(
       {super.key,
       required this.settings,
       required this.location,
       this.travel,
-      this.zoneId});
+      this.zoneId,
+      this.nowForTesting});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -60,6 +68,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime? _civilDay; // wall-clock day the times were computed for
   PrayerTimes? _times; // raw engine output (pre-adjustment)
+
+  /// Set when the engine returned a typed no-solution for the day (polar
+  /// day/night): the timetable is replaced by an honest empty state.
+  NoSolutionReason? _noSolutionReason;
   List<PrayerBand>? _bands;
   late Timer _timer;
   late DateTime _now;
@@ -67,9 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Wall-clock "now" in the same frame as the engine output:
   /// `DateTime.now().toUtc().add(offset)` where the offset is the
   /// location zone's offset for today (or the device offset when no
-  /// [zoneId] was supplied).
+  /// [zoneId] was supplied). [HomeScreen.nowForTesting] overrides the
+  /// clock in widget tests.
   DateTime _frameNow() {
-    final nowUtc = DateTime.now().toUtc();
+    final nowUtc = (widget.nowForTesting ?? DateTime.now()).toUtc();
     return nowUtc.add(_offsetForDate(nowUtc));
   }
 
@@ -144,19 +157,32 @@ class _HomeScreenState extends State<HomeScreen> {
     if (coords == null) {
       _civilDay = null;
       _times = null;
+      _noSolutionReason = null;
       _bands = null;
       return;
     }
     final now = _frameNow();
     _civilDay = DateTime(now.year, now.month, now.day);
-    _times = calculatePrayerTimes(
+    final result = calculatePrayerTimes(
       coordinates: coords,
       date: _civilDay!,
       timeZoneOffset: _offset,
       profile: widget.settings.effectiveProfile,
       elevationMeters: _elevationMeters,
+      fallback: widget.settings.highLatitudeFallback,
     );
-    _bands = malikiPrayerBands(_times!);
+    switch (result) {
+      case PrayerTimesComputed(:var times):
+        _times = times;
+        _noSolutionReason = null;
+        _bands = malikiPrayerBands(times);
+      case PrayerTimesNoSolution(:var reason):
+        // A calculation failure never produces a plausible-but-unsupported
+        // time: no timetable, no bands — the honest empty state instead.
+        _times = null;
+        _noSolutionReason = reason;
+        _bands = null;
+    }
   }
 
   void _openLocationScreen() {
@@ -172,8 +198,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// The next prayer's wall-clock time in the same frame as [_times],
   /// after [SettingsService.adjustedTime] is applied. When nothing remains
-  /// today, Fajr belongs to tomorrow's timetable.
-  ({Prayer prayer, DateTime time}) _nextPrayer() {
+  /// today, Fajr belongs to tomorrow's timetable. Returns null when no
+  /// next prayer can be computed — today is past its last prayer and
+  /// tomorrow has no solar frame (a typed no-solution); the hero then
+  /// shows an honest note instead of a fabricated time.
+  ({Prayer prayer, DateTime time})? _nextPrayer() {
     final times = _times!;
     final settings = widget.settings;
     for (final p in const [
@@ -187,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (t.isAfter(_now)) return (prayer: p, time: t);
     }
     final tomorrowDate = _civilDay!.add(const Duration(days: 1));
-    final tomorrow = calculatePrayerTimes(
+    final tomorrowResult = calculatePrayerTimes(
       coordinates: _coordinates!,
       date: tomorrowDate,
       // Per-date offset: tomorrow's UTC offset can differ from today's
@@ -195,10 +224,12 @@ class _HomeScreenState extends State<HomeScreen> {
       timeZoneOffset: _offsetForDate(tomorrowDate),
       profile: settings.effectiveProfile,
       elevationMeters: _elevationMeters,
+      fallback: settings.highLatitudeFallback,
     );
+    if (tomorrowResult is! PrayerTimesComputed) return null;
     return (
       prayer: Prayer.fajr,
-      time: settings.adjustedTime(Prayer.fajr, tomorrow.fajr),
+      time: settings.adjustedTime(Prayer.fajr, tomorrowResult.times.fajr),
     );
   }
 
@@ -264,7 +295,73 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _times == null ? _locationPrompt() : _timetable();
+    if (_times != null) return _timetable();
+    // No times and no no-solution reason means no location is set yet;
+    // a reason means the engine honestly reported no solution.
+    return _noSolutionReason == null ? _locationPrompt() : _noSolutionCard();
+  }
+
+  /// Honest empty state for a typed no-solution day (polar day/night): no
+  /// fabricated times, an explanation, and the fallback chooser one tap
+  /// away. The fallback is the user's explicit choice — never silent.
+  Widget _noSolutionCard() {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+    final reason = _noSolutionReason!;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        _LocationHeader(
+          location: widget.location,
+          onTap: _openLocationScreen,
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: scheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    reason == NoSolutionReason.polarDay
+                        ? Icons.wb_sunny
+                        : Icons.bedtime,
+                    color: scheme.onTertiaryContainer,
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(l10n.noTimesTitle,
+                    style: theme.textTheme.displaySmall),
+                const SizedBox(height: 8),
+                Text(
+                  reason == NoSolutionReason.polarDay
+                      ? l10n.noTimesPolarDay
+                      : l10n.noTimesPolarNight,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: () => showHighLatitudeChooser(
+                      context, widget.settings),
+                  icon: const Icon(Icons.tune),
+                  label: Text(l10n.noTimesChooseMethod),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   /// Shown when no location is set yet: a prompt card that navigates to the
@@ -357,23 +454,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 12),
 
-        _HeroCard(
+        _HeroCardOrUnavailable(
           next: next,
-          label: _prayerLabel(l10n, next.prayer),
-          arabic: _prayerArabic(next.prayer),
-          descriptor: rows
-              .firstWhere((r) => r.prayer == next.prayer)
-              .descriptor,
+          label: next == null ? '' : _prayerLabel(l10n, next.prayer),
+          arabic: next == null ? '' : _prayerArabic(next.prayer),
+          descriptor: next == null
+              ? ''
+              : rows
+                  .firstWhere((r) => r.prayer == next.prayer)
+                  .descriptor,
           now: _now,
           languageCode: lang,
           hijriDate: localizeDigits(formatHijriDate(l10n, hijri), lang),
         ),
         const SizedBox(height: 20),
 
-        // High-latitude estimate notice: the engine flags these times as
-        // approximations — same pattern as the monthly day sheet.
+        // High-latitude fallback indicator: names the method in effect plus
+        // the convention label; tapping opens the chooser. The default
+        // method is never applied silently — it stays visible wherever
+        // fallback times are shown.
         if (times.highLatitudeFallback) ...[
-          _EstimateNotice(text: l10n.highLatitudeNote),
+          HighLatitudeIndicator(
+            times: times,
+            onTap: () => showHighLatitudeChooser(context, settings),
+          ),
           const SizedBox(height: 12),
         ],
 
@@ -382,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.view_timeline, title: l10n.todaysTimes),
         const SizedBox(height: 8),
         ...rows.map((row) {
-          final isNext = row.prayer == next.prayer;
+          final isNext = next != null && row.prayer == next.prayer;
           final time = settings.adjustedTime(
               row.prayer, times.timeFor(row.prayer));
           final timeLabel = formatPrayerTime(time, lang);
@@ -1125,38 +1229,66 @@ class _LearnCard extends StatelessWidget {
   }
 }
 
-/// Tertiary-toned notice for high-latitude estimation — same pattern as the
-/// monthly day sheet.
-class _EstimateNotice extends StatelessWidget {
-  final String text;
+/// Hero wrapper: the next-prayer countdown card when a next prayer is
+/// computable, otherwise an honest note (tomorrow has no solar frame) —
+/// never a fabricated time.
+class _HeroCardOrUnavailable extends StatelessWidget {
+  final ({Prayer prayer, DateTime time})? next;
+  final String label;
+  final String arabic;
+  final String descriptor;
+  final DateTime now;
+  final String? languageCode;
+  final String hijriDate;
 
-  const _EstimateNotice({required this.text});
+  const _HeroCardOrUnavailable({
+    required this.next,
+    required this.label,
+    required this.arabic,
+    required this.descriptor,
+    required this.now,
+    required this.languageCode,
+    required this.hijriDate,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: scheme.tertiaryFixed,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.info_outline,
-              size: 16, color: scheme.onTertiaryFixed),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onTertiaryFixed,
+    final next = this.next;
+    if (next == null) {
+      final theme = Theme.of(context);
+      final l10n = AppLocalizations.of(context)!;
+      final scheme = theme.colorScheme;
+      return Card(
+        color: scheme.tertiaryContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.info_outline,
+                  size: 20, color: scheme.onTertiaryContainer),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.nextPrayerUnavailable,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: scheme.onTertiaryContainer,
                   ),
-            ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      );
+    }
+    return _HeroCard(
+      next: next,
+      label: label,
+      arabic: arabic,
+      descriptor: descriptor,
+      now: now,
+      languageCode: languageCode,
+      hijriDate: hijriDate,
     );
   }
 }

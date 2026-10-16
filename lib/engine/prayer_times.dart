@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'coordinates.dart';
+import 'high_latitude.dart';
 import 'prayer_profile.dart';
 
 /// The five daily prayers plus sunrise (a timetable marker, not a prayer).
@@ -56,6 +57,16 @@ class PrayerTimes {
   /// times are rule-applied estimates and must be labeled as such in the UI.
   final bool highLatitudeFallback;
 
+  /// The fallback method in effect when [highLatitudeFallback] is true;
+  /// null on a fully computed day. The UI must NAME this method wherever
+  /// fallback times are shown — the default is never applied silently.
+  final HighLatitudeFallback? fallbackMethod;
+
+  /// When [fallbackMethod] is [HighLatitudeFallback.nearestDay], the civil
+  /// date the displayed times were borrowed from. Null otherwise. The UI
+  /// must show this date next to the borrowed times.
+  final DateTime? nearestDaySourceDate;
+
   final PrayerProfile profile;
 
   const PrayerTimes({
@@ -71,6 +82,8 @@ class PrayerTimes {
     required this.maghribPreferredEnd,
     required this.highLatitudeFallback,
     required this.profile,
+    this.fallbackMethod,
+    this.nearestDaySourceDate,
   });
 
   DateTime timeFor(Prayer prayer) {
@@ -249,7 +262,48 @@ _SolarEvents _solarEvents(Coordinates coordinates, PrayerProfile profile,
   );
 }
 
+/// True when the sun stays above the horizon all day (polar day) rather
+/// than below it (polar night): the transit altitude decides, not a guess.
+bool _isPolarDay(
+    double latitudeDeg, double declinationDeg, double horizonDepression) {
+  // Altitude at transit: 90° − |φ − δ|.
+  final transitAltitude = 90.0 - (latitudeDeg - declinationDeg).abs();
+  return transitAltitude > -horizonDepression;
+}
+
+/// The nearest civil date within ±183 days on which every solar event has
+/// a solution (sunrise, sunset, Fajr, Isha all non-null). The half-year
+/// window is deliberate: at high latitudes twilight can be unsolvable for
+/// months (e.g. Tromsø in summer), so a ±30-day window would almost never
+/// find a day where the convention is actually needed. Past days are
+/// preferred on equidistant ties. Null when nothing is found (the poles,
+/// where no day ever has a solution).
+DateTime? _nearestSolvableDay(Coordinates coordinates, PrayerProfile profile,
+    DateTime base, double elevationMeters) {
+  for (var d = 1; d <= 183; d++) {
+    for (final date in [
+      base.subtract(Duration(days: d)),
+      base.add(Duration(days: d)),
+    ]) {
+      final events =
+          _solarEvents(coordinates, profile, date, elevationMeters);
+      if (events.sunriseUtc != null &&
+          events.sunsetUtc != null &&
+          events.fajrUtc != null &&
+          events.ishaUtc != null) {
+        return DateTime(date.year, date.month, date.day);
+      }
+    }
+  }
+  return null;
+}
+
 /// Computes one day of prayer times.
+///
+/// Returns [PrayerTimesComputed] on success or [PrayerTimesNoSolution] when
+/// the date/location has no solar frame (polar day/night) and no usable
+/// fallback is selected. A calculation failure NEVER produces a
+/// plausible-but-unsupported time.
 ///
 /// * [coordinates] — observer location.
 /// * [date] — the local calendar day; only year/month/day are used.
@@ -260,23 +314,29 @@ _SolarEvents _solarEvents(Coordinates coordinates, PrayerProfile profile,
 ///   Applies the horizon dip correction to sunrise/sunset only (the zenith
 ///   grows by `0.0293 × √h` degrees); Fajr/Isha twilight angles, Dhuhr, and
 ///   the Asr shadow rule are unaffected. Defaults to 0 (sea-level horizon).
+/// * [fallback] — the high-latitude fallback method applied when a twilight
+///   event has no solution. Default [HighLatitudeFallback.middleOfNight]
+///   (per adhan `recommended()`). Every method is a software/institutional
+///   convention — NEVER a Maliki ruling — and the caller must surface
+///   [PrayerTimes.fallbackMethod] wherever fallback times are shown.
 ///
-/// High-latitude fallback ([HighLatitudeRule.middleOfNight]): when Fajr or
-/// Isha never occur (the sun never reaches the configured depression), they
-/// are estimated from the night portions — fajr = sunrise − night/2,
-/// isha = sunset + night/2 — and [PrayerTimes.highLatitudeFallback] is set.
-/// When the sun never reaches the horizon at all (polar day/night: sunrise
-/// or sunset null), the horizon is estimated as noon±6 and the WHOLE day is
-/// forced onto this coherent estimate path — real twilight crossings are
-/// never mixed with synthetic horizon times. Fallback times are always
-/// finite and keep the day ordering sane; they must be labeled as estimates
-/// wherever displayed.
-PrayerTimes calculatePrayerTimes({
+/// High-latitude behavior (D5 §3.7):
+/// * Persistent twilight (a real night exists but the twilight angle never
+///   occurs): Fajr/Isha are estimated from the night frame with the chosen
+///   method; [PrayerTimes.highLatitudeFallback] is set and the method is
+///   named on [PrayerTimes.fallbackMethod].
+/// * No night frame at all (polar day/night): the day has no solution and
+///   the result is [PrayerTimesNoSolution] — UNLESS [fallback] is
+///   [HighLatitudeFallback.nearestDay], in which case the whole day is
+///   borrowed from the nearest solvable day and the source date is
+///   recorded on [PrayerTimes.nearestDaySourceDate] for the UI to show.
+PrayerTimesResult calculatePrayerTimes({
   required Coordinates coordinates,
   required DateTime date,
   required Duration timeZoneOffset,
   PrayerProfile profile = PrayerProfiles.defaultProfile,
   double elevationMeters = 0.0,
+  HighLatitudeFallback fallback = HighLatitudeFallback.middleOfNight,
 }) {
   final base = DateTime.utc(date.year, date.month, date.day);
   final today = _solarEvents(coordinates, profile, base, elevationMeters);
@@ -290,58 +350,117 @@ PrayerTimes calculatePrayerTimes({
   // its own date's 00:00, so yesterday's events shift by −24 and tomorrow's
   // by +24. Mixing raw per-date hours here would corrupt every night
   // interval that crosses a civil-date boundary.
-  var highLatitudeFallback = false;
 
-  // Day-boundary events. If the sun never reaches the horizon (polar
-  // day/night), estimate around solar noon and flag the fallback.
-  double sunriseUtc;
-  if (today.sunriseUtc != null) {
-    sunriseUtc = today.sunriseUtc!;
-  } else {
-    highLatitudeFallback = true;
-    sunriseUtc = today.noonUtc - 6.0;
+  // --- No night frame: the sun never reaches the horizon (polar day/night).
+  // No fallback can be constructed from a nonexistent sunset/sunrise, so
+  // the honest result is a typed no-solution — unless the user explicitly
+  // chose the nearest-day convention.
+  if (today.sunriseUtc == null || today.sunsetUtc == null) {
+    final horizonDepression =
+        profile.solarDepression + elevationDipDegrees(elevationMeters);
+    final reason = _isPolarDay(coordinates.latitude, today.declinationDeg,
+            horizonDepression)
+        ? NoSolutionReason.polarDay
+        : NoSolutionReason.polarNight;
+    if (fallback == HighLatitudeFallback.nearestDay) {
+      final src =
+          _nearestSolvableDay(coordinates, profile, base, elevationMeters);
+      if (src != null) {
+        return _borrowedDay(
+          coordinates: coordinates,
+          sourceDate: src,
+          timeZoneOffset: timeZoneOffset,
+          profile: profile,
+          elevationMeters: elevationMeters,
+        );
+      }
+    }
+    return PrayerTimesNoSolution(reason);
   }
-  double sunsetUtc;
-  if (today.sunsetUtc != null) {
-    sunsetUtc = today.sunsetUtc!;
-  } else {
-    highLatitudeFallback = true;
-    sunsetUtc = today.noonUtc + 6.0;
-  }
 
-  // E-01: when the sun never reaches the horizon (polar day/night), the
-  // horizon times above are synthetic (noon±6) and the whole day must use
-  // the coherent estimate path. Real twilight crossings (Fajr/Isha) must
-  // never be mixed with synthetic horizon times — that chimera misorders
-  // the day (e.g. 80°N in December: Fajr 08:03 after "sunrise" 05:58).
-  // The shadow-based Asr is likewise undefined when the sun never rises,
-  // so it takes the midpoint estimate on this path too.
-  final polarDay = today.sunriseUtc == null || today.sunsetUtc == null;
-
+  final sunriseUtc = today.sunriseUtc!;
+  final sunsetUtc = today.sunsetUtc!;
   final dhuhrUtc = today.noonUtc + profile.dhuhrIhtiyatMinutes / 60.0;
   final maghribUtc = sunsetUtc + profile.maghribIhtiyatMinutes / 60.0;
 
-  // Fajr: middle-of-night fallback when the dawn depression never occurs —
-  // or on the polar path, where even a real twilight crossing is ignored in
-  // favour of the coherent estimate (see above).
-  double fajrUtc;
-  if (today.fajrUtc != null && !polarDay) {
-    fajrUtc = today.fajrUtc!;
-  } else {
-    highLatitudeFallback = true;
-    final prevSunsetAbs = yesterday.sunsetUtc == null
-        ? sunriseUtc - 12.0
-        : yesterday.sunsetUtc! - 24.0;
-    var night = sunriseUtc - prevSunsetAbs;
-    if (night <= 0 || night.isNaN) night = 12.0;
-    fajrUtc = sunriseUtc - night / 2.0;
+  // The solar night each twilight event belongs to (D5 §3.7): Fajr's night
+  // ends at today's sunrise; Isha's night starts at today's sunset.
+  final prevSunsetAbs = yesterday.sunsetUtc == null
+      ? sunriseUtc - 12.0
+      : yesterday.sunsetUtc! - 24.0;
+  var nightForFajr = sunriseUtc - prevSunsetAbs;
+  if (nightForFajr <= 0 || nightForFajr.isNaN) nightForFajr = 12.0;
+  final tomorrowSunriseAbs =
+      tomorrow.sunriseUtc == null ? null : tomorrow.sunriseUtc! + 24.0;
+  var nightForIsha = (tomorrowSunriseAbs ?? (sunsetUtc + 12.0)) - sunsetUtc;
+  if (nightForIsha <= 0 || nightForIsha.isNaN) nightForIsha = 12.0;
+
+  final fajrMissing = today.fajrUtc == null;
+  final ishaMissing = today.ishaUtc == null;
+
+  // Nearest-day is a whole-day convention: when any twilight event is
+  // missing, borrow the entire day from the nearest solvable one. When no
+  // solvable day exists within ±183 days (the poles), the default
+  // middle-of-night convention stands in — still named honestly as the
+  // method in effect.
+  var effectiveFallback = fallback;
+  if (fallback == HighLatitudeFallback.nearestDay &&
+      (fajrMissing || ishaMissing)) {
+    final src = _nearestSolvableDay(coordinates, profile, base, elevationMeters);
+    if (src != null) {
+      return _borrowedDay(
+        coordinates: coordinates,
+        sourceDate: src,
+        timeZoneOffset: timeZoneOffset,
+        profile: profile,
+        elevationMeters: elevationMeters,
+      );
+    }
+    effectiveFallback = HighLatitudeFallback.middleOfNight;
   }
 
-  // Asr: midpoint fallback if the shadow altitude is never reached — or on
-  // the polar path, where the shadow formula has no real sun to work with.
+  var highLatitudeFallback = false;
+  HighLatitudeFallback? methodInEffect;
+
+  double fajrUtc;
+  double ishaUtc;
+  if (fajrMissing || ishaMissing) {
+    highLatitudeFallback = true;
+    methodInEffect = effectiveFallback;
+    switch (effectiveFallback) {
+      case HighLatitudeFallback.middleOfNight:
+        fajrUtc =
+            fajrMissing ? sunriseUtc - nightForFajr / 2.0 : today.fajrUtc!;
+        ishaUtc =
+            ishaMissing ? sunsetUtc + nightForIsha / 2.0 : today.ishaUtc!;
+      case HighLatitudeFallback.oneSeventhOfNight:
+        fajrUtc =
+            fajrMissing ? sunriseUtc - nightForFajr / 7.0 : today.fajrUtc!;
+        ishaUtc =
+            ishaMissing ? sunsetUtc + nightForIsha / 7.0 : today.ishaUtc!;
+      case HighLatitudeFallback.angleBased:
+        fajrUtc = fajrMissing
+            ? sunriseUtc - (profile.fajrAngle / 60.0) * nightForFajr
+            : today.fajrUtc!;
+        ishaUtc = ishaMissing
+            ? sunsetUtc + (profile.ishaAngle / 60.0) * nightForIsha
+            : today.ishaUtc!;
+      case HighLatitudeFallback.nearestDay:
+        // Handled above: either borrowed already or degraded to
+        // middle-of-night. Unreachable.
+        fajrUtc = today.fajrUtc ?? (sunriseUtc - nightForFajr / 2.0);
+        ishaUtc = today.ishaUtc ?? (sunsetUtc + nightForIsha / 2.0);
+    }
+  } else {
+    fajrUtc = today.fajrUtc!;
+    ishaUtc = today.ishaUtc!;
+  }
+
+  // Asr: midpoint fallback if the shadow altitude is never reached (or
+  // falls outside the Dhuhr–Maghrib window). A separate software
+  // convention — it does not change the named twilight method.
   double asrUtc;
-  if (!polarDay &&
-      today.asrUtc != null &&
+  if (today.asrUtc != null &&
       today.asrUtc! > dhuhrUtc &&
       today.asrUtc! < maghribUtc) {
     asrUtc = today.asrUtc!;
@@ -363,25 +482,25 @@ PrayerTimes calculatePrayerTimes({
     tomorrowFajrUtc = tomorrow.fajrUtc! + 24.0;
   } else {
     highLatitudeFallback = true;
-    if (tomorrow.sunriseUtc == null) {
+    if (tomorrowSunriseAbs == null) {
       tomorrowFajrUtc = maghribUtc + 12.0;
     } else {
-      final tomorrowSunriseAbs = tomorrow.sunriseUtc! + 24.0;
       var night = tomorrowSunriseAbs - sunsetUtc;
       if (night <= 0 || night.isNaN) night = 12.0;
       tomorrowFajrUtc = tomorrowSunriseAbs - night / 2.0;
     }
   }
-  var night = tomorrowFajrUtc - sunsetUtc;
+  // The night anchoring the first-third marker: sunset → true dawn when
+  // tomorrow's Fajr is real; otherwise the solar night (sunset →
+  // tomorrow's sunrise) is the honest proxy. The estimated fajr midpoint
+  // must NOT be used here: on the fallback path it coincides with the
+  // estimated Isha (both are night midpoints), which would collapse the
+  // marker onto Isha and break the day ordering.
+  final markerNightEndUtc = tomorrow.fajrUtc != null
+      ? tomorrowFajrUtc
+      : (tomorrowSunriseAbs ?? (sunsetUtc + 12.0));
+  var night = markerNightEndUtc - sunsetUtc;
   if (night <= 0 || night.isNaN) night = 12.0;
-
-  double ishaUtc;
-  if (today.ishaUtc != null && !polarDay) {
-    ishaUtc = today.ishaUtc!;
-  } else {
-    highLatitudeFallback = true;
-    ishaUtc = sunsetUtc + night / 2.0;
-  }
 
   var ishaPreferredEndUtc = sunsetUtc + night / 3.0;
   if (ishaPreferredEndUtc <= ishaUtc) {
@@ -389,16 +508,15 @@ PrayerTimes calculatePrayerTimes({
     // the third-of-night marker. Keep the marker after the estimated Isha so
     // the day's ordering stays sane.
     ishaPreferredEndUtc = ishaUtc + 30.0 / 60.0;
-    if (ishaPreferredEndUtc >= tomorrowFajrUtc) {
-      ishaPreferredEndUtc = (ishaUtc + tomorrowFajrUtc) / 2.0;
+    if (ishaPreferredEndUtc >= markerNightEndUtc) {
+      ishaPreferredEndUtc = (ishaUtc + markerNightEndUtc) / 2.0;
     }
   }
   // Ibn Habib midnight variant (spec section 3.8): the midpoint between
   // today's sunset and tomorrow's sunrise. (An earlier draft used
   // maghrib + (tomorrowFajr − maghrib) / 2; corrected to the spec formula.)
   double ishaMidnightVariantUtc;
-  if (tomorrow.sunriseUtc != null) {
-    final tomorrowSunriseAbs = tomorrow.sunriseUtc! + 24.0;
+  if (tomorrowSunriseAbs != null) {
     ishaMidnightVariantUtc =
         sunsetUtc + (tomorrowSunriseAbs - sunsetUtc) / 2.0;
   } else {
@@ -420,7 +538,7 @@ PrayerTimes calculatePrayerTimes({
         isUtc: true);
   }
 
-  return PrayerTimes(
+  return PrayerTimesComputed(PrayerTimes(
     fajr: wall(fajrUtc),
     sunrise: wall(sunriseUtc),
     sunset: wall(sunsetUtc),
@@ -433,5 +551,45 @@ PrayerTimes calculatePrayerTimes({
     maghribPreferredEnd: wall(maghribPreferredEndUtc),
     highLatitudeFallback: highLatitudeFallback,
     profile: profile,
+    fallbackMethod: methodInEffect,
+  ));
+}
+
+/// Borrows a whole computed day from [sourceDate] — the nearest-day
+/// fallback. The source date passed [_nearestSolvableDay], so the inner
+/// call always computes (it cannot hit the polar branch). The borrowed
+/// times render in the displayed date's offset frame — a documented
+/// engineering convention, and the source date is recorded so the UI can
+/// show it next to the borrowed times.
+PrayerTimesComputed _borrowedDay({
+  required Coordinates coordinates,
+  required DateTime sourceDate,
+  required Duration timeZoneOffset,
+  required PrayerProfile profile,
+  required double elevationMeters,
+}) {
+  final inner = calculatePrayerTimes(
+    coordinates: coordinates,
+    date: sourceDate,
+    timeZoneOffset: timeZoneOffset,
+    profile: profile,
+    elevationMeters: elevationMeters,
   );
+  final t = (inner as PrayerTimesComputed).times;
+  return PrayerTimesComputed(PrayerTimes(
+    fajr: t.fajr,
+    sunrise: t.sunrise,
+    sunset: t.sunset,
+    dhuhr: t.dhuhr,
+    asr: t.asr,
+    maghrib: t.maghrib,
+    isha: t.isha,
+    ishaPreferredEnd: t.ishaPreferredEnd,
+    ishaMidnightVariant: t.ishaMidnightVariant,
+    maghribPreferredEnd: t.maghribPreferredEnd,
+    highLatitudeFallback: true,
+    profile: profile,
+    fallbackMethod: HighLatitudeFallback.nearestDay,
+    nearestDaySourceDate: sourceDate,
+  ));
 }

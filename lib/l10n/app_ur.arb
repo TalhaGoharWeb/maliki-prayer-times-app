@@ -49,6 +49,109 @@
   "previousMonth": "پچھلا مہینہ",
   "nextMonth": "اگلا مہینہ",
   "highLatitudeNote": "اس دن کے بعض اوقات تخمینی ہیں: سورج یہاں مقررہ زاویوں تک نہیں پہنچتا، اس لیے عرضِ بلدِ بلند کا تخمینہ استعمال کیا گیا۔",
+  "highLatSectionTitle": "قطبی عرضِ بلد کا متبادل",
+  "@highLatSectionTitle": {
+    "description": "Settings section title: high-latitude fallback chooser"
+  },
+  "highLatSectionNote": "جہاں سورج شفق کے زاویوں تک نہ پہنچے وہاں استعمال ہوتا ہے۔ نیچے دیا گیا ہر طریقہ ایک اصطلاح ہے، مالکی حکم نہیں۔",
+  "@highLatSectionNote": {
+    "description": "Note under the high-latitude fallback settings section"
+  },
+  "highLatMethodMiddleOfNight": "نصفِ شب",
+  "@highLatMethodMiddleOfNight": {
+    "description": "Fallback method name: middle of night"
+  },
+  "highLatDescMiddleOfNight": "فجر اور عشاء دونوں رات کے وسط میں مقرر کیے جاتے ہیں۔",
+  "@highLatDescMiddleOfNight": {
+    "description": "One-line description of the middle-of-night fallback"
+  },
+  "highLatMethodOneSeventh": "رات کا ساتواں حصہ",
+  "@highLatMethodOneSeventh": {
+    "description": "Fallback method name: one-seventh of night"
+  },
+  "highLatDescOneSeventh": "فجر طلوعِ آفتاب سے پہلے اور عشاء غروبِ آفتاب کے بعد، رات کے ساتویں حصے پر۔",
+  "@highLatDescOneSeventh": {
+    "description": "One-line description of the one-seventh fallback"
+  },
+  "highLatMethodAngleBased": "زاویے کے تناسب سے",
+  "@highLatMethodAngleBased": {
+    "description": "Fallback method name: angle-based"
+  },
+  "highLatDescAngleBased": "فجر طلوع سے پہلے اور عشاء غروب کے بعد، شفق کے زاویے کے تناسب سے رات کے ایک حصے پر (زاویہ ÷ 60)۔",
+  "@highLatDescAngleBased": {
+    "description": "One-line description of the angle-based fallback"
+  },
+  "highLatMethodNearestDay": "قریب ترین دن",
+  "@highLatMethodNearestDay": {
+    "description": "Fallback method name: nearest day"
+  },
+  "highLatDescNearestDay": "نزدیک ترین ایسے دن کے اوقات استعمال ہوتے ہیں جس کی رات معمول کے مطابق ہو — وہ تاریخ دکھائی جاتی ہے۔",
+  "@highLatDescNearestDay": {
+    "description": "One-line description of the nearest-day fallback"
+  },
+  "highLatConventionBadge": "اصطلاح ہے، مالکی حکم نہیں",
+  "@highLatConventionBadge": {
+    "description": "Label marking a fallback method as a convention, never a Maliki ruling"
+  },
+  "highLatActiveLabel": "فعال: {method}",
+  "@highLatActiveLabel": {
+    "description": "Shows the active high-latitude fallback method",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorTitle": "قطبی عرضِ بلد کا متبادل: {method}",
+  "@highLatIndicatorTitle": {
+    "description": "Fallback indicator naming the method in effect",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorAction": "تبدیل کریں",
+  "@highLatIndicatorAction": {
+    "description": "Action label opening the fallback chooser"
+  },
+  "noTimesTitle": "نمازوں کے اوقات معلوم نہیں ہو سکے",
+  "@noTimesTitle": {
+    "description": "Honest empty-state title for a no-solution day"
+  },
+  "noTimesPolarDay": "اس تاریخ کو یہاں سورج غروب نہیں ہوتا، اس لیے فجر، مغرب اور عشاء کے حساب کے لیے کوئی رات موجود نہیں۔",
+  "@noTimesPolarDay": {
+    "description": "Explanation for polar-day no-solution"
+  },
+  "noTimesPolarNight": "اس تاریخ کو یہاں سورج طلوع نہیں ہوتا، اس لیے دن کا شمسی ڈھانچہ موجود نہیں۔",
+  "@noTimesPolarNight": {
+    "description": "Explanation for polar-night no-solution"
+  },
+  "noTimesChooseMethod": "متبادل طریقہ منتخب کریں",
+  "@noTimesChooseMethod": {
+    "description": "Button opening the fallback chooser"
+  },
+  "noTimesCell": "اوقات نہیں",
+  "@noTimesCell": {
+    "description": "Monthly cell label for a no-solution day"
+  },
+  "noTimesCellTooltip": "اس تاریخ اور مقام کے لیے نمازوں کے اوقات معلوم نہیں ہو سکے",
+  "@noTimesCellTooltip": {
+    "description": "Tooltip for a no-solution monthly cell"
+  },
+  "nextPrayerUnavailable": "اس مقام کے لیے اگلی نماز کا وقت فی الحال معلوم نہیں ہو سکتا۔",
+  "@nextPrayerUnavailable": {
+    "description": "Hero note when tomorrow has no solar frame"
+  },
+  "nearestDayFrom": "{date} کے اوقات",
+  "@nearestDayFrom": {
+    "description": "Notes the source date of nearest-day borrowed times",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "bandsInfoNote": "اختیاری اور اضطراری اوقات کی معلوماتی پٹیاں — یہ اذان کے اوقات نہیں اور کبھی الٹی گنتی نہیں چلاتیں۔",
   "preferredWord": "اختیاری",
   "necessityWord": "انتہائی حد",

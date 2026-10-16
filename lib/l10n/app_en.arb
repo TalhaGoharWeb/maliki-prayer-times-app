@@ -276,6 +276,109 @@
   "@highLatitudeNote": {
     "description": "Note shown when high-latitude fallback was used"
   },
+  "highLatSectionTitle": "High-latitude fallback",
+  "@highLatSectionTitle": {
+    "description": "Settings section title: high-latitude fallback chooser"
+  },
+  "highLatSectionNote": "Used where the sun never reaches the twilight angles. Every method below is a convention, not a Maliki ruling.",
+  "@highLatSectionNote": {
+    "description": "Note under the high-latitude fallback settings section"
+  },
+  "highLatMethodMiddleOfNight": "Middle of night",
+  "@highLatMethodMiddleOfNight": {
+    "description": "Fallback method name: middle of night"
+  },
+  "highLatDescMiddleOfNight": "Fajr and Isha are both set at the midpoint of the night.",
+  "@highLatDescMiddleOfNight": {
+    "description": "One-line description of the middle-of-night fallback"
+  },
+  "highLatMethodOneSeventh": "One-seventh of night",
+  "@highLatMethodOneSeventh": {
+    "description": "Fallback method name: one-seventh of night"
+  },
+  "highLatDescOneSeventh": "Fajr before sunrise and Isha after sunset, each one-seventh of the night from the horizon.",
+  "@highLatDescOneSeventh": {
+    "description": "One-line description of the one-seventh fallback"
+  },
+  "highLatMethodAngleBased": "Angle-based",
+  "@highLatMethodAngleBased": {
+    "description": "Fallback method name: angle-based"
+  },
+  "highLatDescAngleBased": "Fajr before sunrise and Isha after sunset by a portion of the night proportional to the twilight angle (angle ÷ 60).",
+  "@highLatDescAngleBased": {
+    "description": "One-line description of the angle-based fallback"
+  },
+  "highLatMethodNearestDay": "Nearest day",
+  "@highLatMethodNearestDay": {
+    "description": "Fallback method name: nearest day"
+  },
+  "highLatDescNearestDay": "Times are borrowed from the nearest day with a normal night — that date is shown.",
+  "@highLatDescNearestDay": {
+    "description": "One-line description of the nearest-day fallback"
+  },
+  "highLatConventionBadge": "convention, not a Maliki ruling",
+  "@highLatConventionBadge": {
+    "description": "Label marking a fallback method as a convention, never a Maliki ruling"
+  },
+  "highLatActiveLabel": "Active: {method}",
+  "@highLatActiveLabel": {
+    "description": "Shows the active high-latitude fallback method",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorTitle": "High-latitude fallback: {method}",
+  "@highLatIndicatorTitle": {
+    "description": "Fallback indicator naming the method in effect",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorAction": "Change",
+  "@highLatIndicatorAction": {
+    "description": "Action label opening the fallback chooser"
+  },
+  "noTimesTitle": "Prayer times cannot be computed",
+  "@noTimesTitle": {
+    "description": "Honest empty-state title for a no-solution day"
+  },
+  "noTimesPolarDay": "On this date the sun never sets here, so there is no night from which Fajr, Maghrib and Isha can be derived.",
+  "@noTimesPolarDay": {
+    "description": "Explanation for polar-day no-solution"
+  },
+  "noTimesPolarNight": "On this date the sun never rises here, so the day’s solar frame is absent.",
+  "@noTimesPolarNight": {
+    "description": "Explanation for polar-night no-solution"
+  },
+  "noTimesChooseMethod": "Choose a high-latitude method",
+  "@noTimesChooseMethod": {
+    "description": "Button opening the fallback chooser"
+  },
+  "noTimesCell": "No times",
+  "@noTimesCell": {
+    "description": "Monthly cell label for a no-solution day"
+  },
+  "noTimesCellTooltip": "Prayer times cannot be computed for this date and location",
+  "@noTimesCellTooltip": {
+    "description": "Tooltip for a no-solution monthly cell"
+  },
+  "nextPrayerUnavailable": "The next prayer time cannot be computed for this location right now.",
+  "@nextPrayerUnavailable": {
+    "description": "Hero note when tomorrow has no solar frame"
+  },
+  "nearestDayFrom": "Times from {date}",
+  "@nearestDayFrom": {
+    "description": "Notes the source date of nearest-day borrowed times",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "bandsInfoNote": "Informational bands describing the preferred and necessity windows — they are not adhan times and never drive a countdown.",
   "@bandsInfoNote": {
     "description": "Monthly screen note about the informational bands"

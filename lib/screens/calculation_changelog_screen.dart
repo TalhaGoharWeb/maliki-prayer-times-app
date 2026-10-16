@@ -158,6 +158,13 @@ const List<ChangelogVersion> changelogVersions = [
         status: ChangelogStatus.convention,
         changedSince: 'v1.3.0+6 (unreleased)',
       ),
+      ChangelogRow(
+        parameter: 'High-latitude fallback',
+        value:
+            'user-chosen method (default: middle-of-night, per adhan `recommended()`): middle-of-night / one-seventh / angle-based estimates from the night frame (D5 §3.7 math), or nearest-day borrowing with the source date shown; no night frame (polar day/night) → typed NoSolution with an honest empty state, never fabricated times; the old noon±6 synthetic-horizon path is deleted; the active method is named wherever fallback times appear, with a change affordance',
+        status: ChangelogStatus.convention,
+        changedSince: 'v1.3.0+6 (unreleased)',
+      ),
     ],
   ),
 ];

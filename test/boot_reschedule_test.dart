@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/services/boot_reschedule.dart';
@@ -38,12 +39,13 @@ Map<int, DateTime> _expectedAtTimes({
   final tomorrow = today.add(const Duration(days: 1));
 
   DateTime utcFor(Prayer prayer, DateTime date) {
-    final times = calculatePrayerTimes(
+    final times = (calculatePrayerTimes(
       coordinates: coords,
       date: date,
       timeZoneOffset: offset,
       profile: profile,
-    );
+    ) as PrayerTimesComputed)
+        .times;
     // Default settings apply no adjustments, so adjustedTime is identity and
     // the true instant is the wall fields minus the date's offset.
     return times.timeFor(prayer).subtract(offset);

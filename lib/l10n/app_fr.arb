@@ -49,6 +49,109 @@
   "previousMonth": "Mois précédent",
   "nextMonth": "Mois suivant",
   "highLatitudeNote": "Certains horaires de ce jour sont estimés : le soleil n’atteint pas les angles configurés ici, une approximation haute latitude a donc été utilisée.",
+  "highLatSectionTitle": "Méthode de secours (hautes latitudes)",
+  "@highLatSectionTitle": {
+    "description": "Settings section title: high-latitude fallback chooser"
+  },
+  "highLatSectionNote": "Utilisée là où le soleil n’atteint jamais les angles du crépuscule. Chaque méthode ci-dessous est une convention, pas un avis malikite.",
+  "@highLatSectionNote": {
+    "description": "Note under the high-latitude fallback settings section"
+  },
+  "highLatMethodMiddleOfNight": "Milieu de la nuit",
+  "@highLatMethodMiddleOfNight": {
+    "description": "Fallback method name: middle of night"
+  },
+  "highLatDescMiddleOfNight": "Fajr et Icha sont fixés au milieu de la nuit.",
+  "@highLatDescMiddleOfNight": {
+    "description": "One-line description of the middle-of-night fallback"
+  },
+  "highLatMethodOneSeventh": "Un septième de la nuit",
+  "@highLatMethodOneSeventh": {
+    "description": "Fallback method name: one-seventh of night"
+  },
+  "highLatDescOneSeventh": "Fajr avant le lever du soleil et Icha après le coucher, à un septième de la nuit.",
+  "@highLatDescOneSeventh": {
+    "description": "One-line description of the one-seventh fallback"
+  },
+  "highLatMethodAngleBased": "Basée sur l’angle",
+  "@highLatMethodAngleBased": {
+    "description": "Fallback method name: angle-based"
+  },
+  "highLatDescAngleBased": "Fajr avant le lever et Icha après le coucher, à une fraction de la nuit proportionnelle à l’angle du crépuscule (angle ÷ 60).",
+  "@highLatDescAngleBased": {
+    "description": "One-line description of the angle-based fallback"
+  },
+  "highLatMethodNearestDay": "Jour le plus proche",
+  "@highLatMethodNearestDay": {
+    "description": "Fallback method name: nearest day"
+  },
+  "highLatDescNearestDay": "Horaires empruntés au jour le plus proche avec une nuit normale — la date est affichée.",
+  "@highLatDescNearestDay": {
+    "description": "One-line description of the nearest-day fallback"
+  },
+  "highLatConventionBadge": "convention, pas un avis malikite",
+  "@highLatConventionBadge": {
+    "description": "Label marking a fallback method as a convention, never a Maliki ruling"
+  },
+  "highLatActiveLabel": "Active : {method}",
+  "@highLatActiveLabel": {
+    "description": "Shows the active high-latitude fallback method",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorTitle": "Secours hautes latitudes : {method}",
+  "@highLatIndicatorTitle": {
+    "description": "Fallback indicator naming the method in effect",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "highLatIndicatorAction": "Modifier",
+  "@highLatIndicatorAction": {
+    "description": "Action label opening the fallback chooser"
+  },
+  "noTimesTitle": "Horaires de prière incalculables",
+  "@noTimesTitle": {
+    "description": "Honest empty-state title for a no-solution day"
+  },
+  "noTimesPolarDay": "À cette date, le soleil ne se couche jamais ici : il n’y a pas de nuit à partir de laquelle calculer Fajr, Maghrib et Icha.",
+  "@noTimesPolarDay": {
+    "description": "Explanation for polar-day no-solution"
+  },
+  "noTimesPolarNight": "À cette date, le soleil ne se lève jamais ici : le cadre solaire du jour est absent.",
+  "@noTimesPolarNight": {
+    "description": "Explanation for polar-night no-solution"
+  },
+  "noTimesChooseMethod": "Choisir une méthode de secours",
+  "@noTimesChooseMethod": {
+    "description": "Button opening the fallback chooser"
+  },
+  "noTimesCell": "Pas d’horaires",
+  "@noTimesCell": {
+    "description": "Monthly cell label for a no-solution day"
+  },
+  "noTimesCellTooltip": "Horaires de prière incalculables pour cette date et ce lieu",
+  "@noTimesCellTooltip": {
+    "description": "Tooltip for a no-solution monthly cell"
+  },
+  "nextPrayerUnavailable": "L’heure de la prochaine prière ne peut pas être calculée pour ce lieu pour le moment.",
+  "@nextPrayerUnavailable": {
+    "description": "Hero note when tomorrow has no solar frame"
+  },
+  "nearestDayFrom": "Horaires du {date}",
+  "@nearestDayFrom": {
+    "description": "Notes the source date of nearest-day borrowed times",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "bandsInfoNote": "Bandes informatives décrivant les fenêtres de choix et de nécessité — ce ne sont pas des heures d’adhan et elles ne déclenchent jamais de compte à rebours.",
   "preferredWord": "Choix",
   "necessityWord": "Fin absolue",

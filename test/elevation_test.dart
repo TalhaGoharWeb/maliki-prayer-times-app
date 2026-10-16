@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
+import 'package:malikiprayertimes/engine/high_latitude.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 
@@ -34,13 +35,15 @@ void main() {
     final coords = Coordinates(0.0, 0.0);
     final date = DateTime(2026, 3, 20);
 
-    PrayerTimes at(double elevationMeters) => calculatePrayerTimes(
+    PrayerTimes at(double elevationMeters) =>
+        (calculatePrayerTimes(
           coordinates: coords,
           date: date,
           timeZoneOffset: Duration.zero,
           profile: PrayerProfiles.defaultProfile,
           elevationMeters: elevationMeters,
-        );
+        ) as PrayerTimesComputed)
+            .times;
 
     test(
         'ACCEPTANCE: 1500 m moves sunrise earlier and sunset later, '
@@ -89,12 +92,13 @@ void main() {
 
     test('default elevation is the sea-level horizon', () {
       final explicit = at(0.0);
-      final implicit = calculatePrayerTimes(
+      final implicit = (calculatePrayerTimes(
         coordinates: coords,
         date: date,
         timeZoneOffset: Duration.zero,
         profile: PrayerProfiles.defaultProfile,
-      );
+      ) as PrayerTimesComputed)
+          .times;
       expect(implicit.sunrise, explicit.sunrise);
       expect(implicit.sunset, explicit.sunset);
     });

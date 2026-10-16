@@ -15,6 +15,7 @@ import 'package:malikiprayertimes/utils/app_info.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
+import 'package:malikiprayertimes/widgets/high_latitude_chooser.dart';
 import 'package:malikiprayertimes/widgets/notification_settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -206,6 +207,26 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 value: settings.ihtiyatEnabled,
                 onChanged: settings.setIhtiyatEnabled,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // (3a) High-latitude fallback (Phase 5): the user-chosen
+            // convention applied when a solar event has no solution. The
+            // active method is always named here — never applied silently.
+            _SectionHeader(
+                icon: Icons.public, title: l10n.highLatSectionTitle),
+            const SizedBox(height: 8),
+            _SectionNote(
+                icon: Icons.info_outline, text: l10n.highLatSectionNote),
+            const SizedBox(height: 8),
+            Card(
+              child: _SettingsNavRow(
+                icon: Icons.tune,
+                title: l10n.highLatActiveLabel(highLatitudeFallbackName(
+                    l10n, settings.highLatitudeFallback)),
+                subtitle: l10n.highLatConventionBadge,
+                onTap: () => showHighLatitudeChooser(context, settings),
               ),
             ),
             const SizedBox(height: 20),
@@ -524,16 +545,19 @@ class _SectionHeader extends StatelessWidget {  final IconData icon;
   }
 }
 
-/// One tappable settings navigation entry: icon, title, chevron.
-/// Every entry pushes its screen — no dead buttons (Urdu-first rule).
+/// One tappable settings navigation entry: icon, title, optional
+/// subtitle, chevron. Every entry pushes its screen — no dead buttons
+/// (Urdu-first rule).
 class _SettingsNavRow extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
 
   const _SettingsNavRow({
     required this.icon,
     required this.title,
+    this.subtitle,
     required this.onTap,
   });
 
@@ -551,12 +575,27 @@ class _SettingsNavRow extends StatelessWidget {
             Icon(icon, size: 20, color: scheme.secondary),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.secondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
               ),
             ),
             Icon(Icons.chevron_right, color: scheme.outline),
