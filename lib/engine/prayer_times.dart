@@ -25,6 +25,11 @@ enum Prayer { fajr, sunrise, dhuhr, asr, maghrib, isha }
 class PrayerTimes {
   final DateTime fajr;
   final DateTime sunrise;
+
+  /// Raw solar sunset on the (dip-corrected) horizon — informational
+  /// marker, like [sunrise]. The displayed Maghrib adds the profile's
+  /// ihtiyat on top of this instant.
+  final DateTime sunset;
   final DateTime dhuhr;
   final DateTime asr;
   final DateTime maghrib;
@@ -56,6 +61,7 @@ class PrayerTimes {
   const PrayerTimes({
     required this.fajr,
     required this.sunrise,
+    required this.sunset,
     required this.dhuhr,
     required this.asr,
     required this.maghrib,
@@ -106,6 +112,23 @@ class PrayerTimes {
 // Solar mathematics (standard formulation: Meeus, Astronomical Algorithms,
 // as formulated by the adhan libraries — see ATTRIBUTION.md).
 // ---------------------------------------------------------------------------
+
+/// Dip of the visible horizon below the geometric horizontal, in degrees,
+/// for an observer [elevationMeters] above sea level.
+///
+/// Standard astronomical dip formula: `dip = 0.0293 × √h` (h in meters),
+/// accounting for mean atmospheric refraction. A higher observer sees the
+/// sun rise earlier and set later; the horizon zenith grows from the
+/// profile's `solarDepression` (0.833°) by this dip. Twilight (Fajr/Isha)
+/// angles and the Asr shadow rule are unaffected: they reference the sun's
+/// depression below the geometric horizon, not the visible one.
+///
+/// Negative elevations (below sea level) are clamped to zero — the formula
+/// has no meaning there and the sea-level horizon is the honest default.
+double elevationDipDegrees(double elevationMeters) {
+  if (elevationMeters <= 0 || elevationMeters.isNaN) return 0.0;
+  return 0.0293 * math.sqrt(elevationMeters);
+}
 
 double _toRad(double degrees) => degrees * math.pi / 180.0;
 double _toDeg(double radians) => radians * 180.0 / math.pi;
@@ -163,8 +186,8 @@ class _SolarEvents {
   });
 }
 
-_SolarEvents _solarEvents(
-    Coordinates coordinates, PrayerProfile profile, DateTime date) {
+_SolarEvents _solarEvents(Coordinates coordinates, PrayerProfile profile,
+    DateTime date, double elevationMeters) {
   final latitude = coordinates.latitude;
 
   // Julian date at 0h UTC of `date`.
@@ -209,13 +232,19 @@ _SolarEvents _solarEvents(
   final asrAltitudeDeg =
       _atanDeg(1.0 / (profile.asrShadowFactor + _tanDeg((latitude - decl).abs())));
 
+  // Horizon events (sunrise/sunset) use the dip-corrected zenith: the
+  // profile's solar depression (0.833° = upper limb + refraction) plus the
+  // observer-elevation dip. Twilight and shadow events are unaffected.
+  final horizonDepression = profile.solarDepression +
+      elevationDipDegrees(elevationMeters);
+
   return _SolarEvents(
     declinationDeg: decl,
     fajrUtc: eventUtc(-profile.fajrAngle, true),
-    sunriseUtc: eventUtc(-profile.solarDepression, true),
+    sunriseUtc: eventUtc(-horizonDepression, true),
     noonUtc: noon,
     asrUtc: eventUtc(asrAltitudeDeg, false),
-    sunsetUtc: eventUtc(-profile.solarDepression, false),
+    sunsetUtc: eventUtc(-horizonDepression, false),
     ishaUtc: eventUtc(-profile.ishaAngle, false),
   );
 }
@@ -227,6 +256,10 @@ _SolarEvents _solarEvents(
 /// * [timeZoneOffset] — added to every UTC solar instant to obtain the
 ///   wall-clock frame (e.g. [Duration.zero] for Nouakchott, UTC+0).
 /// * [profile] — calculation profile (PROPOSED — pending scholarly review).
+/// * [elevationMeters] — observer elevation above sea level, in meters.
+///   Applies the horizon dip correction to sunrise/sunset only (the zenith
+///   grows by `0.0293 × √h` degrees); Fajr/Isha twilight angles, Dhuhr, and
+///   the Asr shadow rule are unaffected. Defaults to 0 (sea-level horizon).
 ///
 /// High-latitude fallback ([HighLatitudeRule.middleOfNight]): when Fajr or
 /// Isha never occur (the sun never reaches the configured depression), they
@@ -243,13 +276,14 @@ PrayerTimes calculatePrayerTimes({
   required DateTime date,
   required Duration timeZoneOffset,
   PrayerProfile profile = PrayerProfiles.defaultProfile,
+  double elevationMeters = 0.0,
 }) {
   final base = DateTime.utc(date.year, date.month, date.day);
-  final today = _solarEvents(coordinates, profile, base);
-  final tomorrow =
-      _solarEvents(coordinates, profile, base.add(const Duration(days: 1)));
-  final yesterday =
-      _solarEvents(coordinates, profile, base.subtract(const Duration(days: 1)));
+  final today = _solarEvents(coordinates, profile, base, elevationMeters);
+  final tomorrow = _solarEvents(
+      coordinates, profile, base.add(const Duration(days: 1)), elevationMeters);
+  final yesterday = _solarEvents(coordinates, profile,
+      base.subtract(const Duration(days: 1)), elevationMeters);
 
   // All values below are UTC hours on ONE absolute timeline measured from
   // `base` (00:00 UTC of `date`). `_solarEvents` returns hours relative to
@@ -389,6 +423,7 @@ PrayerTimes calculatePrayerTimes({
   return PrayerTimes(
     fajr: wall(fajrUtc),
     sunrise: wall(sunriseUtc),
+    sunset: wall(sunsetUtc),
     dhuhr: wall(dhuhrUtc),
     asr: wall(asrUtc),
     maghrib: wall(maghribUtc),

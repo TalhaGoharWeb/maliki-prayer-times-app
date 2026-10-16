@@ -5,6 +5,7 @@ import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 
@@ -19,11 +20,21 @@ class ProfilesScreen extends StatefulWidget {
   final Coordinates coordinates;
   final Duration timeZoneOffset;
 
+  /// IANA zone id the comparison renders in. When non-null, today's civil
+  /// day and offset resolve from the zone (DST-correct); when null the
+  /// constructor-supplied offset is used (legacy).
+  final String? zoneId;
+
+  /// Observer elevation in meters for the horizon dip correction.
+  final double elevationMeters;
+
   const ProfilesScreen({
     super.key,
     required this.settings,
     required this.coordinates,
     required this.timeZoneOffset,
+    this.zoneId,
+    this.elevationMeters = 0.0,
   });
 
   @override
@@ -55,6 +66,20 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
   String _hhmm(DateTime t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
+  /// Today's offset: the zone's offset for today when [zoneId] is set,
+  /// otherwise the constructor-supplied offset (legacy).
+  Duration _offsetForToday() {
+    final zoneId = widget.zoneId;
+    if (zoneId != null) {
+      try {
+        return TimezoneService.offsetFor(zoneId, DateTime.now());
+      } catch (_) {
+        // Fall through to the constructor offset.
+      }
+    }
+    return widget.timeZoneOffset;
+  }
+
   String _diffMinutes(AppLocalizations l10n, DateTime a, DateTime b) {
     final d = b.difference(a).inMinutes;
     if (d == 0) return l10n.diffSame;
@@ -78,14 +103,17 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     final l10n = AppLocalizations.of(context)!;
     final lang = Localizations.localeOf(context).languageCode;
 
-    // Today's civil day in the offset's wall-clock frame.
-    final now = DateTime.now().toUtc().add(widget.timeZoneOffset);
+    // Today's civil day in the location zone's wall-clock frame (or the
+    // constructor offset's frame when no zone was supplied).
+    final offset = _offsetForToday();
+    final now = DateTime.now().toUtc().add(offset);
     final day = DateTime(now.year, now.month, now.day);
     PrayerTimes timesFor(PrayerProfile p) => calculatePrayerTimes(
           coordinates: widget.coordinates,
           date: day,
-          timeZoneOffset: widget.timeZoneOffset,
+          timeZoneOffset: offset,
           profile: p,
+          elevationMeters: widget.elevationMeters,
         );
     final timesA = timesFor(_profileA);
     final timesB = timesFor(_profileB);

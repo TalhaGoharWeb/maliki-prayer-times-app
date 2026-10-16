@@ -21,11 +21,12 @@ directly for display.
 
 ## Engine (`lib/engine/`)
 
-- `prayer_times.dart` — `calculatePrayerTimes({coordinates, date, timeZoneOffset, profile})`
-  computes solar events (Fajr, sunrise, Dhuhr, Asr, Maghrib, Isha) as UTC
+- `prayer_times.dart` — `calculatePrayerTimes({coordinates, date, timeZoneOffset, profile, elevationMeters})`
+  computes solar events (Fajr, sunrise, sunset, Dhuhr, Asr, Maghrib, Isha) as UTC
   instants, adds `timeZoneOffset`, rounds to the nearest minute, and returns
   them as UTC-kind `DateTime`s whose **fields are wall-clock values** in the
-  offset's frame. Differences and orderings between returned times are exact;
+  offset's frame. `elevationMeters` (default 0) applies the horizon dip
+  correction to sunrise/sunset only. Differences and orderings between returned times are exact;
   to recover true UTC instants, subtract the offset. Only the civil
   year/month/day of `date` is used. Times may fall on the adjacent civil
   date (e.g. an Isha after midnight belongs to the night that began at
@@ -129,7 +130,7 @@ their controllers/listeners.
    longer than init actually takes, then the real app is run with the
    loaded services passed into constructors.
 5. `_NotificationBootstrap` (post-frame): `init()` (plugin +
-   `tz.initializeTimeZones()` + timezone-change sync), then
+   `TimezoneService.ensureInitialized()` + timezone-change sync), then
    `rescheduleAll`. It also listens to settings/location and
    re-runs `rescheduleAll` on profile, ihtiyat, adjustments, toggles,
    reminder offset, or location changes.

@@ -50,11 +50,36 @@ taken at 0h UTC of the date:
 One event per altitude (event altitudes below):
 
 - Fajr: morning crossing of `−fajrAngle` (default 18°)
-- sunrise: morning crossing of `−solarDepression` (0.833°)
+- sunrise: morning crossing of `−(solarDepression + dip)` (0.833° + elevation dip)
 - Dhuhr: solar noon (+ ihtiyat)
 - Asr: afternoon crossing of the shadow-rule altitude (see below)
-- Maghrib: evening crossing of `−solarDepression` (0.833°) (+ ihtiyat)
+- Maghrib: evening crossing of `−(solarDepression + dip)` (0.833° + elevation dip) (+ ihtiyat)
 - Isha: evening crossing of `−ishaAngle` (default 17°)
+
+### Horizon dip (observer elevation)
+
+`dip = 0.0293 × √h` degrees, with `h` the observer elevation in meters
+(standard astronomical dip-of-horizon formula, mean refraction included).
+It is added to the profile's `solarDepression` for the sunrise/sunset
+horizon events only — the visible horizon drops for a higher observer, so
+sunrise comes earlier and sunset later. Twilight (Fajr/Isha) angles and the
+Asr shadow rule reference the sun's depression below the geometric horizon
+and are unaffected. Elevation is an optional per-location input (meters,
+persisted with the location); unset/0 = sea-level horizon. Negative input
+is clamped to 0. Like the 0.833° itself, the dip is a software/astronomical
+convention — never a Maliki ruling.
+
+### Time-zone frame
+
+All engine times are UTC instants; the wall-clock frame is applied by adding
+a UTC offset per civil date. Since Phase 2 the offset comes from the
+*location's* IANA zone (bundled `package:timezone` latest_all database —
+full IANA coverage, 598 zones, tzdata 2026e — offline-first) — the stored
+zone id for manual locations, the device zone for GPS-derived locations —
+resolved per date so DST transitions are correct per date, not just "today".
+Previously (≤ v1.2.0+5) the device timezone was used for every location,
+which mis-rendered far-away manual locations; see
+docs/CALCULATION_CHANGELOG.md.
 
 `eventUtc(altitude, morning)`: `cosH = (sin(alt) − sinLat·sinDecl) /
 (cosLat·cosDecl)`; returns null when `|cosH| > 1 + 1e-9` (a small epsilon

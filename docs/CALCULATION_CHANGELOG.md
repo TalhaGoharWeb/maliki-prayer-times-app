@@ -33,3 +33,10 @@ change is measured against this entry.
 | Rounding | every solar instant rounded to the nearest minute after the timezone offset is applied; manual adjustments are whole minutes applied after rounding | convention | v1.2.0+5 (baseline) |
 | High-latitude fallback | middle-of-night estimates when a solar event has no solution (polar coherence: whole day on the estimate path when the sun never reaches the horizon); flagged in the UI | convention | v1.2.0+5 (baseline) |
 | Time-zone frame | all displayed times use the device timezone; manual far-away locations are approximate (documented limitation) | convention | v1.2.0+5 (baseline) |
+
+## v1.3.0+6 (unreleased — Phase 2: location exactness)
+
+| parameter | value | status | changed-since |
+|---|---|---|---|
+| Time-zone frame | displayed times render in the location's IANA zone: the stored zone for manual locations (chosen in the zone picker, defaulting to the device zone), the device zone for GPS-derived locations; offsets resolved per date so DST transitions are correct per date; bundled tz database latest_all (full IANA coverage, 598 zones, tzdata 2026e), offline-first | convention | v1.3.0+6 (unreleased) |
+| Sunrise/sunset horizon | −0.833° solar depression (upper limb + refraction) plus the elevation dip correction 0.0293×√h (h in meters) when a per-location elevation is set; optional input, unset = sea-level horizon | convention | v1.3.0+6 (unreleased) |

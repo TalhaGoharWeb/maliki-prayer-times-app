@@ -5,14 +5,14 @@ import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Test double for [GpsReader]: returns a fixed position (or `null`).
+/// Test double for [GpsReader]: returns a fixed fix (or `null`).
 class FakeGpsReader implements GpsReader {
-  (double, double)? position;
+  GpsFix? fix;
 
-  FakeGpsReader([this.position]);
+  FakeGpsReader([this.fix]);
 
   @override
-  Future<(double, double)?> readPosition() async => position;
+  Future<GpsFix?> readPosition() async => fix;
 }
 
 /// Test double for [LocationPermissionGateway]: every permission outcome
@@ -54,8 +54,8 @@ class FakePlaceNamer implements PlaceNamer {
 /// test below; the short timeout here keeps the suite fast.
 class TimeoutGpsReader implements GpsReader {
   @override
-  Future<(double, double)?> readPosition() =>
-      Completer<(double, double)?>().future.timeout(
+  Future<GpsFix?> readPosition() =>
+      Completer<GpsFix?>().future.timeout(
             const Duration(milliseconds: 50),
             onTimeout: () => null,
           );
@@ -145,7 +145,7 @@ void main() {
         ..checked = LocationPermissionState.denied
         ..requested = LocationPermissionState.denied;
       final service = await _loadService(
-        gpsReader: FakeGpsReader((18.0, -16.0)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 18.0, longitude: -16.0)),
         gateway: gateway,
       );
 
@@ -163,7 +163,7 @@ void main() {
         ..checked = LocationPermissionState.denied
         ..requested = LocationPermissionState.deniedForever;
       final service = await _loadService(
-        gpsReader: FakeGpsReader((18.0, -16.0)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 18.0, longitude: -16.0)),
         gateway: gateway,
       );
       await service.useManualLocation(
@@ -193,7 +193,7 @@ void main() {
     test('successful device location persists as isDevice', () async {
       SharedPreferences.setMockInitialValues({});
       final service = await _loadService(
-        gpsReader: FakeGpsReader((24.8607, 67.0011)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 24.8607, longitude: 67.0011)),
       );
 
       await service.useDeviceLocation();
@@ -211,12 +211,12 @@ void main() {
 
     test('refreshDeviceLocation updates a device location', () async {
       SharedPreferences.setMockInitialValues({});
-      final gpsReader = FakeGpsReader((18.08581, -15.9785));
+      final gpsReader = FakeGpsReader(const GpsFix(latitude: 18.08581, longitude: -15.9785));
       final service = await _loadService(gpsReader: gpsReader);
       await service.useDeviceLocation();
       expect(service.current?.latitude, 18.08581);
 
-      gpsReader.position = (19.0, -16.5);
+      gpsReader.fix = const GpsFix(latitude: 19.0, longitude: -16.5);
       await service.refreshDeviceLocation();
 
       expect(service.current?.latitude, 19.0);
@@ -231,7 +231,7 @@ void main() {
     test('refreshDeviceLocation does nothing for a manual location', () async {
       SharedPreferences.setMockInitialValues({});
       final service = await _loadService(
-        gpsReader: FakeGpsReader((1.0, 2.0)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 1.0, longitude: 2.0)),
       );
       await service.useManualLocation(
         const SavedLocation(name: 'Nouakchott', latitude: 18.0, longitude: -16.0),
@@ -247,7 +247,7 @@ void main() {
         () async {
       SharedPreferences.setMockInitialValues({});
       final service = await _loadService(
-        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.4418, longitude: 73.7535)),
         placeNamer: FakePlaceNamer('Lahore'),
       );
       await service.useDeviceLocation();
@@ -264,7 +264,7 @@ void main() {
         () async {
       SharedPreferences.setMockInitialValues({});
       final service = await _loadService(
-        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.4418, longitude: 73.7535)),
         placeNamer: FakePlaceNamer(null),
       );
       await service.useDeviceLocation();
@@ -279,7 +279,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final namer = FakePlaceNamer()..throws = true;
       final service = await _loadService(
-        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.4418, longitude: 73.7535)),
         placeNamer: namer,
       );
       await service.useDeviceLocation(); // must not throw
@@ -314,7 +314,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final namer = GatedPlaceNamer();
       final service = await _loadService(
-        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.4418, longitude: 73.7535)),
         gateway: FakePermissionGateway(),
         placeNamer: namer,
       );
@@ -347,7 +347,7 @@ void main() {
         () async {
       SharedPreferences.setMockInitialValues({});
       final service = await _loadService(
-        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.4418, longitude: 73.7535)),
         gateway: FakePermissionGateway(),
         placeNamer: HangingPlaceNamer(),
       );
@@ -376,7 +376,7 @@ void main() {
         ..checked = LocationPermissionState.denied
         ..requested = LocationPermissionState.denied;
       final service = await _loadService(
-        gpsReader: FakeGpsReader((18.0, -16.0)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 18.0, longitude: -16.0)),
         gateway: gateway,
       );
 
@@ -400,7 +400,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final namer = FakePlaceNamer('Lahore');
       final service = await _loadService(
-        gpsReader: FakeGpsReader((30.4418, 73.7535)),
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.4418, longitude: 73.7535)),
         placeNamer: namer,
       );
       await service.useDeviceLocation();
@@ -467,6 +467,164 @@ void main() {
 
       const manual = SavedLocation(name: 'Fez', latitude: 34.03, longitude: -5.0);
       expect(manual.displayName('Device location'), 'Fez');
+    });
+  });
+
+  group('Phase 2: GPS quality metadata', () {
+    test('device fix persists accuracy and timestamp', () async {
+      SharedPreferences.setMockInitialValues({});
+      final fixTime = DateTime.utc(2026, 10, 16, 10, 0);
+      final service = await _loadService(
+        gpsReader: FakeGpsReader(GpsFix(
+          latitude: 24.86,
+          longitude: 67.0,
+          accuracyMeters: 12.0,
+          timestamp: fixTime,
+        )),
+        placeNamer: FakePlaceNamer('Karachi'),
+      );
+      await service.useDeviceLocation();
+      final loc = service.current!;
+      expect(loc.accuracyMeters, 12.0);
+      expect(loc.updatedAt, fixTime);
+    });
+
+    test('fix without quality metadata persists nulls (unknown, never '
+        'fabricated)', () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService(
+        gpsReader: FakeGpsReader(
+            const GpsFix(latitude: 24.86, longitude: 67.0)),
+      );
+      await service.useDeviceLocation();
+      final loc = service.current!;
+      expect(loc.accuracyMeters, isNull);
+      expect(loc.updatedAt, isNull);
+    });
+
+    test('refresh updates accuracy and timestamp', () async {
+      SharedPreferences.setMockInitialValues({});
+      final first = FakeGpsReader(GpsFix(
+        latitude: 24.86,
+        longitude: 67.0,
+        accuracyMeters: 30.0,
+        timestamp: DateTime.utc(2026, 10, 16, 9, 0),
+      ));
+      final service = await _loadService(gpsReader: first);
+      await service.useDeviceLocation();
+      expect(service.current!.accuracyMeters, 30.0);
+
+      first.fix = GpsFix(
+        latitude: 24.87,
+        longitude: 67.01,
+        accuracyMeters: 8.0,
+        timestamp: DateTime.utc(2026, 10, 16, 10, 0),
+      );
+      await service.refreshDeviceLocation();
+      expect(service.current!.accuracyMeters, 8.0);
+      expect(service.current!.updatedAt, DateTime.utc(2026, 10, 16, 10, 0));
+    });
+  });
+
+  group('Phase 2: saved places', () {
+    test('saveCurrentAsPlace snapshots the current manual location',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService();
+      await service.useManualLocation(const SavedLocation(
+        name: 'Fez',
+        latitude: 34.033,
+        longitude: -5.0,
+        timeZoneId: 'Africa/Casablanca',
+        elevationMeters: 410.0,
+      ));
+      expect(await service.saveCurrentAsPlace(), isTrue);
+      expect(service.savedPlaces, hasLength(1));
+      final place = service.savedPlaces.single;
+      expect(place.name, 'Fez');
+      expect(place.timeZoneId, 'Africa/Casablanca');
+      expect(place.elevationMeters, 410.0);
+      expect(place.isDevice, isFalse);
+    });
+
+    test('device location snapshot freezes the device zone, clears isDevice',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService(
+        gpsReader: FakeGpsReader(const GpsFix(
+            latitude: 24.86, longitude: 67.0, accuracyMeters: 10.0)),
+        placeNamer: FakePlaceNamer('Karachi'),
+      );
+      await service.useDeviceLocation();
+      expect(await service.saveCurrentAsPlace(), isTrue);
+      final place = service.savedPlaces.single;
+      expect(place.isDevice, isFalse);
+      expect(place.name, 'Karachi');
+      // The saved place keeps rendering in the zone it was saved in.
+      expect(place.timeZoneId, isNotNull);
+      // GPS quality does not travel into the saved snapshot.
+      expect(place.accuracyMeters, isNull);
+    });
+
+    test('duplicate coordinates are not saved twice', () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService();
+      await service.useManualLocation(const SavedLocation(
+          name: 'Fez', latitude: 34.033, longitude: -5.0));
+      expect(await service.saveCurrentAsPlace(), isTrue);
+      expect(await service.saveCurrentAsPlace(), isFalse);
+      expect(service.savedPlaces, hasLength(1));
+    });
+
+    test('saveCurrentAsPlace does nothing with no current location',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService();
+      expect(await service.saveCurrentAsPlace(), isFalse);
+      expect(service.savedPlaces, isEmpty);
+    });
+
+    test('usePlace makes the saved place current', () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService();
+      await service.useManualLocation(const SavedLocation(
+          name: 'Fez', latitude: 34.033, longitude: -5.0));
+      await service.saveCurrentAsPlace();
+      await service.useManualLocation(const SavedLocation(
+          name: 'Cairo', latitude: 30.045, longitude: 31.262));
+      await service.usePlace(service.savedPlaces.single);
+      expect(service.current!.name, 'Fez');
+    });
+
+    test('removePlace deletes and persists the removal', () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService();
+      await service.useManualLocation(const SavedLocation(
+          name: 'Fez', latitude: 34.033, longitude: -5.0));
+      await service.saveCurrentAsPlace();
+      final place = service.savedPlaces.single;
+      await service.removePlace(place);
+      expect(service.savedPlaces, isEmpty);
+
+      final reloaded = await _loadService();
+      expect(reloaded.savedPlaces, isEmpty);
+    });
+
+    test('saved places survive a reload', () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = await _loadService();
+      await service.useManualLocation(const SavedLocation(
+        name: 'Nouakchott',
+        latitude: 18.073,
+        longitude: -15.958,
+        timeZoneId: 'Africa/Nouakchott',
+      ));
+      await service.saveCurrentAsPlace();
+
+      final reloaded = await _loadService();
+      expect(reloaded.savedPlaces, hasLength(1));
+      expect(reloaded.savedPlaces.single.name, 'Nouakchott');
+      expect(reloaded.savedPlaces.single.timeZoneId, 'Africa/Nouakchott');
     });
   });
 }

@@ -15,6 +15,7 @@ import 'package:malikiprayertimes/screens/splash_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
@@ -33,6 +34,9 @@ Future<void> main() async {
     ),
   );
   // Load in parallel — never sequential awaits on the launch path.
+  // The IANA tz database is bundled (latest_10y, offline-first) and must
+  // be initialized before any screen resolves a location's zone.
+  TimezoneService.ensureInitialized();
   final travel = TravelService();
   final (settings, location, _) = await (
     SettingsService.load(),
@@ -396,11 +400,14 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
   }
 
   Widget _currentPage(AppLocalizations l10n) {
-    // Device-timezone frame: every computation in this app uses
-    // `DateTime.now().timeZoneOffset`. Manual far-away locations are
-    // therefore approximate — a documented limitation.
-    final offset = DateTime.now().timeZoneOffset;
+    // Location-zone frame (Phase 2): every computation in this app renders
+    // in the *location's* IANA zone — the stored zone for manual
+    // locations, the device zone for GPS-derived ones — resolved per date
+    // so DST transitions are correct per date, not just "today".
     final loc = widget.location.current;
+    final zoneId = TimezoneService.effectiveZoneIdFor(loc);
+    final offset = TimezoneService.offsetFor(zoneId, DateTime.now());
+    final elevationMeters = loc?.elevationMeters ?? 0.0;
     final profile = widget.settings.effectiveProfile;
 
     if (_index == 0) {
@@ -408,6 +415,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         settings: widget.settings,
         location: widget.location,
         travel: widget.travel,
+        zoneId: zoneId,
       );
     }
     // The qada tracker needs no location: show it before the
@@ -426,23 +434,30 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
           coordinates: coords,
           profile: profile,
           timeZoneOffset: offset,
+          zoneId: zoneId,
+          elevationMeters: elevationMeters,
           settings: widget.settings,
         ),
       2 => QiblaScreen(
           coordinates: coords,
           locationName: loc.displayName(l10n.deviceLocationName),
           timeZoneOffset: offset,
+          zoneId: zoneId,
           notifications: widget.notifications,
         ),
       3 => ProfilesScreen(
           settings: widget.settings,
           coordinates: coords,
           timeZoneOffset: offset,
+          zoneId: zoneId,
+          elevationMeters: elevationMeters,
         ),
       _ => SettingsScreen(
           settings: widget.settings,
           coordinates: coords,
           timeZoneOffset: offset,
+          zoneId: zoneId,
+          elevationMeters: elevationMeters,
           notifications: widget.notifications,
           travelService: widget.travel,
           locationService: widget.location,
@@ -561,13 +576,19 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
     if (!mounted) return;
     final loc = widget.location.current;
     if (loc == null) return;
+    // Notification fire times use the location's zone (not the device's),
+    // resolved per date so DST transitions schedule correctly overnight;
+    // elevation rides along so sunrise/sunset notifications match the UI.
+    final zoneId = TimezoneService.effectiveZoneIdFor(loc);
     final texts = _notificationTexts(
         AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
     await widget.notifications.rescheduleAll(
       coords: Coordinates(loc.latitude, loc.longitude),
       profile: widget.settings.effectiveProfile,
       settings: widget.settings,
-      timeZoneOffset: DateTime.now().timeZoneOffset,
+      timeZoneOffset: TimezoneService.offsetFor(zoneId, DateTime.now()),
+      timeZoneOffsetForDate: (date) => TimezoneService.offsetFor(zoneId, date),
+      elevationMeters: loc.elevationMeters ?? 0.0,
       texts: texts,
     );
   }

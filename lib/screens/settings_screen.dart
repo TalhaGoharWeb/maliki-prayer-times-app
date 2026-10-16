@@ -25,6 +25,14 @@ class SettingsScreen extends StatelessWidget {
   final Coordinates coordinates;
   final Duration timeZoneOffset;
 
+  /// IANA zone id the notification schedule renders in. When non-null,
+  /// per-date offsets resolve from the zone; when null the legacy
+  /// constructor-offset behavior is used.
+  final String? zoneId;
+
+  /// Observer elevation in meters for the horizon dip correction.
+  final double elevationMeters;
+
   /// When null, the notification section is hidden (e.g. in widget tests).
   final NotificationService? notifications;
 
@@ -46,6 +54,8 @@ class SettingsScreen extends StatelessWidget {
     required this.settings,
     required this.coordinates,
     required this.timeZoneOffset,
+    this.zoneId,
+    this.elevationMeters = 0.0,
     this.notifications,
     this.updateService,
     this.travelService,
@@ -348,6 +358,8 @@ class SettingsScreen extends StatelessWidget {
                 settings: settings,
                 coordinates: coordinates,
                 timeZoneOffset: timeZoneOffset,
+                zoneId: zoneId,
+                elevationMeters: elevationMeters,
               ),
               const SizedBox(height: 20),
             ],

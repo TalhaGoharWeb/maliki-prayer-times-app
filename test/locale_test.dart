@@ -464,10 +464,12 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Scroll the preset into view (ListView lazily builds its window).
+      // Small steps: the page is long, so large jumps can overshoot the
+      // preset and scroll it out of the built window again.
       final presetFinder = find.text('Cordoba (Great Mosque)');
-      for (var i = 0; i < 6 && presetFinder.evaluate().isEmpty; i++) {
+      for (var i = 0; i < 12 && presetFinder.evaluate().isEmpty; i++) {
         await tester.drag(
-            find.byType(Scrollable).first, const Offset(0, -800));
+            find.byType(Scrollable).first, const Offset(0, -300));
         await tester.pump(const Duration(milliseconds: 100));
       }
       await tester.ensureVisible(presetFinder);
@@ -483,6 +485,10 @@ void main() {
       expect(current.latitude, 37.879, reason: 'exact preset latitude');
       expect(current.longitude, -4.779, reason: 'exact preset longitude');
       expect(current.isDevice, isFalse);
+      // Phase 2: presets carry their IANA zone so times render in the
+      // city's wall clock, not the device's.
+      expect(current.timeZoneId, 'Europe/Madrid',
+          reason: 'preset IANA zone id');
     });
   });
 

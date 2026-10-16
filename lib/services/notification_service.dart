@@ -6,8 +6,8 @@ import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 /// Stable id offset for pre-prayer reminder notifications: the reminder for
@@ -90,7 +90,9 @@ class PluginNotificationScheduler implements NotificationScheduler {
 
   @override
   Future<void> initialize() async {
-    tz.initializeTimeZones();
+    // The tz database is owned by TimezoneService (bundled latest_10y);
+    // this only ensures it is initialized before scheduling.
+    TimezoneService.ensureInitialized();
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(),
@@ -415,6 +417,9 @@ class NotificationService {
   /// DST transition between today and tomorrow is honored per date); tests
   /// inject a fake zone here. [timeZoneOffset] still frames "today" and is
   /// what gets persisted under the last-offset key.
+  ///
+  /// [elevationMeters] applies the horizon dip correction to sunrise/sunset
+  /// (same as the UI path) so scheduled notifications match the timetable.
   Future<void> rescheduleAll({
     required Coordinates coords,
     required PrayerProfile profile,
@@ -422,6 +427,7 @@ class NotificationService {
     required Duration timeZoneOffset,
     required NotificationTexts texts,
     Duration Function(DateTime date)? timeZoneOffsetForDate,
+    double elevationMeters = 0.0,
     DateTime? now,
   }) async {
     await _scheduler.cancelAll();
@@ -443,6 +449,7 @@ class NotificationService {
         date: date,
         timeZoneOffset: offset,
         profile: profile,
+        elevationMeters: elevationMeters,
       );
       // `adjustedTime` returns a UTC-kind DateTime whose fields are
       // wall-clock values; subtract the date's own offset to recover the

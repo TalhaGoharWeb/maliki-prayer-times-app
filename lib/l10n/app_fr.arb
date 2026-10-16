@@ -1172,5 +1172,126 @@
   "changelogStatusConvention": "Convention",
   "@changelogStatusConvention": {
     "description": "Phase 1C: changelog status badge — convention"
+  },
+  "fieldElevation": "Altitude (facultatif)",
+  "@fieldElevation": {
+    "description": "Phase 2: Form field: elevation (optional)"
+  },
+  "hintElevation": "Mètres au-dessus du niveau de la mer",
+  "@hintElevation": {
+    "description": "Phase 2: Form hint: elevation units"
+  },
+  "validateElevationRange": "L'altitude doit être comprise entre -500 et 9000 mètres.",
+  "@validateElevationRange": {
+    "description": "Phase 2: Validation: elevation range"
+  },
+  "elevationValue": "{meters} m",
+  "@elevationValue": {
+    "description": "Phase 2: Elevation display value in meters",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTimeZone": "Fuseau horaire",
+  "@fieldTimeZone": {
+    "description": "Phase 2: Form field: IANA time zone"
+  },
+  "timeZonePickerTitle": "Choisir le fuseau horaire",
+  "@timeZonePickerTitle": {
+    "description": "Phase 2: Title of the time-zone picker dialog"
+  },
+  "timeZoneSearchHint": "Rechercher un fuseau horaire",
+  "@timeZoneSearchHint": {
+    "description": "Phase 2: Search hint in the time-zone picker"
+  },
+  "timeZoneDeviceDefault": "Fuseau de l'appareil ({zone})",
+  "@timeZoneDeviceDefault": {
+    "description": "Phase 2: Time-zone picker option: device zone",
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneLabel": "Fuseau horaire",
+  "@timeZoneLabel": {
+    "description": "Phase 2: Label: the location's time zone"
+  },
+  "gpsAccuracyLabel": "Précision GPS",
+  "@gpsAccuracyLabel": {
+    "description": "Phase 2: Label: GPS accuracy radius"
+  },
+  "gpsAccuracyValue": "±{meters} m",
+  "@gpsAccuracyValue": {
+    "description": "Phase 2: GPS accuracy radius value",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "gpsAccuracyUnknown": "Précision inconnue",
+  "@gpsAccuracyUnknown": {
+    "description": "Phase 2: Shown when GPS accuracy is unknown"
+  },
+  "locationUpdatedAt": "Mis à jour : {when}",
+  "@locationUpdatedAt": {
+    "description": "Phase 2: Location fix timestamp line",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "locationUpdatedUnknown": "Heure de mise à jour inconnue",
+  "@locationUpdatedUnknown": {
+    "description": "Phase 2: Shown when the fix time is unknown"
+  },
+  "locationStaleNote": "Cette position date de plus d'un jour — actualisez-la pour une précision à jour.",
+  "@locationStaleNote": {
+    "description": "Phase 2: Note shown when the GPS fix is over a day old"
+  },
+  "refreshLocation": "Actualiser la position",
+  "@refreshLocation": {
+    "description": "Phase 2: Button: refresh the device GPS fix"
+  },
+  "savedPlacesTitle": "Lieux enregistrés",
+  "@savedPlacesTitle": {
+    "description": "Phase 2: Section header: saved places"
+  },
+  "saveCurrentPlace": "Enregistrer le lieu actuel",
+  "@saveCurrentPlace": {
+    "description": "Phase 2: Button: save the current location as a place"
+  },
+  "noSavedPlaces": "Aucun lieu enregistré pour le moment.",
+  "@noSavedPlaces": {
+    "description": "Phase 2: Empty state: no saved places"
+  },
+  "deleteAction": "Supprimer",
+  "@deleteAction": {
+    "description": "Phase 2: Button: delete"
+  },
+  "dialogCancel": "Annuler",
+  "@dialogCancel": {
+    "description": "Phase 2: Button: cancel a dialog"
+  },
+  "deletePlaceTitle": "Supprimer le lieu enregistré ?",
+  "@deletePlaceTitle": {
+    "description": "Phase 2: Confirm dialog title: delete a saved place"
+  },
+  "deletePlaceMessage": "Retirer {name} de vos lieux enregistrés ?",
+  "@deletePlaceMessage": {
+    "description": "Phase 2: Confirm dialog message: delete a saved place",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneNoResults": "Aucun fuseau horaire ne correspond à votre recherche.",
+  "@timeZoneNoResults": {
+    "description": "Phase 2: empty state of the time-zone picker search"
   }
 }

@@ -6,6 +6,7 @@ import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/services/compass_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/qibla.dart';
@@ -27,6 +28,11 @@ class QiblaScreen extends StatefulWidget {
   final String locationName;
   final Duration timeZoneOffset;
 
+  /// IANA zone id the sun-alignment time renders in. When non-null, the
+  /// wall-clock offset resolves from the zone; when null the
+  /// constructor-supplied offset is used (legacy).
+  final String? zoneId;
+
   /// When null, the sun-alignment "Remind me" button is hidden (e.g. in
   /// widget tests where no real notification plugin exists).
   final NotificationService? notifications;
@@ -46,6 +52,7 @@ class QiblaScreen extends StatefulWidget {
     required this.coordinates,
     required this.locationName,
     required this.timeZoneOffset,
+    this.zoneId,
     this.notifications,
     this.compass,
     this.onBuild,
@@ -103,6 +110,21 @@ class _QiblaScreenState extends State<QiblaScreen> {
     super.dispose();
   }
 
+  /// Wall-clock offset for the sun-alignment display: the zone's offset
+  /// for today when [QiblaScreen.zoneId] is set, otherwise the
+  /// constructor-supplied offset (legacy).
+  Duration _displayOffset() {
+    final zoneId = widget.zoneId;
+    if (zoneId != null) {
+      try {
+        return TimezoneService.offsetFor(zoneId, DateTime.now());
+      } catch (_) {
+        // Fall through to the constructor offset.
+      }
+    }
+    return widget.timeZoneOffset;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -124,8 +146,10 @@ class _QiblaScreenState extends State<QiblaScreen> {
     final eastOffset = bearing - 90.0;
 
     // Sun-alignment: the wall-clock time today when the sun's azimuth
-    // equals the qibla bearing.
-    final now = DateTime.now().toUtc().add(widget.timeZoneOffset);
+    // equals the qibla bearing. Rendered in the location zone's frame
+    // (or the constructor offset's frame when no zone was supplied).
+    final displayOffset = _displayOffset();
+    final now = DateTime.now().toUtc().add(displayOffset);
     final today = DateTime(now.year, now.month, now.day);
     final alignUtc = sunAlignmentUtcHours(
       widget.coordinates.latitude,
@@ -138,7 +162,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
       final base = DateTime.utc(today.year, today.month, today.day);
       alignWall = base
           .add(Duration(microseconds: (alignUtc * 3600 * 1e6).round()))
-          .add(widget.timeZoneOffset);
+          .add(displayOffset);
     }
 
     String fmtNum(num value, {int decimals = 1}) {
@@ -279,7 +303,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
         _SunAlignCard(
           alignWall: alignWall,
           languageCode: lang,
-          timeZoneOffset: widget.timeZoneOffset,
+          // The card recovers the true UTC instant from the wall clock, so
+          // it must use the same frame the wall clock was computed in.
+          timeZoneOffset: displayOffset,
           notifications: widget.notifications,
         ),
       ],

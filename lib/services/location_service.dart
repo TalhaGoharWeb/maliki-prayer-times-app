@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:geolocator/geolocator.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Coarse permission outcome tracked by [LocationService].
@@ -58,11 +59,31 @@ enum LocationErrorKind {
   unexpectedRefresh,
 }
 
+/// One GPS fix with platform-reported quality metadata.
+///
+/// `accuracyMeters` is the platform's accuracy radius (smaller is better);
+/// `timestamp` is when the fix was taken. Both are nullable: the platform
+/// may not report them, in which case the UI shows "unknown" honestly
+/// instead of fabricating values.
+class GpsFix {
+  final double latitude;
+  final double longitude;
+  final double? accuracyMeters;
+  final DateTime? timestamp;
+
+  const GpsFix({
+    required this.latitude,
+    required this.longitude,
+    this.accuracyMeters,
+    this.timestamp,
+  });
+}
+
 /// Reads a single GPS fix. Returns `null` when no position could be
 /// determined. The production implementation uses the geolocator plugin;
 /// tests inject a fake.
 abstract class GpsReader {
-  Future<(double, double)?> readPosition();
+  Future<GpsFix?> readPosition();
 }
 
 /// The real [GpsReader] backed by the geolocator plugin. Never throws:
@@ -81,7 +102,7 @@ class GeolocatorGpsReader implements GpsReader {
   static const gpsTimeLimit = Duration(seconds: 25);
 
   @override
-  Future<(double, double)?> readPosition() async {
+  Future<GpsFix?> readPosition() async {
     try {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -89,7 +110,12 @@ class GeolocatorGpsReader implements GpsReader {
           timeLimit: gpsTimeLimit,
         ),
       );
-      return (position.latitude, position.longitude);
+      return GpsFix(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        accuracyMeters: position.accuracy,
+        timestamp: position.timestamp,
+      );
     } catch (_) {
       return null;
     }
@@ -185,8 +211,16 @@ class LocationService extends ChangeNotifier {
   /// itself is persisted before this wait starts.
   static const Duration _placeNameTimeout = Duration(seconds: 10);
 
+  /// Key under which the saved-places list is persisted.
+  static const String savedPlacesKey = 'saved_places';
+
   /// The currently chosen location, or `null` until one is chosen.
   SavedLocation? current;
+
+  /// Named places the user saved for quick switching. Persisted under
+  /// [savedPlacesKey] as a JSON list; never contains the [current]
+  /// location object itself by identity (snapshots are stored).
+  List<SavedLocation> savedPlaces = const [];
 
   /// The last known permission/service outcome.
   LocationPermissionState permissionState = LocationPermissionState.unknown;
@@ -225,6 +259,7 @@ class LocationService extends ChangeNotifier {
       placeNamer ?? const GeocodingPlaceNamer(),
     );
     await service._restorePersisted();
+    await service._restoreSavedPlaces();
     return service;
   }
 
@@ -253,6 +288,95 @@ class LocationService extends ChangeNotifier {
     await prefs.setString(storageKey, jsonEncode(location.toJson()));
   }
 
+  Future<void> _restoreSavedPlaces() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(savedPlacesKey);
+      if (raw == null || raw.isEmpty) {
+        savedPlaces = const [];
+        return;
+      }
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) {
+        savedPlaces = const [];
+        return;
+      }
+      savedPlaces = [
+        for (final entry in decoded)
+          if (entry is Map<String, dynamic>) SavedLocation.fromJson(entry),
+      ];
+    } catch (_) {
+      savedPlaces = const [];
+    }
+  }
+
+  Future<void> _persistSavedPlaces() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      savedPlacesKey,
+      jsonEncode([for (final p in savedPlaces) p.toJson()]),
+    );
+  }
+
+  /// Snapshots the [current] location into the saved-places list.
+  ///
+  /// A device location is snapshotted as a manual-style place: `isDevice`
+  /// becomes false and the current device zone id is frozen as its
+  /// [SavedLocation.timeZoneId], so the saved place keeps rendering in the
+  /// zone it was saved in even after the phone travels. Coordinates that
+  /// already have a saved place are not duplicated. Returns true when a
+  /// new place was added. Does nothing (returns false) when no location is
+  /// currently chosen.
+  Future<bool> saveCurrentAsPlace() async {
+    final loc = current;
+    if (loc == null) return false;
+    for (final p in savedPlaces) {
+      if ((p.latitude - loc.latitude).abs() < 1e-9 &&
+          (p.longitude - loc.longitude).abs() < 1e-9) {
+        return false;
+      }
+    }
+    final snapshot = SavedLocation(
+      name: loc.isDevice ? (loc.placeName ?? 'Device location') : loc.name,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      isDevice: false,
+      placeName: loc.isDevice ? loc.placeName : null,
+      timeZoneId: loc.isDevice ? TimezoneService.deviceZoneId : loc.timeZoneId,
+      elevationMeters: loc.elevationMeters,
+    );
+    savedPlaces = [...savedPlaces, snapshot];
+    await _persistSavedPlaces();
+    notifyListeners();
+    return true;
+  }
+
+  /// Makes a saved place the current location.
+  Future<void> usePlace(SavedLocation place) async {
+    errorMessage = null;
+    errorKind = LocationErrorKind.none;
+    errorDetail = null;
+    await _persist(place);
+    current = place;
+    notifyListeners();
+  }
+
+  /// Removes a saved place. The current location is unaffected even when it
+  /// happens to match the removed place.
+  Future<void> removePlace(SavedLocation place) async {
+    savedPlaces = [
+      for (final p in savedPlaces)
+        if (!_samePlace(p, place)) p,
+    ];
+    await _persistSavedPlaces();
+    notifyListeners();
+  }
+
+  static bool _samePlace(SavedLocation a, SavedLocation b) =>
+      a.name == b.name &&
+      (a.latitude - b.latitude).abs() < 1e-9 &&
+      (a.longitude - b.longitude).abs() < 1e-9;
+
   /// One-shot device position for the travel-mode auto-suggest. Returns null
   /// when permission is not already granted or the service is off — this
   /// never triggers a permission prompt.
@@ -262,7 +386,9 @@ class LocationService extends ChangeNotifier {
       return null;
     }
     if (!await _permissionGateway.isLocationServiceEnabled()) return null;
-    return _gpsReader.readPosition();
+    final fix = await _gpsReader.readPosition();
+    if (fix == null) return null;
+    return (fix.latitude, fix.longitude);
   }
 
   /// Runs the device-location flow: checks the location service, asks for
@@ -305,8 +431,8 @@ class LocationService extends ChangeNotifier {
       }
 
       permissionState = LocationPermissionState.granted;
-      final position = await _gpsReader.readPosition();
-      if (position == null) {
+      final fix = await _gpsReader.readPosition();
+      if (fix == null) {
         errorKind = LocationErrorKind.positionUnknown;
         errorMessage =
             'Could not determine your position. Please try again, or enter '
@@ -319,24 +445,30 @@ class LocationService extends ChangeNotifier {
       // The human-readable place name is cosmetic and resolves afterwards
       // (with its own timeout), updating the saved entry if one arrives, so
       // a slow platform geocoder can never delay or lose the fix.
+      // The platform's accuracy radius and the fix timestamp travel with
+      // the location so the UI can show GPS quality honestly.
       var location = SavedLocation(
         name: 'Device location',
-        latitude: position.$1,
-        longitude: position.$2,
+        latitude: fix.latitude,
+        longitude: fix.longitude,
         isDevice: true,
+        accuracyMeters: fix.accuracyMeters,
+        updatedAt: fix.timestamp,
       );
       await _persist(location);
       current = location;
       notifyListeners();
 
-      final placeName = await _resolvePlaceName(position.$1, position.$2);
+      final placeName = await _resolvePlaceName(fix.latitude, fix.longitude);
       if (placeName != null && placeName.isNotEmpty) {
         location = SavedLocation(
           name: 'Device location',
-          latitude: position.$1,
-          longitude: position.$2,
+          latitude: fix.latitude,
+          longitude: fix.longitude,
           isDevice: true,
           placeName: placeName,
+          accuracyMeters: fix.accuracyMeters,
+          updatedAt: fix.timestamp,
         );
         await _persist(location);
         current = location;
@@ -379,8 +511,8 @@ class LocationService extends ChangeNotifier {
         notifyListeners();
         return;
       }
-      final position = await _gpsReader.readPosition();
-      if (position == null) {
+      final fix = await _gpsReader.readPosition();
+      if (fix == null) {
         errorKind = LocationErrorKind.refreshPositionUnknown;
         errorMessage =
             'Could not determine your position. Please try again, or enter '
@@ -390,10 +522,12 @@ class LocationService extends ChangeNotifier {
       }
       final location = SavedLocation(
         name: 'Device location',
-        latitude: position.$1,
-        longitude: position.$2,
+        latitude: fix.latitude,
+        longitude: fix.longitude,
         isDevice: true,
-        placeName: await _resolvePlaceName(position.$1, position.$2),
+        placeName: await _resolvePlaceName(fix.latitude, fix.longitude),
+        accuracyMeters: fix.accuracyMeters,
+        updatedAt: fix.timestamp,
       );
       await _persist(location);
       current = location;

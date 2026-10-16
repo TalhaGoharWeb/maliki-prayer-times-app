@@ -11,6 +11,7 @@ import 'package:malikiprayertimes/screens/location_screen.dart';
 import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
@@ -23,9 +24,11 @@ import 'package:malikiprayertimes/widgets/why_time_sheet.dart';
 /// Home tab: today's timetable with a next-prayer hero, the Maliki two-tier
 /// bands, and the calculation-profile status.
 ///
-/// Time frame: every computation here uses `DateTime.now().timeZoneOffset`
-/// (the device timezone). Manual far-away locations are therefore
-/// approximate — a documented limitation.
+/// Time frame: computations render in the location's IANA zone (via
+/// [zoneId]) — the stored zone for manual locations, the device zone for
+/// GPS-derived ones — resolved per date so DST transitions are correct.
+/// A null [zoneId] keeps the legacy device-timezone behavior (widget
+/// tests).
 ///
 /// The displayed prayer times are the engine times passed through
 /// [SettingsService.adjustedTime], so any ihtiyat (precautionary) adjustment
@@ -38,11 +41,16 @@ class HomeScreen extends StatefulWidget {
   /// tests; when null the banner stays hidden.
   final TravelService? travel;
 
+  /// IANA zone id the times render in. Null = device timezone (legacy /
+  /// widget-test behavior).
+  final String? zoneId;
+
   const HomeScreen(
       {super.key,
       required this.settings,
       required this.location,
-      this.travel});
+      this.travel,
+      this.zoneId});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -53,24 +61,35 @@ class _HomeScreenState extends State<HomeScreen> {
   PrayerTimes? _times; // raw engine output (pre-adjustment)
   List<PrayerBand>? _bands;
   late Timer _timer;
-  DateTime _now = _frameNow();
+  late DateTime _now;
 
   /// Wall-clock "now" in the same frame as the engine output:
-  /// `DateTime.now().toUtc().add(offset)`.
-  static DateTime _frameNow() {
-    final offset = DateTime.now().timeZoneOffset;
-    return DateTime.now().toUtc().add(offset);
+  /// `DateTime.now().toUtc().add(offset)` where the offset is the
+  /// location zone's offset for today (or the device offset when no
+  /// [zoneId] was supplied).
+  DateTime _frameNow() {
+    final nowUtc = DateTime.now().toUtc();
+    return nowUtc.add(_offsetForDate(nowUtc));
   }
 
-  Duration get _offset => DateTime.now().timeZoneOffset;
+  Duration get _offset => _offsetForDate(DateTime.now());
 
-  /// Device UTC offset for [date], falling back to today's offset when
-  /// derivation is unavailable.
+  /// Location-zone UTC offset for [date] (DST-correct per date), falling
+  /// back to the device offset when no zone was supplied or the zone
+  /// lookup fails.
   Duration _offsetForDate(DateTime date) {
+    final zoneId = widget.zoneId;
+    if (zoneId != null) {
+      try {
+        return TimezoneService.offsetFor(zoneId, date);
+      } catch (_) {
+        // Fall through to the device offset below.
+      }
+    }
     try {
       return DateTime(date.year, date.month, date.day).timeZoneOffset;
     } catch (_) {
-      return _offset;
+      return DateTime.now().timeZoneOffset;
     }
   }
 
@@ -79,11 +98,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return loc == null ? null : Coordinates(loc.latitude, loc.longitude);
   }
 
+  /// Observer elevation for the horizon dip correction (0 when unset).
+  double get _elevationMeters =>
+      widget.location.current?.elevationMeters ?? 0.0;
+
   @override
   void initState() {
     super.initState();
     widget.settings.addListener(_onServicesChanged);
     widget.location.addListener(_onServicesChanged);
+    _now = _frameNow();
     _computeForToday();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       final now = _frameNow();
@@ -129,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
       date: _civilDay!,
       timeZoneOffset: _offset,
       profile: widget.settings.effectiveProfile,
+      elevationMeters: _elevationMeters,
     );
     _bands = malikiPrayerBands(_times!);
   }
@@ -165,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // across a DST transition.
       timeZoneOffset: _offsetForDate(tomorrowDate),
       profile: settings.effectiveProfile,
+      elevationMeters: _elevationMeters,
     );
     return (
       prayer: Prayer.fajr,

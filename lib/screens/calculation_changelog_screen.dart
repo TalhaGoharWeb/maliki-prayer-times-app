@@ -118,6 +118,27 @@ const List<ChangelogVersion> changelogVersions = [
       ),
     ],
   ),
+  ChangelogVersion(
+    version: 'v1.3.0+6',
+    date: '2026-10-16',
+    isBaseline: false,
+    rows: [
+      ChangelogRow(
+        parameter: 'Time-zone frame',
+        value:
+            "displayed times render in the location's IANA zone: the stored zone for manual locations (chosen in the zone picker, defaulting to the device zone), the device zone for GPS-derived locations; offsets resolved per date so DST transitions are correct per date; bundled tz database latest_all (full IANA coverage, 598 zones, tzdata 2026e), offline-first",
+        status: ChangelogStatus.convention,
+        changedSince: 'v1.3.0+6 (unreleased)',
+      ),
+      ChangelogRow(
+        parameter: 'Sunrise/sunset horizon',
+        value:
+            '−0.833° solar depression (upper limb + refraction) plus the elevation dip correction 0.0293×√h (h in meters) when a per-location elevation is set; optional input, unset = sea-level horizon',
+        status: ChangelogStatus.convention,
+        changedSince: 'v1.3.0+6 (unreleased)',
+      ),
+    ],
+  ),
 ];
 
 /// In-app rendering of the calculation changelog.

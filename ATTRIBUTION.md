@@ -88,6 +88,30 @@ this app is presented as scholar-reviewed.
 Both passed the license gate (permissive: MIT/Apache-2.0/BSD — no
 copyleft, no proprietary terms, LICENSE files present and read).
 
+## Phase 2: timezone tz-data variant (location exactness)
+
+- **timezone** — BSD-3-Clause — 0.11.2 — srawlins/timezone
+  (https://github.com/srawlins/timezone) — the app now uses the
+  **latest_all** tz-data variant (`package:timezone/data/latest_all.dart`,
+  full IANA coverage: 598 zones, tzdata version 2026e) via
+  `lib/services/timezone_service.dart` to render times in the
+  *location's* IANA zone (stored zone for manual locations, device zone
+  for GPS-derived ones). Offline-first: the database is bundled, no
+  connectivity needed. The notification path
+  (`lib/services/notification_service.dart`) was already on `latest_all`
+  and now shares the single `TimezoneService` initialization.
+- **Why not latest_10y:** the first draft named `latest_10y` (~85 KB), but
+  verification showed it is a curated 345-zone SUBSET, not a time-window
+  trim — it drops real zones including `Africa/Nouakchott`, one of this
+  app's own preset cities. A zone picker that cannot represent Nouakchott
+  breaks Phase 2's purpose, so the full variant is used; the size cost
+  (~1 MB in a ~73 MB APK) is immaterial next to correctness.
+- License re-verified 2026-10-16 by reading the LICENSE file in the pub
+  cache (`~/.pub-cache/hosted/pub.dev/timezone-0.11.2/LICENSE`): full
+  BSD-3-Clause text, "Copyright (c) 2014, timezone project authors".
+  Passed the license gate (permissive, no copyleft). Release blocker:
+  cleared.
+
 ## Bundled font: Nafees Nastaleeq (CRULP — redistribution permitted)
 
 - **File:** `assets/fonts/NafeesNastaleeq.ttf` (396,948 bytes), declared as family

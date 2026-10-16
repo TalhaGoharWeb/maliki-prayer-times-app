@@ -7,6 +7,7 @@ import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/band_texts.dart';
 import 'package:malikiprayertimes/screens/date_labels.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/services/timetable_share.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
@@ -30,6 +31,14 @@ class MonthlyScreen extends StatefulWidget {
   final PrayerProfile profile;
   final Duration timeZoneOffset;
 
+  /// IANA zone id the times render in. When non-null, each day's offset is
+  /// resolved from the zone (DST-correct per date); when null the legacy
+  /// device-offset derivation is used.
+  final String? zoneId;
+
+  /// Observer elevation in meters for the horizon dip correction.
+  final double elevationMeters;
+
   /// Settings supply the per-prayer adjustments (ihtiyat) applied to the
   /// displayed times, matching the home timetable.
   final SettingsService settings;
@@ -42,6 +51,8 @@ class MonthlyScreen extends StatefulWidget {
     required this.coordinates,
     required this.profile,
     required this.timeZoneOffset,
+    this.zoneId,
+    this.elevationMeters = 0.0,
     required this.settings,
     this.initialMonth,
   });
@@ -76,12 +87,15 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
   @override
   void didUpdateWidget(covariant MonthlyScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Recompute when the profile, the zone offset, or the per-prayer
-    // adjustments change while the screen is open. The guard prevents
-    // reload loops; profile comparison is by identity because profiles are
-    // immutable engine constants (a toggled ihtiyat yields a new instance).
+    // Recompute when the profile, the zone, the zone offset, the elevation,
+    // or the per-prayer adjustments change while the screen is open. The
+    // guard prevents reload loops; profile comparison is by identity because
+    // profiles are immutable engine constants (a toggled ihtiyat yields a
+    // new instance).
     if (widget.profile != oldWidget.profile ||
         widget.timeZoneOffset != oldWidget.timeZoneOffset ||
+        widget.zoneId != oldWidget.zoneId ||
+        widget.elevationMeters != oldWidget.elevationMeters ||
         !_adjustmentsEqual(_appliedAdjustments, widget.settings.adjustments)) {
       setState(_loadMonth);
     }
@@ -95,18 +109,28 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
       return calculatePrayerTimes(
         coordinates: widget.coordinates,
         date: date,
-        // Per-date device offset: one offset for the whole month shifts
+        // Per-date zone offset: one offset for the whole month shifts
         // displayed times by an hour across DST transitions.
         timeZoneOffset: _offsetForDate(date),
         profile: widget.profile,
+        elevationMeters: widget.elevationMeters,
       );
     });
     _appliedAdjustments = Map.of(widget.settings.adjustments);
   }
 
-  /// The device UTC offset for [date], falling back to the
-  /// constructor-supplied offset when derivation is unavailable.
+  /// The location-zone UTC offset for [date] (DST-correct per date),
+  /// falling back to the constructor-supplied offset, then to the device
+  /// offset, when derivation is unavailable.
   Duration _offsetForDate(DateTime date) {
+    final zoneId = widget.zoneId;
+    if (zoneId != null) {
+      try {
+        return TimezoneService.offsetFor(zoneId, date);
+      } catch (_) {
+        // Fall through below.
+      }
+    }
     try {
       return date.timeZoneOffset;
     } catch (_) {

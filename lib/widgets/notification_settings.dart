@@ -5,6 +5,7 @@ import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 
 /// Notification settings section for the settings screen.
@@ -30,12 +31,21 @@ class NotificationSettingsSection extends StatefulWidget {
   final Coordinates coordinates;
   final Duration timeZoneOffset;
 
+  /// IANA zone id the schedule renders in (per-date offsets resolve from
+  /// it). Null = legacy constructor-offset behavior.
+  final String? zoneId;
+
+  /// Observer elevation in meters for the horizon dip correction.
+  final double elevationMeters;
+
   const NotificationSettingsSection({
     super.key,
     required this.notifications,
     required this.settings,
     required this.coordinates,
     required this.timeZoneOffset,
+    this.zoneId,
+    this.elevationMeters = 0.0,
   });
 
   @override
@@ -79,11 +89,18 @@ class _NotificationSettingsSectionState
 
   Future<void> _reschedule(AppLocalizations l10n) async {
     try {
+      final zoneId = widget.zoneId;
       await widget.notifications.rescheduleAll(
         coords: widget.coordinates,
         profile: widget.settings.effectiveProfile,
         settings: widget.settings,
-        timeZoneOffset: widget.timeZoneOffset,
+        timeZoneOffset: zoneId == null
+            ? widget.timeZoneOffset
+            : TimezoneService.offsetFor(zoneId, DateTime.now()),
+        timeZoneOffsetForDate: zoneId == null
+            ? null
+            : (date) => TimezoneService.offsetFor(zoneId, date),
+        elevationMeters: widget.elevationMeters,
         texts: _texts(l10n),
       );
     } catch (_) {

@@ -1753,5 +1753,126 @@
   "changelogStatusConvention": "Convention",
   "@changelogStatusConvention": {
     "description": "Phase 1C: changelog status badge — convention"
+  },
+  "fieldElevation": "Elevation (optional)",
+  "@fieldElevation": {
+    "description": "Phase 2: Form field: elevation (optional)"
+  },
+  "hintElevation": "Meters above sea level",
+  "@hintElevation": {
+    "description": "Phase 2: Form hint: elevation units"
+  },
+  "validateElevationRange": "Elevation must be between -500 and 9000 meters.",
+  "@validateElevationRange": {
+    "description": "Phase 2: Validation: elevation range"
+  },
+  "elevationValue": "{meters} m",
+  "@elevationValue": {
+    "description": "Phase 2: Elevation display value in meters",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTimeZone": "Time zone",
+  "@fieldTimeZone": {
+    "description": "Phase 2: Form field: IANA time zone"
+  },
+  "timeZonePickerTitle": "Choose time zone",
+  "@timeZonePickerTitle": {
+    "description": "Phase 2: Title of the time-zone picker dialog"
+  },
+  "timeZoneSearchHint": "Search time zones",
+  "@timeZoneSearchHint": {
+    "description": "Phase 2: Search hint in the time-zone picker"
+  },
+  "timeZoneDeviceDefault": "Device time zone ({zone})",
+  "@timeZoneDeviceDefault": {
+    "description": "Phase 2: Time-zone picker option: device zone",
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneLabel": "Time zone",
+  "@timeZoneLabel": {
+    "description": "Phase 2: Label: the location's time zone"
+  },
+  "gpsAccuracyLabel": "GPS accuracy",
+  "@gpsAccuracyLabel": {
+    "description": "Phase 2: Label: GPS accuracy radius"
+  },
+  "gpsAccuracyValue": "±{meters} m",
+  "@gpsAccuracyValue": {
+    "description": "Phase 2: GPS accuracy radius value",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "gpsAccuracyUnknown": "Accuracy unknown",
+  "@gpsAccuracyUnknown": {
+    "description": "Phase 2: Shown when GPS accuracy is unknown"
+  },
+  "locationUpdatedAt": "Updated {when}",
+  "@locationUpdatedAt": {
+    "description": "Phase 2: Location fix timestamp line",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "locationUpdatedUnknown": "Update time unknown",
+  "@locationUpdatedUnknown": {
+    "description": "Phase 2: Shown when the fix time is unknown"
+  },
+  "locationStaleNote": "This fix is over a day old — refresh for current accuracy.",
+  "@locationStaleNote": {
+    "description": "Phase 2: Note shown when the GPS fix is over a day old"
+  },
+  "refreshLocation": "Refresh location",
+  "@refreshLocation": {
+    "description": "Phase 2: Button: refresh the device GPS fix"
+  },
+  "savedPlacesTitle": "Saved places",
+  "@savedPlacesTitle": {
+    "description": "Phase 2: Section header: saved places"
+  },
+  "saveCurrentPlace": "Save current place",
+  "@saveCurrentPlace": {
+    "description": "Phase 2: Button: save the current location as a place"
+  },
+  "noSavedPlaces": "No saved places yet.",
+  "@noSavedPlaces": {
+    "description": "Phase 2: Empty state: no saved places"
+  },
+  "deleteAction": "Delete",
+  "@deleteAction": {
+    "description": "Phase 2: Button: delete"
+  },
+  "dialogCancel": "Cancel",
+  "@dialogCancel": {
+    "description": "Phase 2: Button: cancel a dialog"
+  },
+  "deletePlaceTitle": "Delete saved place?",
+  "@deletePlaceTitle": {
+    "description": "Phase 2: Confirm dialog title: delete a saved place"
+  },
+  "deletePlaceMessage": "Remove {name} from your saved places?",
+  "@deletePlaceMessage": {
+    "description": "Phase 2: Confirm dialog message: delete a saved place",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneNoResults": "No time zones match your search.",
+  "@timeZoneNoResults": {
+    "description": "Phase 2: empty state of the time-zone picker search"
   }
 }

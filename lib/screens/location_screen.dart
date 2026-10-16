@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
+import 'package:malikiprayertimes/services/timezone_service.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 
 /// Location picker: the active horizon card, famous Maliki city presets,
@@ -24,30 +26,33 @@ class LocationScreen extends StatefulWidget {
 }
 
 /// A famous Maliki city the user can adopt with one tap: the timetable is
-/// computed with the city's exact coordinates.
+/// computed with the city's exact coordinates, in the city's IANA zone.
 class _Preset {
   final String name;
   final double latitude;
   final double longitude;
   final IconData icon;
+  final String timeZoneId;
   final String Function(AppLocalizations) description;
 
-  const _Preset(
-      this.name, this.latitude, this.longitude, this.icon, this.description);
+  const _Preset(this.name, this.latitude, this.longitude, this.icon,
+      this.timeZoneId, this.description);
 }
 
 // Famous Maliki cities. Descriptions are localized, so this cannot be
-// `const`.
+// `const`. Zone ids are the cities' IANA zones (factual, from the tz
+// database); elevations are left unset (sea-level horizon) rather than
+// approximated.
 final _presets = [
   _Preset('Fez (al-Qarawiyyin)', 34.033, -5.000, Icons.star,
-      (l) => l.presetFezDesc),
+      'Africa/Casablanca', (l) => l.presetFezDesc),
   _Preset('Cairo (al-Azhar / Fustat)', 30.045, 31.262, Icons.mosque,
-      (l) => l.presetCairoDesc),
+      'Africa/Cairo', (l) => l.presetCairoDesc),
   _Preset('Kairouan (Mosque of Uqba)', 35.679, 10.103, Icons.account_balance,
-      (l) => l.presetKairouanDesc),
+      'Africa/Tunis', (l) => l.presetKairouanDesc),
   _Preset('Cordoba (Great Mosque)', 37.879, -4.779, Icons.history_edu,
-      (l) => l.presetCordobaDesc),
-  _Preset('Nouakchott', 18.073, -15.958, Icons.wb_sunny,
+      'Europe/Madrid', (l) => l.presetCordobaDesc),
+  _Preset('Nouakchott', 18.073, -15.958, Icons.wb_sunny, 'Africa/Nouakchott',
       (l) => l.presetNouakchottDesc),
 ];
 
@@ -56,18 +61,32 @@ class _LocationScreenState extends State<LocationScreen> {
   final _nameController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
+  final _elevationController = TextEditingController();
+
+  /// IANA zone id chosen for the manual location; defaults to the device
+  /// zone (the picker lets the user change it).
+  late String _selectedZoneId;
 
   bool _deviceBusy = false;
   bool _manualBusy = false;
   bool _presetBusy = false;
+  bool _refreshBusy = false;
+  bool _savePlaceBusy = false;
 
   LocationService get _service => widget.locationService;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedZoneId = TimezoneService.deviceZoneId;
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
+    _elevationController.dispose();
     super.dispose();
   }
 
@@ -127,6 +146,7 @@ class _LocationScreenState extends State<LocationScreen> {
       name: preset.name,
       latitude: preset.latitude,
       longitude: preset.longitude,
+      timeZoneId: preset.timeZoneId,
     ));
     if (!mounted) return;
     setState(() => _presetBusy = false);
@@ -136,15 +156,77 @@ class _LocationScreenState extends State<LocationScreen> {
   Future<void> _saveManualLocation() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _manualBusy = true);
+    final elevationText = _elevationController.text.trim();
     final location = SavedLocation(
       name: _nameController.text.trim(),
       latitude: double.parse(_latitudeController.text.trim()),
       longitude: double.parse(_longitudeController.text.trim()),
+      timeZoneId: _selectedZoneId,
+      elevationMeters:
+          elevationText.isEmpty ? null : double.parse(elevationText),
     );
     await _service.useManualLocation(location);
     if (!mounted) return;
     setState(() => _manualBusy = false);
     Navigator.of(context).pop();
+  }
+
+  /// Opens the searchable IANA zone picker; the chosen zone id becomes the
+  /// manual location's time zone. Dismissing keeps the previous choice —
+  /// the button is never dead.
+  Future<void> _pickTimeZone() async {
+    final picked = await showDialog<String>(
+      context: context,
+      builder: (ctx) =>
+          _TimeZonePickerDialog(selectedZoneId: _selectedZoneId),
+    );
+    if (picked != null && mounted) {
+      setState(() => _selectedZoneId = picked);
+    }
+  }
+
+  Future<void> _refreshDeviceLocation() async {
+    setState(() => _refreshBusy = true);
+    await _service.refreshDeviceLocation();
+    if (!mounted) return;
+    setState(() => _refreshBusy = false);
+  }
+
+  Future<void> _saveCurrentPlace() async {
+    setState(() => _savePlaceBusy = true);
+    await _service.saveCurrentAsPlace();
+    if (!mounted) return;
+    setState(() => _savePlaceBusy = false);
+  }
+
+  Future<void> _usePlace(SavedLocation place) async {
+    await _service.usePlace(place);
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _deletePlace(
+      AppLocalizations l10n, SavedLocation place) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deletePlaceTitle),
+        content: Text(l10n.deletePlaceMessage(place.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.dialogCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.deleteAction),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await _service.removePlace(place);
+    }
   }
 
   String? _validateName(AppLocalizations l10n, String? value) {
@@ -174,6 +256,21 @@ class _LocationScreenState extends State<LocationScreen> {
     }
     if (parsed < -180 || parsed > 180) {
       return l10n.validateLongitudeRange;
+    }
+    return null;
+  }
+
+  /// Elevation is optional (empty = sea-level horizon); when given it must
+  /// be a finite number within the plausible inhabited range.
+  String? _validateElevation(AppLocalizations l10n, String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return null;
+    final parsed = double.tryParse(text);
+    if (parsed == null || parsed.isNaN || !parsed.isFinite) {
+      return l10n.validateNumberExample;
+    }
+    if (parsed < -500 || parsed > 9000) {
+      return l10n.validateElevationRange;
     }
     return null;
   }
@@ -291,6 +388,28 @@ class _LocationScreenState extends State<LocationScreen> {
                     label: Text(l10n.useDeviceLocation),
                   ),
                 ),
+                // Refresh is only meaningful for a device-derived location:
+                // it re-reads the GPS fix (and its accuracy/timestamp)
+                // without going through the permission flow again.
+                if (current?.isDevice == true) ...[
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed:
+                          _refreshBusy ? null : _refreshDeviceLocation,
+                      icon: _refreshBusy
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child:
+                                  CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh),
+                      label: Text(l10n.refreshLocation),
+                    ),
+                  ),
+                ],
                 if (errorText != null &&
                     _service.current?.isDevice != true) ...[
                   const SizedBox(height: 8),
@@ -376,6 +495,46 @@ class _LocationScreenState extends State<LocationScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 10),
+                      // Optional elevation: adjusts the sunrise/sunset
+                      // horizon via the dip correction. Empty = sea level.
+                      TextFormField(
+                        controller: _elevationController,
+                        decoration: InputDecoration(
+                          labelText: l10n.fieldElevation,
+                          hintText: l10n.hintElevation,
+                          prefixIcon: const Icon(Icons.terrain),
+                          border: const OutlineInputBorder(),
+                        ),
+                        keyboardType:
+                            const TextInputType.numberWithOptions(
+                          signed: true,
+                          decimal: true,
+                        ),
+                        validator: (v) => _validateElevation(l10n, v),
+                      ),
+                      const SizedBox(height: 10),
+                      // Time zone: the location's IANA zone, so times render
+                      // in the location's wall clock instead of the device's.
+                      // Defaults to the device zone.
+                      Card(
+                        margin: EdgeInsets.zero,
+                        child: ListTile(
+                          leading: const Icon(Icons.public),
+                          title: Text(l10n.fieldTimeZone),
+                          subtitle: Text(
+                            _selectedZoneId,
+                            // Zone ids are Latin-script data: pin the Latin
+                            // font so they never misrender in Nastaleeq.
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontFamily: AppFonts.latinSans,
+                            ),
+                          ),
+                          trailing:
+                              const Icon(Icons.chevron_right),
+                          onTap: _pickTimeZone,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
@@ -394,6 +553,52 @@ class _LocationScreenState extends State<LocationScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Saved places: named snapshots for quick switching.
+                _SectionHeader(
+                    icon: Icons.bookmark_border,
+                    title: l10n.savedPlacesTitle),
+                const SizedBox(height: 8),
+                if (_service.savedPlaces.isEmpty)
+                  Text(
+                    l10n.noSavedPlaces,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                  )
+                else
+                  ..._service.savedPlaces.map((place) {
+                    final isCurrent = current != null &&
+                        (current.latitude - place.latitude).abs() < 1e-9 &&
+                        (current.longitude - place.longitude).abs() < 1e-9;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: _SavedPlaceRow(
+                        place: place,
+                        isCurrent: isCurrent,
+                        onTap: () => _usePlace(place),
+                        onDelete: () => _deletePlace(l10n, place),
+                      ),
+                    );
+                  }),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: (current == null || _savePlaceBusy)
+                        ? null
+                        : _saveCurrentPlace,
+                    icon: _savePlaceBusy
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.bookmark_add_outlined),
+                    label: Text(l10n.saveCurrentPlace),
                   ),
                 ),
               ],
@@ -434,19 +639,59 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// The active horizon card: current location with coordinates, datum, and
-/// verification badges. Empty state when nothing is chosen.
+/// The active horizon card: current location with coordinates, datum,
+/// time zone, elevation, GPS quality, and verification badges. Empty state
+/// when nothing is chosen.
 class _ActiveHorizonCard extends StatelessWidget {
   final SavedLocation? current;
 
   const _ActiveHorizonCard({required this.current});
 
+  /// Formats a [Duration] offset as "UTC+5:00" / "UTC-4:00".
+  static String _formatUtcOffset(Duration offset) {
+    final sign = offset.isNegative ? '-' : '+';
+    final totalMinutes = offset.inMinutes.abs();
+    final hours = totalMinutes ~/ 60;
+    final minutes = (totalMinutes % 60).toString().padLeft(2, '0');
+    return 'UTC$sign$hours:$minutes';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final materialL10n = MaterialLocalizations.of(context);
     final scheme = theme.colorScheme;
+    final lang = Localizations.localeOf(context).languageCode;
     final loc = current;
+
+    // One icon+text row of the card's metadata list.
+    Widget metaRow(IconData icon, String text, {Color? color}) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Row(
+          children: [
+            Icon(icon,
+                size: 14, color: color ?? scheme.onInverseSurface),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                text,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: color ?? scheme.onInverseSurface,
+                  // Zone ids, offsets and numbers are Latin-script data:
+                  // pin the Latin font so they never misrender in
+                  // Nastaleeq.
+                  fontFamily: AppFonts.latinSans,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Card(
       color: scheme.primaryContainer,
@@ -547,24 +792,82 @@ class _ActiveHorizonCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.layers_outlined,
-                          size: 14, color: scheme.onInverseSurface),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          '${l10n.datumLabel}: ${l10n.wgs84Datum}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: scheme.onInverseSurface,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                  metaRow(
+                    Icons.layers_outlined,
+                    '${l10n.datumLabel}: ${l10n.wgs84Datum}',
+                  ),
+                  // Time zone this location's times render in (the stored
+                  // zone for manual locations, the device zone otherwise).
+                  Builder(builder: (context) {
+                    final zoneId =
+                        TimezoneService.effectiveZoneIdFor(loc);
+                    final offset =
+                        TimezoneService.offsetFor(zoneId, DateTime.now());
+                    return metaRow(
+                      Icons.public,
+                      '${l10n.timeZoneLabel}: $zoneId '
+                      '(${_formatUtcOffset(offset)})',
+                    );
+                  }),
+                  // Elevation, when set: the horizon dip correction applies
+                  // to sunrise/sunset.
+                  if (loc.elevationMeters != null)
+                    metaRow(
+                      Icons.terrain,
+                      '${l10n.fieldElevation}: ${l10n.elevationValue(localizeDigits('${loc.elevationMeters!.round()}', lang))}',
+                    ),
+                  // GPS quality for device locations: accuracy radius and
+                  // fix timestamp; unknown values are shown as unknown,
+                  // never fabricated.
+                  if (loc.isDevice) ...[
+                    metaRow(
+                      Icons.gps_fixed,
+                      '${l10n.gpsAccuracyLabel}: '
+                      '${loc.accuracyMeters == null ? l10n.gpsAccuracyUnknown : l10n.gpsAccuracyValue(localizeDigits('${loc.accuracyMeters!.round()}', lang))}',
+                    ),
+                    Builder(builder: (context) {
+                      final updatedAt = loc.updatedAt;
+                      if (updatedAt == null) {
+                        return metaRow(
+                          Icons.update,
+                          l10n.locationUpdatedUnknown,
+                        );
+                      }
+                      final when =
+                          '${materialL10n.formatMediumDate(updatedAt)} '
+                          '${materialL10n.formatTimeOfDay(TimeOfDay.fromDateTime(updatedAt))}';
+                      return metaRow(
+                        Icons.update,
+                        l10n.locationUpdatedAt(when),
+                      );
+                    }),
+                    // Stale-fix honesty: a fix over a day old is flagged
+                    // instead of being presented as current.
+                    if (loc.updatedAt != null &&
+                        DateTime.now()
+                                .difference(loc.updatedAt!)
+                                .inHours >=
+                            24)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.history,
+                                size: 14, color: scheme.onInverseSurface),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                l10n.locationStaleNote,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: scheme.onInverseSurface,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ],
               ),
       ),
@@ -660,8 +963,7 @@ class _PresetRow extends StatelessWidget {
 }
 
 /// Notice card with an action button (e.g. blocked device location).
-class _NoticeCard extends StatelessWidget {
-  final IconData icon;
+class _NoticeCard extends StatelessWidget {  final IconData icon;
   final String text;
   final String actionLabel;
   final VoidCallback onAction;
@@ -693,6 +995,226 @@ class _NoticeCard extends StatelessWidget {
               onPressed: onAction,
               child: Text(actionLabel),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One saved place row: name, coordinates + zone, select-on-tap and a
+/// delete button. Tapping the row makes the place current and pops the
+/// screen; delete asks for confirmation first.
+class _SavedPlaceRow extends StatelessWidget {
+  final SavedLocation place;
+  final bool isCurrent;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+
+  const _SavedPlaceRow({
+    required this.place,
+    required this.isCurrent,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final zoneId = TimezoneService.effectiveZoneIdFor(place);
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: scheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(Icons.bookmark,
+                    size: 22, color: scheme.onSecondaryContainer),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(place.name,
+                        style: theme.textTheme.titleMedium,
+                        overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${place.latitude.toStringAsFixed(3)}°, '
+                      '${place.longitude.toStringAsFixed(3)}° · $zoneId',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.secondary,
+                        // Latin-script data: pin the Latin font so it never
+                        // misrenders in Nastaleeq.
+                        fontFamily: AppFonts.latinSans,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (isCurrent)
+                Icon(Icons.check_circle, color: scheme.primary, size: 24)
+              else
+                IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: MaterialLocalizations.of(context)
+                      .deleteButtonTooltip,
+                  onPressed: onDelete,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Searchable IANA time-zone picker dialog.
+///
+/// Lists every zone in the bundled tz database (~600 ids) with its current
+/// UTC offset for today, filtered by the search field. Returns the chosen
+/// zone id, or null when dismissed (the caller's previous choice stands).
+class _TimeZonePickerDialog extends StatefulWidget {
+  final String selectedZoneId;
+
+  const _TimeZonePickerDialog({required this.selectedZoneId});
+
+  @override
+  State<_TimeZonePickerDialog> createState() => _TimeZonePickerDialogState();
+}
+
+class _TimeZonePickerDialogState extends State<_TimeZonePickerDialog> {
+  final _searchController = TextEditingController();
+  late List<String> _filtered;
+
+  @override
+  void initState() {
+    super.initState();
+    _filtered = TimezoneService.zoneIds;
+    _searchController.addListener(_onSearch);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearch);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearch() {
+    setState(() {
+      _filtered = TimezoneService.searchZones(_searchController.text);
+    });
+  }
+
+  String _offsetLabel(String zoneId) {
+    try {
+      final offset = TimezoneService.offsetFor(zoneId, DateTime.now());
+      final sign = offset.isNegative ? '-' : '+';
+      final totalMinutes = offset.inMinutes.abs();
+      final hours = totalMinutes ~/ 60;
+      final minutes = (totalMinutes % 60).toString().padLeft(2, '0');
+      return 'UTC$sign$hours:$minutes';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+    return Dialog(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 560, maxWidth: 420),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.timeZonePickerTitle,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    tooltip: MaterialLocalizations.of(context)
+                        .closeButtonTooltip,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: l10n.timeZoneSearchHint,
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: _filtered.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l10n.timeZoneNoResults,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: scheme.secondary,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _filtered.length,
+                      itemBuilder: (context, i) {
+                        final zoneId = _filtered[i];
+                        final selected = zoneId == widget.selectedZoneId;
+                        return ListTile(
+                          dense: true,
+                          selected: selected,
+                          selectedTileColor: scheme.secondaryContainer,
+                          title: Text(
+                            zoneId,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontFamily: AppFonts.latinSans,
+                            ),
+                          ),
+                          trailing: Text(
+                            _offsetLabel(zoneId),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: scheme.secondary,
+                              fontFamily: AppFonts.latinSans,
+                            ),
+                          ),
+                          onTap: () =>
+                              Navigator.of(context).pop(zoneId),
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

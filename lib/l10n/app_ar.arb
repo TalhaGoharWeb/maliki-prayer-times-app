@@ -1172,5 +1172,126 @@
   "changelogStatusConvention": "اصطلاح",
   "@changelogStatusConvention": {
     "description": "Phase 1C: changelog status badge — convention"
+  },
+  "fieldElevation": "الارتفاع (اختياري)",
+  "@fieldElevation": {
+    "description": "Phase 2: Form field: elevation (optional)"
+  },
+  "hintElevation": "بالمتر فوق سطح البحر",
+  "@hintElevation": {
+    "description": "Phase 2: Form hint: elevation units"
+  },
+  "validateElevationRange": "يجب أن يكون الارتفاع بين -500 و 9000 متر.",
+  "@validateElevationRange": {
+    "description": "Phase 2: Validation: elevation range"
+  },
+  "elevationValue": "{meters} م",
+  "@elevationValue": {
+    "description": "Phase 2: Elevation display value in meters",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTimeZone": "المنطقة الزمنية",
+  "@fieldTimeZone": {
+    "description": "Phase 2: Form field: IANA time zone"
+  },
+  "timeZonePickerTitle": "اختر المنطقة الزمنية",
+  "@timeZonePickerTitle": {
+    "description": "Phase 2: Title of the time-zone picker dialog"
+  },
+  "timeZoneSearchHint": "ابحث عن المناطق الزمنية",
+  "@timeZoneSearchHint": {
+    "description": "Phase 2: Search hint in the time-zone picker"
+  },
+  "timeZoneDeviceDefault": "منطقة الجهاز الزمنية ({zone})",
+  "@timeZoneDeviceDefault": {
+    "description": "Phase 2: Time-zone picker option: device zone",
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneLabel": "المنطقة الزمنية",
+  "@timeZoneLabel": {
+    "description": "Phase 2: Label: the location's time zone"
+  },
+  "gpsAccuracyLabel": "دقة نظام تحديد المواقع",
+  "@gpsAccuracyLabel": {
+    "description": "Phase 2: Label: GPS accuracy radius"
+  },
+  "gpsAccuracyValue": "±{meters} م",
+  "@gpsAccuracyValue": {
+    "description": "Phase 2: GPS accuracy radius value",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "gpsAccuracyUnknown": "الدقة غير معروفة",
+  "@gpsAccuracyUnknown": {
+    "description": "Phase 2: Shown when GPS accuracy is unknown"
+  },
+  "locationUpdatedAt": "آخر تحديث: {when}",
+  "@locationUpdatedAt": {
+    "description": "Phase 2: Location fix timestamp line",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "locationUpdatedUnknown": "وقت التحديث غير معروف",
+  "@locationUpdatedUnknown": {
+    "description": "Phase 2: Shown when the fix time is unknown"
+  },
+  "locationStaleNote": "هذا الموقع أقدم من يوم — حدّثه للحصول على دقة حديثة.",
+  "@locationStaleNote": {
+    "description": "Phase 2: Note shown when the GPS fix is over a day old"
+  },
+  "refreshLocation": "تحديث الموقع",
+  "@refreshLocation": {
+    "description": "Phase 2: Button: refresh the device GPS fix"
+  },
+  "savedPlacesTitle": "الأماكن المحفوظة",
+  "@savedPlacesTitle": {
+    "description": "Phase 2: Section header: saved places"
+  },
+  "saveCurrentPlace": "حفظ الموقع الحالي",
+  "@saveCurrentPlace": {
+    "description": "Phase 2: Button: save the current location as a place"
+  },
+  "noSavedPlaces": "لا توجد أماكن محفوظة بعد.",
+  "@noSavedPlaces": {
+    "description": "Phase 2: Empty state: no saved places"
+  },
+  "deleteAction": "حذف",
+  "@deleteAction": {
+    "description": "Phase 2: Button: delete"
+  },
+  "dialogCancel": "إلغاء",
+  "@dialogCancel": {
+    "description": "Phase 2: Button: cancel a dialog"
+  },
+  "deletePlaceTitle": "حذف المكان المحفوظ؟",
+  "@deletePlaceTitle": {
+    "description": "Phase 2: Confirm dialog title: delete a saved place"
+  },
+  "deletePlaceMessage": "إزالة {name} من الأماكن المحفوظة؟",
+  "@deletePlaceMessage": {
+    "description": "Phase 2: Confirm dialog message: delete a saved place",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneNoResults": "لا توجد مناطق زمنية تطابق بحثك.",
+  "@timeZoneNoResults": {
+    "description": "Phase 2: empty state of the time-zone picker search"
   }
 }

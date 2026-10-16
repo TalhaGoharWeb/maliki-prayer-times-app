@@ -1172,5 +1172,126 @@
   "changelogStatusConvention": "روایت",
   "@changelogStatusConvention": {
     "description": "Phase 1C: changelog status badge — convention"
+  },
+  "fieldElevation": "بلندی (اختیاری)",
+  "@fieldElevation": {
+    "description": "Phase 2: Form field: elevation (optional)"
+  },
+  "hintElevation": "سطح سمندر سے میٹر میں",
+  "@hintElevation": {
+    "description": "Phase 2: Form hint: elevation units"
+  },
+  "validateElevationRange": "بلندی -500 سے 9000 میٹر کے درمیان ہونی چاہیے۔",
+  "@validateElevationRange": {
+    "description": "Phase 2: Validation: elevation range"
+  },
+  "elevationValue": "{meters} میٹر",
+  "@elevationValue": {
+    "description": "Phase 2: Elevation display value in meters",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTimeZone": "ٹائم زون",
+  "@fieldTimeZone": {
+    "description": "Phase 2: Form field: IANA time zone"
+  },
+  "timeZonePickerTitle": "ٹائم زون منتخب کریں",
+  "@timeZonePickerTitle": {
+    "description": "Phase 2: Title of the time-zone picker dialog"
+  },
+  "timeZoneSearchHint": "ٹائم زون تلاش کریں",
+  "@timeZoneSearchHint": {
+    "description": "Phase 2: Search hint in the time-zone picker"
+  },
+  "timeZoneDeviceDefault": "ڈیوائس کا ٹائم زون ({zone})",
+  "@timeZoneDeviceDefault": {
+    "description": "Phase 2: Time-zone picker option: device zone",
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneLabel": "ٹائم زون",
+  "@timeZoneLabel": {
+    "description": "Phase 2: Label: the location's time zone"
+  },
+  "gpsAccuracyLabel": "جی پی ایس درستگی",
+  "@gpsAccuracyLabel": {
+    "description": "Phase 2: Label: GPS accuracy radius"
+  },
+  "gpsAccuracyValue": "±{meters} میٹر",
+  "@gpsAccuracyValue": {
+    "description": "Phase 2: GPS accuracy radius value",
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "gpsAccuracyUnknown": "درستگی معلوم نہیں",
+  "@gpsAccuracyUnknown": {
+    "description": "Phase 2: Shown when GPS accuracy is unknown"
+  },
+  "locationUpdatedAt": "اپ ڈیٹ: {when}",
+  "@locationUpdatedAt": {
+    "description": "Phase 2: Location fix timestamp line",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "locationUpdatedUnknown": "اپ ڈیٹ کا وقت معلوم نہیں",
+  "@locationUpdatedUnknown": {
+    "description": "Phase 2: Shown when the fix time is unknown"
+  },
+  "locationStaleNote": "یہ مقام ایک دن سے زیادہ پرانا ہے — تازہ درستگی کے لیے ریفریش کریں۔",
+  "@locationStaleNote": {
+    "description": "Phase 2: Note shown when the GPS fix is over a day old"
+  },
+  "refreshLocation": "مقام ریفریش کریں",
+  "@refreshLocation": {
+    "description": "Phase 2: Button: refresh the device GPS fix"
+  },
+  "savedPlacesTitle": "محفوظ مقامات",
+  "@savedPlacesTitle": {
+    "description": "Phase 2: Section header: saved places"
+  },
+  "saveCurrentPlace": "موجودہ مقام محفوظ کریں",
+  "@saveCurrentPlace": {
+    "description": "Phase 2: Button: save the current location as a place"
+  },
+  "noSavedPlaces": "ابھی کوئی محفوظ مقام نہیں ہے۔",
+  "@noSavedPlaces": {
+    "description": "Phase 2: Empty state: no saved places"
+  },
+  "deleteAction": "حذف کریں",
+  "@deleteAction": {
+    "description": "Phase 2: Button: delete"
+  },
+  "dialogCancel": "منسوخ کریں",
+  "@dialogCancel": {
+    "description": "Phase 2: Button: cancel a dialog"
+  },
+  "deletePlaceTitle": "محفوظ مقام حذف کریں؟",
+  "@deletePlaceTitle": {
+    "description": "Phase 2: Confirm dialog title: delete a saved place"
+  },
+  "deletePlaceMessage": "کیا {name} کو محفوظ مقامات سے ہٹا دیں؟",
+  "@deletePlaceMessage": {
+    "description": "Phase 2: Confirm dialog message: delete a saved place",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timeZoneNoResults": "آپ کی تلاش سے کوئی ٹائم زون نہیں ملا۔",
+  "@timeZoneNoResults": {
+    "description": "Phase 2: empty state of the time-zone picker search"
   }
 }
