@@ -10,8 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter" alt="Flutter 3.47.5" />
-  <img src="https://img.shields.io/badge/tests-189%2F189-brightgreen" alt="189/189 tests" />
-  <img src="https://img.shields.io/badge/version-1.1.2%2B4-blue" alt="v1.1.2+4" />
+  <img src="https://img.shields.io/badge/tests-222%2F222-brightgreen" alt="222/222 tests" />
+  <img src="https://img.shields.io/badge/version-1.2.0%2B5-blue" alt="v1.2.0+5" />
   <img src="https://img.shields.io/badge/offline-first-success" alt="offline-first" />
   <img src="https://img.shields.io/badge/license-see%20ATTRIBUTION.md-lightgrey" alt="licenses" />
 </p>
@@ -56,6 +56,10 @@ Angles are astronomical conventions, not fiqh rulings.
 ## Features
 
 - **Two-tier timetable** — ikhtiyari and daruri bands for every prayer, with plain-language explanations
+- **Why this time?** — tap any prayer row to see the Maliki reasoning behind its time
+- **Qada tracker** — log missed prayers, mark them complete, count down what you owe
+- **Travel mode** — Maliki qasr guidance (2 rak'ahs for Dhuhr/Asr/Isha) with auto-suggest when ~80 km from home
+- **Shareable timetable** — monthly view exportable as an image via the share button
 - **Live Qibla compass** — sensor-driven dial (accelerometer + magnetometer) with distance, rhumb-line bearing,
   true-north offset, 16-wind compass point, and a computed sun-alignment time with reminder
 - **Smart location** — device GPS with reverse-geocoded place names, manual coordinates, and one-tap
@@ -65,7 +69,7 @@ Angles are astronomical conventions, not fiqh rulings.
 - **Notifications** — per-prayer reminders, rescheduled automatically on any settings/location change
 - **Per-prayer adjustments** (±60 min) and ihtiyat toggles to match your local mosque
 - **Profile comparison** — side-by-side times across calculation profiles
-- **In-app updates** — checks GitHub releases for newer builds
+- **In-app updates** — checks GitHub releases for newer builds; v1.2.0+5 ships its APK attached to the release
 - **Honest by design** — no invented figures (no magnetic declination without a geomagnetic model, no
   unverified quote attributions), approximate Hijri clearly labelled, best-effort delivery notes
 
@@ -92,7 +96,7 @@ lib/
 ├── screens/       # home, monthly, qibla, profiles, location, settings, splash
 ├── services/      # location, notifications, compass, update check, settings
 └── utils/         # Hijri dates, qibla math, solar scan, fonts, digits
-test/              # 189 widget + unit tests
+test/              # 222 widget + unit tests
 ```
 
 ## Getting started
@@ -102,7 +106,7 @@ test/              # 189 widget + unit tests
 flutter pub get
 flutter gen-l10n
 flutter analyze        # must be clean
-flutter test           # 189/189 green
+flutter test           # 222/222 green
 
 # Android
 flutter build apk --release
@@ -130,9 +134,11 @@ the project.
 - [ ] Adhan audio for notifications
 - [ ] Scholarly review of the calculation profiles (the 18-question checklist)
 - [ ] iOS release build & TestFlight
-- [ ] Travel mode / multiple saved locations
+- [ ] Multiple saved locations (home / work / mosque)
 - [ ] Mosque-timetable verification helper
 - [ ] Google Play release
+- [ ] Home-screen widget (next prayer + countdown)
+- [ ] Dhikr counter (post-prayer adhkar with tap counter)
 
 ## Contributing
 
@@ -141,7 +147,7 @@ Developers and scholars are both welcome — this app gets better when code and 
 ### Developers
 
 - Fork the repo, branch from `master`, and open a pull request with a clear description.
-- `flutter analyze` must be clean and the full test suite green (`flutter test` — 189 tests).
+- `flutter analyze` must be clean and the full test suite green (`flutter test` — 222 tests).
 - Match the repo's hand code style — do **not** run bare `dart format` (read-only check:
   `dart format --output=none --set-exit-if-changed`).
 - Every new dependency must be license-checked **before** adoption (permissive only:
