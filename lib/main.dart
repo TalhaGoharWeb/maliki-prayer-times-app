@@ -14,6 +14,7 @@ import 'package:malikiprayertimes/screens/splash_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,10 +38,11 @@ Future<void> main() async {
   final notifications = NotificationService(
     scheduler: PluginNotificationScheduler(),
   );
-  // Brief brand moment, but never slower than the actual init: only wait
-  // out the remainder of a short minimum so the splash can't flash by.
+  // Brand-visible minimum: the splash must stay up long enough for the
+  // logo to actually be seen (~2s). Never slower than the actual init:
+  // only wait out the remainder of the minimum so it can't flash by.
   final elapsed = DateTime.now().difference(splashStart);
-  const minSplash = Duration(milliseconds: 700);
+  const minSplash = Duration(milliseconds: 2000);
   if (elapsed < minSplash) {
     await Future<void>.delayed(minSplash - elapsed);
   }
@@ -176,7 +178,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         children: [
           ClipOval(
             child: Image.asset(
-              'assets/branding/compass_mark.jpg',
+              'assets/branding/compass_rose.png',
               width: 46,
               height: 46,
               fit: BoxFit.cover,
@@ -218,7 +220,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
           children: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Expanded(
@@ -401,7 +403,10 @@ class _LocationChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             onTap: onTap,
             child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 8, 8),
+              // Vertical 16 gives the chip a ~48px tap target (I-10); the
+              // row's outer vertical padding is zero so the 49px app-bar
+              // bottom keeps its height.
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 16, 8, 16),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -473,7 +478,8 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
 
   Future<void> _init() async {
     if (!mounted) return;
-    final texts = _notificationTexts(AppLocalizations.of(context)!);
+    final texts = _notificationTexts(
+        AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
     await widget.notifications.init(texts: texts);
     await _reschedule();
   }
@@ -482,7 +488,8 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
     if (!mounted) return;
     final loc = widget.location.current;
     if (loc == null) return;
-    final texts = _notificationTexts(AppLocalizations.of(context)!);
+    final texts = _notificationTexts(
+        AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
     await widget.notifications.rescheduleAll(
       coords: Coordinates(loc.latitude, loc.longitude),
       profile: widget.settings.effectiveProfile,
@@ -497,7 +504,7 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
 }
 
 /// Builds localized notification strings from the app localizations.
-NotificationTexts _notificationTexts(AppLocalizations l10n) {
+NotificationTexts _notificationTexts(AppLocalizations l10n, String? lang) {
   String prayerName(Prayer p) => switch (p) {
         Prayer.fajr => l10n.prayerFajr,
         Prayer.sunrise => l10n.prayerSunrise,
@@ -506,11 +513,16 @@ NotificationTexts _notificationTexts(AppLocalizations l10n) {
         Prayer.maghrib => l10n.prayerMaghrib,
         Prayer.isha => l10n.prayerIsha,
       };
+  // Reminder minutes are digit-localized for `ar` (Arabic-Indic) so the
+  // notification text never shows raw Western digits.
+  String minutes(int m) => localizeDigits('$m', lang);
   return NotificationTexts(
     titleFor: (p) => l10n.notifTitle(prayerName(p)),
     bodyFor: (p) => l10n.notifBody(prayerName(p)),
-    reminderTitleFor: (p, m) => l10n.notifReminderTitle(prayerName(p), '$m'),
-    reminderBodyFor: (p, m) => l10n.notifReminderBody(prayerName(p), '$m'),
+    reminderTitleFor: (p, m) =>
+        l10n.notifReminderTitle(prayerName(p), minutes(m)),
+    reminderBodyFor: (p, m) =>
+        l10n.notifReminderBody(prayerName(p), minutes(m)),
   );
 }
 

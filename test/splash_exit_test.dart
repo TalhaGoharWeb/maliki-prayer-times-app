@@ -60,13 +60,29 @@ class _Loaded {
 
 void main() {
   group('SplashScreen', () {
-    testWidgets('renders the logo and both credit lines', (tester) async {
+    testWidgets('renders the rose brand, title, loader and credit lines',
+        (tester) async {
+      // Real-size phone frame (1080x2400 @3x).
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         const MaterialApp(home: SplashScreen()),
       );
       await tester.pump();
+      expect(tester.takeException(), isNull,
+          reason: 'no overflow on a real-size frame');
 
-      expect(find.byType(Image), findsOneWidget);
+      final image = tester.widget<Image>(find.byType(Image));
+      expect((image.image as AssetImage).assetName, SplashScreen.logoAsset,
+          reason: 'splash shows the compass-rose brand art');
+      expect(find.text('Maliki Prayer Times'), findsOneWidget);
+      expect(find.byType(CustomPaint), findsWidgets,
+          reason: 'hand-drawn star loader is present');
+      expect(find.byType(CircularProgressIndicator), findsNothing,
+          reason: 'no generic spinner');
       expect(
           find.text('Developed by Muhammad Talha Bin Farid Al Maliki'),
           findsOneWidget);
@@ -75,6 +91,26 @@ void main() {
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.backgroundColor, const Color(0xFF003527),
           reason: 'splash is deep green');
+
+      final title = tester.widget<Text>(find.text('Maliki Prayer Times'));
+      final titleStyle = title.style!;
+      expect(titleStyle.fontFamily, 'Source Serif 4');
+      expect(titleStyle.letterSpacing, 2.0);
+    });
+
+    testWidgets('precaches the logo so it paints on the first frame',
+        (tester) async {
+      PaintingBinding.instance.imageCache.clear();
+      await tester.pumpWidget(
+        const MaterialApp(home: SplashScreen()),
+      );
+      await tester.pump(); // didChangeDependencies -> precacheImage
+      await tester.pump(const Duration(milliseconds: 100)); // decode
+      final key = await const AssetImage(SplashScreen.logoAsset)
+          .obtainKey(const ImageConfiguration());
+      final status = PaintingBinding.instance.imageCache.statusForKey(key);
+      expect(status.live || status.keepAlive, isTrue,
+          reason: 'logo is in the image cache right after the splash builds');
     });
   });
 

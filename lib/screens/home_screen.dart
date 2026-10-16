@@ -683,6 +683,11 @@ class _PrayerRowCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
+            // Name, badge and time form one tight cluster: the time sits
+            // adjacent to the name instead of being stranded at the far
+            // edge by an expanding spacer (user feedback on the Urdu home
+            // screen). Loose flexibles shrink-wrap; the time's FittedBox
+            // is leading-aligned so it hugs the name in both LTR and RTL.
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -690,6 +695,7 @@ class _PrayerRowCard extends StatelessWidget {
                   Row(
                     children: [
                       Flexible(
+                        fit: FlexFit.loose,
                         child: Text(
                           row.label,
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -701,6 +707,7 @@ class _PrayerRowCard extends StatelessWidget {
                       if (!omitArabicCompanion(context)) ...[
                         const SizedBox(width: 8),
                         Flexible(
+                          fit: FlexFit.loose,
                           child: Text(
                             row.arabic,
                             style: TextStyle(
@@ -715,6 +722,7 @@ class _PrayerRowCard extends StatelessWidget {
                       if (highlighted) ...[
                         const SizedBox(width: 8),
                         Flexible(
+                          fit: FlexFit.loose,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
@@ -732,6 +740,20 @@ class _PrayerRowCard extends StatelessWidget {
                           ),
                         ),
                       ],
+                      const SizedBox(width: 10),
+                      // Shrink-to-fit: the readout scales down instead of
+                      // pushing the row into overflow at large text sizes.
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            time,
+                            style: AppFonts.timeLabel(context)
+                                .copyWith(color: fg),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 2),
@@ -741,18 +763,6 @@ class _PrayerRowCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            // Shrink-to-fit: the readout scales down instead of pushing
-            // the row into overflow at large text sizes.
-            Flexible(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  time,
-                  style: AppFonts.timeLabel(context).copyWith(color: fg),
-                ),
               ),
             ),
           ],
