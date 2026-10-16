@@ -333,11 +333,15 @@ class _PresetCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final labels = profileLabel(l10n, profile);
+    final disputed = profileAnglesDisputed(profile);
 
-    final specChips = [
-      'Fajr ${profile.fajrAngle}°',
-      'Isha ${profile.ishaAngle}°',
-      'Asr ×${profile.asrShadowFactor}',
+    // Per-parameter spec chips, each carrying its D9 evidence-status badge:
+    // angles are provisional conventions, institutional presets, or
+    // disputed; Asr ×1 is fiqh-derived (Maliki first mithl).
+    final paramSpecs = [
+      ('Fajr ${profile.fajrAngle}°', ProfileParam.fajrAngle),
+      ('Isha ${profile.ishaAngle}°', ProfileParam.ishaAngle),
+      ('Asr ×${profile.asrShadowFactor}', ProfileParam.asrShadowFactor),
     ];
 
     return Card(
@@ -395,6 +399,25 @@ class _PresetCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 4),
+                    // Profile-level evidence badge (D9 vocabulary): the
+                    // preset's standing — provisional convention,
+                    // institutional preset, or disputed. Never color alone:
+                    // the text carries the status.
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: scheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        profileEvidenceBadge(l10n, profile),
+                        style: AppFonts.badgeLabel(context).copyWith(
+                          color: scheme.onSecondaryContainer,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     Text(
                       labels.basis,
                       style: theme.textTheme.bodySmall,
@@ -403,8 +426,14 @@ class _PresetCard extends StatelessWidget {
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
-                      children: specChips
-                          .map((c) => Container(
+                      children: [
+                        for (final (value, param) in paramSpecs)
+                          Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
@@ -412,12 +441,43 @@ class _PresetCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  c,
+                                  value,
                                   style: theme.textTheme.labelMedium,
                                 ),
-                              ))
-                          .toList(),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                parameterEvidenceBadge(
+                                    l10n, profile, param),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: scheme.secondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
+                    // The UOIF disputed label (D1 trap register), surfaced
+                    // honestly — never softened.
+                    if (disputed) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline,
+                              size: 14, color: scheme.secondary),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              l10n.evidenceDisputedDetail,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: scheme.secondary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

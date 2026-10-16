@@ -137,6 +137,27 @@ const List<ChangelogVersion> changelogVersions = [
         status: ChangelogStatus.convention,
         changedSince: 'v1.3.0+6 (unreleased)',
       ),
+      ChangelogRow(
+        parameter: 'Calculation profiles',
+        value:
+            'new "Maliki — Morocco Habous" preset added (Fajr 19°, Isha 17°): institutional preset, NOT a fiqh ruling; methodology unpublished (D1). No engine math changed',
+        status: ChangelogStatus.convention,
+        changedSince: 'v1.3.0+6 (unreleased)',
+      ),
+      ChangelogRow(
+        parameter: 'Profile evidence badges',
+        value:
+            'every profile shows per-parameter evidence status (D9): MWL West Africa 18/17 = provisional convention (default); Habous 19/17 and Egyptian 19.5/17.5 = institutional preset; UOIF 12/12 = disputed (12° vs claimed 15°); Asr factor 1 = fiqh-derived on all profiles',
+        status: ChangelogStatus.convention,
+        changedSince: 'v1.3.0+6 (unreleased)',
+      ),
+      ChangelogRow(
+        parameter: 'Regional auto-adapt',
+        value:
+            '"Recommended settings": a one-time, dismissible dialog suggests the regional preset matching the detected location (Maghreb → Habous; West Africa → MWL West Africa; Egypt → Egyptian; France → UOIF with its disputed badge); the user confirms — nothing switches silently',
+        status: ChangelogStatus.convention,
+        changedSince: 'v1.3.0+6 (unreleased)',
+      ),
     ],
   ),
 ];

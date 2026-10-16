@@ -161,7 +161,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openLocationScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => LocationScreen(locationService: widget.location),
+        builder: (_) => LocationScreen(
+              locationService: widget.location,
+              settings: widget.settings,
+            ),
       ),
     );
   }
@@ -1010,6 +1013,24 @@ class _ProfileStatusCard extends StatelessWidget {
               profileLabel(l10n, times.profile).name,
               style: theme.textTheme.titleMedium?.copyWith(
                 color: scheme.onTertiaryFixed,
+              ),
+            ),
+            const SizedBox(height: 6),
+            // Evidence-status badge (D9 vocabulary): the preset's standing —
+            // e.g. "Institutional preset — not a fiqh ruling" for the
+            // Morocco Habous profile. Never color alone.
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: scheme.tertiaryFixedDim,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                profileEvidenceBadge(l10n, times.profile),
+                style: AppFonts.badgeLabel(context).copyWith(
+                  color: scheme.onTertiaryFixed,
+                ),
               ),
             ),
             Theme(

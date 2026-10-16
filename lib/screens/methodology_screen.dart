@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
+import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/methodology_texts.dart';
+import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 
 /// Methodology screen: the full method table (D1 Part IV) rendered from
@@ -47,6 +49,7 @@ class MethodologyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final code = Localizations.localeOf(context).languageCode;
+    final l10n = AppLocalizations.of(context)!;
     final s = methodologyStrings(code);
     final fiqhRows = methodologyRows
         .where((r) => r.status == MethodStatus.fiqhDerived)
@@ -57,7 +60,7 @@ class MethodologyScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       children: [
-        _headerCard(context, s),
+        _headerCard(context, s, l10n),
         const SizedBox(height: 16),
         _integrityCard(context, s),
         const SizedBox(height: 16),
@@ -68,8 +71,10 @@ class MethodologyScreen extends StatelessWidget {
     );
   }
 
-  /// Deep-green header card: title, profile name, method version, vintage.
-  Widget _headerCard(BuildContext context, MethodologyStrings s) {
+  /// Deep-green header card: title, profile name + evidence badge, method
+  /// version, vintage.
+  Widget _headerCard(
+      BuildContext context, MethodologyStrings s, AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
     return Card(
       color: scheme.primary,
@@ -85,7 +90,15 @@ class MethodologyScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            _headerLine(context, s.profileLabel, profile.name),
+            // Localized profile name with its D9 evidence badge — e.g. the
+            // Habous profile always renders as "Institutional preset — not
+            // a fiqh ruling" here too.
+            _headerLine(
+              context,
+              s.profileLabel,
+              '${profileLabel(l10n, profile).name} — '
+              '${profileEvidenceBadge(l10n, profile)}',
+            ),
             const SizedBox(height: 4),
             _headerLine(context, s.versionLabel, s.versionValue),
             const SizedBox(height: 4),

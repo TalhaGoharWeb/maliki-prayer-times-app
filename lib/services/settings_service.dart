@@ -18,6 +18,7 @@ class SettingsService extends ChangeNotifier {
   static const _languageCodeKey = 'language_code';
   static const _notificationTogglesKey = 'notification_toggles';
   static const _reminderOffsetKey = 'reminder_offset_minutes';
+  static const _regionSuggestionShownKey = 'region_suggestion_shown';
 
   /// Language codes the app can be switched to. `null` means "system
   /// default" and is always allowed.
@@ -53,6 +54,11 @@ class SettingsService extends ChangeNotifier {
   /// Minutes before each prayer time at which a reminder notification fires.
   /// One of [allowedReminderOffsets]; 0 = no early reminder.
   int _reminderOffsetMinutes = 0;
+
+  /// Whether the one-time regional-preset suggestion dialog ("Recommended
+  /// settings") has already been shown on this install. Once true it is
+  /// never shown again — the dialog never nags.
+  bool _regionSuggestionShown = false;
 
   /// The active profile; falls back to the default when the stored id does
   /// not match a known profile.
@@ -100,6 +106,10 @@ class SettingsService extends ChangeNotifier {
   /// The UI language code, or `null` for the system default.
   String? get languageCode => _languageCode;
 
+  /// Whether the one-time regional-preset suggestion dialog has been shown
+  /// on this install. Defaults to false.
+  bool get regionSuggestionShown => _regionSuggestionShown;
+
   /// The user-visible time for [prayer]: the computed engine time shifted by
   /// the stored per-prayer adjustment.
   DateTime adjustedTime(Prayer prayer, DateTime computed) {
@@ -119,6 +129,9 @@ class SettingsService extends ChangeNotifier {
     }
 
     service._ihtiyatEnabled = prefs.getBool(_ihtiyatKey) ?? true;
+
+    service._regionSuggestionShown =
+        prefs.getBool(_regionSuggestionShownKey) ?? false;
 
     final storedOffset = prefs.getInt(_reminderOffsetKey);
     if (storedOffset != null &&
@@ -240,6 +253,17 @@ class SettingsService extends ChangeNotifier {
     if (_languageCode == code) return;
     _languageCode = code;
     await _persist();
+    notifyListeners();
+  }
+
+  /// Marks the one-time regional-preset suggestion dialog as shown on this
+  /// install, so it is never shown again (dismissed counts as shown — the
+  /// dialog never nags).
+  Future<void> setRegionSuggestionShown() async {
+    if (_regionSuggestionShown) return;
+    _regionSuggestionShown = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_regionSuggestionShownKey, true);
     notifyListeners();
   }
 

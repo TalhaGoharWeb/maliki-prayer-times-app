@@ -95,9 +95,32 @@ class PrayerProfiles {
     name: 'Maliki — UOIF (12/12)',
     basis:
         'UOIF (France) convention: Fajr 12 deg, Isha 12 deg; '
-        'Asr factor 1 (Maliki). Named alternative.',
+        'Asr factor 1 (Maliki). Named alternative. '
+        'DISPUTED: a 2026 GitHub report claims the real UOIF uses 15/15 '
+        '(D1 trap register) — preset labels are not always trustworthy.',
     fajrAngle: 12.0,
     ishaAngle: 12.0,
+    asrShadowFactor: 1.0,
+    solarDepression: 0.833,
+    dhuhrIhtiyatMinutes: 1,
+    maghribIhtiyatMinutes: 1,
+  );
+
+  /// Morocco Habous (Ministry of Habous and Islamic Affairs) convention:
+  /// Fajr 19 deg, Isha 17 deg. The closest Maliki-majority institutional
+  /// preset (D1/D9). INSTITUTIONAL, NOT A FIQH RULING: the methodology is
+  /// unpublished (explicit negative finding in D1) and the angles come
+  /// from secondary sources only. Never present 19/17 as a Maliki ruling.
+  static const PrayerProfile malikiMoroccoHabous = PrayerProfile(
+    id: 'maliki-morocco-habous',
+    name: 'Maliki — Morocco Habous',
+    basis:
+        'Moroccan Habous convention: Fajr 19 deg, Isha 17 deg; '
+        'Asr factor 1 = Maliki first mithl. '
+        'Institutional preset, NOT a fiqh ruling. '
+        'Methodology unpublished; angles from secondary sources (D1).',
+    fajrAngle: 19.0,
+    ishaAngle: 17.0,
     asrShadowFactor: 1.0,
     solarDepression: 0.833,
     dhuhrIhtiyatMinutes: 1,
@@ -108,6 +131,7 @@ class PrayerProfiles {
     malikiMwlWestAfrica,
     malikiEgyptian,
     malikiUoif,
+    malikiMoroccoHabous,
   ];
 
   /// Proposed default profile (pending scholarly review).

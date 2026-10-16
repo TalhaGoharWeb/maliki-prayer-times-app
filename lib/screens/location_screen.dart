@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
+import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
+import 'package:malikiprayertimes/services/region_service.dart';
+import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/widgets/region_suggestion_dialog.dart';
 
 /// Location picker: the active horizon card, famous Maliki city presets,
 /// device GPS, and manual coordinate entry.
@@ -19,7 +24,13 @@ import 'package:malikiprayertimes/utils/fonts.dart';
 class LocationScreen extends StatefulWidget {
   final LocationService locationService;
 
-  const LocationScreen({super.key, required this.locationService});
+  /// Optional: when supplied, a newly set location may trigger the one-time
+  /// "Recommended settings" regional-preset suggestion dialog
+  /// (region_service.dart). When null the dialog is skipped.
+  final SettingsService? settings;
+
+  const LocationScreen(
+      {super.key, required this.locationService, this.settings});
 
   @override
   State<LocationScreen> createState() => _LocationScreenState();
@@ -136,6 +147,8 @@ class _LocationScreenState extends State<LocationScreen> {
     if (!mounted) return;
     setState(() => _deviceBusy = false);
     if (_service.errorMessage == null && _service.current?.isDevice == true) {
+      await _maybeSuggestRegion();
+      if (!mounted) return;
       Navigator.of(context).pop();
     }
   }
@@ -150,6 +163,8 @@ class _LocationScreenState extends State<LocationScreen> {
     ));
     if (!mounted) return;
     setState(() => _presetBusy = false);
+    await _maybeSuggestRegion();
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 
@@ -168,6 +183,8 @@ class _LocationScreenState extends State<LocationScreen> {
     await _service.useManualLocation(location);
     if (!mounted) return;
     setState(() => _manualBusy = false);
+    await _maybeSuggestRegion();
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 
@@ -202,7 +219,52 @@ class _LocationScreenState extends State<LocationScreen> {
   Future<void> _usePlace(SavedLocation place) async {
     await _service.usePlace(place);
     if (!mounted) return;
+    await _maybeSuggestRegion();
+    if (!mounted) return;
     Navigator.of(context).pop();
+  }
+
+  /// One-time "Recommended settings" suggestion (trust program Part A §2.5).
+  ///
+  /// After a location is set: the coarse region guess (region_service.dart)
+  /// may map to a preset. The dialog shows only when the guess maps to a
+  /// preset, the preset differs from the active profile, and the dialog has
+  /// not been shown on this install yet. Showing marks it shown (dismissed
+  /// counts as shown — the dialog never nags). The user confirms: nothing
+  /// switches silently. Uncertain guesses (outside every box, or a region
+  /// with no mapped preset) stay silent.
+  Future<void> _maybeSuggestRegion() async {
+    final settings = widget.settings;
+    if (settings == null || settings.regionSuggestionShown) return;
+    final current = _service.current;
+    if (current == null) return;
+    final guess =
+        RegionService.guessFor(current.latitude, current.longitude);
+    final suggestedId = guess?.suggestedProfileId;
+    if (suggestedId == null) return;
+    if (suggestedId == settings.activeProfileId) return;
+    if (!PrayerProfiles.all.any((p) => p.id == suggestedId)) return;
+    await settings.setRegionSuggestionShown();
+    if (!mounted) return;
+    final profile =
+        PrayerProfiles.all.firstWhere((p) => p.id == suggestedId);
+    final confirmed = await showRegionSuggestionDialog(
+      context: context,
+      guess: guess!,
+      profile: profile,
+    );
+    if (confirmed == true && mounted) {
+      await settings.setActiveProfile(suggestedId);
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                l10n.profileApplied(profileLabel(l10n, profile).name)),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _deletePlace(

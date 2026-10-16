@@ -191,7 +191,10 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
   void _openLocation(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => LocationScreen(locationService: widget.location),
+        builder: (_) => LocationScreen(
+              locationService: widget.location,
+              settings: widget.settings,
+            ),
       ),
     );
   }
@@ -426,7 +429,8 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     // The non-Home tabs need coordinates: show the choose-location prompt
     // instead of silently falling back to a default city.
     if (loc == null) {
-      return _ChooseLocationPrompt(location: widget.location);
+      return _ChooseLocationPrompt(
+          location: widget.location, settings: widget.settings);
     }
     final coords = Coordinates(loc.latitude, loc.longitude);
     return switch (_index) {
@@ -624,8 +628,9 @@ NotificationTexts _notificationTexts(AppLocalizations l10n, String? lang) {
 /// location picker instead of falling back to a default city.
 class _ChooseLocationPrompt extends StatelessWidget {
   final LocationService location;
+  final SettingsService settings;
 
-  const _ChooseLocationPrompt({required this.location});
+  const _ChooseLocationPrompt({required this.location, required this.settings});
 
   @override
   Widget build(BuildContext context) {
@@ -663,8 +668,10 @@ class _ChooseLocationPrompt extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) =>
-                          LocationScreen(locationService: location),
+                      builder: (_) => LocationScreen(
+                        locationService: location,
+                        settings: settings,
+                      ),
                     ),
                   );
                 },

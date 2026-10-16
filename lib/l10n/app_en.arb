@@ -713,9 +713,95 @@
   "@profileNameUoif": {
     "description": "Localized display for profile id 'profileNameUoif'"
   },
-  "profileBasisUoif": "UOIF (France) convention: Fajr 12 deg, Isha 12 deg; Asr factor 1 (Maliki). Named alternative.",
+  "profileBasisUoif": "UOIF (France) convention: Fajr 12 deg, Isha 12 deg; Asr factor 1 (Maliki). Named alternative. DISPUTED: a 2026 GitHub report claims the real UOIF uses 15/15 (D1 trap register) — preset labels are not always trustworthy.",
   "@profileBasisUoif": {
     "description": "Localized display for profile id 'profileBasisUoif'"
+  },
+  "profileNameMoroccoHabous": "Maliki — Morocco Habous",
+  "@profileNameMoroccoHabous": {
+    "description": "Localized display for profile id 'maliki-morocco-habous'"
+  },
+  "profileBasisMoroccoHabous": "Moroccan Habous convention: Fajr 19 deg, Isha 17 deg; Asr factor 1 = Maliki first mithl. Institutional preset, NOT a fiqh ruling. Methodology unpublished; angles from secondary sources (D1).",
+  "@profileBasisMoroccoHabous": {
+    "description": "Localized display for profile id 'maliki-morocco-habous'"
+  },
+  "evidenceBadgeProvisional": "Provisional convention",
+  "@evidenceBadgeProvisional": {
+    "description": "Per-parameter evidence badge: angle is a provisional convention (D9)"
+  },
+  "evidenceProfileProvisional": "Provisional convention (default)",
+  "@evidenceProfileProvisional": {
+    "description": "Profile-level evidence badge for the MWL West Africa default (D9)"
+  },
+  "evidenceBadgeInstitutional": "Institutional preset — not a fiqh ruling",
+  "@evidenceBadgeInstitutional": {
+    "description": "Evidence badge: institutional preset, explicitly not a fiqh ruling (D9)"
+  },
+  "evidenceBadgeDisputed": "Disputed — see research",
+  "@evidenceBadgeDisputed": {
+    "description": "Evidence badge: the preset's parameters are disputed (D1 trap register)"
+  },
+  "evidenceDisputedDetail": "A 2026 GitHub report claims the real UOIF uses 15°/15°, not 12°/12°: preset labels are not always trustworthy (D1).",
+  "@evidenceDisputedDetail": {
+    "description": "Longer explanation of the UOIF disputed badge"
+  },
+  "evidenceBadgeFiqhDerived": "Fiqh-derived (Maliki)",
+  "@evidenceBadgeFiqhDerived": {
+    "description": "Per-parameter evidence badge: fiqh-derived Maliki rule (D9)"
+  },
+  "regionDialogTitle": "Recommended settings",
+  "@regionDialogTitle": {
+    "description": "Title of the one-time regional preset suggestion dialog"
+  },
+  "regionDetected": "Region detected: {region}",
+  "@regionDetected": {
+    "description": "Dialog line naming the detected region",
+    "placeholders": {
+      "region": {
+        "type": "String"
+      }
+    }
+  },
+  "regionSuggestion": "Regional preset: {profile}",
+  "@regionSuggestion": {
+    "description": "Dialog line naming the suggested regional preset",
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    }
+  },
+  "regionSwitchQuestion": "Switch to this preset? Nothing changes until you confirm.",
+  "@regionSwitchQuestion": {
+    "description": "Dialog question; stresses nothing switches silently"
+  },
+  "regionConfirm": "Switch",
+  "@regionConfirm": {
+    "description": "Dialog confirm button: switch to the suggested preset"
+  },
+  "regionDismiss": "Keep current profile",
+  "@regionDismiss": {
+    "description": "Dialog dismiss button: keep the active profile"
+  },
+  "regionNameMaghreb": "the Maghreb",
+  "@regionNameMaghreb": {
+    "description": "Region name: the Maghreb (Morocco, Algeria, Tunisia, Libya)"
+  },
+  "regionNameWestAfrica": "West Africa",
+  "@regionNameWestAfrica": {
+    "description": "Region name: West Africa (Mauritania, Senegal, Mali, Niger)"
+  },
+  "regionNameEgypt": "Egypt",
+  "@regionNameEgypt": {
+    "description": "Region name: Egypt"
+  },
+  "regionNameFrance": "France",
+  "@regionNameFrance": {
+    "description": "Region name: France"
+  },
+  "regionNameSpain": "Spain",
+  "@regionNameSpain": {
+    "description": "Region name: Spain (no preset maps to it)"
   },
   "notificationsSection": "Prayer notifications",
   "@notificationsSection": {
