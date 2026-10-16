@@ -1104,5 +1104,73 @@
   "reviewP8Evidence": "النسخ مشوه؛ والنظم المطبوع لم يُراجَع.",
   "@reviewP8Evidence": {
     "description": "D7 review item P8: evidence status"
+  },
+  "adjustmentUnitMin": "دقيقة",
+  "@adjustmentUnitMin": {
+    "description": "Phase 1C: minute abbreviation used in adjustment chips"
+  },
+  "adjustmentIhtiyatWord": "احتياط",
+  "@adjustmentIhtiyatWord": {
+    "description": "Phase 1C: word shown in the precautionary-delay adjustment chip"
+  },
+  "roundingFootnote": "تُقرَّب الأوقات إلى أقرب دقيقة.",
+  "@roundingFootnote": {
+    "description": "Phase 1C: home-screen footnote disclosing nearest-minute rounding"
+  },
+  "adjustmentMarkerSemantics": "هذا الوقت يتضمن تعديلًا.",
+  "@adjustmentMarkerSemantics": {
+    "description": "Phase 1C: screen-reader label for the monthly cell adjustment marker"
+  },
+  "methodReviewSection": "المنهج والمراجعة والتغييرات",
+  "@methodReviewSection": {
+    "description": "Phase 1C: settings section opening methodology, review record and changelog"
+  },
+  "settingsMethodologyTitle": "منهج الحساب",
+  "@settingsMethodologyTitle": {
+    "description": "Phase 1C: settings entry opening the Methodology screen"
+  },
+  "settingsReviewTitle": "سجل المراجعة العلمية",
+  "@settingsReviewTitle": {
+    "description": "Phase 1C: settings entry opening the review record screen"
+  },
+  "settingsChangelogTitle": "سجل تغييرات الحساب",
+  "@settingsChangelogTitle": {
+    "description": "Phase 1C: settings entry opening the calculation changelog screen"
+  },
+  "changelogTitle": "سجل تغييرات الحساب",
+  "@changelogTitle": {
+    "description": "Phase 1C: title of the calculation changelog screen"
+  },
+  "changelogIntro": "ما تغيّر في محرك الحساب والملفات، إصدارًا بإصدار. أي وقت يتغيّر بين الإصدارات يمكن تفسيره من هنا.",
+  "@changelogIntro": {
+    "description": "Phase 1C: intro line of the calculation changelog screen"
+  },
+  "changelogBaselineNote": "أول حالة منهجية مسجلة — تُقاس عليها كل التغييرات اللاحقة.",
+  "@changelogBaselineNote": {
+    "description": "Phase 1C: note under the baseline version entry"
+  },
+  "changelogParamHeader": "المعامل",
+  "@changelogParamHeader": {
+    "description": "Phase 1C: changelog row header — parameter"
+  },
+  "changelogValueHeader": "القيمة",
+  "@changelogValueHeader": {
+    "description": "Phase 1C: changelog row header — value"
+  },
+  "changelogStatusHeader": "الحالة",
+  "@changelogStatusHeader": {
+    "description": "Phase 1C: changelog row header — status"
+  },
+  "changelogSinceHeader": "متغيّر منذ",
+  "@changelogSinceHeader": {
+    "description": "Phase 1C: changelog row header — changed since"
+  },
+  "changelogStatusFiqh": "قاعدة فقهية",
+  "@changelogStatusFiqh": {
+    "description": "Phase 1C: changelog status badge — fiqh-derived rule"
+  },
+  "changelogStatusConvention": "اصطلاح",
+  "@changelogStatusConvention": {
+    "description": "Phase 1C: changelog status badge — convention"
   }
 }

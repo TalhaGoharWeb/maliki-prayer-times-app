@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/screens/calculation_changelog_screen.dart';
+import 'package:malikiprayertimes/screens/methodology_screen.dart';
+import 'package:malikiprayertimes/screens/review_record_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
@@ -192,6 +195,37 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 value: settings.ihtiyatEnabled,
                 onChanged: settings.setIhtiyatEnabled,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // (3b) Method, review & changes (Phase 1C): entries opening the
+            // Methodology screen, the review record, and the calculation
+            // changelog — every screen opens; there are no dead entries.
+            _SectionHeader(
+                icon: Icons.library_books, title: l10n.methodReviewSection),
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  _SettingsNavRow(
+                    icon: Icons.calculate_outlined,
+                    title: l10n.settingsMethodologyTitle,
+                    onTap: () => MethodologyScreen.open(context),
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingsNavRow(
+                    icon: Icons.rate_review_outlined,
+                    title: l10n.settingsReviewTitle,
+                    onTap: () => ReviewRecordScreen.open(context),
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingsNavRow(
+                    icon: Icons.history_outlined,
+                    title: l10n.settingsChangelogTitle,
+                    onTap: () => CalculationChangelogScreen.open(context),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -466,6 +500,49 @@ class _SectionHeader extends StatelessWidget {  final IconData icon;
           ),
         ),
       ],
+    );
+  }
+}
+
+/// One tappable settings navigation entry: icon, title, chevron.
+/// Every entry pushes its screen — no dead buttons (Urdu-first rule).
+class _SettingsNavRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _SettingsNavRow({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: scheme.secondary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(Icons.chevron_right, color: scheme.outline),
+          ],
+        ),
+      ),
     );
   }
 }

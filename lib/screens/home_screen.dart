@@ -16,6 +16,7 @@ import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
+import 'package:malikiprayertimes/widgets/adjustment_chip.dart';
 import 'package:malikiprayertimes/widgets/travel_banner.dart';
 import 'package:malikiprayertimes/widgets/why_time_sheet.dart';
 
@@ -197,6 +198,31 @@ class _HomeScreenState extends State<HomeScreen> {
   String _prayerLabel(AppLocalizations l10n, Prayer p) =>
       _prayerRows(l10n).firstWhere((r) => r.prayer == p).label;
 
+  /// Adjustment chips disclosing what was added to [prayer]'s displayed
+  /// time: the user's manual offset and/or the profile's ihtiyat minutes.
+  /// Empty when nothing applies — zero adjustments never render a chip, so
+  /// no silent adjustment is possible in code without a visible chip.
+  List<AdjustmentChip> _adjustmentChips(Prayer prayer) {
+    final chips = <AdjustmentChip>[];
+    final manual = widget.settings.adjustments[prayer] ?? 0;
+    if (manual != 0) {
+      chips.add(
+          AdjustmentChip(minutes: manual, kind: AdjustmentKind.manual));
+    }
+    // The ihtiyat minutes come from the effective profile the times were
+    // actually computed with, so a disabled ihtiyat yields 0 and no chip.
+    final ihtiyat = switch (prayer) {
+      Prayer.dhuhr => _times!.profile.dhuhrIhtiyatMinutes,
+      Prayer.maghrib => _times!.profile.maghribIhtiyatMinutes,
+      _ => 0,
+    };
+    if (ihtiyat > 0) {
+      chips.add(
+          AdjustmentChip(minutes: ihtiyat, kind: AdjustmentKind.ihtiyat));
+    }
+    return chips;
+  }
+
   String _prayerArabic(Prayer p) => switch (p) {
         Prayer.fajr => 'الفجر',
         Prayer.sunrise => 'الشروق',
@@ -335,6 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _PrayerRowCard(
               row: row,
               time: timeLabel,
+              adjustments: _adjustmentChips(row.prayer),
               isNext: isNext,
               nextBadge: l10n.nextPrayerBadge,
               onTap: () => showWhyTimeSheet(
@@ -345,6 +372,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         }),
+        const SizedBox(height: 4),
+        // Rounding is disclosed once per screen, not per row.
+        Text(
+          l10n.roundingFootnote,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.secondary,
+          ),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 20),
 
         // Two-tier fiqh bands.
@@ -659,9 +695,14 @@ class _HeroCard extends StatelessWidget {
 
 /// One timetable row: icon medallion, names + descriptor, HH:MM readout.
 /// The next prayer is highlighted and carries a text badge (never color-only).
+/// Any manual or ihtiyat adjustment applied to the row's time is disclosed
+/// by [adjustments] chips hugging the time readout.
 class _PrayerRowCard extends StatelessWidget {
   final _PrayerRow row;
   final String time;
+
+  /// Disclosure chips for the row's adjustments; empty when none apply.
+  final List<AdjustmentChip> adjustments;
   final bool isNext;
   final String nextBadge;
   final VoidCallback? onTap;
@@ -669,6 +710,7 @@ class _PrayerRowCard extends StatelessWidget {
   const _PrayerRowCard({
     required this.row,
     required this.time,
+    this.adjustments = const [],
     required this.isNext,
     required this.nextBadge,
     this.onTap,
@@ -781,6 +823,22 @@ class _PrayerRowCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        // Adjustment chips hug the time: every offset applied
+                        // to the displayed time is disclosed right next to
+                        // it (program Part A §2.3). Empty in the common case
+                        // — the row layout is unchanged when no adjustment
+                        // applies.
+                        for (final chip in adjustments) ...[
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment:
+                                  AlignmentDirectional.centerStart,
+                              child: chip,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 2),

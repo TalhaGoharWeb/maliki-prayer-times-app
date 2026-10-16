@@ -12,6 +12,7 @@ import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/hijri.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
+import 'package:malikiprayertimes/widgets/adjustment_chip.dart';
 
 /// Monthly view: a month grid of computed prayer times.
 ///
@@ -120,6 +121,38 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
   DateTime _adjusted(Prayer prayer, DateTime computed) =>
       widget.settings.adjustedTime(prayer, computed);
 
+  /// True when [prayer]'s displayed time carries a manual or ihtiyat
+  /// adjustment — the "never silently adjust" requirement (program
+  /// Part A §2.3).
+  bool _hasAdjustment(Prayer prayer) {
+    if ((widget.settings.adjustments[prayer] ?? 0) != 0) return true;
+    final ihtiyat = switch (prayer) {
+      Prayer.dhuhr => widget.profile.dhuhrIhtiyatMinutes,
+      Prayer.maghrib => widget.profile.maghribIhtiyatMinutes,
+      _ => 0,
+    };
+    return ihtiyat > 0;
+  }
+
+  /// Adjustment chips disclosing what was added to [prayer]'s displayed
+  /// time. Empty when nothing applies — zero adjustments never render.
+  List<AdjustmentChip> _adjustmentChips(Prayer prayer) {
+    final chips = <AdjustmentChip>[];
+    final manual = widget.settings.adjustments[prayer] ?? 0;
+    if (manual != 0) {
+      chips.add(AdjustmentChip(minutes: manual, kind: AdjustmentKind.manual));
+    }
+    final ihtiyat = switch (prayer) {
+      Prayer.dhuhr => widget.profile.dhuhrIhtiyatMinutes,
+      Prayer.maghrib => widget.profile.maghribIhtiyatMinutes,
+      _ => 0,
+    };
+    if (ihtiyat > 0) {
+      chips.add(AdjustmentChip(minutes: ihtiyat, kind: AdjustmentKind.ihtiyat));
+    }
+    return chips;
+  }
+
   /// Deep equality for per-prayer adjustment maps (the getter returns a
   /// fresh copy each call, so identity comparison never works).
   static bool _adjustmentsEqual(Map<Prayer, int> a, Map<Prayer, int> b) {
@@ -176,31 +209,37 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     final lang = Localizations.localeOf(context).languageCode;
     final rows = [
       (
+        prayer: Prayer.fajr,
         label: l10n.prayerFajr,
         arabic: 'الفجر',
         time: _adjusted(Prayer.fajr, times.fajr)
       ),
       (
+        prayer: Prayer.sunrise,
         label: l10n.prayerSunrise,
         arabic: 'الشروق',
         time: _adjusted(Prayer.sunrise, times.sunrise)
       ),
       (
+        prayer: Prayer.dhuhr,
         label: l10n.prayerDhuhr,
         arabic: 'الظهر',
         time: _adjusted(Prayer.dhuhr, times.dhuhr)
       ),
       (
+        prayer: Prayer.asr,
         label: l10n.prayerAsr,
         arabic: 'العصر',
         time: _adjusted(Prayer.asr, times.asr)
       ),
       (
+        prayer: Prayer.maghrib,
         label: l10n.prayerMaghrib,
         arabic: 'المغرب',
         time: _adjusted(Prayer.maghrib, times.maghrib)
       ),
       (
+        prayer: Prayer.isha,
         label: l10n.prayerIsha,
         arabic: 'العشاء',
         time: _adjusted(Prayer.isha, times.isha)
@@ -260,6 +299,9 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                 const SizedBox(height: 12),
                 ...rows.map((r) {
                   final isMarker = r.label == l10n.prayerSunrise;
+                  // Adjustment chips disclose what was added to this row's
+                  // displayed time (program Part A §2.3); empty when none.
+                  final chips = _adjustmentChips(r.prayer);
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: Padding(
@@ -303,9 +345,23 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                               ],
                             ),
                           ),
-                          Text(
-                            localizeDigits(_hhmm(r.time), lang),
-                            style: AppFonts.timeLabel(context),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                localizeDigits(_hhmm(r.time), lang),
+                                style: AppFonts.timeLabel(context),
+                              ),
+                              if (chips.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Wrap(
+                                  spacing: 4,
+                                  runSpacing: 4,
+                                  alignment: WrapAlignment.end,
+                                  children: chips,
+                                ),
+                              ],
+                            ],
                           ),
                         ],
                       ),
@@ -625,12 +681,20 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                     isToday ? scheme.onPrimary : scheme.onTertiaryFixedVariant;
                 // One clean announcement per day cell ("15 October 2026")
                 // instead of the raw day-number + time fragments; the cell
-                // is a button that opens the day's detail sheet.
+                // is a button that opens the day's detail sheet. When either
+                // displayed time carries an adjustment, the announcement says
+                // so and a subtle dot marks the adjusted line — a marker,
+                // not clutter (program Part A §2.3).
+                final fajrAdjusted = _hasAdjustment(Prayer.fajr);
+                final maghribAdjusted = _hasAdjustment(Prayer.maghrib);
+                final cellLabel = materialL10n.formatFullDate(
+                  DateTime(_year, _month, day),
+                );
                 return Semantics(
                   button: true,
-                  label: materialL10n.formatFullDate(
-                    DateTime(_year, _month, day),
-                  ),
+                  label: (fajrAdjusted || maghribAdjusted)
+                      ? '$cellLabel, ${l10n.adjustmentMarkerSemantics}'
+                      : cellLabel,
                   excludeSemantics: true,
                   child: _DayCellMaterial(
                     isToday: isToday,
@@ -686,12 +750,16 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                           text: l10n.dayCellFajr(localizeDigits(
                               _hhmm(_adjusted(Prayer.fajr, times.fajr)), lang)),
                           color: timeFg,
+                          adjusted: fajrAdjusted,
+                          markerTooltip: l10n.adjustmentMarkerSemantics,
                         ),
                         _CellTime(
                           text: l10n.dayCellMaghrib(localizeDigits(
                               _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
                               lang)),
                           color: timeFg,
+                          adjusted: maghribAdjusted,
+                          markerTooltip: l10n.adjustmentMarkerSemantics,
                         ),
                       ],
                     ),
@@ -764,16 +832,31 @@ class _DayCellMaterial extends StatelessWidget {
   }
 }
 
-/// Single-line shrink-to-fit time label inside a day cell.
+/// Single-line shrink-to-fit time label inside a day cell, with an optional
+/// subtle dot marking an adjusted time (program Part A §2.3). The dot is
+/// never the only disclosure: the day sheet shows the full chips, the cell
+/// tooltip names it, and the cell's semantics label announces it.
 class _CellTime extends StatelessWidget {
-  const _CellTime({required this.text, required this.color});
+  const _CellTime({
+    required this.text,
+    required this.color,
+    this.adjusted = false,
+    this.markerTooltip,
+  });
 
   final String text;
   final Color color;
 
+  /// Whether the displayed time carries a manual or ihtiyat adjustment.
+  final bool adjusted;
+
+  /// Tooltip/semantics text for the marker; used only when [adjusted].
+  final String? markerTooltip;
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    final scheme = Theme.of(context).colorScheme;
+    final label = SizedBox(
       width: double.infinity,
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -786,6 +869,26 @@ class _CellTime extends StatelessWidget {
               ?.copyWith(color: color),
         ),
       ),
+    );
+    if (!adjusted) return label;
+    // Same dark gold-brown as the estimated marker (~8:1 on the cell
+    // surface — the lighter gold failed WCAG AA there).
+    return Row(
+      children: [
+        Expanded(child: label),
+        const SizedBox(width: 4),
+        Tooltip(
+          message: markerTooltip ?? '',
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: scheme.onTertiaryFixedVariant,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

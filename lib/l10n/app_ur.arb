@@ -1104,5 +1104,73 @@
   "reviewP8Evidence": "نقل بگڑی ہوئی؛ مطبوع نظم نہیں دیکھی گئی۔",
   "@reviewP8Evidence": {
     "description": "D7 review item P8: evidence status"
+  },
+  "adjustmentUnitMin": "منٹ",
+  "@adjustmentUnitMin": {
+    "description": "Phase 1C: minute abbreviation used in adjustment chips"
+  },
+  "adjustmentIhtiyatWord": "احتیاط",
+  "@adjustmentIhtiyatWord": {
+    "description": "Phase 1C: word shown in the precautionary-delay adjustment chip"
+  },
+  "roundingFootnote": "اوقات کو قریب ترین منٹ تک گول کیا گیا ہے۔",
+  "@roundingFootnote": {
+    "description": "Phase 1C: home-screen footnote disclosing nearest-minute rounding"
+  },
+  "adjustmentMarkerSemantics": "اس وقت میں ترمیم شامل ہے۔",
+  "@adjustmentMarkerSemantics": {
+    "description": "Phase 1C: screen-reader label for the monthly cell adjustment marker"
+  },
+  "methodReviewSection": "طریقہ کار، جائزہ اور تبدیلیاں",
+  "@methodReviewSection": {
+    "description": "Phase 1C: settings section opening methodology, review record and changelog"
+  },
+  "settingsMethodologyTitle": "حساب کا طریقہ",
+  "@settingsMethodologyTitle": {
+    "description": "Phase 1C: settings entry opening the Methodology screen"
+  },
+  "settingsReviewTitle": "علمی جائزے کا ریکارڈ",
+  "@settingsReviewTitle": {
+    "description": "Phase 1C: settings entry opening the review record screen"
+  },
+  "settingsChangelogTitle": "حساب کی تبدیلیوں کا لاگ",
+  "@settingsChangelogTitle": {
+    "description": "Phase 1C: settings entry opening the calculation changelog screen"
+  },
+  "changelogTitle": "حساب کی تبدیلیوں کا لاگ",
+  "@changelogTitle": {
+    "description": "Phase 1C: title of the calculation changelog screen"
+  },
+  "changelogIntro": "حسابی انجن اور پروفائلز میں ورژن بہ ورژن کیا تبدیل ہوا۔ جو وقت ورژنوں کے درمیان بدلے، اس کی وضاحت یہاں سے ملے گی۔",
+  "@changelogIntro": {
+    "description": "Phase 1C: intro line of the calculation changelog screen"
+  },
+  "changelogBaselineNote": "پہلی درج شدہ طریقہ کار کی حالت — ہر بعد کی تبدیلی اسی سے ماپی جائے گی۔",
+  "@changelogBaselineNote": {
+    "description": "Phase 1C: note under the baseline version entry"
+  },
+  "changelogParamHeader": "پیرامیٹر",
+  "@changelogParamHeader": {
+    "description": "Phase 1C: changelog row header — parameter"
+  },
+  "changelogValueHeader": "قدر",
+  "@changelogValueHeader": {
+    "description": "Phase 1C: changelog row header — value"
+  },
+  "changelogStatusHeader": "حیثیت",
+  "@changelogStatusHeader": {
+    "description": "Phase 1C: changelog row header — status"
+  },
+  "changelogSinceHeader": "تبدیل شدہ از",
+  "@changelogSinceHeader": {
+    "description": "Phase 1C: changelog row header — changed since"
+  },
+  "changelogStatusFiqh": "فقہ سے ماخوذ اصول",
+  "@changelogStatusFiqh": {
+    "description": "Phase 1C: changelog status badge — fiqh-derived rule"
+  },
+  "changelogStatusConvention": "روایت",
+  "@changelogStatusConvention": {
+    "description": "Phase 1C: changelog status badge — convention"
   }
 }

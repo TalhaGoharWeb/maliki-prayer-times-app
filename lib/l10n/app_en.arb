@@ -1685,5 +1685,73 @@
   "reviewP8Evidence": "Transcription garbled; printed nazm not consulted.",
   "@reviewP8Evidence": {
     "description": "D7 review item P8: evidence status"
+  },
+  "adjustmentUnitMin": "min",
+  "@adjustmentUnitMin": {
+    "description": "Phase 1C: minute abbreviation used in adjustment chips"
+  },
+  "adjustmentIhtiyatWord": "ihtiyat",
+  "@adjustmentIhtiyatWord": {
+    "description": "Phase 1C: word shown in the precautionary-delay adjustment chip"
+  },
+  "roundingFootnote": "Times are rounded to the nearest minute.",
+  "@roundingFootnote": {
+    "description": "Phase 1C: home-screen footnote disclosing nearest-minute rounding"
+  },
+  "adjustmentMarkerSemantics": "This time includes an adjustment.",
+  "@adjustmentMarkerSemantics": {
+    "description": "Phase 1C: screen-reader label for the monthly cell adjustment marker"
+  },
+  "methodReviewSection": "Method, review & changes",
+  "@methodReviewSection": {
+    "description": "Phase 1C: settings section opening methodology, review record and changelog"
+  },
+  "settingsMethodologyTitle": "Calculation method",
+  "@settingsMethodologyTitle": {
+    "description": "Phase 1C: settings entry opening the Methodology screen"
+  },
+  "settingsReviewTitle": "Scholarly review record",
+  "@settingsReviewTitle": {
+    "description": "Phase 1C: settings entry opening the review record screen"
+  },
+  "settingsChangelogTitle": "Calculation changelog",
+  "@settingsChangelogTitle": {
+    "description": "Phase 1C: settings entry opening the calculation changelog screen"
+  },
+  "changelogTitle": "Calculation changelog",
+  "@changelogTitle": {
+    "description": "Phase 1C: title of the calculation changelog screen"
+  },
+  "changelogIntro": "What changed in the calculation engine and profiles, version by version. A time that moves between versions is explainable from here.",
+  "@changelogIntro": {
+    "description": "Phase 1C: intro line of the calculation changelog screen"
+  },
+  "changelogBaselineNote": "First recorded method state — the baseline every later change is measured against.",
+  "@changelogBaselineNote": {
+    "description": "Phase 1C: note under the baseline version entry"
+  },
+  "changelogParamHeader": "Parameter",
+  "@changelogParamHeader": {
+    "description": "Phase 1C: changelog row header — parameter"
+  },
+  "changelogValueHeader": "Value",
+  "@changelogValueHeader": {
+    "description": "Phase 1C: changelog row header — value"
+  },
+  "changelogStatusHeader": "Status",
+  "@changelogStatusHeader": {
+    "description": "Phase 1C: changelog row header — status"
+  },
+  "changelogSinceHeader": "Changed since",
+  "@changelogSinceHeader": {
+    "description": "Phase 1C: changelog row header — changed since"
+  },
+  "changelogStatusFiqh": "Fiqh-derived rule",
+  "@changelogStatusFiqh": {
+    "description": "Phase 1C: changelog status badge — fiqh-derived rule"
+  },
+  "changelogStatusConvention": "Convention",
+  "@changelogStatusConvention": {
+    "description": "Phase 1C: changelog status badge — convention"
   }
 }

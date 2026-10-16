@@ -1104,5 +1104,73 @@
   "reviewP8Evidence": "Transcription corrompue ; le nazm imprimé non consulté.",
   "@reviewP8Evidence": {
     "description": "D7 review item P8: evidence status"
+  },
+  "adjustmentUnitMin": "min",
+  "@adjustmentUnitMin": {
+    "description": "Phase 1C: minute abbreviation used in adjustment chips"
+  },
+  "adjustmentIhtiyatWord": "ihtiyat",
+  "@adjustmentIhtiyatWord": {
+    "description": "Phase 1C: word shown in the precautionary-delay adjustment chip"
+  },
+  "roundingFootnote": "Les heures sont arrondies à la minute près.",
+  "@roundingFootnote": {
+    "description": "Phase 1C: home-screen footnote disclosing nearest-minute rounding"
+  },
+  "adjustmentMarkerSemantics": "Cette heure inclut un ajustement.",
+  "@adjustmentMarkerSemantics": {
+    "description": "Phase 1C: screen-reader label for the monthly cell adjustment marker"
+  },
+  "methodReviewSection": "Méthode, revue et changements",
+  "@methodReviewSection": {
+    "description": "Phase 1C: settings section opening methodology, review record and changelog"
+  },
+  "settingsMethodologyTitle": "Méthode de calcul",
+  "@settingsMethodologyTitle": {
+    "description": "Phase 1C: settings entry opening the Methodology screen"
+  },
+  "settingsReviewTitle": "Dossier de revue savante",
+  "@settingsReviewTitle": {
+    "description": "Phase 1C: settings entry opening the review record screen"
+  },
+  "settingsChangelogTitle": "Journal des modifications du calcul",
+  "@settingsChangelogTitle": {
+    "description": "Phase 1C: settings entry opening the calculation changelog screen"
+  },
+  "changelogTitle": "Journal des modifications",
+  "@changelogTitle": {
+    "description": "Phase 1C: title of the calculation changelog screen"
+  },
+  "changelogIntro": "Ce qui a changé dans le moteur de calcul et les profils, version par version. Une heure qui change d'une version à l'autre s'explique ici.",
+  "@changelogIntro": {
+    "description": "Phase 1C: intro line of the calculation changelog screen"
+  },
+  "changelogBaselineNote": "Premier état de méthode enregistré — la référence à laquelle chaque changement ultérieur est mesuré.",
+  "@changelogBaselineNote": {
+    "description": "Phase 1C: note under the baseline version entry"
+  },
+  "changelogParamHeader": "Paramètre",
+  "@changelogParamHeader": {
+    "description": "Phase 1C: changelog row header — parameter"
+  },
+  "changelogValueHeader": "Valeur",
+  "@changelogValueHeader": {
+    "description": "Phase 1C: changelog row header — value"
+  },
+  "changelogStatusHeader": "Statut",
+  "@changelogStatusHeader": {
+    "description": "Phase 1C: changelog row header — status"
+  },
+  "changelogSinceHeader": "Modifié depuis",
+  "@changelogSinceHeader": {
+    "description": "Phase 1C: changelog row header — changed since"
+  },
+  "changelogStatusFiqh": "Règle fiqh",
+  "@changelogStatusFiqh": {
+    "description": "Phase 1C: changelog status badge — fiqh-derived rule"
+  },
+  "changelogStatusConvention": "Convention",
+  "@changelogStatusConvention": {
+    "description": "Phase 1C: changelog status badge — convention"
   }
 }

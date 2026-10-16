@@ -24,6 +24,26 @@ class MethodologyScreen extends StatelessWidget {
     this.profile = PrayerProfiles.defaultProfile,
   });
 
+  /// Pushes the methodology screen with its app chrome onto [context]'s
+  /// navigator. The screen itself renders body content only, so the route
+  /// wraps it in a Scaffold whose title comes from the localized
+  /// methodology strings (same locale the body uses).
+  static void open(BuildContext context,
+      {PrayerProfile profile = PrayerProfiles.defaultProfile}) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) {
+          final s = methodologyStrings(
+              Localizations.localeOf(ctx).languageCode);
+          return Scaffold(
+            appBar: AppBar(title: Text(s.title)),
+            body: MethodologyScreen(profile: profile),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final code = Localizations.localeOf(context).languageCode;
