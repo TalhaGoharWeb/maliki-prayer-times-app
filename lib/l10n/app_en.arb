@@ -1960,5 +1960,13 @@
   "timeZoneNoResults": "No time zones match your search.",
   "@timeZoneNoResults": {
     "description": "Phase 2: empty state of the time-zone picker search"
+  },
+  "learnTitle": "Learn",
+  "@learnTitle": {
+    "description": "Phase 4: title of the Learn teaching section, the settings entry, the home card, and the screen's app bar"
+  },
+  "learnHomeCardBody": "Maliki definitions of the five prayers, the 18° question, and common questions — all linked to the research evidence.",
+  "@learnHomeCardBody": {
+    "description": "Phase 4: body line of the Learn card on the home screen"
   }
 }

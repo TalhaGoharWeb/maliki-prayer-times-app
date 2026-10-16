@@ -1312,5 +1312,13 @@
   "timeZoneNoResults": "آپ کی تلاش سے کوئی ٹائم زون نہیں ملا۔",
   "@timeZoneNoResults": {
     "description": "Phase 2: empty state of the time-zone picker search"
+  },
+  "learnTitle": "سیکھیں",
+  "@learnTitle": {
+    "description": "Phase 4: title of the Learn teaching section, the settings entry, the home card, and the screen's app bar"
+  },
+  "learnHomeCardBody": "پانچ نمازوں کی مالکی تعریفیں، 18 ڈگری کا سوال، اور عام سوالات — سب تحقیقی شواہد سے منسلک۔",
+  "@learnHomeCardBody": {
+    "description": "Phase 4: body line of the Learn card on the home screen"
   }
 }

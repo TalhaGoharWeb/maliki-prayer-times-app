@@ -7,6 +7,7 @@ import 'package:malikiprayertimes/fiqh/maliki_rules.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/band_texts.dart';
 import 'package:malikiprayertimes/screens/date_labels.dart';
+import 'package:malikiprayertimes/screens/learn_screen.dart';
 import 'package:malikiprayertimes/screens/location_screen.dart';
 import 'package:malikiprayertimes/screens/profile_labels.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
@@ -433,6 +434,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Prominent calculation-profile status label.
         _ProfileStatusCard(times: times),
+        const SizedBox(height: 20),
+
+        // Learn card (Phase 4): teaching section linked to research
+        // evidence — not a 7th nav tab, just an entry point.
+        _LearnCard(),
       ],
     );
   }
@@ -1059,6 +1065,60 @@ class _ProfileStatusCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Learn card (Phase 4): a deep-green entry point to the teaching
+/// section. A live button — it opens LearnScreen — never a dead surface.
+class _LearnCard extends StatelessWidget {
+  const _LearnCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+    return Card(
+      color: scheme.primary,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => LearnScreen.open(context),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.school_outlined,
+                  size: 22, color: scheme.tertiaryFixed),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.learnTitle,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: scheme.onPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.learnHomeCardBody,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.onPrimary.withValues(alpha: 0.85),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.arrow_forward_ios,
+                  size: 16, color: scheme.tertiaryFixed),
+            ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/screens/calculation_changelog_screen.dart';
+import 'package:malikiprayertimes/screens/learn_screen.dart';
 import 'package:malikiprayertimes/screens/methodology_screen.dart';
 import 'package:malikiprayertimes/screens/review_record_screen.dart';
 import 'package:malikiprayertimes/services/location_service.dart';
@@ -212,6 +213,7 @@ class SettingsScreen extends StatelessWidget {
             // (3b) Method, review & changes (Phase 1C): entries opening the
             // Methodology screen, the review record, and the calculation
             // changelog — every screen opens; there are no dead entries.
+            // (Phase 4) the Learn teaching section sits alongside them.
             _SectionHeader(
                 icon: Icons.library_books, title: l10n.methodReviewSection),
             const SizedBox(height: 8),
@@ -222,6 +224,12 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.calculate_outlined,
                     title: l10n.settingsMethodologyTitle,
                     onTap: () => MethodologyScreen.open(context),
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingsNavRow(
+                    icon: Icons.school_outlined,
+                    title: l10n.learnTitle,
+                    onTap: () => LearnScreen.open(context),
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   _SettingsNavRow(
