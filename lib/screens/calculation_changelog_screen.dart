@@ -128,42 +128,42 @@ const List<ChangelogVersion> changelogVersions = [
         value:
             "displayed times render in the location's IANA zone: the stored zone for manual locations (chosen in the zone picker, defaulting to the device zone), the device zone for GPS-derived locations; offsets resolved per date so DST transitions are correct per date; bundled tz database latest_all (full IANA coverage, 598 zones, tzdata 2026e), offline-first",
         status: ChangelogStatus.convention,
-        changedSince: 'v1.3.0+6 (unreleased)',
+        changedSince: 'v1.3.0+6',
       ),
       ChangelogRow(
         parameter: 'Sunrise/sunset horizon',
         value:
             '−0.833° solar depression (upper limb + refraction) plus the elevation dip correction 0.0293×√h (h in meters) when a per-location elevation is set; optional input, unset = sea-level horizon',
         status: ChangelogStatus.convention,
-        changedSince: 'v1.3.0+6 (unreleased)',
+        changedSince: 'v1.3.0+6',
       ),
       ChangelogRow(
         parameter: 'Calculation profiles',
         value:
             'new "Maliki — Morocco Habous" preset added (Fajr 19°, Isha 17°): institutional preset, NOT a fiqh ruling; methodology unpublished (D1). No engine math changed',
         status: ChangelogStatus.convention,
-        changedSince: 'v1.3.0+6 (unreleased)',
+        changedSince: 'v1.3.0+6',
       ),
       ChangelogRow(
         parameter: 'Profile evidence badges',
         value:
             'every profile shows per-parameter evidence status (D9): MWL West Africa 18/17 = provisional convention (default); Habous 19/17 and Egyptian 19.5/17.5 = institutional preset; UOIF 12/12 = disputed (12° vs claimed 15°); Asr factor 1 = fiqh-derived on all profiles',
         status: ChangelogStatus.convention,
-        changedSince: 'v1.3.0+6 (unreleased)',
+        changedSince: 'v1.3.0+6',
       ),
       ChangelogRow(
         parameter: 'Regional auto-adapt',
         value:
             '"Recommended settings": a one-time, dismissible dialog suggests the regional preset matching the detected location (Maghreb → Habous; West Africa → MWL West Africa; Egypt → Egyptian; France → UOIF with its disputed badge); the user confirms — nothing switches silently',
         status: ChangelogStatus.convention,
-        changedSince: 'v1.3.0+6 (unreleased)',
+        changedSince: 'v1.3.0+6',
       ),
       ChangelogRow(
         parameter: 'High-latitude fallback',
         value:
             'user-chosen method (default: middle-of-night, per adhan `recommended()`): middle-of-night / one-seventh / angle-based estimates from the night frame (D5 §3.7 math), or nearest-day borrowing with the source date shown; no night frame (polar day/night) → typed NoSolution with an honest empty state, never fabricated times; the old noon±6 synthetic-horizon path is deleted; the active method is named wherever fallback times appear, with a change affordance',
         status: ChangelogStatus.convention,
-        changedSince: 'v1.3.0+6 (unreleased)',
+        changedSince: 'v1.3.0+6',
       ),
     ],
   ),

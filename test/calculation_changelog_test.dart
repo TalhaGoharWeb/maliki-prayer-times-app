@@ -119,7 +119,8 @@ void main() {
           await AppLocalizations.delegate.load(const Locale('en'));
 
       expect(find.text('v1.2.0+5'), findsOneWidget);
-      // Phase 2 added an unreleased entry sharing the same date.
+      // Phase 2 added a v1.3.0+6 entry sharing the same date; it is
+      // now the released build.
       expect(find.text('v1.3.0+6'), findsOneWidget);
       expect(find.text('2026-10-16'), findsWidgets);
       expect(find.text('Fajr angle'), findsOneWidget);

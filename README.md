@@ -10,8 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter" alt="Flutter 3.47.5" />
-  <img src="https://img.shields.io/badge/tests-222%2F222-brightgreen" alt="222/222 tests" />
-  <img src="https://img.shields.io/badge/version-1.2.0%2B5-blue" alt="v1.2.0+5" />
+  <img src="https://img.shields.io/badge/tests-398%2F398-brightgreen" alt="398/398 tests" />
+  <img src="https://img.shields.io/badge/version-1.3.0%2B6-blue" alt="v1.3.0+6" />
   <img src="https://img.shields.io/badge/offline-first-success" alt="offline-first" />
   <img src="https://img.shields.io/badge/license-see%20ATTRIBUTION.md-lightgrey" alt="licenses" />
 </p>
