@@ -50,6 +50,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # adhan_dart: test-only cross-validation dependency (Phase 6). It is NEVER
+  # imported by lib/ (runtime path) — only by test/. Pinned 2.0.1; MIT license
+  # verified in-repo (see ATTRIBUTION.md); release blocker.
+  adhan_dart: 2.0.1
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

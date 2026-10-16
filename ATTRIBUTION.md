@@ -152,6 +152,25 @@ copyleft, no proprietary terms, LICENSE files present and read).
 - **Use:** Arabic-script UI text (ar locale and Arabic names/labels across
   locales).
 
+## Phase 6: adhan_dart (test-only cross-validation dependency)
+
+- **Package:** adhan_dart 2.0.1 —
+  https://github.com/prayer-timetable/adhan_dart
+  (https://pub.dev/packages/adhan_dart)
+- **License: VERIFIED MIT — release blocker CLEARED.** Verified 2026-10-16 by
+  reading the LICENSE file in the pub cache at the pinned version
+  (`~/.pub-cache/hosted/pub.dev/adhan_dart-2.0.1/LICENSE`): full MIT text,
+  "Copyright (c) 2020 prayer-timetable <https://github.com/prayer-timetable>".
+  Passed the license gate (permissive, no copyleft). pubspec.lock pins
+  sha256 `b1a280975b73052eb3b213430adf481f241bfc1cd839b2b0f4368bfe1a1b7ee5`.
+- **Use:** `dev_dependency` ONLY. Imported solely by
+  `test/adhan_cross_validation_test.dart` to cross-validate the app's own
+  engine against an independent Meeus-family implementation (MWL 18/17,
+  Asr t=1 mapped via Madhab.shafi, ihtiyat disabled on both sides — see the
+  parameter-mapping comment in the test). It is NEVER imported by `lib/`
+  and never ships in the app's runtime path. Agreement is a math-consistency
+  signal, never fiqh proof (D6 §8.2).
+
 ## Source Serif 4 (Latin/French headlines)
 - **Files:** `assets/fonts/SourceSerif4-Variable.ttf` (font family
   "Source Serif 4", variable weight; used at w400/w600/w700).
