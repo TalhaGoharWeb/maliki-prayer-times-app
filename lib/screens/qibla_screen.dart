@@ -10,6 +10,7 @@ import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/qibla.dart';
 import 'package:malikiprayertimes/utils/solar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Qibla tab: the great-circle bearing to the Kaaba with a live compass dial,
 /// distance, rhumb-line bearing, calibration guidance, and the sun-alignment
@@ -34,6 +35,12 @@ class QiblaScreen extends StatefulWidget {
   /// is created and owned by this screen.
   final CompassService? compass;
 
+  /// Test-only hook invoked at the end of every build so widget tests can
+  /// count rebuilds (verifies the heading throttle, REL-08). Null in
+  /// production.
+  @visibleForTesting
+  final VoidCallback? onBuild;
+
   const QiblaScreen({
     super.key,
     required this.coordinates,
@@ -41,6 +48,7 @@ class QiblaScreen extends StatefulWidget {
     required this.timeZoneOffset,
     this.notifications,
     this.compass,
+    this.onBuild,
   });
 
   @override
@@ -53,6 +61,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
   StreamSubscription<double?>? _liveSub;
   bool _liveMode = false;
 
+  /// Heading-throttle state (REL-08): the raw sensor fires at hardware rate
+  /// (tens–hundreds of events/sec), but this subscription only drives the
+  /// calibration card's live-ness flag.
+  int? _lastRoundedHeading;
+  DateTime _lastHeadingUiUpdate = DateTime.fromMillisecondsSinceEpoch(0);
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +75,24 @@ class _QiblaScreenState extends State<QiblaScreen> {
     // Track live-ness for the calibration card; the dial itself renders
     // from a StreamBuilder on the same broadcast stream.
     _liveSub = _compass.headings.listen((heading) {
-      if (mounted) setState(() => _liveMode = heading != null);
+      if (!mounted) return;
+      // Throttle: rebuild only when the rounded heading moved by ≥1° or
+      // ≥100ms elapsed since the last UI update — and only when the live
+      // flag actually flips, so a steady stream costs nothing.
+      final live = heading != null;
+      final rounded = heading?.round();
+      final now = DateTime.now();
+      final moved = rounded != _lastRoundedHeading &&
+          (_lastRoundedHeading == null ||
+              rounded == null ||
+              (rounded - _lastRoundedHeading!).abs() >= 1);
+      if (moved ||
+          now.difference(_lastHeadingUiUpdate) >=
+              const Duration(milliseconds: 100)) {
+        _lastRoundedHeading = rounded;
+        _lastHeadingUiUpdate = now;
+        if (_liveMode != live) setState(() => _liveMode = live);
+      }
     });
   }
 
@@ -119,11 +150,14 @@ class _QiblaScreenState extends State<QiblaScreen> {
           RegExp(r'\B(?=(\d{3})+(?!\d))'),
           (_) => lang == 'fr' ? ' ' : ',',
         );
-        s = parts.length > 1 ? '$head.${parts[1]}' : head;
+        // French uses a comma as the decimal separator ("7 451,5 km").
+        final decSep = lang == 'fr' ? ',' : '.';
+        s = parts.length > 1 ? '$head$decSep${parts[1]}' : head;
       }
       return localizeDigits(s, lang);
     }
 
+    widget.onBuild?.call();
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       children: [
@@ -140,7 +174,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
             Expanded(
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
+                alignment: AlignmentDirectional.centerStart,
                 child: Text(
                   '${widget.coordinates.latitude.toStringAsFixed(5)}°  ·  '
                   '${widget.coordinates.longitude.toStringAsFixed(5)}°',
@@ -245,12 +279,27 @@ class _QiblaScreenState extends State<QiblaScreen> {
         _SunAlignCard(
           alignWall: alignWall,
           languageCode: lang,
+          timeZoneOffset: widget.timeZoneOffset,
           notifications: widget.notifications,
         ),
       ],
     );
   }
 }
+
+/// Whether the sun-alignment reminder may still be scheduled for
+/// [alignWall]: the event's true UTC instant must lie in the future.
+/// [alignWall] carries the wall-clock reading of the event (a UTC-mode
+/// DateTime whose clock shows local time), so subtract [timeZoneOffset] to
+/// recover the true UTC instant before comparing. Scheduling a past instant
+/// would fire immediately (REL-06).
+@visibleForTesting
+bool sunReminderSchedulable(
+  DateTime alignWall,
+  Duration timeZoneOffset,
+  DateTime nowUtc,
+) =>
+    alignWall.subtract(timeZoneOffset).isAfter(nowUtc);
 
 /// Compass dial: live when the compass emits a heading, static fallback
 /// while waiting or when the device has no magnetometer.
@@ -289,7 +338,8 @@ class _CompassDial extends StatelessWidget {
             final semanticsLabel = heading != null
                 ? l10n.liveHeading(
                     localizeDigits(heading.toStringAsFixed(0), lang))
-                : l10n.qiblaBearing(bearing.toStringAsFixed(1));
+                : l10n.qiblaBearing(
+                    localizeDigits(bearing.toStringAsFixed(1), lang));
 
             return Column(
               children: [
@@ -373,6 +423,19 @@ class _CompassDial extends StatelessWidget {
                           bearing,
                           l10n.qiblaLabel,
                           scheme,
+                          // Localized cardinal letters (I-12), in N/E/S/W
+                          // order. ar/ur use the Perso-Arabic compass
+                          // abbreviations; fr uses N/E/S/O.
+                          cardinals: switch (lang) {
+                            'ar' || 'ur' => const ['ش', 'ق', 'ج', 'غ'],
+                            'fr' => const ['N', 'E', 'S', 'O'],
+                            _ => const ['N', 'E', 'S', 'W'],
+                          },
+                          cardinalFontFamily: switch (lang) {
+                            'ur' => AppFonts.urdu,
+                            'ar' => AppFonts.arabic,
+                            _ => AppFonts.latinSans,
+                          },
                         ),
                       ),
                     ),
@@ -473,7 +536,7 @@ class _StatRow extends StatelessWidget {
         Flexible(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerRight,
+            alignment: AlignmentDirectional.centerEnd,
             child: Text(
               value,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -592,11 +655,13 @@ class _Step extends StatelessWidget {
 class _SunAlignCard extends StatefulWidget {
   final DateTime? alignWall;
   final String? languageCode;
+  final Duration timeZoneOffset;
   final NotificationService? notifications;
 
   const _SunAlignCard({
     required this.alignWall,
     required this.languageCode,
+    required this.timeZoneOffset,
     required this.notifications,
   });
 
@@ -608,10 +673,55 @@ class _SunAlignCardState extends State<_SunAlignCard> {
   bool _busy = false;
   bool _scheduled = false;
 
+  /// Prefs key under which [NotificationService.scheduleSunReminder] persists
+  /// the pending reminder's fire time (the `_sunReminderUtcKey` in
+  /// notification_service.dart). Duplicated here because that key is private
+  /// there and this card must not reach into notification internals.
+  static const _persistedSunReminderKey = 'sun_reminder_utc';
+
+  @override
+  void initState() {
+    super.initState();
+    _seedScheduled();
+  }
+
+  /// Seed [_scheduled] from the persisted reminder (REL-16): a reminder set
+  /// before a restart is restored by `rescheduleAll` while its fire time is
+  /// still in the future, so the card must open in the scheduled state
+  /// rather than offering "Remind me" again.
+  Future<void> _seedScheduled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_persistedSunReminderKey);
+      final utc = raw == null ? null : DateTime.tryParse(raw);
+      if (utc != null && utc.isAfter(DateTime.now().toUtc())) {
+        if (mounted) setState(() => _scheduled = true);
+      }
+    } catch (_) {
+      // Persistence is best-effort; the card works without it.
+    }
+  }
+
   Future<void> _remind(AppLocalizations l10n) async {
     final notifications = widget.notifications;
     final alignWall = widget.alignWall;
     if (notifications == null || alignWall == null) return;
+    // The true UTC instant of the event (see [sunReminderSchedulable]).
+    // NOTE: this used to be `alignWall.toUtc()` — a no-op, since alignWall
+    // is already UTC-mode — which scheduled the reminder `timeZoneOffset`
+    // late and skewed the past-check by the same amount. Fixed 2026-10-16.
+    final scheduledUtc = alignWall.subtract(widget.timeZoneOffset);
+    if (!sunReminderSchedulable(
+        alignWall, widget.timeZoneOffset, DateTime.now().toUtc())) {
+      // Today's alignment already passed: never schedule a past instant
+      // (it would fire immediately) — show the passed note instead.
+      if (!mounted) return;
+      setState(() => _busy = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.sunAlignPassed)),
+      );
+      return;
+    }
     setState(() => _busy = true);
     try {
       final granted = await notifications.areNotificationsEnabled();
@@ -624,8 +734,6 @@ class _SunAlignCardState extends State<_SunAlignCard> {
           return;
         }
       }
-      // Convert the wall-clock alignment back to a UTC instant.
-      final scheduledUtc = alignWall.toUtc();
       await notifications.scheduleSunReminder(
         scheduledUtc: scheduledUtc,
         title: l10n.sunReminderTitle,
@@ -647,6 +755,23 @@ class _SunAlignCardState extends State<_SunAlignCard> {
     }
   }
 
+  /// Cancel the pending sun-alignment reminder (REL-16).
+  Future<void> _cancel() async {
+    final notifications = widget.notifications;
+    if (notifications == null || _busy) return;
+    setState(() => _busy = true);
+    try {
+      await notifications.cancelSunReminder();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _scheduled = false;
+        });
+      }
+    }
+  }
+
   String _hhmm(DateTime t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
@@ -656,6 +781,11 @@ class _SunAlignCardState extends State<_SunAlignCard> {
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final alignWall = widget.alignWall;
+    // Already-passed alignment: the button is disabled and the passed note
+    // is shown instead of scheduling (REL-06).
+    final alignPassed = alignWall != null &&
+        !sunReminderSchedulable(
+            alignWall, widget.timeZoneOffset, DateTime.now().toUtc());
 
     return Card(
       color: scheme.tertiaryFixed,
@@ -718,24 +848,62 @@ class _SunAlignCardState extends State<_SunAlignCard> {
               ),
               if (widget.notifications != null) ...[
                 const SizedBox(height: 12),
-                FilledButton.icon(
-                  onPressed: (_busy || _scheduled) ? null : () => _remind(l10n),
-                  icon: _busy
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.alarm, size: 18),
-                  label: Text(_scheduled
-                      ? l10n.reminderSet(localizeDigits(
-                          _hhmm(alignWall), widget.languageCode))
-                      : l10n.remindMe),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: scheme.tertiaryContainer,
-                    foregroundColor: scheme.onTertiaryContainer,
+                if (alignPassed)
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          size: 16,
+                          color: scheme.onTertiaryFixedVariant),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.sunAlignPassed,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: scheme.onTertiaryFixedVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                else if (_scheduled)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.reminderSet(localizeDigits(
+                              _hhmm(alignWall), widget.languageCode)),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: scheme.onTertiaryFixed,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: _busy ? null : _cancel,
+                        icon: const Icon(Icons.cancel_outlined, size: 18),
+                        label: Text(l10n.cancelReminder),
+                        style: TextButton.styleFrom(
+                          foregroundColor: scheme.onTertiaryContainer,
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  FilledButton.icon(
+                    onPressed: _busy ? null : () => _remind(l10n),
+                    icon: _busy
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.alarm, size: 18),
+                    label: Text(l10n.remindMe),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: scheme.tertiaryContainer,
+                      foregroundColor: scheme.onTertiaryContainer,
+                    ),
                   ),
-                ),
               ],
             ] else
               Row(
@@ -767,7 +935,15 @@ class _QiblaDialPainter extends CustomPainter {
   final String qiblaLabel;
   final ColorScheme scheme;
 
-  _QiblaDialPainter(this.bearingDegrees, this.qiblaLabel, this.scheme);
+  /// Cardinal letters in N/E/S/W order, localized per UI locale.
+  final List<String> cardinals;
+
+  /// Font for [cardinals]: the Arabic-script font for ar/ur, Manrope
+  /// otherwise.
+  final String cardinalFontFamily;
+
+  _QiblaDialPainter(this.bearingDegrees, this.qiblaLabel, this.scheme,
+      {required this.cardinals, required this.cardinalFontFamily});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -797,7 +973,6 @@ class _QiblaDialPainter extends CustomPainter {
     }
 
     // Cardinal letters.
-    const cardinals = ['N', 'E', 'S', 'W'];
     for (var i = 0; i < 4; i++) {
       final rad = i * 90 * math.pi / 180.0;
       final pos =
@@ -806,7 +981,7 @@ class _QiblaDialPainter extends CustomPainter {
         text: TextSpan(
           text: cardinals[i],
           style: TextStyle(
-            fontFamily: 'Manrope',
+            fontFamily: cardinalFontFamily,
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: i == 0 ? scheme.error : scheme.onSurface,

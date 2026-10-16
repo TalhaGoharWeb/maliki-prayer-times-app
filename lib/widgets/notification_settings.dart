@@ -5,6 +5,7 @@ import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
 
 /// Notification settings section for the settings screen.
 ///
@@ -186,6 +187,7 @@ class _NotificationSettingsSectionState
 
   Widget _offsetPicker(
       AppLocalizations l10n, ThemeData theme, SettingsService settings) {
+    final lang = Localizations.localeOf(context).languageCode;
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
@@ -201,7 +203,10 @@ class _NotificationSettingsSectionState
                   value: m,
                   child: Text(m == 0
                       ? l10n.reminderOffsetOptionNone
-                      : l10n.reminderOffsetOptionMinutes('$m')),
+                      // Digit-localized for `ar` (Arabic-Indic) so the
+                      // options never show raw Western digits.
+                      : l10n.reminderOffsetOptionMinutes(
+                          localizeDigits('$m', lang))),
                 ),
               )
               .toList(),

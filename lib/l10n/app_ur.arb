@@ -36,13 +36,14 @@
   "subhNecessityEnd": "معذوروں کے لیے انتہائی حد: طلوعِ آفتاب، {time}۔",
   "dhuhrPreferred": "اختیاری وقت عصر کے آغاز (پہلی مثل) تک، {time}۔",
   "dhuhrNecessityEnd": "معذوروں کے لیے انتہائی حد: غروبِ آفتاب، {time}۔",
-  "asrPreferredInfo": "اختیاری وقت اصفرار (سورج کے پیلے پڑنے) تک — معلوماتی پٹی؛ تقریبی ہے، اذان کا وقت کبھی نہیں۔",
+  "asrPreferredInfo": "اختیاری وقت اصفرار (سورج کے پیلے پڑنے) تک — معلوماتی پٹی؛ اذان کا وقت کبھی نہیں۔",
   "asrNecessityEnd": "معذوروں کے لیے انتہائی حد: غروبِ آفتاب، {time}۔",
   "maghribPreferred": "اختیاری وقت تنگ ہے — غروب کے بعد تقریباً 15 تا 20 منٹ ({time} تک)۔ معلوماتی پٹی؛ اذان کا وقت نہیں۔",
   "maghribNecessityInfo": "معذوروں کے لیے انتہائی حد: فجرِ صادق — اس اسکرین پر حساب نہیں کیا گیا۔",
   "ishaPreferred": "اختیاری وقت رات کے پہلے تہائی تک، {third}۔ متبادل مذکور قول: ابن حبیب کے نزدیک اختیاری وقت نصف شب تک ہے، {midnight}۔",
   "ishaNecessityInfo": "معذوروں کے لیے انتہائی حد: فجرِ صادق — اس اسکرین پر حساب نہیں کیا گیا۔",
   "hijriCalendarNote": "حسابی (ریاضیاتی) اسلامی کیلنڈر — ایک حسابی تخمینہ؛ مہینوں کا اصل آغاز چاند دیکھنے پر منحصر ہے۔",
+  "hijriApproxQualifier": "تقریبی",
   "hijriDateFormat": "{day} {monthName} {year}ھ",
   "monthSubtitle": "{hijri} · ہجری تاریخیں: حسابی کیلنڈر",
   "previousMonth": "پچھلا مہینہ",
@@ -454,6 +455,14 @@
   "reminderSet": "{time} کے لیے یاد دہانی لگا دی گئی",
   "@reminderSet": {
     "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunAlignPassed": "آج دھوپ اور قبلے کے اتّفاق کا وقت گزر چکا ہے۔",
+  "@sunAlignPassed": {
+    "description": "Qibla wave 2026-10-16: sunAlignPassed"
+  },
+  "cancelReminder": "یاد دہانی منسوخ کریں",
+  "@cancelReminder": {
+    "description": "Qibla wave 2026-10-16: cancelReminder"
   },
   "sunReminderTitle": "سورج سے قبلے کی مطابقت",
   "@sunReminderTitle": {

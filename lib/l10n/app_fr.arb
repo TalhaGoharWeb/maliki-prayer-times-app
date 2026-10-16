@@ -36,13 +36,14 @@
   "subhNecessityEnd": "Fin absolue (pour les personnes excusées) : lever du soleil, {time}.",
   "dhuhrPreferred": "Temps de choix jusqu’au début de l’Asr (premier mithl), {time}.",
   "dhuhrNecessityEnd": "Fin absolue (pour les personnes excusées) : coucher du soleil, {time}.",
-  "asrPreferredInfo": "Temps de choix jusqu’à l’isfirar (jaunissement du soleil) — bande informative ; approximatif, jamais une heure d’adhan.",
+  "asrPreferredInfo": "Temps de choix jusqu’à l’isfirar (jaunissement du soleil) — bande informative ; jamais une heure d’adhan.",
   "asrNecessityEnd": "Fin absolue (pour les personnes excusées) : coucher du soleil, {time}.",
   "maghribPreferred": "Fenêtre de choix étroite — environ 15 à 20 minutes après le coucher du soleil (jusqu’à {time}). Bande informative ; pas une heure d’adhan.",
   "maghribNecessityInfo": "Fin absolue (pour les personnes excusées) : l’aube véritable — non calculée sur cet écran.",
   "ishaPreferred": "Temps de choix jusqu’au premier tiers de la nuit, {third}. Avis alternatif nommé : selon Ibn Habib, le temps de choix s’étend jusqu’à minuit, {midnight}.",
   "ishaNecessityInfo": "Fin absolue (pour les personnes excusées) : l’aube véritable — non calculée sur cet écran.",
   "hijriCalendarNote": "Calendrier islamique tabulaire (arithmétique) — approximation de calcul ; le début réel des mois dépend de l’observation lunaire.",
+  "hijriApproxQualifier": "approximatif",
   "hijriDateFormat": "{day} {monthName} {year} AH",
   "monthSubtitle": "{hijri} · Dates hégiriennes : calendrier tabulaire",
   "previousMonth": "Mois précédent",
@@ -454,6 +455,14 @@
   "reminderSet": "Rappel programmé pour {time}",
   "@reminderSet": {
     "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunAlignPassed": "L'heure d'alignement d'aujourd'hui est déjà passée.",
+  "@sunAlignPassed": {
+    "description": "Qibla wave 2026-10-16: sunAlignPassed"
+  },
+  "cancelReminder": "Annuler le rappel",
+  "@cancelReminder": {
+    "description": "Qibla wave 2026-10-16: cancelReminder"
   },
   "sunReminderTitle": "Alignement solaire avec la qibla",
   "@sunReminderTitle": {

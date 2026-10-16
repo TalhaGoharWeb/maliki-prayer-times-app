@@ -12,9 +12,15 @@ library;
 
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
 
-String _hhmm(DateTime t) =>
-    '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+/// HH:MM with the locale's digit set (Arabic-Indic for `ar`, Western
+/// digits elsewhere), so embedded band times never show raw Western
+/// digits in the `ar` locale.
+String _hhmm(AppLocalizations l10n, DateTime t) => localizeDigits(
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}',
+      l10n.localeName,
+    );
 
 /// Localized display name for a band (e.g. "Subh" / "صبح" / "الصبح").
 String bandDisplayName(AppLocalizations l10n, String arabicName) =>
@@ -33,11 +39,11 @@ String bandIkhtiyariText(
     AppLocalizations l10n, String arabicName, PrayerTimes times) =>
     switch (arabicName) {
       'الصبح' => l10n.subhPreferredInfo,
-      'الظهر' => l10n.dhuhrPreferred(_hhmm(times.asr)),
+      'الظهر' => l10n.dhuhrPreferred(_hhmm(l10n, times.asr)),
       'العصر' => l10n.asrPreferredInfo,
-      'المغرب' => l10n.maghribPreferred(_hhmm(times.maghribPreferredEnd)),
+      'المغرب' => l10n.maghribPreferred(_hhmm(l10n, times.maghribPreferredEnd)),
       'العشاء' => l10n.ishaPreferred(
-          _hhmm(times.ishaPreferredEnd), _hhmm(times.ishaMidnightVariant)),
+          _hhmm(l10n, times.ishaPreferredEnd), _hhmm(l10n, times.ishaMidnightVariant)),
       _ => '',
     };
 
@@ -46,9 +52,9 @@ String bandIkhtiyariText(
 String bandDaruriText(
     AppLocalizations l10n, String arabicName, PrayerTimes times) =>
     switch (arabicName) {
-      'الصبح' => l10n.subhNecessityEnd(_hhmm(times.sunrise)),
-      'الظهر' => l10n.dhuhrNecessityEnd(_hhmm(times.maghrib)),
-      'العصر' => l10n.asrNecessityEnd(_hhmm(times.maghrib)),
+      'الصبح' => l10n.subhNecessityEnd(_hhmm(l10n, times.sunrise)),
+      'الظهر' => l10n.dhuhrNecessityEnd(_hhmm(l10n, times.maghrib)),
+      'العصر' => l10n.asrNecessityEnd(_hhmm(l10n, times.maghrib)),
       'المغرب' => l10n.maghribNecessityInfo,
       'العشاء' => l10n.ishaNecessityInfo,
       _ => '',

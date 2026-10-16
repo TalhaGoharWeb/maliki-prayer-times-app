@@ -238,8 +238,10 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                   style: theme.textTheme.displaySmall,
                 ),
                 const SizedBox(height: 2),
+                // Hijri date, digit-localized like the home hero, with the
+                // tabular-approximation qualifier (I-07, I-08).
                 Text(
-                  formatHijriDate(l10n, hijri),
+                  '${localizeDigits(formatHijriDate(l10n, hijri), lang)} · ${l10n.hijriApproxQualifier}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: scheme.secondary,
                   ),
@@ -277,10 +279,10 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                                       const SizedBox(width: 8),
                                       Text(
                                         r.arabic,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: AppFonts.arabic,
                                           fontSize: 14,
-                                          color: Color(0xFF404944),
+                                          color: scheme.onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -314,6 +316,9 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                     Expanded(
                       child: Text(
                         l10n.bandsTitle.toUpperCase(),
+                        // Screen readers get the un-uppercased string: all
+                        // caps can degrade pronunciation in en/fr.
+                        semanticsLabel: l10n.bandsTitle,
                         style: AppFonts.eyebrow(context).copyWith(
                           color: scheme.secondary,
                         ),
@@ -389,34 +394,44 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     AppLocalizations l10n,
   ) {
     final scheme = theme.colorScheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: scheme.onSurface,
-              ),
-              children: [
-                TextSpan(
-                  text: '${label.toUpperCase()}  ',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: scheme.secondary,
-                  ),
+    // The "PREFERRED"/"NECESSITY" prefixes render uppercased; expose the
+    // whole line to screen readers with the un-uppercased label so the
+    // announcement stays natural in en/fr. The chip's status (computed vs
+    // informational) is folded into the label because the wrapped row is
+    // excluded from the semantics tree.
+    final chipText = isComputed ? l10n.computedChip : l10n.informationalChip;
+    return Semantics(
+      label: '$label: $text ($chipText)',
+      excludeSemantics: true,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurface,
                 ),
-                TextSpan(text: text),
-              ],
+                children: [
+                  TextSpan(
+                    text: '${label.toUpperCase()}  ',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                  ),
+                  TextSpan(text: text),
+                ],
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        _MiniChip(
-          text: isComputed ? l10n.computedChip : l10n.informationalChip,
-          background: scheme.surfaceContainerHigh,
-          foreground: scheme.onSurfaceVariant,
-        ),
-      ],
+          const SizedBox(width: 8),
+          _MiniChip(
+            text: chipText,
+            background: scheme.surfaceContainerHigh,
+            foreground: scheme.onSurfaceVariant,
+          ),
+        ],
+      ),
     );
   }
 
@@ -443,7 +458,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
 
     return Column(
       children: [
-        // Month header card: navigator + Hijri subtitle + verified chip.
+        // Month header card: navigator + Hijri subtitle + standard chip.
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
           child: Card(
@@ -492,7 +507,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Verified-calculation chip.
+                  // Standard-calculation chip.
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 6),
@@ -503,7 +518,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.verified,
+                        Icon(Icons.calculate,
                             size: 14, color: scheme.onSecondaryContainer),
                         const SizedBox(width: 6),
                         Flexible(
@@ -581,8 +596,12 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
               final dayFg = isToday ? scheme.onPrimary : scheme.onSurface;
               final timeFg =
                   isToday ? scheme.onPrimary : scheme.onSurfaceVariant;
+              // The estimated marker sits on the plain day-cell surface, so
+              // it needs the darker gold-brown onTertiaryFixedVariant
+              // (#5B4301, ~8:1) — onTertiaryContainer (#CEAC63) was only
+              // 2.06:1 and failed WCAG AA.
               final markerFg =
-                  isToday ? scheme.onPrimary : scheme.onTertiaryContainer;
+                  isToday ? scheme.onPrimary : scheme.onTertiaryFixedVariant;
               // One clean announcement per day cell ("15 October 2026")
               // instead of the raw day-number + time fragments; the cell
               // is a button that opens the day's detail sheet.
@@ -608,7 +627,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                           Flexible(
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
+                              alignment: AlignmentDirectional.centerStart,
                               child: Text(
                                 localizeDigits('$day', lang),
                                 style: theme.textTheme.titleSmall?.copyWith(
@@ -622,7 +641,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                             Flexible(
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerRight,
+                                alignment: AlignmentDirectional.centerEnd,
                                 child: Tooltip(
                                   message: l10n.estimatedTooltip,
                                   child: Text(
@@ -736,7 +755,7 @@ class _CellTime extends StatelessWidget {
       width: double.infinity,
       child: FittedBox(
         fit: BoxFit.scaleDown,
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
           style: Theme.of(context)

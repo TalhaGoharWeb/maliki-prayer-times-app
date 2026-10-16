@@ -6,6 +6,7 @@ import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/services/update_service.dart';
 import 'package:malikiprayertimes/utils/app_info.dart';
+import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
 import 'package:malikiprayertimes/widgets/notification_settings.dart';
@@ -358,6 +359,9 @@ class _SectionHeader extends StatelessWidget {  final IconData icon;
         Expanded(
           child: Text(
             title.toUpperCase(),
+            // Screen readers get the un-uppercased string: all caps can
+            // degrade pronunciation in en/fr.
+            semanticsLabel: title,
             style: AppFonts.eyebrow(context).copyWith(
               color: theme.colorScheme.secondary,
             ),
@@ -397,6 +401,7 @@ class _AdjustmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final lang = Localizations.localeOf(context).languageCode;
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
@@ -421,10 +426,10 @@ class _AdjustmentCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             arabic,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: AppFonts.arabic,
                               fontSize: 14,
-                              color: Color(0xFF404944),
+                              color: scheme.onSurfaceVariant,
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -458,7 +463,9 @@ class _AdjustmentCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                '${value >= 0 ? '+' : ''}$value',
+                // Digit-localized for `ar` (Arabic-Indic) so the stepper
+                // never shows raw Western digits.
+                localizeDigits('${value >= 0 ? '+' : ''}$value', lang),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleSmall,
               ),

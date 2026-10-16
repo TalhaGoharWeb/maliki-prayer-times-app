@@ -156,7 +156,9 @@ class _LocationScreenState extends State<LocationScreen> {
 
   String? _validateLatitude(AppLocalizations l10n, String? value) {
     final parsed = double.tryParse(value?.trim() ?? '');
-    if (parsed == null) {
+    // Reject NaN/infinity: double.parse accepts "NaN"/"Infinity", and the
+    // engine would silently collapse every time to solar noon.
+    if (parsed == null || parsed.isNaN || !parsed.isFinite) {
       return l10n.validateNumberExample;
     }
     if (parsed < -90 || parsed > 90) {
@@ -167,7 +169,7 @@ class _LocationScreenState extends State<LocationScreen> {
 
   String? _validateLongitude(AppLocalizations l10n, String? value) {
     final parsed = double.tryParse(value?.trim() ?? '');
-    if (parsed == null) {
+    if (parsed == null || parsed.isNaN || !parsed.isFinite) {
       return l10n.validateNumberExample;
     }
     if (parsed < -180 || parsed > 180) {
@@ -215,6 +217,8 @@ class _LocationScreenState extends State<LocationScreen> {
                         children: [
                           Text(
                             l10n.locationTitle.toUpperCase(),
+                            // Screen readers get the un-uppercased string.
+                            semanticsLabel: l10n.locationTitle,
                             style: AppFonts.eyebrow(context).copyWith(
                               color: scheme.secondary,
                             ),
@@ -418,6 +422,8 @@ class _SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title.toUpperCase(),
+            // Screen readers get the un-uppercased string.
+            semanticsLabel: title,
             style: AppFonts.eyebrow(context).copyWith(
               color: theme.colorScheme.secondary,
             ),
@@ -473,6 +479,8 @@ class _ActiveHorizonCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           l10n.activeNow.toUpperCase(),
+                          // Screen readers get the un-uppercased string.
+                          semanticsLabel: l10n.activeNow,
                           style: AppFonts.eyebrow(context).copyWith(
                             color: scheme.inversePrimary,
                           ),
@@ -524,7 +532,7 @@ class _ActiveHorizonCard extends StatelessWidget {
                       Expanded(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
+                          alignment: AlignmentDirectional.centerStart,
                           child: Text(
                             '${loc.latitude.toStringAsFixed(5)}°  ·  '
                             '${loc.longitude.toStringAsFixed(5)}°',

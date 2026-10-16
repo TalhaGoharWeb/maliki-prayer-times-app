@@ -103,6 +103,14 @@ abstract final class AppFonts {
         onTertiary: AppColors.onPrimary,
         tertiaryContainer: AppColors.tertiaryContainer,
         onTertiaryContainer: AppColors.onTertiaryContainer,
+        // The fixed tertiary roles are real Stitch tokens (AppColors) — they
+        // must be wired explicitly: the ColorScheme getters fall back to
+        // tertiary/onTertiary (dark brown/white) when unset, which inverted
+        // every tertiaryFixed surface (I-02: the marker rendered white).
+        tertiaryFixed: AppColors.tertiaryFixed,
+        tertiaryFixedDim: AppColors.tertiaryFixedDim,
+        onTertiaryFixed: AppColors.onTertiaryFixed,
+        onTertiaryFixedVariant: AppColors.onTertiaryFixedVariant,
         error: AppColors.error,
         onError: AppColors.onPrimary,
         errorContainer: AppColors.errorContainer,
@@ -151,6 +159,11 @@ abstract final class AppFonts {
           letterSpacing: tracking,
           height: bodyHeight,
         );
+    // Scholarly badge labels get 0.08em tracking on Latin locales only:
+    // letter-spacing breaks Arabic-script joining in ur (Nastaleeq) and
+    // ar (Amiri).
+    final badgeTracking =
+        (languageCode == 'ur' || languageCode == 'ar') ? 0.0 : 0.08 * 11;
     return TextTheme(
       displayLarge: s(32, FontWeight.w700), // hero countdown
       displayMedium: s(30, FontWeight.w600), // headline lg
@@ -164,9 +177,10 @@ abstract final class AppFonts {
       bodySmall: b(12, FontWeight.w400),
       labelLarge: b(11, FontWeight.w600, tracking: 0.04 * 11), // eyebrow
       labelMedium: b(12, FontWeight.w600),
-      // Scholarly badge labels: 11px semibold, 0.08em tracking, serif.
+      // Scholarly badge labels: 11px semibold, 0.08em tracking (Latin
+      // locales only — see badgeTracking above), serif.
       labelSmall: s(11, FontWeight.w600, height: 1.4).copyWith(
-        letterSpacing: 0.08 * 11,
+        letterSpacing: badgeTracking,
       ),
     );
   }

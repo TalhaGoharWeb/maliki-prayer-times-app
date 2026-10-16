@@ -190,7 +190,7 @@
       }
     }
   },
-  "asrPreferredInfo": "Preferred until isfirar (yellowing of the sun) — informational band; shown approximately, never an adhan time.",
+  "asrPreferredInfo": "Preferred until isfirar (yellowing of the sun) — informational band; never an adhan time.",
   "@asrPreferredInfo": {
     "description": "Asr ikhtiyari band (isfirar, informational)"
   },
@@ -235,6 +235,10 @@
   "hijriCalendarNote": "Tabular (arithmetic) Islamic calendar — an arithmetic approximation; actual month starts depend on moon sighting.",
   "@hijriCalendarNote": {
     "description": "Note that the Hijri calendar is tabular/approximate"
+  },
+  "hijriApproxQualifier": "approximate",
+  "@hijriApproxQualifier": {
+    "description": "Short qualifier marking a Hijri date as an arithmetic approximation"
   },
   "hijriDateFormat": "{day} {monthName} {year} AH",
   "@hijriDateFormat": {
@@ -1032,6 +1036,14 @@
   "reminderSet": "Reminder set for {time}",
   "@reminderSet": {
     "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunAlignPassed": "Today's alignment has already passed.",
+  "@sunAlignPassed": {
+    "description": "Qibla wave 2026-10-16: sunAlignPassed"
+  },
+  "cancelReminder": "Cancel reminder",
+  "@cancelReminder": {
+    "description": "Qibla wave 2026-10-16: cancelReminder"
   },
   "sunReminderTitle": "Qibla sun alignment",
   "@sunReminderTitle": {

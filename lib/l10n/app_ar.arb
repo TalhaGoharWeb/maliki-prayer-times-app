@@ -36,13 +36,14 @@
   "subhNecessityEnd": "النهاية القصوى (لأصحاب الأعذار): الشروق، {time}.",
   "dhuhrPreferred": "وقت الاختيار إلى دخول العصر (المثل الأول)، {time}.",
   "dhuhrNecessityEnd": "النهاية القصوى (لأصحاب الأعذار): الغروب، {time}.",
-  "asrPreferredInfo": "وقت الاختيار إلى الاصفرار (اصفرار الشمس) — شريط معلوماتي؛ تقريبي، وليس وقت أذان أبدًا.",
+  "asrPreferredInfo": "وقت الاختيار إلى الاصفرار (اصفرار الشمس) — شريط معلوماتي؛ وليس وقت أذان أبدًا.",
   "asrNecessityEnd": "النهاية القصوى (لأصحاب الأعذار): الغروب، {time}.",
   "maghribPreferred": "وقت الاختيار ضيق — نحو 15 إلى 20 دقيقة بعد الغروب (حتى {time}). شريط معلوماتي؛ ليس وقت أذان.",
   "maghribNecessityInfo": "النهاية القصوى (لأصحاب الأعذار): الفجر الصادق — غير محسوب في هذه الشاشة.",
   "ishaPreferred": "وقت الاختيار إلى الثلث الأول من الليل، {third}. قول بديل مُسمّى: يمتد وقت الاختيار عند ابن حبيب إلى منتصف الليل، {midnight}.",
   "ishaNecessityInfo": "النهاية القصوى (لأصحاب الأعذار): الفجر الصادق — غير محسوب في هذه الشاشة.",
   "hijriCalendarNote": "تقويم إسلامي حسابي (رياضي) — تقدير حسابي؛ بداية الشهور الفعلية تعتمد على رؤية الهلال.",
+  "hijriApproxQualifier": "تقريبي",
   "hijriDateFormat": "{day} {monthName} {year} هـ",
   "monthSubtitle": "{hijri} · التواريخ الهجرية: تقويم حسابي",
   "previousMonth": "الشهر السابق",
@@ -454,6 +455,14 @@
   "reminderSet": "تم ضبط التذكير لـ {time}",
   "@reminderSet": {
     "description": "Redesign 2026-10-15: reminderSet"
+  },
+  "sunAlignPassed": "لقد انقضى وقت محاذاة الشمس للقبلة اليوم.",
+  "@sunAlignPassed": {
+    "description": "Qibla wave 2026-10-16: sunAlignPassed"
+  },
+  "cancelReminder": "إلغاء التذكير",
+  "@cancelReminder": {
+    "description": "Qibla wave 2026-10-16: cancelReminder"
   },
   "sunReminderTitle": "محاذاة الشمس مع القبلة",
   "@sunReminderTitle": {
