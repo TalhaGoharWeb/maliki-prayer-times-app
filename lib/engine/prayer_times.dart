@@ -31,7 +31,10 @@ class PrayerTimes {
   final DateTime isha;
 
   /// First third of the night (Maliki ikhtiyari end of Isha):
-  /// maghrib + (tomorrowFajr − maghrib) / 3. Informational marker.
+  /// sunset + (tomorrowFajr − sunset) / 3, anchored on the RAW solar sunset —
+  /// never on the ihtiyat-shifted Maghrib — so the fiqh boundary does not
+  /// move when the user toggles the operational ihtiyat convention.
+  /// Informational marker.
   final DateTime ishaPreferredEnd;
 
   /// Ibn Habib midnight variant (spec section 3.8):
@@ -39,7 +42,9 @@ class PrayerTimes {
   /// and tomorrow's sunrise. Labeled alternative — never an adhan time.
   final DateTime ishaMidnightVariant;
 
-  /// Maghrib + 20 minutes informational band — NOT an adhan time.
+  /// Raw sunset + 20 minutes informational band — NOT an adhan time.
+  /// Anchored on the raw solar sunset (no ihtiyat) so the displayed end
+  /// matches the "about 15-20 minutes after sunset" band text.
   final DateTime maghribPreferredEnd;
 
   /// True when any high-latitude fallback approximation was used; the affected
@@ -226,9 +231,13 @@ _SolarEvents _solarEvents(
 /// High-latitude fallback ([HighLatitudeRule.middleOfNight]): when Fajr or
 /// Isha never occur (the sun never reaches the configured depression), they
 /// are estimated from the night portions — fajr = sunrise − night/2,
-/// isha = maghrib + night/2 — and [PrayerTimes.highLatitudeFallback] is set.
-/// Fallback times are always finite and keep the day ordering sane; they must
-/// be labeled as estimates wherever displayed.
+/// isha = sunset + night/2 — and [PrayerTimes.highLatitudeFallback] is set.
+/// When the sun never reaches the horizon at all (polar day/night: sunrise
+/// or sunset null), the horizon is estimated as noon±6 and the WHOLE day is
+/// forced onto this coherent estimate path — real twilight crossings are
+/// never mixed with synthetic horizon times. Fallback times are always
+/// finite and keep the day ordering sane; they must be labeled as estimates
+/// wherever displayed.
 PrayerTimes calculatePrayerTimes({
   required Coordinates coordinates,
   required DateTime date,
@@ -266,12 +275,23 @@ PrayerTimes calculatePrayerTimes({
     sunsetUtc = today.noonUtc + 6.0;
   }
 
+  // E-01: when the sun never reaches the horizon (polar day/night), the
+  // horizon times above are synthetic (noon±6) and the whole day must use
+  // the coherent estimate path. Real twilight crossings (Fajr/Isha) must
+  // never be mixed with synthetic horizon times — that chimera misorders
+  // the day (e.g. 80°N in December: Fajr 08:03 after "sunrise" 05:58).
+  // The shadow-based Asr is likewise undefined when the sun never rises,
+  // so it takes the midpoint estimate on this path too.
+  final polarDay = today.sunriseUtc == null || today.sunsetUtc == null;
+
   final dhuhrUtc = today.noonUtc + profile.dhuhrIhtiyatMinutes / 60.0;
   final maghribUtc = sunsetUtc + profile.maghribIhtiyatMinutes / 60.0;
 
-  // Fajr: middle-of-night fallback when the dawn depression never occurs.
+  // Fajr: middle-of-night fallback when the dawn depression never occurs —
+  // or on the polar path, where even a real twilight crossing is ignored in
+  // favour of the coherent estimate (see above).
   double fajrUtc;
-  if (today.fajrUtc != null) {
+  if (today.fajrUtc != null && !polarDay) {
     fajrUtc = today.fajrUtc!;
   } else {
     highLatitudeFallback = true;
@@ -283,9 +303,11 @@ PrayerTimes calculatePrayerTimes({
     fajrUtc = sunriseUtc - night / 2.0;
   }
 
-  // Asr: midpoint fallback if the shadow altitude is never reached.
+  // Asr: midpoint fallback if the shadow altitude is never reached — or on
+  // the polar path, where the shadow formula has no real sun to work with.
   double asrUtc;
-  if (today.asrUtc != null &&
+  if (!polarDay &&
+      today.asrUtc != null &&
       today.asrUtc! > dhuhrUtc &&
       today.asrUtc! < maghribUtc) {
     asrUtc = today.asrUtc!;
@@ -296,6 +318,12 @@ PrayerTimes calculatePrayerTimes({
 
   // The night interval (maghrib → next true dawn) anchors the Isha markers.
   // Tomorrow's events are shifted +24 onto the absolute timeline.
+  //
+  // ANCHOR RULE (E-05): the fiqh night is measured from the RAW solar sunset
+  // (sunsetUtc), never from the ihtiyat-shifted maghribUtc. Ihtiyat is a
+  // user-toggleable operational convention; fiqh boundaries (third of night,
+  // midnight variant) must not shift when it is toggled. The displayed
+  // Maghrib itself keeps the ihtiyat — that is disclosed in settings.
   double tomorrowFajrUtc;
   if (tomorrow.fajrUtc != null) {
     tomorrowFajrUtc = tomorrow.fajrUtc! + 24.0;
@@ -310,18 +338,18 @@ PrayerTimes calculatePrayerTimes({
       tomorrowFajrUtc = tomorrowSunriseAbs - night / 2.0;
     }
   }
-  var night = tomorrowFajrUtc - maghribUtc;
+  var night = tomorrowFajrUtc - sunsetUtc;
   if (night <= 0 || night.isNaN) night = 12.0;
 
   double ishaUtc;
-  if (today.ishaUtc != null) {
+  if (today.ishaUtc != null && !polarDay) {
     ishaUtc = today.ishaUtc!;
   } else {
     highLatitudeFallback = true;
-    ishaUtc = maghribUtc + night / 2.0;
+    ishaUtc = sunsetUtc + night / 2.0;
   }
 
-  var ishaPreferredEndUtc = maghribUtc + night / 3.0;
+  var ishaPreferredEndUtc = sunsetUtc + night / 3.0;
   if (ishaPreferredEndUtc <= ishaUtc) {
     // Can only happen on the fallback path: the estimated Isha sits at/after
     // the third-of-night marker. Keep the marker after the estimated Isha so
@@ -343,7 +371,10 @@ PrayerTimes calculatePrayerTimes({
     highLatitudeFallback = true;
     ishaMidnightVariantUtc = sunsetUtc + 6.0;
   }
-  final maghribPreferredEndUtc = maghribUtc + 20.0 / 60.0;
+  // E-04: the ~15-20 minute Maghrib band is measured from the raw sunset,
+  // so the displayed end is sunset + 20 min (previously it stacked the
+  // +20 min on the ihtiyat-shifted Maghrib, showing sunset + 21 min).
+  final maghribPreferredEndUtc = sunsetUtc + 20.0 / 60.0;
 
   // UTC instant → wall clock in the offset frame → nearest minute.
   DateTime wall(double utcHours) {

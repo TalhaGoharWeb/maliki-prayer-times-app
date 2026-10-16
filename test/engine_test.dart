@@ -165,6 +165,101 @@ void main() {
     });
   });
 
+  group('polar-night coherence (E-01)', () {
+    // Regression: before the fix, 70-84.6°N in deep winter mixed REAL
+    // twilight crossings (the sun's max altitude sits between −18° and
+    // −0.833°) with SYNTHETIC noon±6 horizon times — 80°N on 21 Dec 2026
+    // showed fajr 08:03 > sunrise 05:58 and isha 15:24 < maghrib 17:59.
+
+    test('70N on 21 Dec: whole day estimated, ordering holds', () {
+      final t = times(70.0, 0.0, 2026, 12, 21, Duration.zero);
+      expect(t.highLatitudeFallback, isTrue);
+      expectOrdering(t);
+    });
+
+    test('80N on 21 Dec: chimera gone — fajr < sunrise < ... < maghrib < isha',
+        () {
+      final t = times(80.0, 0.0, 2026, 12, 21, Duration.zero);
+      expect(t.highLatitudeFallback, isTrue);
+      expectOrdering(t);
+      // The two crossings that were inverted before the fix.
+      expect(t.fajr.isBefore(t.sunrise), isTrue,
+          reason: 'estimated fajr before synthetic sunrise');
+      expect(t.isha.isAfter(t.maghrib), isTrue,
+          reason: 'estimated isha after synthetic maghrib');
+    });
+
+    test('80N on 21 Jun (polar day): stays coherent', () {
+      final t = times(80.0, 0.0, 2026, 6, 21, Duration.zero);
+      expect(t.highLatitudeFallback, isTrue);
+      expectOrdering(t);
+    });
+  });
+
+  group('Maghrib preferred-band anchor (E-04)', () {
+    test('maghribPreferredEnd is exactly raw sunset + 20 minutes', () {
+      // Default profile adds +1 min ihtiyat into the displayed Maghrib, so
+      // the raw sunset is recovered by subtracting it.
+      final t = times(18.08581, -15.9785, 2026, 10, 15, Duration.zero);
+      final rawSunset =
+          t.maghrib.subtract(const Duration(minutes: 1));
+      expect(t.maghribPreferredEnd.difference(rawSunset),
+          const Duration(minutes: 20));
+    });
+
+    test('with ihtiyat disabled the band end is maghrib + 20 minutes', () {
+      const base = PrayerProfiles.malikiMwlWestAfrica;
+      final noIhtiyat = PrayerProfile(
+        id: 'test-no-ihtiyat',
+        name: 'test copy',
+        basis: 'test-only copy of the default profile without ihtiyat',
+        fajrAngle: base.fajrAngle,
+        ishaAngle: base.ishaAngle,
+        asrShadowFactor: base.asrShadowFactor,
+        solarDepression: base.solarDepression,
+        dhuhrIhtiyatMinutes: 0,
+        maghribIhtiyatMinutes: 0,
+      );
+      final t = times(
+          18.08581, -15.9785, 2026, 10, 15, Duration.zero, noIhtiyat);
+      expect(t.maghribPreferredEnd.difference(t.maghrib),
+          const Duration(minutes: 20));
+    });
+  });
+
+  group('fiqh marker anchors ignore ihtiyat (E-05)', () {
+    test('toggling ihtiyat moves Maghrib but not the Isha markers', () {
+      const base = PrayerProfiles.malikiMwlWestAfrica;
+      final noIhtiyat = PrayerProfile(
+        id: 'test-no-ihtiyat',
+        name: 'test copy',
+        basis: 'test-only copy of the default profile without ihtiyat',
+        fajrAngle: base.fajrAngle,
+        ishaAngle: base.ishaAngle,
+        asrShadowFactor: base.asrShadowFactor,
+        solarDepression: base.solarDepression,
+        dhuhrIhtiyatMinutes: 0,
+        maghribIhtiyatMinutes: 0,
+      );
+      final withIhtiyat =
+          times(18.08581, -15.9785, 2026, 10, 15, Duration.zero, base);
+      final withoutIhtiyat = times(
+          18.08581, -15.9785, 2026, 10, 15, Duration.zero, noIhtiyat);
+      // The operational convention moves the displayed Maghrib…
+      expect(
+          withIhtiyat.maghrib.difference(withoutIhtiyat.maghrib),
+          const Duration(minutes: 1));
+      // …but the fiqh boundaries are anchored on the raw solar sunset and
+      // must not move.
+      expect(withIhtiyat.ishaPreferredEnd, withoutIhtiyat.ishaPreferredEnd);
+      expect(withIhtiyat.ishaMidnightVariant,
+          withoutIhtiyat.ishaMidnightVariant);
+      // Same for the Maghrib preferred-band end (E-04).
+      expect(withIhtiyat.maghribPreferredEnd,
+          withoutIhtiyat.maghribPreferredEnd);
+    });
+  });
+
   group('named profiles', () {
     test('all named profiles produce ordered days for Nouakchott', () {
       for (final p in PrayerProfiles.all) {
