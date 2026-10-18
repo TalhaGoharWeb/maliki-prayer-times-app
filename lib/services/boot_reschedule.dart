@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
+import 'package:malikiprayertimes/services/qada_reminders.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -79,9 +80,10 @@ abstract final class BootReschedule {
 }
 
 /// Headless entrypoint invoked by the native `BootReceiver` after reboot.
-/// Rebuilds the [NotificationService] and re-runs the last persisted
-/// schedule. Kept minimal and fast: the OS only grants a brief window after
-/// `BOOT_COMPLETED`.
+/// Rebuilds the [NotificationService], re-runs the last persisted prayer
+/// schedule, and restores the optional daily qada reminder ([QadaReminders])
+/// when it is enabled. Kept minimal and fast: the OS only grants a brief
+/// window after `BOOT_COMPLETED`.
 ///
 /// The `@pragma('vm:entry-point')` keeps this from being tree-shaken: it is
 /// only referenced from native code, never from Dart.
@@ -89,8 +91,8 @@ abstract final class BootReschedule {
 Future<void> rescheduleOnBoot() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    final service =
-        NotificationService(scheduler: PluginNotificationScheduler());
+    final scheduler = PluginNotificationScheduler();
+    final service = NotificationService(scheduler: scheduler);
     // Localizations need a BuildContext; the fallback is the same plain
     // English used for a pre-UI timezone-change reschedule.
     final texts = NotificationTexts.fallback();
@@ -118,6 +120,15 @@ Future<void> rescheduleOnBoot() async {
       settings: settings,
       timeZoneOffset: inputs.timeZoneOffset,
       texts: texts,
+    );
+    // Restore the optional daily qada reminder: rescheduleAll's cancelAll()
+    // wiped its schedule, so re-schedule it only when it is enabled (a
+    // missing key means disabled). Localizations are unavailable headless,
+    // so the plain-English fallback strings are used. restoreOnBoot never
+    // throws — an optional reminder must not break the boot path.
+    await QadaReminders.restoreOnBoot(
+      minutesSinceMidnight: prefs.getInt(QadaReminders.minutesKey),
+      scheduler: scheduler,
     );
   } finally {
     // Signal the native receiver so it can destroy the headless engine.

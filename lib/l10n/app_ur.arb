@@ -1455,5 +1455,688 @@
   "calibrationNeededBody": "مقناطیسی فیلڈ کی ریڈنگ غیر معمولی ہے، اس لیے تیر غلط بتا سکتا ہے۔ وارننگ ختم ہونے تک فون کو 8 کی شکل میں ہلائیں۔",
   "@calibrationNeededBody": {
     "description": "Qibla: warning body when the magnetometer field looks wrong"
+  },
+  "hnLoadError": "آپ کا ریکارڈ لوڈ نہیں ہو سکا۔ براہ کرم یہ اسکرین دوبارہ کھول کر کوشش کریں۔",
+  "@hnLoadError": {
+    "description": "Hayd & Nifas: error shown when the encrypted records cannot be loaded"
+  }
+,
+  "qada2MadeUp": "مکمل شدہ: {count}",
+  "@qada2MadeUp": {
+    "description": "Qada v2: completed headline",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2ProgressTitle": "پیش رفت",
+  "@qada2ProgressTitle": {
+    "description": "Qada v2: progress section title"
+  },
+  "qada2ProgressText": "{total} میں سے {done} مکمل شدہ ({percent}%)",
+  "@qada2ProgressText": {
+    "description": "Qada v2: progress bar text label",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2TodaysPlan": "آج کا منصوبہ",
+  "@qada2TodaysPlan": {
+    "description": "Qada v2: today's plan card title"
+  },
+  "qada2TodaysPlanValue": "آج {count} نمازیں",
+  "@qada2TodaysPlanValue": {
+    "description": "Qada v2: today's plan value",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2NoTargetSet": "کوئی ہدف مقرر نہیں — منصوبہ ساز میں ایک منتخب کریں۔",
+  "@qada2NoTargetSet": {
+    "description": "Qada v2: no daily/weekly target set hint"
+  },
+  "qada2ProjectedFinish": "متوقع تکمیل",
+  "@qada2ProjectedFinish": {
+    "description": "Qada v2: projected end date card title"
+  },
+  "qada2ProjectedFinishValue": "{date} (تخمینہ)",
+  "@qada2ProjectedFinishValue": {
+    "description": "Qada v2: projected finish date, labelled as estimate",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2NoEta": "متوقع تکمیلی تاریخ دیکھنے کے لیے منصوبہ ساز میں روزانہ یا ہفتہ وار ہدف مقرر کریں۔",
+  "@qada2NoEta": {
+    "description": "Qada v2: hint shown when no ETA can be computed"
+  },
+  "qada2EstimatedBadge": "تخمینی",
+  "@qada2EstimatedBadge": {
+    "description": "Qada v2: badge marking estimated balances"
+  },
+  "qada2EstimatedHint": "اس باقی تعداد کا کچھ حصہ تخمینے سے آیا ہے، تصدیق شدہ تعداد سے نہیں۔",
+  "@qada2EstimatedHint": {
+    "description": "Qada v2: explanation of the estimated badge"
+  },
+  "qada2OpenModes": "حساب کے طریقے",
+  "@qada2OpenModes": {
+    "description": "Qada v2: button to open the calculation modes screen"
+  },
+  "qada2OpenModesDesc": "قطعی تعداد درج کریں، مدتوں کے حساب سے تخمینہ لگائیں، یا باقی تعداد درست کریں۔",
+  "@qada2OpenModesDesc": {
+    "description": "Qada v2: description of the calculation modes screen"
+  },
+  "qada2OpenPlanner": "منصوبہ ساز اور ریکارڈ",
+  "@qada2OpenPlanner": {
+    "description": "Qada v2: button to open the planner screen"
+  },
+  "qada2OpenPlannerDesc": "روزانہ اہداف، یاد دہانیاں، ریکارڈ اور بیک اپ۔",
+  "@qada2OpenPlannerDesc": {
+    "description": "Qada v2: description of the planner screen"
+  },
+  "qada2OpenHayd": "حیض و نفاس ٹریکر",
+  "@qada2OpenHayd": {
+    "description": "Qada v2: button to open the Hayd and Nifas tracker"
+  },
+  "qada2OpenHaydDesc": "خون آنے کی مدتوں کا اختیاری ریکارڈ۔",
+  "@qada2OpenHaydDesc": {
+    "description": "Qada v2: description of the Hayd and Nifas tracker"
+  },
+  "qada2ModesTitle": "حساب کے طریقے",
+  "@qada2ModesTitle": {
+    "description": "Qada v2: modes screen title"
+  },
+  "qada2ModeATitle": "الف · قطعی تعداد",
+  "@qada2ModeATitle": {
+    "description": "Qada v2: mode A section title"
+  },
+  "qada2ModeADesc": "وہ چھوٹی نمازیں جن کی تعداد آپ یقین کے ساتھ جانتے ہیں، درج کریں۔",
+  "@qada2ModeADesc": {
+    "description": "Qada v2: mode A description"
+  },
+  "qada2ModeBTitle": "ب · مدتوں کے حساب سے تخمینہ",
+  "@qada2ModeBTitle": {
+    "description": "Qada v2: mode B section title"
+  },
+  "qada2ModeBDesc": "وہ مدتیں شامل کریں جن میں نمازیں چھوٹیں اور فی دن کتنی چھوٹیں۔",
+  "@qada2ModeBDesc": {
+    "description": "Qada v2: mode B description"
+  },
+  "qada2ModeCTitle": "ج · تخمینہ وِزارڈ",
+  "@qada2ModeCTitle": {
+    "description": "Qada v2: mode C section title"
+  },
+  "qada2ModeCDesc": "تقریبی سالوں، مہینوں اور دنوں سے رہنمائی والا تخمینہ۔",
+  "@qada2ModeCDesc": {
+    "description": "Qada v2: mode C description"
+  },
+  "qada2ModeDTitle": "د · دستی ترمیم",
+  "@qada2ModeDTitle": {
+    "description": "Qada v2: mode D section title"
+  },
+  "qada2ModeDDesc": "وجہ درج کر کے باقی تعداد درست کریں۔",
+  "@qada2ModeDDesc": {
+    "description": "Qada v2: mode D description"
+  },
+  "qada2FieldErrorNumber": "0 یا اس سے زیادہ مکمل عدد درج کریں۔",
+  "@qada2FieldErrorNumber": {
+    "description": "Qada v2: numeric field validation error"
+  },
+  "qada2Total": "کل: {count}",
+  "@qada2Total": {
+    "description": "Qada v2: total of entered counts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2SavedOrigin": "محفوظ ہو گیا۔",
+  "@qada2SavedOrigin": {
+    "description": "Qada v2: confirmation that exact counts were saved"
+  },
+  "qada2Period": "مدت {n}",
+  "@qada2Period": {
+    "description": "Qada v2: numbered estimation period",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2StartDate": "آغاز کی تاریخ",
+  "@qada2StartDate": {
+    "description": "Qada v2: period start date label"
+  },
+  "qada2EndDate": "اختتامی تاریخ",
+  "@qada2EndDate": {
+    "description": "Qada v2: period end date label"
+  },
+  "qada2DailyRate": "فی دن چھوٹی نمازیں",
+  "@qada2DailyRate": {
+    "description": "Qada v2: per-prayer daily miss rate label"
+  },
+  "qada2AddPeriod": "مدت شامل کریں",
+  "@qada2AddPeriod": {
+    "description": "Qada v2: add an estimation period"
+  },
+  "qada2RemovePeriod": "مدت ہٹائیں",
+  "@qada2RemovePeriod": {
+    "description": "Qada v2: remove an estimation period"
+  },
+  "qada2OverlapError": "مدتیں ایک دوسرے پر نہیں آنی چاہئیں۔ تاریخیں درست کریں۔",
+  "@qada2OverlapError": {
+    "description": "Qada v2: overlapping periods validation error"
+  },
+  "qada2EndBeforeStart": "اختتامی تاریخ آغاز کی تاریخ کے برابر یا اس کے بعد ہونی چاہیے۔",
+  "@qada2EndBeforeStart": {
+    "description": "Qada v2: end-before-start validation error"
+  },
+  "qada2Preview": "تخمینہ پیش نظارہ",
+  "@qada2Preview": {
+    "description": "Qada v2: preview the estimation"
+  },
+  "qada2PreviewAssumptions": "مفروضات",
+  "@qada2PreviewAssumptions": {
+    "description": "Qada v2: estimation assumptions heading"
+  },
+  "qada2PreviewWarnings": "انتباہات",
+  "@qada2PreviewWarnings": {
+    "description": "Qada v2: estimation warnings heading"
+  },
+  "qada2EstimatedRange": "{low} – {high} نمازیں (تخمینہ)",
+  "@qada2EstimatedRange": {
+    "description": "Qada v2: low-high estimation range",
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2EstimatedLabel": "تخمینی — تصدیق شدہ ذمہ داری نہیں",
+  "@qada2EstimatedLabel": {
+    "description": "Qada v2: label marking an estimation"
+  },
+  "qada2ConfirmSaveTitle": "کیا یہ تخمینہ محفوظ کریں؟",
+  "@qada2ConfirmSaveTitle": {
+    "description": "Qada v2: confirm saving an estimation"
+  },
+  "qada2ConfirmSaveBody": "اس سے آپ کی باقی تعداد میں {count} نمازیں شامل ہو جائیں گی، تخمینی کی نشاندہی کے ساتھ۔ بعد میں ریکارڈ سے اسے کالعدم کر سکتے ہیں۔",
+  "@qada2ConfirmSaveBody": {
+    "description": "Qada v2: confirm-save estimation body",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2Confirm": "تصدیق کریں",
+  "@qada2Confirm": {
+    "description": "Qada v2: generic confirm button"
+  },
+  "qada2AdjustNonZero": "صفر کے علاوہ کوئی رقم درج کریں۔",
+  "@qada2AdjustNonZero": {
+    "description": "Qada v2: adjustment of zero is not allowed"
+  },
+  "qada2CompleteTooMany": "صرف {count} {prayer} باقی ہیں — باقی تعداد صفر سے کم نہیں ہو سکتی۔",
+  "@qada2CompleteTooMany": {
+    "description": "Qada v2: tried to complete more than the outstanding balance",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2AdjustTooMuch": "اس سے {prayer} صفر سے نیچے چلی جائے گی (صرف {count} باقی ہیں)۔",
+  "@qada2AdjustTooMuch": {
+    "description": "Qada v2: adjustment would take the balance below zero",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2ImportInvalid": "یہ کوئی درست بیک اپ نہیں لگتا۔ کچھ بھی امپورٹ نہیں ہوا۔",
+  "@qada2ImportInvalid": {
+    "description": "Qada v2: pasted import text is not a valid backup"
+  },
+  "qada2EstimateSaved": "تخمینہ محفوظ کر دیا گیا اور تخمینی کی نشاندہی کر دی گئی۔",
+  "@qada2EstimateSaved": {
+    "description": "Qada v2: estimation saved confirmation"
+  },
+  "qada2WizardYears": "تقریبی سال",
+  "@qada2WizardYears": {
+    "description": "Qada v2: wizard years field"
+  },
+  "qada2WizardMonths": "تقریبی ماہ",
+  "@qada2WizardMonths": {
+    "description": "Qada v2: wizard months field"
+  },
+  "qada2WizardDays": "تقریبی دن",
+  "@qada2WizardDays": {
+    "description": "Qada v2: wizard days field"
+  },
+  "qada2WizardAllFive": "پانچوں روزانہ نمازیں چھوٹ گئیں",
+  "@qada2WizardAllFive": {
+    "description": "Qada v2: wizard toggle for all five prayers"
+  },
+  "qada2WizardFrequency": "نمازیں کتنی بار چھوٹیں؟",
+  "@qada2WizardFrequency": {
+    "description": "Qada v2: wizard frequency question"
+  },
+  "qada2WizardFreqDaily": "ہر روز",
+  "@qada2WizardFreqDaily": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqMost": "اکثر دنوں میں",
+  "@qada2WizardFreqMost": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqHalf": "تقریباً آدھے دنوں میں",
+  "@qada2WizardFreqHalf": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqFew": "ہفتے میں چند دن",
+  "@qada2WizardFreqFew": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardDisclaimer": "ایپ آپ کا اپنا تخمینہ محفوظ کرتی ہے، کوئی تصدیق شدہ ذمہ داری نہیں۔ شک کی صورت میں کسی مستند عالم سے پوچھ لیں۔",
+  "@qada2WizardDisclaimer": {
+    "description": "Qada v2: wizard disclaimer"
+  },
+  "qada2AdjustAmount": "رقم (منفی باقی تعداد کم کرے گی)",
+  "@qada2AdjustAmount": {
+    "description": "Qada v2: adjustment amount field"
+  },
+  "qada2AdjustReason": "وجہ",
+  "@qada2AdjustReason": {
+    "description": "Qada v2: adjustment reason field"
+  },
+  "qada2AdjustReasonRequired": "وجہ بتانا ضروری ہے۔",
+  "@qada2AdjustReasonRequired": {
+    "description": "Qada v2: missing reason validation error"
+  },
+  "qada2AdjustNote": "نوٹ (اختیاری)",
+  "@qada2AdjustNote": {
+    "description": "Qada v2: adjustment note field"
+  },
+  "qada2AdjustResult": "{prayer} کی نئی باقی تعداد: {count}",
+  "@qada2AdjustResult": {
+    "description": "Qada v2: resulting balance after adjustment",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2AdjustConfirmTitle": "ترمیم لاگو کریں؟",
+  "@qada2AdjustConfirmTitle": {
+    "description": "Qada v2: confirm adjustment dialog title"
+  },
+  "qada2AdjustConfirmBody": "{prayer} میں {delta}۔ وجہ: {reason}",
+  "@qada2AdjustConfirmBody": {
+    "description": "Qada v2: confirm adjustment dialog body",
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "prayer": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2Adjusted": "ترمیم درج کر دی گئی۔ اسے ریکارڈ سے کالعدم کر سکتے ہیں۔",
+  "@qada2Adjusted": {
+    "description": "Qada v2: adjustment applied confirmation"
+  },
+  "qada2PlannerTitle": "منصوبہ ساز اور ریکارڈ",
+  "@qada2PlannerTitle": {
+    "description": "Qada v2: planner screen title"
+  },
+  "qada2PlanMode": "منصوبے کی قسم",
+  "@qada2PlanMode": {
+    "description": "Qada v2: planner mode selector label"
+  },
+  "qada2PlanModeAfterFard": "ہر فرض کے بعد",
+  "@qada2PlanModeAfterFard": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeAfterFardDesc": "پانچ روزانہ نمازوں میں سے ہر ایک کے بعد ایک قضا پڑھیں (روزانہ 5)۔",
+  "@qada2PlanModeAfterFardDesc": {
+    "description": "Qada v2: plan mode description"
+  },
+  "qada2PlanModeFullDay": "پورا دن",
+  "@qada2PlanModeFullDay": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeFullDayDesc": "ایک ساتھ پورے دن کی پانچوں نمازیں قضا کریں (روزانہ 5)۔",
+  "@qada2PlanModeFullDayDesc": {
+    "description": "Qada v2: plan mode description"
+  },
+  "qada2PlanModeDaily": "اپنی مرضی کا روزانہ",
+  "@qada2PlanModeDaily": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeWeekly": "اپنی مرضی کا ہفتہ وار",
+  "@qada2PlanModeWeekly": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeCustom": "اپنی مرضی کا شیڈول",
+  "@qada2PlanModeCustom": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeCustomDesc": "اپنے روزانہ اور ہفتہ وار اہداف نیچے مقرر کریں۔",
+  "@qada2PlanModeCustomDesc": {
+    "description": "Qada v2: custom plan mode description"
+  },
+  "qada2DailyTargetLabel": "روزانہ ہدف",
+  "@qada2DailyTargetLabel": {
+    "description": "Qada v2: daily target field"
+  },
+  "qada2WeeklyTargetLabel": "ہفتہ وار ہدف",
+  "@qada2WeeklyTargetLabel": {
+    "description": "Qada v2: weekly target field"
+  },
+  "qada2Reminder": "یاد دہانی",
+  "@qada2Reminder": {
+    "description": "Qada v2: reminder section title"
+  },
+  "qada2ReminderOff": "بند",
+  "@qada2ReminderOff": {
+    "description": "Qada v2: reminder off label"
+  },
+  "qada2ReminderTime": "یاد دہانی کا وقت",
+  "@qada2ReminderTime": {
+    "description": "Qada v2: reminder time label"
+  },
+  "qada2ReminderSet": "{time} کے لیے یاد دہانی لگا دی گئی۔",
+  "@qada2ReminderSet": {
+    "description": "Qada v2: reminder set confirmation",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2ReminderOffDone": "یاد دہانی بند کر دی گئی۔",
+  "@qada2ReminderOffDone": {
+    "description": "Qada v2: reminder turned off confirmation"
+  },
+  "qada2ReminderNote": "یاد دہانی صرف آپ کو مطلع کرتی ہے — یہ نمازیں مکمل قرار نہیں دیتی۔",
+  "@qada2ReminderNote": {
+    "description": "Qada v2: reminder is not a completion, disclaimer"
+  },
+  "qada2EtaLabel": "متوقع تکمیل (تخمینہ)",
+  "@qada2EtaLabel": {
+    "description": "Qada v2: ETA label"
+  },
+  "qada2History": "ریکارڈ",
+  "@qada2History": {
+    "description": "Qada v2: transaction history title"
+  },
+  "qada2FilterAll": "تمام",
+  "@qada2FilterAll": {
+    "description": "Qada v2: history filter, all prayers"
+  },
+  "qada2Undo": "کالعدم کریں",
+  "@qada2Undo": {
+    "description": "Qada v2: undo a transaction"
+  },
+  "qada2Undone": "کالعدم کر دیا گیا۔",
+  "@qada2Undone": {
+    "description": "Qada v2: transaction undone confirmation"
+  },
+  "qada2NoHistory": "ابھی کوئی ریکارڈ نہیں۔ باقی تعداد کی تبدیلیاں یہاں نظر آئیں گی۔",
+  "@qada2NoHistory": {
+    "description": "Qada v2: empty history message"
+  },
+  "qada2LogMadeUp": "ادا شدہ نمازیں درج کریں",
+  "@qada2LogMadeUp": {
+    "description": "Qada v2: log completed qada section title"
+  },
+  "qada2Count": "تعداد",
+  "@qada2Count": {
+    "description": "Qada v2: count field label"
+  },
+  "qada2LoggedMadeUp": "{count} {prayer} ادا شدہ درج کر دی گئیں۔",
+  "@qada2LoggedMadeUp": {
+    "description": "Qada v2: made-up prayers logged confirmation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2Export": "بیک اپ ایکسپورٹ کریں",
+  "@qada2Export": {
+    "description": "Qada v2: export backup button"
+  },
+  "qada2ExportTitle": "بیک اپ (JSON)",
+  "@qada2ExportTitle": {
+    "description": "Qada v2: export dialog title"
+  },
+  "qada2Copy": "کاپی کریں",
+  "@qada2Copy": {
+    "description": "Qada v2: copy to clipboard button"
+  },
+  "qada2Copied": "کلپ بورڈ میں کاپی ہو گیا۔",
+  "@qada2Copied": {
+    "description": "Qada v2: copied confirmation"
+  },
+  "qada2Import": "بیک اپ امپورٹ کریں",
+  "@qada2Import": {
+    "description": "Qada v2: import backup button"
+  },
+  "qada2ImportHint": "اس ایپ سے ایکسپورٹ کردہ بیک اپ JSON یہاں پیسٹ کریں۔",
+  "@qada2ImportHint": {
+    "description": "Qada v2: import text field hint"
+  },
+  "qada2ImportTitle": "بیک اپ امپورٹ کریں؟",
+  "@qada2ImportTitle": {
+    "description": "Qada v2: confirm import dialog title"
+  },
+  "qada2ImportBody": "اس سے آپ کی موجودہ باقی تعداد، ریکارڈ، اہداف اور اندراجات کی جگہ بیک اپ رکھ دیا جائے گا۔ یہ عمل واپس نہیں ہو سکتا۔",
+  "@qada2ImportBody": {
+    "description": "Qada v2: confirm import dialog body"
+  },
+  "qada2Imported": "امپورٹ مکمل ہو گیا۔",
+  "@qada2Imported": {
+    "description": "Qada v2: import complete confirmation"
+  },
+  "qada2Privacy": "پرائیویسی",
+  "@qada2Privacy": {
+    "description": "Qada v2: privacy section title"
+  },
+  "qada2DeleteAll": "قضا کا تمام ڈیٹا حذف کریں",
+  "@qada2DeleteAll": {
+    "description": "Qada v2: delete all button"
+  },
+  "qada2DeleteAllTitle": "کیا واقعی سب کچھ حذف کریں؟",
+  "@qada2DeleteAllTitle": {
+    "description": "Qada v2: delete-all confirm dialog title"
+  },
+  "qada2DeleteAllBody": "اس سے تمام درج شدہ نمازیں، باقی تعداد، ریکارڈ، اہداف، یاد دہانیاں اور خون آنے کے اندراجات مستقل طور پر حذف ہو جائیں گے۔",
+  "@qada2DeleteAllBody": {
+    "description": "Qada v2: delete-all confirm dialog body"
+  },
+  "qada2DeleteAllConfirm": "جی ہاں، سب کچھ حذف کریں",
+  "@qada2DeleteAllConfirm": {
+    "description": "Qada v2: delete-all final confirm button"
+  },
+  "qada2DeleteAllDone": "قضا کا تمام ڈیٹا حذف کر دیا گیا۔",
+  "@qada2DeleteAllDone": {
+    "description": "Qada v2: delete-all done confirmation"
+  },
+  "hnTitle": "حیض و نفاس ٹریکر",
+  "@hnTitle": {
+    "description": "Hayd/Nifas: screen title"
+  },
+  "hnNoAutoClassify": "ایپ خون آنے کی خودکار درجہ بندی نہیں کرتی۔ یہ صرف وہی محفوظ کرتی ہے جو آپ درج کریں۔ غیر یقینی صورتوں میں مستند عالم سے پوچھیں۔",
+  "@hnNoAutoClassify": {
+    "description": "Hayd/Nifas: no automatic classification banner"
+  },
+  "hnTabHayd": "حیض",
+  "@hnTabHayd": {
+    "description": "Hayd/Nifas: Hayd tab"
+  },
+  "hnTabNifas": "نفاس",
+  "@hnTabNifas": {
+    "description": "Hayd/Nifas: Nifas tab"
+  },
+  "hnTabIrregular": "بے قاعدہ",
+  "@hnTabIrregular": {
+    "description": "Hayd/Nifas: Irregular tab"
+  },
+  "hnIrregularNote": "صرف مشاہدات — یہاں کوئی درجہ بندی نہیں کی جاتی۔",
+  "@hnIrregularNote": {
+    "description": "Hayd/Nifas: irregular tab note"
+  },
+  "hnNoRecords": "ابھی کوئی اندراج نہیں۔",
+  "@hnNoRecords": {
+    "description": "Hayd/Nifas: empty records message"
+  },
+  "hnAddRecord": "اندراج شامل کریں",
+  "@hnAddRecord": {
+    "description": "Hayd/Nifas: add record button"
+  },
+  "hnEditRecord": "اندراج میں ترمیم کریں",
+  "@hnEditRecord": {
+    "description": "Hayd/Nifas: edit record title"
+  },
+  "hnStart": "آغاز",
+  "@hnStart": {
+    "description": "Hayd/Nifas: start date label"
+  },
+  "hnEnd": "اختتام",
+  "@hnEnd": {
+    "description": "Hayd/Nifas: end date label"
+  },
+  "hnOngoing": "جاری",
+  "@hnOngoing": {
+    "description": "Hayd/Nifas: ongoing toggle label"
+  },
+  "hnPurityIntervals": "پاکی کے وقفے",
+  "@hnPurityIntervals": {
+    "description": "Hayd/Nifas: purity intervals section"
+  },
+  "hnAddInterval": "پاکی کا وقفہ شامل کریں",
+  "@hnAddInterval": {
+    "description": "Hayd/Nifas: add purity interval button"
+  },
+  "hnRemoveInterval": "ہٹائیں",
+  "@hnRemoveInterval": {
+    "description": "Hayd/Nifas: remove purity interval button"
+  },
+  "hnPurityConfirmed": "میں تصدیق کرتی ہوں کہ اوپر درج پاکی کے وقفے درست ہیں",
+  "@hnPurityConfirmed": {
+    "description": "Hayd/Nifas: purity confirmed checkbox"
+  },
+  "hnPrivateNote": "نجی نوٹ",
+  "@hnPrivateNote": {
+    "description": "Hayd/Nifas: private note field"
+  },
+  "hnConfirmation": "تصدیق",
+  "@hnConfirmation": {
+    "description": "Hayd/Nifas: confirmation status label"
+  },
+  "hnConfirmed": "تصدیق شدہ",
+  "@hnConfirmed": {
+    "description": "Hayd/Nifas: confirmed option"
+  },
+  "hnUnconfirmed": "غیر تصدیق شدہ",
+  "@hnUnconfirmed": {
+    "description": "Hayd/Nifas: unconfirmed option"
+  },
+  "hnChildbirthDate": "ولادت کی تاریخ",
+  "@hnChildbirthDate": {
+    "description": "Hayd/Nifas: childbirth date label (nifas only)"
+  },
+  "hnDeleteRecord": "اندراج حذف کریں",
+  "@hnDeleteRecord": {
+    "description": "Hayd/Nifas: delete record button"
+  },
+  "hnDeleteConfirmTitle": "کیا یہ اندراج حذف کریں؟",
+  "@hnDeleteConfirmTitle": {
+    "description": "Hayd/Nifas: delete confirm dialog title"
+  },
+  "hnDeleteConfirmBody": "اس سے یہ اندراج مستقل طور پر ختم ہو جائے گا۔ پہلے سے لاگو شدہ استثنات ریکارڈ میں رہیں گے۔",
+  "@hnDeleteConfirmBody": {
+    "description": "Hayd/Nifas: delete confirm dialog body"
+  },
+  "hnReviewExemption": "استثنا کا جائزہ لیں",
+  "@hnReviewExemption": {
+    "description": "Hayd/Nifas: review for exemption button"
+  },
+  "hnExemptionTitle": "استثنا کا جائزہ",
+  "@hnExemptionTitle": {
+    "description": "Hayd/Nifas: exemption review dialog title"
+  },
+  "hnExemptionDays": "فی نماز مستثنیٰ دن",
+  "@hnExemptionDays": {
+    "description": "Hayd/Nifas: days to exempt field label"
+  },
+  "hnExemptionConfirmTitle": "استثنا لاگو کریں؟",
+  "@hnExemptionConfirmTitle": {
+    "description": "Hayd/Nifas: apply exemption confirm title"
+  },
+  "hnExemptionConfirmBody": "اس سے آپ کی باقی تعداد سے {count} نمازیں منہا ہو جائیں گی اور یہ ریکارڈ میں درج ہو گا۔ صرف وہی استثنا لگائیں جس کی آپ تصدیق کر چکی ہوں۔",
+  "@hnExemptionConfirmBody": {
+    "description": "Hayd/Nifas: apply exemption confirm body",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hnExempted": "استثنا لاگو کر دیا گیا اور ریکارڈ میں درج ہو گیا۔",
+  "@hnExempted": {
+    "description": "Hayd/Nifas: exemption applied confirmation"
+  },
+  "hnExemptionTooMany": "{prayer} کی باقی تعداد ({count} باقی) سے زیادہ دن منتخب کیے گئے۔",
+  "@hnExemptionTooMany": {
+    "description": "Hayd/Nifas: exemption days exceed the outstanding balance",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hnRecordOngoing": "جاری",
+  "@hnRecordOngoing": {
+    "description": "Hayd/Nifas: ongoing record label"
   }
 }

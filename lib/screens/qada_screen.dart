@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/screens/hayd_nifas_screen.dart';
+import 'package:malikiprayertimes/screens/qada_modes_screen.dart';
+import 'package:malikiprayertimes/screens/qada_planner_screen.dart';
 import 'package:malikiprayertimes/services/qada_service.dart';
+import 'package:malikiprayertimes/services/secure_store.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 
 /// Missed-prayer (qada) tracker: log prayers that were missed, mark them
-/// done as they are made up, and delete entries. The header card shows the
-/// total still remaining; a per-prayer summary follows, then the pending
-/// list and the completed list.
+/// done as they are made up, and delete entries.
 ///
-/// This screen renders body content only — the app chrome lives in
-/// [MalikiPrayerTimesApp]. The add button is positioned inside this body.
+/// The dashboard header shows the total still outstanding (logged entries
+/// plus balances set through the calculation modes). A progress bar, the
+/// completed count, today's plan, and the projected finish date follow,
+/// then navigation to the calculation modes, the planner & history, and
+/// the Hayd & Nifas tracker. The per-prayer card, pending list, and
+/// completed list keep the original entry-based behaviour.
 class QadaScreen extends StatefulWidget {
-  const QadaScreen({super.key});
+  /// Injected secure storage backend, threaded through to the calculation
+  /// modes, planner, and Hayd & Nifas screens (tests use the in-memory
+  /// fake; production uses the platform secure storage).
+  final SecureStore? secureStore;
+
+  const QadaScreen({super.key, this.secureStore});
 
   @override
   State<QadaScreen> createState() => _QadaScreenState();
@@ -29,7 +40,7 @@ const _loggablePrayers = [
 ];
 
 class _QadaScreenState extends State<QadaScreen> {
-  late final Future<QadaService> _future;
+  late Future<QadaService> _future;
 
   @override
   void initState() {
@@ -38,7 +49,7 @@ class _QadaScreenState extends State<QadaScreen> {
   }
 
   Future<QadaService> _load() async {
-    final service = QadaService();
+    final service = QadaService(secureStore: widget.secureStore);
     await service.load();
     return service;
   }
@@ -128,6 +139,38 @@ class _QadaScreenState extends State<QadaScreen> {
     }
   }
 
+  Future<void> _refreshAfterPush(Future<void> Function() open) async {
+    await open();
+    if (!mounted) return;
+    setState(() {
+      _future = _load();
+    });
+  }
+
+  void _openModes(BuildContext context) {
+    _refreshAfterPush(() => Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (_) =>
+                QadaModesScreen(secureStore: widget.secureStore)))
+        .then((_) {}));
+  }
+
+  void _openPlanner(BuildContext context) {
+    _refreshAfterPush(() => Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (_) =>
+                QadaPlannerScreen(secureStore: widget.secureStore)))
+        .then((_) {}));
+  }
+
+  void _openHaydNifas(BuildContext context) {
+    _refreshAfterPush(() => Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (_) =>
+                HaydNifasScreen(secureStore: widget.secureStore)))
+        .then((_) {}));
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<QadaService>(
@@ -148,6 +191,12 @@ class _QadaScreenState extends State<QadaScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                   children: [
                     _headerCard(context, l10n, service),
+                    const SizedBox(height: 16),
+                    _progressCard(context, l10n, service),
+                    const SizedBox(height: 16),
+                    _statsRow(context, l10n, service),
+                    const SizedBox(height: 16),
+                    _navigationCard(context, l10n),
                     const SizedBox(height: 16),
                     _perPrayerCard(context, l10n, service),
                     const SizedBox(height: 16),
@@ -180,49 +229,272 @@ class _QadaScreenState extends State<QadaScreen> {
     );
   }
 
-  /// Deep-green header card with the gold "total remaining" headline.
+  /// Deep-green header card with the gold "total outstanding" headline and
+  /// the Estimated badge when any balance comes from an estimation.
   Widget _headerCard(
       BuildContext context, AppLocalizations l10n, QadaService service) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final total = service.totalRemaining();
+    final total = service.totalOutstanding();
     return Card(
       color: scheme.primary,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: scheme.tertiaryFixed,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(Icons.history_outlined,
+                      color: scheme.onTertiaryFixed, size: 26),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.qadaTitle.toUpperCase(),
+                        style: AppFonts.eyebrow(context).copyWith(
+                          color: scheme.tertiaryFixed,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.qadaTotalRemaining(total),
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          color: scheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (service.hasEstimatedBalances()) ...[
+              const SizedBox(height: 12),
+              _estimatedBadge(context, l10n, scheme),
+              const SizedBox(height: 8),
+              Text(
+                l10n.qada2EstimatedHint,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onPrimary.withValues(alpha: 0.85),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Icon + text badge (never color-only) marking estimated balances.
+  Widget _estimatedBadge(
+      BuildContext context, AppLocalizations l10n, ColorScheme scheme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryFixed,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.info_outline,
+              size: 14, color: scheme.onTertiaryFixed),
+          const SizedBox(width: 4),
+          Text(
+            l10n.qada2EstimatedBadge,
+            style: AppFonts.badgeLabel(context).copyWith(
+              color: scheme.onTertiaryFixed,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Completion progress: bar plus a text label (not color-only).
+  Widget _progressCard(
+      BuildContext context, AppLocalizations l10n, QadaService service) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final done = service.totalCompleted();
+    final outstanding = service.totalOutstanding();
+    final fraction = service.completionFraction();
+    final percent = (fraction * 100).round();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.qada2ProgressTitle.toUpperCase(),
+              style: AppFonts.eyebrow(context).copyWith(
+                color: scheme.secondary,
+              ),
+            ),
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: fraction,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(999),
+              backgroundColor: scheme.surfaceContainerHighest,
+              color: scheme.primary,
+              semanticsLabel: l10n.qada2ProgressText(
+                  done, done + outstanding, percent),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.qada2ProgressText(done, done + outstanding, percent),
+              style: theme.textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Two small stat cards: made-up count, and today's plan / projected
+  /// finish.
+  Widget _statsRow(
+      BuildContext context, AppLocalizations l10n, QadaService service) {
+    final daily = service.dailyTarget();
+    final eta = service.projectedEndDate();
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _statCard(
+            context,
+            icon: Icons.check_circle_outline,
+            value: l10n.qada2MadeUp(service.totalCompleted()),
+            caption: null,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _statCard(
+            context,
+            icon: Icons.today_outlined,
+            value: daily > 0
+                ? l10n.qada2TodaysPlanValue(daily)
+                : l10n.qada2NoTargetSet,
+            caption: eta == null
+                ? l10n.qada2NoEta
+                : '${l10n.qada2ProjectedFinish}: '
+                    '${l10n.qada2ProjectedFinishValue(_dateLabel(eta))}',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _statCard(BuildContext context,
+      {required IconData icon, required String value, String? caption}) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 22, color: scheme.primary),
+            const SizedBox(height: 8),
+            Text(value, style: theme.textTheme.titleSmall),
+            if (caption != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                caption,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Navigation to the three new screens. Every button works.
+  Widget _navigationCard(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Card(
+      child: Column(
+        children: [
+          _navRow(
+            context,
+            icon: Icons.calculate_outlined,
+            title: l10n.qada2OpenModes,
+            subtitle: l10n.qada2OpenModesDesc,
+            onTap: () => _openModes(context),
+          ),
+          Divider(height: 1, indent: 16, endIndent: 16,
+              color: scheme.outlineVariant),
+          _navRow(
+            context,
+            icon: Icons.event_note_outlined,
+            title: l10n.qada2OpenPlanner,
+            subtitle: l10n.qada2OpenPlannerDesc,
+            onTap: () => _openPlanner(context),
+          ),
+          Divider(height: 1, indent: 16, endIndent: 16,
+              color: scheme.outlineVariant),
+          _navRow(
+            context,
+            icon: Icons.water_drop_outlined,
+            title: l10n.qada2OpenHayd,
+            subtitle: l10n.qada2OpenHaydDesc,
+            onTap: () => _openHaydNifas(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _navRow(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required String subtitle,
+      required VoidCallback onTap}) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: scheme.tertiaryFixed,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(Icons.history_outlined,
-                  color: scheme.onTertiaryFixed, size: 26),
-            ),
+            Icon(icon, size: 24, color: scheme.primary),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(title, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: 2),
                   Text(
-                    l10n.qadaTitle.toUpperCase(),
-                    style: AppFonts.eyebrow(context).copyWith(
-                      color: scheme.tertiaryFixed,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.qadaTotalRemaining(total),
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      color: scheme.onPrimary,
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
+            Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
           ],
         ),
       ),

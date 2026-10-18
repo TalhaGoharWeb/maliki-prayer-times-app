@@ -88,6 +88,20 @@ this app is presented as scholar-reviewed.
 Both passed the license gate (permissive: MIT/Apache-2.0/BSD — no
 copyleft, no proprietary terms, LICENSE files present and read).
 
+## Qada tracker: encrypted storage for sensitive records
+
+- **flutter_secure_storage** — BSD-3-Clause — 11.2.0 —
+  mogol/flutter_secure_storage
+  (https://github.com/mogol/flutter_secure_storage) — used ONLY for the
+  Hayd/Nifas bleeding records (the sensitive subset of the Qada tracker).
+  Android: keys in the Android Keystore, values in EncryptedSharedPreferences
+  (AES-256-GCM); iOS: Keychain. License verified 2026-10-19 by reading the
+  LICENSE file in the pub cache
+  (`~/.pub-cache/hosted/pub.dev/flutter_secure_storage-11.2.0/LICENSE`):
+  full BSD-3-Clause text, "Copyright 2017 German Saprykin". Passed the
+  license gate (permissive, no copyleft). All other Qada data (balances,
+  ledger, planner) stays in shared_preferences like the rest of the app.
+
 ## Phase 2: timezone tz-data variant (location exactness)
 
 - **timezone** — BSD-3-Clause — 0.11.2 — srawlins/timezone

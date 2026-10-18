@@ -1455,5 +1455,688 @@
   "calibrationNeededBody": "Le champ magnétique semble anormal : la flèche peut être trompeuse. Décrivez un 8 avec votre téléphone jusqu'à disparition de l'avertissement.",
   "@calibrationNeededBody": {
     "description": "Qibla: warning body when the magnetometer field looks wrong"
+  },
+  "hnLoadError": "Impossible de charger vos enregistrements. Veuillez rouvrir cet écran et réessayer.",
+  "@hnLoadError": {
+    "description": "Hayd & Nifas: error shown when the encrypted records cannot be loaded"
+  }
+,
+  "qada2MadeUp": "Rattrapées : {count}",
+  "@qada2MadeUp": {
+    "description": "Qada v2: completed headline",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2ProgressTitle": "Progression",
+  "@qada2ProgressTitle": {
+    "description": "Qada v2: progress section title"
+  },
+  "qada2ProgressText": "{done} sur {total} rattrapées ({percent} %)",
+  "@qada2ProgressText": {
+    "description": "Qada v2: progress bar text label",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2TodaysPlan": "Plan d’aujourd’hui",
+  "@qada2TodaysPlan": {
+    "description": "Qada v2: today's plan card title"
+  },
+  "qada2TodaysPlanValue": "{count} prières aujourd’hui",
+  "@qada2TodaysPlanValue": {
+    "description": "Qada v2: today's plan value",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2NoTargetSet": "Aucun objectif défini — choisissez-en un dans le planificateur.",
+  "@qada2NoTargetSet": {
+    "description": "Qada v2: no daily/weekly target set hint"
+  },
+  "qada2ProjectedFinish": "Fin prévue",
+  "@qada2ProjectedFinish": {
+    "description": "Qada v2: projected end date card title"
+  },
+  "qada2ProjectedFinishValue": "{date} (estimation)",
+  "@qada2ProjectedFinishValue": {
+    "description": "Qada v2: projected finish date, labelled as estimate",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2NoEta": "Définissez un objectif quotidien ou hebdomadaire dans le planificateur pour voir une date de fin prévue.",
+  "@qada2NoEta": {
+    "description": "Qada v2: hint shown when no ETA can be computed"
+  },
+  "qada2EstimatedBadge": "Estimé",
+  "@qada2EstimatedBadge": {
+    "description": "Qada v2: badge marking estimated balances"
+  },
+  "qada2EstimatedHint": "Une partie de ce solde provient d’une estimation, et non d’un décompte confirmé.",
+  "@qada2EstimatedHint": {
+    "description": "Qada v2: explanation of the estimated badge"
+  },
+  "qada2OpenModes": "Modes de calcul",
+  "@qada2OpenModes": {
+    "description": "Qada v2: button to open the calculation modes screen"
+  },
+  "qada2OpenModesDesc": "Saisissez des nombres exacts, estimez par plages de dates, ou ajustez les soldes.",
+  "@qada2OpenModesDesc": {
+    "description": "Qada v2: description of the calculation modes screen"
+  },
+  "qada2OpenPlanner": "Planificateur et historique",
+  "@qada2OpenPlanner": {
+    "description": "Qada v2: button to open the planner screen"
+  },
+  "qada2OpenPlannerDesc": "Objectifs quotidiens, rappels, historique et sauvegarde.",
+  "@qada2OpenPlannerDesc": {
+    "description": "Qada v2: description of the planner screen"
+  },
+  "qada2OpenHayd": "Suivi Hayd & Nifas",
+  "@qada2OpenHayd": {
+    "description": "Qada v2: button to open the Hayd and Nifas tracker"
+  },
+  "qada2OpenHaydDesc": "Enregistrements facultatifs d’épisodes de saignements.",
+  "@qada2OpenHaydDesc": {
+    "description": "Qada v2: description of the Hayd and Nifas tracker"
+  },
+  "qada2ModesTitle": "Modes de calcul",
+  "@qada2ModesTitle": {
+    "description": "Qada v2: modes screen title"
+  },
+  "qada2ModeATitle": "A · Nombres exacts",
+  "@qada2ModeATitle": {
+    "description": "Qada v2: mode A section title"
+  },
+  "qada2ModeADesc": "Saisissez le nombre exact de prières manquées que vous connaissez avec certitude.",
+  "@qada2ModeADesc": {
+    "description": "Qada v2: mode A description"
+  },
+  "qada2ModeBTitle": "B · Estimation par plages de dates",
+  "@qada2ModeBTitle": {
+    "description": "Qada v2: mode B section title"
+  },
+  "qada2ModeBDesc": "Ajoutez les périodes où des prières ont été manquées et combien par jour.",
+  "@qada2ModeBDesc": {
+    "description": "Qada v2: mode B description"
+  },
+  "qada2ModeCTitle": "C · Assistant d’estimation",
+  "@qada2ModeCTitle": {
+    "description": "Qada v2: mode C section title"
+  },
+  "qada2ModeCDesc": "Une estimation guidée à partir d’années, de mois et de jours approximatifs.",
+  "@qada2ModeCDesc": {
+    "description": "Qada v2: mode C description"
+  },
+  "qada2ModeDTitle": "D · Ajustement manuel",
+  "@qada2ModeDTitle": {
+    "description": "Qada v2: mode D section title"
+  },
+  "qada2ModeDDesc": "Corrigez un solde en enregistrant un motif.",
+  "@qada2ModeDDesc": {
+    "description": "Qada v2: mode D description"
+  },
+  "qada2FieldErrorNumber": "Saisissez un nombre entier, 0 ou plus.",
+  "@qada2FieldErrorNumber": {
+    "description": "Qada v2: numeric field validation error"
+  },
+  "qada2Total": "Total : {count}",
+  "@qada2Total": {
+    "description": "Qada v2: total of entered counts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2SavedOrigin": "Enregistré.",
+  "@qada2SavedOrigin": {
+    "description": "Qada v2: confirmation that exact counts were saved"
+  },
+  "qada2Period": "Période {n}",
+  "@qada2Period": {
+    "description": "Qada v2: numbered estimation period",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2StartDate": "Date de début",
+  "@qada2StartDate": {
+    "description": "Qada v2: period start date label"
+  },
+  "qada2EndDate": "Date de fin",
+  "@qada2EndDate": {
+    "description": "Qada v2: period end date label"
+  },
+  "qada2DailyRate": "manquées par jour",
+  "@qada2DailyRate": {
+    "description": "Qada v2: per-prayer daily miss rate label"
+  },
+  "qada2AddPeriod": "Ajouter une période",
+  "@qada2AddPeriod": {
+    "description": "Qada v2: add an estimation period"
+  },
+  "qada2RemovePeriod": "Retirer la période",
+  "@qada2RemovePeriod": {
+    "description": "Qada v2: remove an estimation period"
+  },
+  "qada2OverlapError": "Les périodes ne doivent pas se chevaucher. Ajustez les dates.",
+  "@qada2OverlapError": {
+    "description": "Qada v2: overlapping periods validation error"
+  },
+  "qada2EndBeforeStart": "La date de fin doit être égale ou postérieure à la date de début.",
+  "@qada2EndBeforeStart": {
+    "description": "Qada v2: end-before-start validation error"
+  },
+  "qada2Preview": "Aperçu de l’estimation",
+  "@qada2Preview": {
+    "description": "Qada v2: preview the estimation"
+  },
+  "qada2PreviewAssumptions": "Hypothèses",
+  "@qada2PreviewAssumptions": {
+    "description": "Qada v2: estimation assumptions heading"
+  },
+  "qada2PreviewWarnings": "Avertissements",
+  "@qada2PreviewWarnings": {
+    "description": "Qada v2: estimation warnings heading"
+  },
+  "qada2EstimatedRange": "{low} – {high} prières (estimation)",
+  "@qada2EstimatedRange": {
+    "description": "Qada v2: low-high estimation range",
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2EstimatedLabel": "Estimé — sans obligation vérifiée",
+  "@qada2EstimatedLabel": {
+    "description": "Qada v2: label marking an estimation"
+  },
+  "qada2ConfirmSaveTitle": "Enregistrer cette estimation ?",
+  "@qada2ConfirmSaveTitle": {
+    "description": "Qada v2: confirm saving an estimation"
+  },
+  "qada2ConfirmSaveBody": "Ceci ajoute {count} prières à votre solde restant, marquées comme estimées. Vous pourrez l’annuler plus tard depuis l’historique.",
+  "@qada2ConfirmSaveBody": {
+    "description": "Qada v2: confirm-save estimation body",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2Confirm": "Confirmer",
+  "@qada2Confirm": {
+    "description": "Qada v2: generic confirm button"
+  },
+  "qada2AdjustNonZero": "Saisissez un montant non nul.",
+  "@qada2AdjustNonZero": {
+    "description": "Qada v2: adjustment of zero is not allowed"
+  },
+  "qada2CompleteTooMany": "Seulement {count} {prayer} restantes — le solde ne peut pas passer sous zéro.",
+  "@qada2CompleteTooMany": {
+    "description": "Qada v2: tried to complete more than the outstanding balance",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2AdjustTooMuch": "Cela ferait passer {prayer} sous zéro (seulement {count} restantes).",
+  "@qada2AdjustTooMuch": {
+    "description": "Qada v2: adjustment would take the balance below zero",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2ImportInvalid": "Ceci ne ressemble pas à une sauvegarde valide. Rien n’a été importé.",
+  "@qada2ImportInvalid": {
+    "description": "Qada v2: pasted import text is not a valid backup"
+  },
+  "qada2EstimateSaved": "Estimation enregistrée et marquée comme estimée.",
+  "@qada2EstimateSaved": {
+    "description": "Qada v2: estimation saved confirmation"
+  },
+  "qada2WizardYears": "Années approximatives",
+  "@qada2WizardYears": {
+    "description": "Qada v2: wizard years field"
+  },
+  "qada2WizardMonths": "Mois approximatifs",
+  "@qada2WizardMonths": {
+    "description": "Qada v2: wizard months field"
+  },
+  "qada2WizardDays": "Jours approximatifs",
+  "@qada2WizardDays": {
+    "description": "Qada v2: wizard days field"
+  },
+  "qada2WizardAllFive": "Les cinq prières quotidiennes ont été manquées",
+  "@qada2WizardAllFive": {
+    "description": "Qada v2: wizard toggle for all five prayers"
+  },
+  "qada2WizardFrequency": "À quelle fréquence les prières ont-elles été manquées ?",
+  "@qada2WizardFrequency": {
+    "description": "Qada v2: wizard frequency question"
+  },
+  "qada2WizardFreqDaily": "Chaque jour",
+  "@qada2WizardFreqDaily": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqMost": "La plupart des jours",
+  "@qada2WizardFreqMost": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqHalf": "Environ la moitié des jours",
+  "@qada2WizardFreqHalf": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqFew": "Quelques jours par semaine",
+  "@qada2WizardFreqFew": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardDisclaimer": "L’application enregistre votre propre estimation, pas une obligation vérifiée. En cas de doute, consultez un savant qualifié.",
+  "@qada2WizardDisclaimer": {
+    "description": "Qada v2: wizard disclaimer"
+  },
+  "qada2AdjustAmount": "Montant (un nombre négatif réduit le solde)",
+  "@qada2AdjustAmount": {
+    "description": "Qada v2: adjustment amount field"
+  },
+  "qada2AdjustReason": "Motif",
+  "@qada2AdjustReason": {
+    "description": "Qada v2: adjustment reason field"
+  },
+  "qada2AdjustReasonRequired": "Un motif est requis.",
+  "@qada2AdjustReasonRequired": {
+    "description": "Qada v2: missing reason validation error"
+  },
+  "qada2AdjustNote": "Note (facultatif)",
+  "@qada2AdjustNote": {
+    "description": "Qada v2: adjustment note field"
+  },
+  "qada2AdjustResult": "Nouveau solde pour {prayer} : {count}",
+  "@qada2AdjustResult": {
+    "description": "Qada v2: resulting balance after adjustment",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2AdjustConfirmTitle": "Appliquer l’ajustement ?",
+  "@qada2AdjustConfirmTitle": {
+    "description": "Qada v2: confirm adjustment dialog title"
+  },
+  "qada2AdjustConfirmBody": "{delta} sur {prayer}. Motif : {reason}",
+  "@qada2AdjustConfirmBody": {
+    "description": "Qada v2: confirm adjustment dialog body",
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "prayer": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2Adjusted": "Ajustement enregistré. Vous pouvez l’annuler depuis l’historique.",
+  "@qada2Adjusted": {
+    "description": "Qada v2: adjustment applied confirmation"
+  },
+  "qada2PlannerTitle": "Planificateur et historique",
+  "@qada2PlannerTitle": {
+    "description": "Qada v2: planner screen title"
+  },
+  "qada2PlanMode": "Mode du plan",
+  "@qada2PlanMode": {
+    "description": "Qada v2: planner mode selector label"
+  },
+  "qada2PlanModeAfterFard": "Après chaque prière obligatoire",
+  "@qada2PlanModeAfterFard": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeAfterFardDesc": "Rattrapez un qada après chacune des cinq prières quotidiennes (5 par jour).",
+  "@qada2PlanModeAfterFardDesc": {
+    "description": "Qada v2: plan mode description"
+  },
+  "qada2PlanModeFullDay": "Journée complète",
+  "@qada2PlanModeFullDay": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeFullDayDesc": "Rattrapez une journée complète de cinq prières d’un coup (5 par jour).",
+  "@qada2PlanModeFullDayDesc": {
+    "description": "Qada v2: plan mode description"
+  },
+  "qada2PlanModeDaily": "Quotidien personnalisé",
+  "@qada2PlanModeDaily": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeWeekly": "Hebdomadaire personnalisé",
+  "@qada2PlanModeWeekly": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeCustom": "Programme personnalisé",
+  "@qada2PlanModeCustom": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeCustomDesc": "Définissez vos propres objectifs quotidiens et hebdomadaires ci-dessous.",
+  "@qada2PlanModeCustomDesc": {
+    "description": "Qada v2: custom plan mode description"
+  },
+  "qada2DailyTargetLabel": "Objectif quotidien",
+  "@qada2DailyTargetLabel": {
+    "description": "Qada v2: daily target field"
+  },
+  "qada2WeeklyTargetLabel": "Objectif hebdomadaire",
+  "@qada2WeeklyTargetLabel": {
+    "description": "Qada v2: weekly target field"
+  },
+  "qada2Reminder": "Rappel",
+  "@qada2Reminder": {
+    "description": "Qada v2: reminder section title"
+  },
+  "qada2ReminderOff": "Désactivé",
+  "@qada2ReminderOff": {
+    "description": "Qada v2: reminder off label"
+  },
+  "qada2ReminderTime": "Heure du rappel",
+  "@qada2ReminderTime": {
+    "description": "Qada v2: reminder time label"
+  },
+  "qada2ReminderSet": "Rappel réglé pour {time}.",
+  "@qada2ReminderSet": {
+    "description": "Qada v2: reminder set confirmation",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2ReminderOffDone": "Rappel désactivé.",
+  "@qada2ReminderOffDone": {
+    "description": "Qada v2: reminder turned off confirmation"
+  },
+  "qada2ReminderNote": "Le rappel se contente de vous notifier — il ne marque jamais les prières comme faites.",
+  "@qada2ReminderNote": {
+    "description": "Qada v2: reminder is not a completion, disclaimer"
+  },
+  "qada2EtaLabel": "Fin prévue (estimation)",
+  "@qada2EtaLabel": {
+    "description": "Qada v2: ETA label"
+  },
+  "qada2History": "Historique",
+  "@qada2History": {
+    "description": "Qada v2: transaction history title"
+  },
+  "qada2FilterAll": "Toutes",
+  "@qada2FilterAll": {
+    "description": "Qada v2: history filter, all prayers"
+  },
+  "qada2Undo": "Annuler",
+  "@qada2Undo": {
+    "description": "Qada v2: undo a transaction"
+  },
+  "qada2Undone": "Annulé.",
+  "@qada2Undone": {
+    "description": "Qada v2: transaction undone confirmation"
+  },
+  "qada2NoHistory": "Aucun historique pour le moment. Les changements de solde apparaîtront ici.",
+  "@qada2NoHistory": {
+    "description": "Qada v2: empty history message"
+  },
+  "qada2LogMadeUp": "Noter les prières rattrapées",
+  "@qada2LogMadeUp": {
+    "description": "Qada v2: log completed qada section title"
+  },
+  "qada2Count": "Nombre",
+  "@qada2Count": {
+    "description": "Qada v2: count field label"
+  },
+  "qada2LoggedMadeUp": "{count} {prayer} enregistrées comme rattrapées.",
+  "@qada2LoggedMadeUp": {
+    "description": "Qada v2: made-up prayers logged confirmation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2Export": "Exporter la sauvegarde",
+  "@qada2Export": {
+    "description": "Qada v2: export backup button"
+  },
+  "qada2ExportTitle": "Sauvegarde (JSON)",
+  "@qada2ExportTitle": {
+    "description": "Qada v2: export dialog title"
+  },
+  "qada2Copy": "Copier",
+  "@qada2Copy": {
+    "description": "Qada v2: copy to clipboard button"
+  },
+  "qada2Copied": "Copié dans le presse-papiers.",
+  "@qada2Copied": {
+    "description": "Qada v2: copied confirmation"
+  },
+  "qada2Import": "Importer la sauvegarde",
+  "@qada2Import": {
+    "description": "Qada v2: import backup button"
+  },
+  "qada2ImportHint": "Collez une sauvegarde JSON exportée depuis cette application.",
+  "@qada2ImportHint": {
+    "description": "Qada v2: import text field hint"
+  },
+  "qada2ImportTitle": "Importer la sauvegarde ?",
+  "@qada2ImportTitle": {
+    "description": "Qada v2: confirm import dialog title"
+  },
+  "qada2ImportBody": "Ceci remplace vos soldes actuels, votre historique, vos objectifs et vos enregistrements par la sauvegarde. Cette action est irréversible.",
+  "@qada2ImportBody": {
+    "description": "Qada v2: confirm import dialog body"
+  },
+  "qada2Imported": "Importation terminée.",
+  "@qada2Imported": {
+    "description": "Qada v2: import complete confirmation"
+  },
+  "qada2Privacy": "Confidentialité",
+  "@qada2Privacy": {
+    "description": "Qada v2: privacy section title"
+  },
+  "qada2DeleteAll": "Supprimer toutes les données de qada",
+  "@qada2DeleteAll": {
+    "description": "Qada v2: delete all button"
+  },
+  "qada2DeleteAllTitle": "Tout supprimer ?",
+  "@qada2DeleteAllTitle": {
+    "description": "Qada v2: delete-all confirm dialog title"
+  },
+  "qada2DeleteAllBody": "Ceci supprime définitivement toutes les prières enregistrées, les soldes, l’historique, les objectifs, les rappels et les enregistrements de saignements.",
+  "@qada2DeleteAllBody": {
+    "description": "Qada v2: delete-all confirm dialog body"
+  },
+  "qada2DeleteAllConfirm": "Oui, tout supprimer",
+  "@qada2DeleteAllConfirm": {
+    "description": "Qada v2: delete-all final confirm button"
+  },
+  "qada2DeleteAllDone": "Toutes les données de qada ont été supprimées.",
+  "@qada2DeleteAllDone": {
+    "description": "Qada v2: delete-all done confirmation"
+  },
+  "hnTitle": "Suivi Hayd & Nifas",
+  "@hnTitle": {
+    "description": "Hayd/Nifas: screen title"
+  },
+  "hnNoAutoClassify": "L’application ne classe pas les saignements automatiquement. Elle ne conserve que ce que vous enregistrez. Les cas incertains nécessitent un savant qualifié.",
+  "@hnNoAutoClassify": {
+    "description": "Hayd/Nifas: no automatic classification banner"
+  },
+  "hnTabHayd": "Hayd",
+  "@hnTabHayd": {
+    "description": "Hayd/Nifas: Hayd tab"
+  },
+  "hnTabNifas": "Nifas",
+  "@hnTabNifas": {
+    "description": "Hayd/Nifas: Nifas tab"
+  },
+  "hnTabIrregular": "Irréguliers",
+  "@hnTabIrregular": {
+    "description": "Hayd/Nifas: Irregular tab"
+  },
+  "hnIrregularNote": "Observations uniquement — aucune classification n’est faite ici.",
+  "@hnIrregularNote": {
+    "description": "Hayd/Nifas: irregular tab note"
+  },
+  "hnNoRecords": "Aucun enregistrement pour le moment.",
+  "@hnNoRecords": {
+    "description": "Hayd/Nifas: empty records message"
+  },
+  "hnAddRecord": "Ajouter un enregistrement",
+  "@hnAddRecord": {
+    "description": "Hayd/Nifas: add record button"
+  },
+  "hnEditRecord": "Modifier l’enregistrement",
+  "@hnEditRecord": {
+    "description": "Hayd/Nifas: edit record title"
+  },
+  "hnStart": "Début",
+  "@hnStart": {
+    "description": "Hayd/Nifas: start date label"
+  },
+  "hnEnd": "Fin",
+  "@hnEnd": {
+    "description": "Hayd/Nifas: end date label"
+  },
+  "hnOngoing": "En cours",
+  "@hnOngoing": {
+    "description": "Hayd/Nifas: ongoing toggle label"
+  },
+  "hnPurityIntervals": "Intervalles de pureté",
+  "@hnPurityIntervals": {
+    "description": "Hayd/Nifas: purity intervals section"
+  },
+  "hnAddInterval": "Ajouter un intervalle de pureté",
+  "@hnAddInterval": {
+    "description": "Hayd/Nifas: add purity interval button"
+  },
+  "hnRemoveInterval": "Retirer",
+  "@hnRemoveInterval": {
+    "description": "Hayd/Nifas: remove purity interval button"
+  },
+  "hnPurityConfirmed": "Je confirme que les intervalles de pureté ci-dessus sont exacts",
+  "@hnPurityConfirmed": {
+    "description": "Hayd/Nifas: purity confirmed checkbox"
+  },
+  "hnPrivateNote": "Note privée",
+  "@hnPrivateNote": {
+    "description": "Hayd/Nifas: private note field"
+  },
+  "hnConfirmation": "Confirmation",
+  "@hnConfirmation": {
+    "description": "Hayd/Nifas: confirmation status label"
+  },
+  "hnConfirmed": "Confirmé",
+  "@hnConfirmed": {
+    "description": "Hayd/Nifas: confirmed option"
+  },
+  "hnUnconfirmed": "Non confirmé",
+  "@hnUnconfirmed": {
+    "description": "Hayd/Nifas: unconfirmed option"
+  },
+  "hnChildbirthDate": "Date de l’accouchement",
+  "@hnChildbirthDate": {
+    "description": "Hayd/Nifas: childbirth date label (nifas only)"
+  },
+  "hnDeleteRecord": "Supprimer l’enregistrement",
+  "@hnDeleteRecord": {
+    "description": "Hayd/Nifas: delete record button"
+  },
+  "hnDeleteConfirmTitle": "Supprimer cet enregistrement ?",
+  "@hnDeleteConfirmTitle": {
+    "description": "Hayd/Nifas: delete confirm dialog title"
+  },
+  "hnDeleteConfirmBody": "Ceci supprime définitivement l’enregistrement. Les exemptions déjà appliquées restent dans l’historique.",
+  "@hnDeleteConfirmBody": {
+    "description": "Hayd/Nifas: delete confirm dialog body"
+  },
+  "hnReviewExemption": "Revoir pour exemption",
+  "@hnReviewExemption": {
+    "description": "Hayd/Nifas: review for exemption button"
+  },
+  "hnExemptionTitle": "Vérification de l’exemption",
+  "@hnExemptionTitle": {
+    "description": "Hayd/Nifas: exemption review dialog title"
+  },
+  "hnExemptionDays": "Jours à exempter par prière",
+  "@hnExemptionDays": {
+    "description": "Hayd/Nifas: days to exempt field label"
+  },
+  "hnExemptionConfirmTitle": "Appliquer l’exemption ?",
+  "@hnExemptionConfirmTitle": {
+    "description": "Hayd/Nifas: apply exemption confirm title"
+  },
+  "hnExemptionConfirmBody": "Ceci soustrait {count} prières de votre solde restant et l’enregistre dans l’historique. N’appliquez que ce que vous avez vérifié.",
+  "@hnExemptionConfirmBody": {
+    "description": "Hayd/Nifas: apply exemption confirm body",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hnExempted": "Exemption appliquée et enregistrée dans l’historique.",
+  "@hnExempted": {
+    "description": "Hayd/Nifas: exemption applied confirmation"
+  },
+  "hnExemptionTooMany": "Plus de jours choisis que le solde restant pour {prayer} ({count} restantes).",
+  "@hnExemptionTooMany": {
+    "description": "Hayd/Nifas: exemption days exceed the outstanding balance",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hnRecordOngoing": "En cours",
+  "@hnRecordOngoing": {
+    "description": "Hayd/Nifas: ongoing record label"
   }
 }

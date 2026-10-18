@@ -1455,5 +1455,688 @@
   "calibrationNeededBody": "قراءة المجال المغناطيسي غير طبيعية، فقد يكون السهم مضلّلًا. حرّك هاتفك على شكل الرقم 8 حتى تختفي الرسالة.",
   "@calibrationNeededBody": {
     "description": "Qibla: warning body when the magnetometer field looks wrong"
+  },
+  "hnLoadError": "تعذّر تحميل سجلّاتك. يُرجى إعادة فتح هذه الشاشة والمحاولة مجددًا.",
+  "@hnLoadError": {
+    "description": "Hayd & Nifas: error shown when the encrypted records cannot be loaded"
+  }
+,
+  "qada2MadeUp": "تم قضاؤها: {count}",
+  "@qada2MadeUp": {
+    "description": "Qada v2: completed headline",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2ProgressTitle": "التقدّم",
+  "@qada2ProgressTitle": {
+    "description": "Qada v2: progress section title"
+  },
+  "qada2ProgressText": "{done} من أصل {total} تم قضاؤها ({percent}٪)",
+  "@qada2ProgressText": {
+    "description": "Qada v2: progress bar text label",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2TodaysPlan": "خطة اليوم",
+  "@qada2TodaysPlan": {
+    "description": "Qada v2: today's plan card title"
+  },
+  "qada2TodaysPlanValue": "{count} صلوات اليوم",
+  "@qada2TodaysPlanValue": {
+    "description": "Qada v2: today's plan value",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2NoTargetSet": "لم يُحدَّد هدف بعد — اختر هدفًا في المخطط.",
+  "@qada2NoTargetSet": {
+    "description": "Qada v2: no daily/weekly target set hint"
+  },
+  "qada2ProjectedFinish": "الانتهاء المتوقّع",
+  "@qada2ProjectedFinish": {
+    "description": "Qada v2: projected end date card title"
+  },
+  "qada2ProjectedFinishValue": "{date} (تقدير)",
+  "@qada2ProjectedFinishValue": {
+    "description": "Qada v2: projected finish date, labelled as estimate",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2NoEta": "حدّد هدفًا يوميًّا أو أسبوعيًّا في المخطط لرؤية تاريخ الانتهاء المتوقّع.",
+  "@qada2NoEta": {
+    "description": "Qada v2: hint shown when no ETA can be computed"
+  },
+  "qada2EstimatedBadge": "تقديري",
+  "@qada2EstimatedBadge": {
+    "description": "Qada v2: badge marking estimated balances"
+  },
+  "qada2EstimatedHint": "جزء من هذا الرصيد جاء من تقدير، لا من عدٍّ مؤكَّد.",
+  "@qada2EstimatedHint": {
+    "description": "Qada v2: explanation of the estimated badge"
+  },
+  "qada2OpenModes": "أنماط الحساب",
+  "@qada2OpenModes": {
+    "description": "Qada v2: button to open the calculation modes screen"
+  },
+  "qada2OpenModesDesc": "أدخل الأعداد الدقيقة، أو قدّر بالنطاقات الزمنية، أو عدّل الأرصدة.",
+  "@qada2OpenModesDesc": {
+    "description": "Qada v2: description of the calculation modes screen"
+  },
+  "qada2OpenPlanner": "المخطط والسجلّ",
+  "@qada2OpenPlanner": {
+    "description": "Qada v2: button to open the planner screen"
+  },
+  "qada2OpenPlannerDesc": "أهداف يومية، وتذكيرات، وسجلّ، ونسخة احتياطية.",
+  "@qada2OpenPlannerDesc": {
+    "description": "Qada v2: description of the planner screen"
+  },
+  "qada2OpenHayd": "سجلات الحيض والنفاس",
+  "@qada2OpenHayd": {
+    "description": "Qada v2: button to open the Hayd and Nifas tracker"
+  },
+  "qada2OpenHaydDesc": "سجلات اختيارية لنوبات النزيف.",
+  "@qada2OpenHaydDesc": {
+    "description": "Qada v2: description of the Hayd and Nifas tracker"
+  },
+  "qada2ModesTitle": "أنماط الحساب",
+  "@qada2ModesTitle": {
+    "description": "Qada v2: modes screen title"
+  },
+  "qada2ModeATitle": "أ · الأعداد الدقيقة",
+  "@qada2ModeATitle": {
+    "description": "Qada v2: mode A section title"
+  },
+  "qada2ModeADesc": "أدخل العدد الدقيق للصلوات الفائتة التي تعرفها بيقين.",
+  "@qada2ModeADesc": {
+    "description": "Qada v2: mode A description"
+  },
+  "qada2ModeBTitle": "ب · التقدير بالنطاقات الزمنية",
+  "@qada2ModeBTitle": {
+    "description": "Qada v2: mode B section title"
+  },
+  "qada2ModeBDesc": "أضف الفترات التي فاتت فيها الصلوات وعدد ما فات في اليوم الواحد.",
+  "@qada2ModeBDesc": {
+    "description": "Qada v2: mode B description"
+  },
+  "qada2ModeCTitle": "ج · معالج التقدير",
+  "@qada2ModeCTitle": {
+    "description": "Qada v2: mode C section title"
+  },
+  "qada2ModeCDesc": "تقدير مُرشَد مبني على سنوات وأشهر وأيام تقريبية.",
+  "@qada2ModeCDesc": {
+    "description": "Qada v2: mode C description"
+  },
+  "qada2ModeDTitle": "د · تعديل يدوي",
+  "@qada2ModeDTitle": {
+    "description": "Qada v2: mode D section title"
+  },
+  "qada2ModeDDesc": "صحّح الرصيد مع تسجيل السبب.",
+  "@qada2ModeDDesc": {
+    "description": "Qada v2: mode D description"
+  },
+  "qada2FieldErrorNumber": "أدخل عددًا صحيحًا، 0 أو أكثر.",
+  "@qada2FieldErrorNumber": {
+    "description": "Qada v2: numeric field validation error"
+  },
+  "qada2Total": "المجموع: {count}",
+  "@qada2Total": {
+    "description": "Qada v2: total of entered counts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2SavedOrigin": "تم الحفظ.",
+  "@qada2SavedOrigin": {
+    "description": "Qada v2: confirmation that exact counts were saved"
+  },
+  "qada2Period": "الفترة {n}",
+  "@qada2Period": {
+    "description": "Qada v2: numbered estimation period",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2StartDate": "تاريخ البدء",
+  "@qada2StartDate": {
+    "description": "Qada v2: period start date label"
+  },
+  "qada2EndDate": "تاريخ الانتهاء",
+  "@qada2EndDate": {
+    "description": "Qada v2: period end date label"
+  },
+  "qada2DailyRate": "المفوَّتة في اليوم",
+  "@qada2DailyRate": {
+    "description": "Qada v2: per-prayer daily miss rate label"
+  },
+  "qada2AddPeriod": "أضف فترة",
+  "@qada2AddPeriod": {
+    "description": "Qada v2: add an estimation period"
+  },
+  "qada2RemovePeriod": "أزل الفترة",
+  "@qada2RemovePeriod": {
+    "description": "Qada v2: remove an estimation period"
+  },
+  "qada2OverlapError": "يجب ألا تتداخل الفترات. عدّل التواريخ.",
+  "@qada2OverlapError": {
+    "description": "Qada v2: overlapping periods validation error"
+  },
+  "qada2EndBeforeStart": "يجب أن يكون تاريخ الانتهاء مساويًا لتاريخ البدء أو بعده.",
+  "@qada2EndBeforeStart": {
+    "description": "Qada v2: end-before-start validation error"
+  },
+  "qada2Preview": "معاينة التقدير",
+  "@qada2Preview": {
+    "description": "Qada v2: preview the estimation"
+  },
+  "qada2PreviewAssumptions": "الافتراضات",
+  "@qada2PreviewAssumptions": {
+    "description": "Qada v2: estimation assumptions heading"
+  },
+  "qada2PreviewWarnings": "التنبيهات",
+  "@qada2PreviewWarnings": {
+    "description": "Qada v2: estimation warnings heading"
+  },
+  "qada2EstimatedRange": "{low} – {high} صلاة (تقدير)",
+  "@qada2EstimatedRange": {
+    "description": "Qada v2: low-high estimation range",
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2EstimatedLabel": "تقديري — ليس التزامًا مؤكَّدًا",
+  "@qada2EstimatedLabel": {
+    "description": "Qada v2: label marking an estimation"
+  },
+  "qada2ConfirmSaveTitle": "أحفظ هذا التقدير؟",
+  "@qada2ConfirmSaveTitle": {
+    "description": "Qada v2: confirm saving an estimation"
+  },
+  "qada2ConfirmSaveBody": "يضيف هذا {count} صلاة إلى رصيدك المستحق، موسومًا بأنه تقدير. يمكنك التراجع عنه لاحقًا من السجلّ.",
+  "@qada2ConfirmSaveBody": {
+    "description": "Qada v2: confirm-save estimation body",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2Confirm": "تأكيد",
+  "@qada2Confirm": {
+    "description": "Qada v2: generic confirm button"
+  },
+  "qada2AdjustNonZero": "أدخل مبلغًا غير صفري.",
+  "@qada2AdjustNonZero": {
+    "description": "Qada v2: adjustment of zero is not allowed"
+  },
+  "qada2CompleteTooMany": "المستحق من {prayer} هو {count} فقط — لا يمكن أن ينزل الرصيد دون الصفر.",
+  "@qada2CompleteTooMany": {
+    "description": "Qada v2: tried to complete more than the outstanding balance",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2AdjustTooMuch": "سينزل هذا بـ{prayer} دون الصفر (المستحق {count} فقط).",
+  "@qada2AdjustTooMuch": {
+    "description": "Qada v2: adjustment would take the balance below zero",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2ImportInvalid": "لا يبدو هذا نسخة احتياطية صالحة. لم يُستورَد شيء.",
+  "@qada2ImportInvalid": {
+    "description": "Qada v2: pasted import text is not a valid backup"
+  },
+  "qada2EstimateSaved": "تم حفظ التقدير ووُسم بأنه تقدير.",
+  "@qada2EstimateSaved": {
+    "description": "Qada v2: estimation saved confirmation"
+  },
+  "qada2WizardYears": "سنوات تقريبية",
+  "@qada2WizardYears": {
+    "description": "Qada v2: wizard years field"
+  },
+  "qada2WizardMonths": "أشهر تقريبية",
+  "@qada2WizardMonths": {
+    "description": "Qada v2: wizard months field"
+  },
+  "qada2WizardDays": "أيام تقريبية",
+  "@qada2WizardDays": {
+    "description": "Qada v2: wizard days field"
+  },
+  "qada2WizardAllFive": "فاتت الصلوات الخمس اليومية كلها",
+  "@qada2WizardAllFive": {
+    "description": "Qada v2: wizard toggle for all five prayers"
+  },
+  "qada2WizardFrequency": "كم مرة فاتت الصلوات؟",
+  "@qada2WizardFrequency": {
+    "description": "Qada v2: wizard frequency question"
+  },
+  "qada2WizardFreqDaily": "كل يوم",
+  "@qada2WizardFreqDaily": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqMost": "معظم الأيام",
+  "@qada2WizardFreqMost": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqHalf": "نحو نصف الأيام",
+  "@qada2WizardFreqHalf": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardFreqFew": "بضعة أيام في الأسبوع",
+  "@qada2WizardFreqFew": {
+    "description": "Qada v2: wizard frequency option"
+  },
+  "qada2WizardDisclaimer": "يسجّل التطبيق تقديرك أنت، لا التزامًا مؤكَّدًا. عند الشك، استشر عالمًا موثوقًا.",
+  "@qada2WizardDisclaimer": {
+    "description": "Qada v2: wizard disclaimer"
+  },
+  "qada2AdjustAmount": "المبلغ (السالب يُنقِص الرصيد)",
+  "@qada2AdjustAmount": {
+    "description": "Qada v2: adjustment amount field"
+  },
+  "qada2AdjustReason": "السبب",
+  "@qada2AdjustReason": {
+    "description": "Qada v2: adjustment reason field"
+  },
+  "qada2AdjustReasonRequired": "السبب مطلوب.",
+  "@qada2AdjustReasonRequired": {
+    "description": "Qada v2: missing reason validation error"
+  },
+  "qada2AdjustNote": "ملاحظة (اختياري)",
+  "@qada2AdjustNote": {
+    "description": "Qada v2: adjustment note field"
+  },
+  "qada2AdjustResult": "الرصيد الجديد لـ{prayer}: {count}",
+  "@qada2AdjustResult": {
+    "description": "Qada v2: resulting balance after adjustment",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qada2AdjustConfirmTitle": "أتُطبِّق التعديل؟",
+  "@qada2AdjustConfirmTitle": {
+    "description": "Qada v2: confirm adjustment dialog title"
+  },
+  "qada2AdjustConfirmBody": "{delta} على {prayer}. السبب: {reason}",
+  "@qada2AdjustConfirmBody": {
+    "description": "Qada v2: confirm adjustment dialog body",
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "prayer": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2Adjusted": "تم تسجيل التعديل. يمكنك التراجع عنه من السجلّ.",
+  "@qada2Adjusted": {
+    "description": "Qada v2: adjustment applied confirmation"
+  },
+  "qada2PlannerTitle": "المخطط والسجلّ",
+  "@qada2PlannerTitle": {
+    "description": "Qada v2: planner screen title"
+  },
+  "qada2PlanMode": "نمط الخطة",
+  "@qada2PlanMode": {
+    "description": "Qada v2: planner mode selector label"
+  },
+  "qada2PlanModeAfterFard": "بعد كل فريضة",
+  "@qada2PlanModeAfterFard": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeAfterFardDesc": "اقضِ صلاة واحدة بعد كل من الصلوات الخمس اليومية (5 في اليوم).",
+  "@qada2PlanModeAfterFardDesc": {
+    "description": "Qada v2: plan mode description"
+  },
+  "qada2PlanModeFullDay": "يوم كامل",
+  "@qada2PlanModeFullDay": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeFullDayDesc": "اقضِ يومًا كاملًا من الصلوات الخمس دفعة واحدة (5 في اليوم).",
+  "@qada2PlanModeFullDayDesc": {
+    "description": "Qada v2: plan mode description"
+  },
+  "qada2PlanModeDaily": "يومي مخصّص",
+  "@qada2PlanModeDaily": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeWeekly": "أسبوعي مخصّص",
+  "@qada2PlanModeWeekly": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeCustom": "جدول مخصّص",
+  "@qada2PlanModeCustom": {
+    "description": "Qada v2: plan mode option"
+  },
+  "qada2PlanModeCustomDesc": "حدّد أهدافك اليومية والأسبوعية أدناه.",
+  "@qada2PlanModeCustomDesc": {
+    "description": "Qada v2: custom plan mode description"
+  },
+  "qada2DailyTargetLabel": "الهدف اليومي",
+  "@qada2DailyTargetLabel": {
+    "description": "Qada v2: daily target field"
+  },
+  "qada2WeeklyTargetLabel": "الهدف الأسبوعي",
+  "@qada2WeeklyTargetLabel": {
+    "description": "Qada v2: weekly target field"
+  },
+  "qada2Reminder": "تذكير",
+  "@qada2Reminder": {
+    "description": "Qada v2: reminder section title"
+  },
+  "qada2ReminderOff": "إيقاف",
+  "@qada2ReminderOff": {
+    "description": "Qada v2: reminder off label"
+  },
+  "qada2ReminderTime": "وقت التذكير",
+  "@qada2ReminderTime": {
+    "description": "Qada v2: reminder time label"
+  },
+  "qada2ReminderSet": "تم ضبط التذكير على {time}.",
+  "@qada2ReminderSet": {
+    "description": "Qada v2: reminder set confirmation",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2ReminderOffDone": "تم إيقاف التذكير.",
+  "@qada2ReminderOffDone": {
+    "description": "Qada v2: reminder turned off confirmation"
+  },
+  "qada2ReminderNote": "التذكير يُنبّهك فقط — ولا يسجّل الصلوات أبدًا كمُنجَزة.",
+  "@qada2ReminderNote": {
+    "description": "Qada v2: reminder is not a completion, disclaimer"
+  },
+  "qada2EtaLabel": "الانتهاء المتوقّع (تقدير)",
+  "@qada2EtaLabel": {
+    "description": "Qada v2: ETA label"
+  },
+  "qada2History": "السجلّ",
+  "@qada2History": {
+    "description": "Qada v2: transaction history title"
+  },
+  "qada2FilterAll": "الكل",
+  "@qada2FilterAll": {
+    "description": "Qada v2: history filter, all prayers"
+  },
+  "qada2Undo": "تراجع",
+  "@qada2Undo": {
+    "description": "Qada v2: undo a transaction"
+  },
+  "qada2Undone": "تم التراجع.",
+  "@qada2Undone": {
+    "description": "Qada v2: transaction undone confirmation"
+  },
+  "qada2NoHistory": "لا سجلّ بعد. ستظهر هنا تغيّرات الرصيد.",
+  "@qada2NoHistory": {
+    "description": "Qada v2: empty history message"
+  },
+  "qada2LogMadeUp": "تسجيل الصلوات المقضاة",
+  "@qada2LogMadeUp": {
+    "description": "Qada v2: log completed qada section title"
+  },
+  "qada2Count": "العدد",
+  "@qada2Count": {
+    "description": "Qada v2: count field label"
+  },
+  "qada2LoggedMadeUp": "سُجِّلت {count} {prayer} كمقضاة.",
+  "@qada2LoggedMadeUp": {
+    "description": "Qada v2: made-up prayers logged confirmation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "qada2Export": "تصدير نسخة احتياطية",
+  "@qada2Export": {
+    "description": "Qada v2: export backup button"
+  },
+  "qada2ExportTitle": "نسخة احتياطية (JSON)",
+  "@qada2ExportTitle": {
+    "description": "Qada v2: export dialog title"
+  },
+  "qada2Copy": "نسخ",
+  "@qada2Copy": {
+    "description": "Qada v2: copy to clipboard button"
+  },
+  "qada2Copied": "نُسِخ إلى الحافظة.",
+  "@qada2Copied": {
+    "description": "Qada v2: copied confirmation"
+  },
+  "qada2Import": "استيراد نسخة احتياطية",
+  "@qada2Import": {
+    "description": "Qada v2: import backup button"
+  },
+  "qada2ImportHint": "الصق نسخة احتياطية بصيغة JSON صُدِّرت من هذا التطبيق.",
+  "@qada2ImportHint": {
+    "description": "Qada v2: import text field hint"
+  },
+  "qada2ImportTitle": "أستورِد النسخة الاحتياطية؟",
+  "@qada2ImportTitle": {
+    "description": "Qada v2: confirm import dialog title"
+  },
+  "qada2ImportBody": "يستبدل هذا أرصدتك الحالية وسجلّك وأهدافك وسجلاتك بالنسخة الاحتياطية. ولا يمكن التراجع عن هذا.",
+  "@qada2ImportBody": {
+    "description": "Qada v2: confirm import dialog body"
+  },
+  "qada2Imported": "اكتمل الاستيراد.",
+  "@qada2Imported": {
+    "description": "Qada v2: import complete confirmation"
+  },
+  "qada2Privacy": "الخصوصية",
+  "@qada2Privacy": {
+    "description": "Qada v2: privacy section title"
+  },
+  "qada2DeleteAll": "حذف جميع بيانات القضاء",
+  "@qada2DeleteAll": {
+    "description": "Qada v2: delete all button"
+  },
+  "qada2DeleteAllTitle": "أتحذف كل شيء؟",
+  "@qada2DeleteAllTitle": {
+    "description": "Qada v2: delete-all confirm dialog title"
+  },
+  "qada2DeleteAllBody": "يحذف هذا نهائيًّا جميع الصلوات المسجَّلة والأرصدة والسجلّ والأهداف والتذكيرات وسجلات النزيف.",
+  "@qada2DeleteAllBody": {
+    "description": "Qada v2: delete-all confirm dialog body"
+  },
+  "qada2DeleteAllConfirm": "نعم، احذف كل شيء",
+  "@qada2DeleteAllConfirm": {
+    "description": "Qada v2: delete-all final confirm button"
+  },
+  "qada2DeleteAllDone": "حُذِفت جميع بيانات القضاء.",
+  "@qada2DeleteAllDone": {
+    "description": "Qada v2: delete-all done confirmation"
+  },
+  "hnTitle": "سجلات الحيض والنفاس",
+  "@hnTitle": {
+    "description": "Hayd/Nifas: screen title"
+  },
+  "hnNoAutoClassify": "لا يصنّف التطبيق النزيف تلقائيًّا. إنه يخزّن فقط ما تسجّله أنت. والحالات غير المؤكَّدة تحتاج إلى عالم موثوق.",
+  "@hnNoAutoClassify": {
+    "description": "Hayd/Nifas: no automatic classification banner"
+  },
+  "hnTabHayd": "الحيض",
+  "@hnTabHayd": {
+    "description": "Hayd/Nifas: Hayd tab"
+  },
+  "hnTabNifas": "النفاس",
+  "@hnTabNifas": {
+    "description": "Hayd/Nifas: Nifas tab"
+  },
+  "hnTabIrregular": "غير المنتظمة",
+  "@hnTabIrregular": {
+    "description": "Hayd/Nifas: Irregular tab"
+  },
+  "hnIrregularNote": "ملاحظات فقط — لا يُجرى أي تصنيف هنا.",
+  "@hnIrregularNote": {
+    "description": "Hayd/Nifas: irregular tab note"
+  },
+  "hnNoRecords": "لا سجلات بعد.",
+  "@hnNoRecords": {
+    "description": "Hayd/Nifas: empty records message"
+  },
+  "hnAddRecord": "أضف سجلًّا",
+  "@hnAddRecord": {
+    "description": "Hayd/Nifas: add record button"
+  },
+  "hnEditRecord": "تحرير السجلّ",
+  "@hnEditRecord": {
+    "description": "Hayd/Nifas: edit record title"
+  },
+  "hnStart": "البدء",
+  "@hnStart": {
+    "description": "Hayd/Nifas: start date label"
+  },
+  "hnEnd": "الانتهاء",
+  "@hnEnd": {
+    "description": "Hayd/Nifas: end date label"
+  },
+  "hnOngoing": "مستمرّ",
+  "@hnOngoing": {
+    "description": "Hayd/Nifas: ongoing toggle label"
+  },
+  "hnPurityIntervals": "فترات الطهر",
+  "@hnPurityIntervals": {
+    "description": "Hayd/Nifas: purity intervals section"
+  },
+  "hnAddInterval": "أضف فترة طهر",
+  "@hnAddInterval": {
+    "description": "Hayd/Nifas: add purity interval button"
+  },
+  "hnRemoveInterval": "أزل",
+  "@hnRemoveInterval": {
+    "description": "Hayd/Nifas: remove purity interval button"
+  },
+  "hnPurityConfirmed": "أؤكّد أن فترات الطهر المذكورة أعلاه صحيحة",
+  "@hnPurityConfirmed": {
+    "description": "Hayd/Nifas: purity confirmed checkbox"
+  },
+  "hnPrivateNote": "ملاحظة خاصة",
+  "@hnPrivateNote": {
+    "description": "Hayd/Nifas: private note field"
+  },
+  "hnConfirmation": "التأكيد",
+  "@hnConfirmation": {
+    "description": "Hayd/Nifas: confirmation status label"
+  },
+  "hnConfirmed": "مؤكَّد",
+  "@hnConfirmed": {
+    "description": "Hayd/Nifas: confirmed option"
+  },
+  "hnUnconfirmed": "غير مؤكَّد",
+  "@hnUnconfirmed": {
+    "description": "Hayd/Nifas: unconfirmed option"
+  },
+  "hnChildbirthDate": "تاريخ الولادة",
+  "@hnChildbirthDate": {
+    "description": "Hayd/Nifas: childbirth date label (nifas only)"
+  },
+  "hnDeleteRecord": "حذف السجلّ",
+  "@hnDeleteRecord": {
+    "description": "Hayd/Nifas: delete record button"
+  },
+  "hnDeleteConfirmTitle": "أتحذف هذا السجلّ؟",
+  "@hnDeleteConfirmTitle": {
+    "description": "Hayd/Nifas: delete confirm dialog title"
+  },
+  "hnDeleteConfirmBody": "يزيل هذا السجلّ نهائيًّا. وتبقى الإعفاءات المُطبَّقة مسبقًا في السجلّ.",
+  "@hnDeleteConfirmBody": {
+    "description": "Hayd/Nifas: delete confirm dialog body"
+  },
+  "hnReviewExemption": "مراجعة الإعفاء",
+  "@hnReviewExemption": {
+    "description": "Hayd/Nifas: review for exemption button"
+  },
+  "hnExemptionTitle": "مراجعة الإعفاء",
+  "@hnExemptionTitle": {
+    "description": "Hayd/Nifas: exemption review dialog title"
+  },
+  "hnExemptionDays": "أيام الإعفاء لكل صلاة",
+  "@hnExemptionDays": {
+    "description": "Hayd/Nifas: days to exempt field label"
+  },
+  "hnExemptionConfirmTitle": "أتُطبِّق الإعفاء؟",
+  "@hnExemptionConfirmTitle": {
+    "description": "Hayd/Nifas: apply exemption confirm title"
+  },
+  "hnExemptionConfirmBody": "يخصم هذا {count} صلاة من رصيدك المستحق ويسجّله في السجلّ. طبّق فقط ما تحقّقت منه.",
+  "@hnExemptionConfirmBody": {
+    "description": "Hayd/Nifas: apply exemption confirm body",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hnExempted": "طُبِّق الإعفاء وسُجِّل في السجلّ.",
+  "@hnExempted": {
+    "description": "Hayd/Nifas: exemption applied confirmation"
+  },
+  "hnExemptionTooMany": "الأيام المختارة أكثر من الرصيد المستحق لـ{prayer} (المستحق {count}).",
+  "@hnExemptionTooMany": {
+    "description": "Hayd/Nifas: exemption days exceed the outstanding balance",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hnRecordOngoing": "مستمرّ",
+  "@hnRecordOngoing": {
+    "description": "Hayd/Nifas: ongoing record label"
   }
 }

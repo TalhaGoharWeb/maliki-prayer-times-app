@@ -5,8 +5,24 @@ import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/services/boot_reschedule.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
+import 'package:malikiprayertimes/services/qada_reminders.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// A scheduler that explodes on any platform call — proves the qada boot
+/// restore swallows failures instead of crashing the boot path.
+class _ThrowingScheduler extends FakeNotificationScheduler {
+  @override
+  Future<void> schedule({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledUtc,
+    required bool exact,
+  }) {
+    throw StateError('no platform in test');
+  }
+}
 
 /// A prefs map in the shape the boot entrypoint builds from
 /// SharedPreferences, with the values a previous in-app schedule persisted.
@@ -159,6 +175,57 @@ void main() {
           fake.scheduled.firstWhere((s) => s.id == Prayer.fajr.index);
       expect(fajr.title, 'Fajr time');
       expect(fajr.body, 'It is now time for Fajr.');
+    });
+  });
+
+  group('qada reminder boot restore', () {
+    test('minutes set: boot restores the daily qada reminder', () async {
+      // Simulate the prefs left behind by Worker B's settings UI.
+      SharedPreferences.setMockInitialValues({
+        QadaReminders.minutesKey: 8 * 60,
+      });
+      // Read back exactly the way rescheduleOnBoot does.
+      final prefs = await SharedPreferences.getInstance();
+      final fake = FakeNotificationScheduler();
+      await QadaReminders.restoreOnBoot(
+        minutesSinceMidnight: prefs.getInt(QadaReminders.minutesKey),
+        scheduler: fake,
+      );
+      expect(fake.scheduled, hasLength(1));
+      final scheduled = fake.scheduled.single;
+      expect(scheduled.id, QadaReminders.notificationId);
+      expect(scheduled.title, QadaReminders.fallbackTitle);
+      expect(scheduled.body, QadaReminders.fallbackBody);
+      expect(scheduled.scheduledUtc.isAfter(DateTime.now().toUtc()), isTrue);
+    });
+
+    test('minutes absent: boot schedules no qada notification', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final fake = FakeNotificationScheduler();
+      await QadaReminders.restoreOnBoot(
+        minutesSinceMidnight: prefs.getInt(QadaReminders.minutesKey),
+        scheduler: fake,
+      );
+      expect(fake.scheduled, isEmpty);
+      expect(fake.cancelledIds, isEmpty);
+    });
+
+    test('boot never throws when prefs are empty', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      // The scheduler is never even touched when the key is absent.
+      await QadaReminders.restoreOnBoot(
+        minutesSinceMidnight: prefs.getInt(QadaReminders.minutesKey),
+        scheduler: _ThrowingScheduler(),
+      );
+    });
+
+    test('boot swallows scheduler failures instead of crashing', () async {
+      await QadaReminders.restoreOnBoot(
+        minutesSinceMidnight: 8 * 60,
+        scheduler: _ThrowingScheduler(),
+      );
     });
   });
 }
