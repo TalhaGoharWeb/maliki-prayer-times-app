@@ -14,13 +14,10 @@ import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 
-/// HH:MM with the locale's digit set (Arabic-Indic for `ar`, Western
-/// digits elsewhere), so embedded band times never show raw Western
-/// digits in the `ar` locale.
-String _hhmm(AppLocalizations l10n, DateTime t) => localizeDigits(
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}',
-      l10n.localeName,
-    );
+/// Prayer-time rendering shared with the rest of the app: 12/24-hour
+/// per the user's setting, locale digits via [formatPrayerTime].
+String _hhmm(AppLocalizations l10n, DateTime t, bool use24Hour) =>
+    formatPrayerTime(t, l10n.localeName, use24Hour: use24Hour);
 
 /// Localized display name for a band (e.g. "Subh" / "صبح" / "الصبح").
 String bandDisplayName(AppLocalizations l10n, String arabicName) =>
@@ -35,26 +32,30 @@ String bandDisplayName(AppLocalizations l10n, String arabicName) =>
 
 /// Localized ikhtiyari (preferred/choice-time) band text, with the band's
 /// computed clock time embedded where the band is computable.
-String bandIkhtiyariText(
-    AppLocalizations l10n, String arabicName, PrayerTimes times) =>
+String bandIkhtiyariText(AppLocalizations l10n, String arabicName,
+        PrayerTimes times,
+        {required bool use24Hour}) =>
     switch (arabicName) {
       'الصبح' => l10n.subhPreferredInfo,
-      'الظهر' => l10n.dhuhrPreferred(_hhmm(l10n, times.asr)),
+      'الظهر' => l10n.dhuhrPreferred(_hhmm(l10n, times.asr, use24Hour)),
       'العصر' => l10n.asrPreferredInfo,
-      'المغرب' => l10n.maghribPreferred(_hhmm(l10n, times.maghribPreferredEnd)),
+      'المغرب' =>
+        l10n.maghribPreferred(_hhmm(l10n, times.maghribPreferredEnd, use24Hour)),
       'العشاء' => l10n.ishaPreferred(
-          _hhmm(l10n, times.ishaPreferredEnd), _hhmm(l10n, times.ishaMidnightVariant)),
+          _hhmm(l10n, times.ishaPreferredEnd, use24Hour),
+          _hhmm(l10n, times.ishaMidnightVariant, use24Hour)),
       _ => '',
     };
 
 /// Localized daruri (necessity-time) band text, with the band's computed
 /// clock time embedded where the band is computable.
-String bandDaruriText(
-    AppLocalizations l10n, String arabicName, PrayerTimes times) =>
+String bandDaruriText(AppLocalizations l10n, String arabicName,
+        PrayerTimes times,
+        {required bool use24Hour}) =>
     switch (arabicName) {
-      'الصبح' => l10n.subhNecessityEnd(_hhmm(l10n, times.sunrise)),
-      'الظهر' => l10n.dhuhrNecessityEnd(_hhmm(l10n, times.maghrib)),
-      'العصر' => l10n.asrNecessityEnd(_hhmm(l10n, times.maghrib)),
+      'الصبح' => l10n.subhNecessityEnd(_hhmm(l10n, times.sunrise, use24Hour)),
+      'الظهر' => l10n.dhuhrNecessityEnd(_hhmm(l10n, times.maghrib, use24Hour)),
+      'العصر' => l10n.asrNecessityEnd(_hhmm(l10n, times.maghrib, use24Hour)),
       'المغرب' => l10n.maghribNecessityInfo,
       'العشاء' => l10n.ishaNecessityInfo,
       _ => '',

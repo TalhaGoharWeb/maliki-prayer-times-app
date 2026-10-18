@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
 import 'package:malikiprayertimes/services/compass_service.dart';
@@ -47,6 +48,10 @@ class QiblaScreen extends StatefulWidget {
   @visibleForTesting
   final VoidCallback? onBuild;
 
+  /// Whether the sun-alignment time renders 24-hour (false = 12-hour with
+  /// day-period markers). Defaults to 12-hour, the app-wide default.
+  final bool use24Hour;
+
   const QiblaScreen({
     super.key,
     required this.coordinates,
@@ -56,6 +61,7 @@ class QiblaScreen extends StatefulWidget {
     this.notifications,
     this.compass,
     this.onBuild,
+    this.use24Hour = false,
   });
 
   @override
@@ -66,7 +72,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
   late final CompassService _compass;
   late final bool _ownsCompass;
   StreamSubscription<double?>? _liveSub;
+  StreamSubscription<CompassQuality>? _qualitySub;
   bool _liveMode = false;
+
+  /// Latest magnetometer health; drives the calibration warning state.
+  /// Starts unknown until the first assessed sample arrives.
+  CompassQuality _quality = CompassQuality.unknown;
 
   /// Heading-throttle state (REL-08): the raw sensor fires at hardware rate
   /// (tens–hundreds of events/sec), but this subscription only drives the
@@ -101,11 +112,18 @@ class _QiblaScreenState extends State<QiblaScreen> {
         if (_liveMode != live) setState(() => _liveMode = live);
       }
     });
+    // Magnetometer health for the calibration warning. A change in quality
+    // always rebuilds (it is rare); the dial reads the same value.
+    _qualitySub = _compass.quality.listen((quality) {
+      if (!mounted) return;
+      if (_quality != quality) setState(() => _quality = quality);
+    });
   }
 
   @override
   void dispose() {
     _liveSub?.cancel();
+    _qualitySub?.cancel();
     if (_ownsCompass) _compass.dispose();
     super.dispose();
   }
@@ -292,11 +310,13 @@ class _QiblaScreenState extends State<QiblaScreen> {
         _CompassDial(
           compass: _compass,
           bearing: bearing,
+          quality: _quality,
         ),
         const SizedBox(height: 12),
 
         // Calibration notice with expandable steps (copy follows the mode).
-        _CalibrationCard(bearing: bearing, live: _liveMode),
+        _CalibrationCard(
+            bearing: bearing, live: _liveMode, quality: _quality),
         const SizedBox(height: 12),
 
         // Sun-alignment method.
@@ -307,6 +327,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
           // it must use the same frame the wall clock was computed in.
           timeZoneOffset: displayOffset,
           notifications: widget.notifications,
+          use24Hour: widget.use24Hour,
         ),
       ],
     );
@@ -334,11 +355,77 @@ bool sunReminderSchedulable(
 /// −heading so the teal qibla arrow stays fixed on the computed bearing
 /// while the dial turns with the device. Turn until the arrow points
 /// straight up — then the top of the phone faces the qibla.
-class _CompassDial extends StatelessWidget {
+///
+/// The raw sensor stream is jumpy, so headings pass through a
+/// [HeadingSmoother] (small time constant: the dial glides, it never
+/// lags). When the smoothed heading lands within ±2° of the bearing the
+/// dial shows a distinct aligned state with a gentle haptic pulse; a live
+/// "X° off" readout helps the user home in the rest of the way. A suspect
+/// magnetometer ([CompassQuality.suspect]) surfaces a calibration warning
+/// instead of a confident-but-wrong arrow.
+class _CompassDial extends StatefulWidget {
   final CompassService compass;
   final double bearing;
+  final CompassQuality quality;
 
-  const _CompassDial({required this.compass, required this.bearing});
+  const _CompassDial({
+    required this.compass,
+    required this.bearing,
+    required this.quality,
+  });
+
+  @override
+  State<_CompassDial> createState() => _CompassDialState();
+}
+
+class _CompassDialState extends State<_CompassDial> {
+  final HeadingSmoother _smoother = HeadingSmoother();
+  StreamSubscription<double?>? _headingSub;
+
+  /// True once any heading event (including null) has arrived.
+  bool _receivedAny = false;
+
+  /// Latest smoothed heading; null while waiting or when the sensor is
+  /// unavailable. The dial and readouts render this value.
+  double? _smoothHeading;
+
+  /// Whether the aligned haptic has fired for the current aligned visit;
+  /// reset when the user drifts back out of the window.
+  bool _wasAligned = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _headingSub = widget.compass.headings.listen((heading) {
+      if (!mounted) return;
+      setState(() {
+        _receivedAny = true;
+        if (heading == null) {
+          _smoothHeading = null;
+          _smoother.reset();
+          _wasAligned = false;
+        } else {
+          _smoothHeading = _smoother.update(heading);
+          final aligned = angularDifferenceDegrees(
+                  _smoothHeading!, widget.bearing) <=
+              kQiblaAlignedToleranceDegrees;
+          if (aligned && !_wasAligned) {
+            // A gentle pulse the moment the qibla locks in. In widget
+            // tests the platform channel is unmocked and the call is a
+            // harmless no-op.
+            HapticFeedback.lightImpact();
+          }
+          _wasAligned = aligned;
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _headingSub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -347,181 +434,262 @@ class _CompassDial extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final lang = Localizations.localeOf(context).languageCode;
 
+    final waiting = !_receivedAny;
+    // Null while waiting, null when the sensor is unavailable.
+    final double? heading = waiting ? null : _smoothHeading;
+    final live = heading != null;
+    final suspect = widget.quality == CompassQuality.suspect;
+
+    final headerTitle = live ? l10n.liveCompassTitle : l10n.staticVector;
+    final semanticsLabel = heading != null
+        ? l10n.liveHeading(localizeDigits(heading.toStringAsFixed(0), lang))
+        : l10n.qiblaBearing(
+            localizeDigits(widget.bearing.toStringAsFixed(1), lang));
+
+    final offBy = heading == null
+        ? null
+        : angularDifferenceDegrees(heading, widget.bearing);
+    final aligned =
+        offBy != null && offBy <= kQiblaAlignedToleranceDegrees;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: StreamBuilder<double?>(
-          stream: compass.headings,
-          builder: (context, snapshot) {
-            final waiting =
-                snapshot.connectionState == ConnectionState.waiting;
-            // Null while waiting, null when the sensor is unavailable.
-            final double? heading = waiting ? null : snapshot.data;
-            final live = heading != null;
-
-            final headerTitle =
-                live ? l10n.liveCompassTitle : l10n.staticVector;
-            final semanticsLabel = heading != null
-                ? l10n.liveHeading(
-                    localizeDigits(heading.toStringAsFixed(0), lang))
-                : l10n.qiblaBearing(
-                    localizeDigits(bearing.toStringAsFixed(1), lang));
-
-            return Column(
+        child: Column(
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      live ? Icons.explore : Icons.hdr_weak,
-                      size: 16,
+                Icon(
+                  live ? Icons.explore : Icons.hdr_weak,
+                  size: 16,
+                  color: scheme.secondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    headerTitle,
+                    style: AppFonts.eyebrow(context).copyWith(
                       color: scheme.secondary,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        headerTitle,
-                        style: AppFonts.eyebrow(context).copyWith(
-                          color: scheme.secondary,
-                        ),
-                      ),
-                    ),
-                    if (live)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: scheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              l10n.liveBadge,
-                              style: AppFonts.badgeLabel(context).copyWith(
-                                color: scheme.onTertiaryContainer,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    else if (waiting)
-                      SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: scheme.secondary,
-                        ),
-                      )
-                    else
-                      Text(
-                        l10n.northUp,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: scheme.secondary,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Semantics(
-                    // The dial is pure CustomPaint: expose its essential
-                    // information to screen readers.
-                    label: semanticsLabel,
-                    child: Transform.rotate(
-                      // Rotate the artwork opposite the device heading so
-                      // the qibla arrow stays fixed on the bearing.
-                      angle:
-                          heading != null ? -heading * math.pi / 180.0 : 0,
-                      child: CustomPaint(
-                        painter: _QiblaDialPainter(
-                          bearing,
-                          l10n.qiblaLabel,
-                          scheme,
-                          // Localized cardinal letters (I-12), in N/E/S/W
-                          // order. ar/ur use the Perso-Arabic compass
-                          // abbreviations; fr uses N/E/S/O.
-                          cardinals: switch (lang) {
-                            'ar' || 'ur' => const ['ش', 'ق', 'ج', 'غ'],
-                            'fr' => const ['N', 'E', 'S', 'O'],
-                            _ => const ['N', 'E', 'S', 'W'],
-                          },
-                          cardinalFontFamily: switch (lang) {
-                            'ur' => AppFonts.urdu,
-                            'ar' => AppFonts.arabic,
-                            _ => AppFonts.latinSans,
-                          },
-                        ),
-                      ),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                if (heading != null) ...[
-                  Text(
-                    l10n.liveHeading(
-                      localizeDigits(heading.toStringAsFixed(0), lang),
+                if (live)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: scheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          l10n.liveBadge,
+                          style: AppFonts.badgeLabel(context).copyWith(
+                            color: scheme.onTertiaryContainer,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
+                  )
+                else if (waiting)
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: scheme.secondary,
+                    ),
+                  )
+                else
                   Text(
-                    l10n.qiblaLiveNote,
+                    l10n.northUp,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.secondary,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              ],
+            ),
+            // Magnetometer health warning: shown instead of a
+            // confident-but-wrong arrow when the field looks off.
+            if (live && suspect) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                decoration: BoxDecoration(
+                  color: scheme.errorContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.warning_amber_rounded,
+                        size: 18, color: scheme.onErrorContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.calibrationNeeded,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: scheme.onErrorContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.calibrationHint,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: scheme.onErrorContainer,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            AspectRatio(
+              aspectRatio: 1,
+              child: Semantics(
+                // The dial is pure CustomPaint: expose its essential
+                // information to screen readers.
+                label: semanticsLabel,
+                child: Transform.rotate(
+                  // Rotate the artwork opposite the device heading so
+                  // the qibla arrow stays fixed on the bearing.
+                  angle: heading != null ? -heading * math.pi / 180.0 : 0,
+                  child: CustomPaint(
+                    painter: _QiblaDialPainter(
+                      widget.bearing,
+                      l10n.qiblaLabel,
+                      scheme,
+                      aligned: aligned,
+                      // Localized cardinal letters (I-12), in N/E/S/W
+                      // order. ar/ur use the Perso-Arabic compass
+                      // abbreviations; fr uses N/E/S/O.
+                      cardinals: switch (lang) {
+                        'ar' || 'ur' => const ['ش', 'ق', 'ج', 'غ'],
+                        'fr' => const ['N', 'E', 'S', 'O'],
+                        _ => const ['N', 'E', 'S', 'W'],
+                      },
+                      cardinalFontFamily: switch (lang) {
+                        'ur' => AppFonts.urdu,
+                        'ar' => AppFonts.arabic,
+                        _ => AppFonts.latinSans,
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (heading != null) ...[
+              Text(
+                l10n.liveHeading(
+                  localizeDigits(heading.toStringAsFixed(0), lang),
+                ),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              if (aligned)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: scheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: scheme.tertiary,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.gesture,
-                          size: 14, color: scheme.secondary),
-                      const SizedBox(width: 6),
+                      Icon(Icons.check_circle,
+                          size: 18, color: scheme.tertiary),
+                      const SizedBox(width: 8),
                       Flexible(
                         child: Text(
-                          l10n.calibrationHint,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: scheme.secondary,
+                          l10n.qiblaAligned,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: scheme.onTertiaryContainer,
+                            fontWeight: FontWeight.w700,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],
                   ),
-                ] else if (waiting)
-                  Text(
-                    l10n.compassAcquiring,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: scheme.secondary,
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                else
-                  Text(
-                    l10n.compassUnavailable,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: scheme.secondary,
-                    ),
-                    textAlign: TextAlign.center,
+                )
+              else
+                Text(
+                  l10n.degreesOff(
+                    localizeDigits(offBy!.toStringAsFixed(0), lang),
                   ),
-              ],
-            );
-          },
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: scheme.secondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.qiblaLiveNote,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.secondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.gesture, size: 14, color: scheme.secondary),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      l10n.calibrationHint,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.secondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ] else if (waiting)
+              Text(
+                l10n.compassAcquiring,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.secondary,
+                ),
+                textAlign: TextAlign.center,
+              )
+            else
+              Text(
+                l10n.compassUnavailable,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.secondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+          ],
         ),
       ),
     );
@@ -577,21 +745,33 @@ class _StatRow extends StatelessWidget {
 }
 
 /// Calibration notice: mode-aware guidance + expandable steps.
+///
+/// When the magnetometer health is [CompassQuality.suspect] the card leads
+/// with a clear recalibration warning instead of the routine guidance.
 class _CalibrationCard extends StatelessWidget {
   final double bearing;
   final bool live;
+  final CompassQuality quality;
 
-  const _CalibrationCard({required this.bearing, required this.live});
+  const _CalibrationCard({
+    required this.bearing,
+    required this.live,
+    required this.quality,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final suspect = quality == CompassQuality.suspect;
     final steps = live
         ? [l10n.step1Live, l10n.step2Live, l10n.step3Live]
         : [l10n.step1, l10n.step2, l10n.step3];
     return Card(
+      // A suspect sensor gets the error tint so the warning reads as a
+      // warning, not as routine guidance.
+      color: suspect ? scheme.errorContainer : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -599,20 +779,33 @@ class _CalibrationCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.info_outline, size: 18, color: scheme.secondary),
+                Icon(
+                  suspect ? Icons.warning_amber_rounded : Icons.info_outline,
+                  size: 18,
+                  color:
+                      suspect ? scheme.onErrorContainer : scheme.secondary,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    l10n.calibrationTitle,
-                    style: theme.textTheme.titleMedium,
+                    suspect ? l10n.calibrationNeeded : l10n.calibrationTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: suspect ? scheme.onErrorContainer : null,
+                      fontWeight:
+                          suspect ? FontWeight.w700 : null,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              live ? l10n.calibrationBodyLive : l10n.calibrationBody,
-              style: theme.textTheme.bodySmall,
+              suspect
+                  ? l10n.calibrationNeededBody
+                  : (live ? l10n.calibrationBodyLive : l10n.calibrationBody),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: suspect ? scheme.onErrorContainer : null,
+              ),
             ),
             Theme(
               data: theme.copyWith(dividerColor: Colors.transparent),
@@ -684,11 +877,15 @@ class _SunAlignCard extends StatefulWidget {
   final Duration timeZoneOffset;
   final NotificationService? notifications;
 
+  /// Whether the alignment time renders 24-hour (false = 12-hour).
+  final bool use24Hour;
+
   const _SunAlignCard({
     required this.alignWall,
     required this.languageCode,
     required this.timeZoneOffset,
     required this.notifications,
+    required this.use24Hour,
   });
 
   @override
@@ -773,7 +970,8 @@ class _SunAlignCardState extends State<_SunAlignCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.reminderSet(
-              localizeDigits(_hhmm(alignWall), widget.languageCode))),
+              formatPrayerTime(alignWall, widget.languageCode,
+                use24Hour: widget.use24Hour))),
         ),
       );
     } catch (_) {
@@ -798,8 +996,6 @@ class _SunAlignCardState extends State<_SunAlignCard> {
     }
   }
 
-  String _hhmm(DateTime t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -860,7 +1056,8 @@ class _SunAlignCardState extends State<_SunAlignCard> {
               ),
               const SizedBox(height: 4),
               Text(
-                localizeDigits(_hhmm(alignWall), widget.languageCode),
+                formatPrayerTime(alignWall, widget.languageCode,
+                use24Hour: widget.use24Hour),
                 style: theme.textTheme.displaySmall?.copyWith(
                   color: scheme.onTertiaryFixed,
                 ),
@@ -896,8 +1093,9 @@ class _SunAlignCardState extends State<_SunAlignCard> {
                     children: [
                       Expanded(
                         child: Text(
-                          l10n.reminderSet(localizeDigits(
-                              _hhmm(alignWall), widget.languageCode)),
+                          l10n.reminderSet(formatPrayerTime(
+                              alignWall, widget.languageCode,
+                              use24Hour: widget.use24Hour)),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: scheme.onTertiaryFixed,
                             fontWeight: FontWeight.w600,
@@ -956,10 +1154,14 @@ class _SunAlignCardState extends State<_SunAlignCard> {
 
 /// Static compass dial: north marker, degree ticks, cardinal letters, and a
 /// fixed Kaaba-direction arrow at [bearingDegrees]. Nothing rotates.
+///
+/// When [aligned] is true (device heading within ±2° of the bearing) a gold
+/// ring is drawn so the "you are facing the qibla" state is unmistakable.
 class _QiblaDialPainter extends CustomPainter {
   final double bearingDegrees;
   final String qiblaLabel;
   final ColorScheme scheme;
+  final bool aligned;
 
   /// Cardinal letters in N/E/S/W order, localized per UI locale.
   final List<String> cardinals;
@@ -969,7 +1171,9 @@ class _QiblaDialPainter extends CustomPainter {
   final String cardinalFontFamily;
 
   _QiblaDialPainter(this.bearingDegrees, this.qiblaLabel, this.scheme,
-      {required this.cardinals, required this.cardinalFontFamily});
+      {required this.cardinals,
+      required this.cardinalFontFamily,
+      this.aligned = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -982,27 +1186,62 @@ class _QiblaDialPainter extends CustomPainter {
       ..color = scheme.outline;
     canvas.drawCircle(center, radius, ringPaint);
 
-    // Degree ticks every 15°, longer at the cardinals.
-    for (var deg = 0; deg < 360; deg += 15) {
+    // Aligned state: a gold ring outside the dial face.
+    if (aligned) {
+      canvas.drawCircle(
+        center,
+        radius + 6,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4
+          ..color = scheme.tertiary,
+      );
+    }
+
+    // Degree ticks: minor every 10°, medium at 30°, long at the cardinals.
+    for (var deg = 0; deg < 360; deg += 10) {
       final rad = deg * math.pi / 180.0;
       final isCardinal = deg % 90 == 0;
-      final inner = radius - (isCardinal ? 14 : 8);
+      final isMedium = deg % 30 == 0;
+      final inner = radius - (isCardinal ? 16 : (isMedium ? 12 : 7));
       final p1 = center + Offset(math.sin(rad), -math.cos(rad)) * inner;
       final p2 = center + Offset(math.sin(rad), -math.cos(rad)) * radius;
       canvas.drawLine(
         p1,
         p2,
         Paint()
-          ..strokeWidth = isCardinal ? 3 : 1.5
-          ..color = scheme.onSurfaceVariant,
+          ..strokeWidth = isCardinal ? 3 : (isMedium ? 2 : 1.25)
+          ..color = isCardinal
+              ? scheme.onSurface
+              : scheme.onSurfaceVariant,
       );
+    }
+
+    // Degree numbers every 30° (cardinal points get letters instead).
+    for (var deg = 30; deg < 360; deg += 30) {
+      if (deg % 90 == 0) continue;
+      final rad = deg * math.pi / 180.0;
+      final pos =
+          center + Offset(math.sin(rad), -math.cos(rad)) * (radius - 34);
+      final tp = TextPainter(
+        text: TextSpan(
+          text: '$deg',
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 10,
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
     }
 
     // Cardinal letters.
     for (var i = 0; i < 4; i++) {
       final rad = i * 90 * math.pi / 180.0;
       final pos =
-          center + Offset(math.sin(rad), -math.cos(rad)) * (radius - 28);
+          center + Offset(math.sin(rad), -math.cos(rad)) * (radius - 30);
       final tp = TextPainter(
         text: TextSpan(
           text: cardinals[i],
@@ -1068,5 +1307,6 @@ class _QiblaDialPainter extends CustomPainter {
   @override
   bool shouldRepaint(_QiblaDialPainter oldDelegate) =>
       oldDelegate.bearingDegrees != bearingDegrees ||
+      oldDelegate.aligned != aligned ||
       oldDelegate.scheme != scheme;
 }

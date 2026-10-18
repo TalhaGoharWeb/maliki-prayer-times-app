@@ -560,8 +560,9 @@ void main() {
       final place = service.savedPlaces.single;
       expect(place.isDevice, isFalse);
       expect(place.name, 'Karachi');
-      // The saved place keeps rendering in the zone it was saved in.
-      expect(place.timeZoneId, isNotNull);
+      // The saved place keeps rendering in the frame it was saved in:
+      // the device wall clock (null zone id) — never a fake zone id.
+      expect(place.timeZoneId, isNull);
       // GPS quality does not travel into the saved snapshot.
       expect(place.accuracyMeters, isNull);
     });

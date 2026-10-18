@@ -1972,6 +1972,22 @@
   "@timeZonePickerTitle": {
     "description": "Phase 2: Title of the time-zone picker dialog"
   },
+  "timeFormatSection": "Time format",
+  "@timeFormatSection": {
+    "description": "Settings section: 12-hour vs 24-hour time display"
+  },
+  "timeFormat12Hour": "12-hour",
+  "@timeFormat12Hour": {
+    "description": "Time format option: 12-hour with day-period markers"
+  },
+  "timeFormat24Hour": "24-hour",
+  "@timeFormat24Hour": {
+    "description": "Time format option: 24-hour"
+  },
+  "deviceTimeZoneOption": "Device time zone",
+  "@deviceTimeZoneOption": {
+    "description": "Time zone picker option: follow the device wall clock"
+  },
   "timeZoneSearchHint": "Search time zones",
   "@timeZoneSearchHint": {
     "description": "Phase 2: Search hint in the time-zone picker"
@@ -2071,5 +2087,21 @@
   "learnHomeCardBody": "Maliki definitions of the five prayers, the 18° question, and common questions — all linked to the research evidence.",
   "@learnHomeCardBody": {
     "description": "Phase 4: body line of the Learn card on the home screen"
+  },
+  "qiblaAligned": "Aligned with the Qibla",
+  "@qiblaAligned": {
+    "description": "Qibla dial: shown when the device heading is within ±2° of the qibla bearing"
+  },
+  "degreesOff": "{degrees}° off",
+  "@degreesOff": {
+    "description": "Qibla dial: live readout of how many degrees the heading is off the qibla bearing"
+  },
+  "calibrationNeeded": "Compass needs calibration",
+  "@calibrationNeeded": {
+    "description": "Qibla: warning title when the magnetometer field looks wrong"
+  },
+  "calibrationNeededBody": "The magnetic field reading looks wrong, so the arrow may mislead. Wave your phone in a figure-8 motion until the warning clears.",
+  "@calibrationNeededBody": {
+    "description": "Qibla: warning body when the magnetometer field looks wrong"
   }
 }

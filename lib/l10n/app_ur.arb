@@ -1324,6 +1324,22 @@
   "@timeZonePickerTitle": {
     "description": "Phase 2: Title of the time-zone picker dialog"
   },
+  "timeFormatSection": "وقت کا فارمیٹ",
+  "@timeFormatSection": {
+    "description": "Settings section: 12-hour vs 24-hour time display"
+  },
+  "timeFormat12Hour": "12 گھنٹے",
+  "@timeFormat12Hour": {
+    "description": "Time format option: 12-hour with day-period markers"
+  },
+  "timeFormat24Hour": "24 گھنٹے",
+  "@timeFormat24Hour": {
+    "description": "Time format option: 24-hour"
+  },
+  "deviceTimeZoneOption": "ڈیوائس کا ٹائم زون",
+  "@deviceTimeZoneOption": {
+    "description": "Time zone picker option: follow the device wall clock"
+  },
   "timeZoneSearchHint": "ٹائم زون تلاش کریں",
   "@timeZoneSearchHint": {
     "description": "Phase 2: Search hint in the time-zone picker"
@@ -1423,5 +1439,21 @@
   "learnHomeCardBody": "پانچ نمازوں کی مالکی تعریفیں، 18 ڈگری کا سوال، اور عام سوالات — سب تحقیقی شواہد سے منسلک۔",
   "@learnHomeCardBody": {
     "description": "Phase 4: body line of the Learn card on the home screen"
+  },
+  "qiblaAligned": "قبلے کی سمت درست ہے",
+  "@qiblaAligned": {
+    "description": "Qibla dial: shown when the device heading is within ±2° of the qibla bearing"
+  },
+  "degreesOff": "{degrees}° کا فرق",
+  "@degreesOff": {
+    "description": "Qibla dial: live readout of how many degrees the heading is off the qibla bearing"
+  },
+  "calibrationNeeded": "قطب نما کی کیلبریشن درکار ہے",
+  "@calibrationNeeded": {
+    "description": "Qibla: warning title when the magnetometer field looks wrong"
+  },
+  "calibrationNeededBody": "مقناطیسی فیلڈ کی ریڈنگ غیر معمولی ہے، اس لیے تیر غلط بتا سکتا ہے۔ وارننگ ختم ہونے تک فون کو 8 کی شکل میں ہلائیں۔",
+  "@calibrationNeededBody": {
+    "description": "Qibla: warning body when the magnetometer field looks wrong"
   }
 }

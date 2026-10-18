@@ -64,8 +64,6 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     _profileB = PrayerProfiles.all[1];
   }
 
-  String _hhmm(DateTime t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   /// Today's offset: the zone's offset for today when [zoneId] is set,
   /// otherwise the constructor-supplied offset (legacy).
@@ -299,10 +297,10 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                     return DataRow(
                       cells: [
                         DataCell(Text(_rowLabel(l10n, prayer))),
-                        DataCell(
-                            Text(localizeDigits(_hhmm(a), lang))),
-                        DataCell(
-                            Text(localizeDigits(_hhmm(b), lang))),
+                        DataCell(Text(formatPrayerTime(a, lang,
+                            use24Hour: widget.settings.use24Hour))),
+                        DataCell(Text(formatPrayerTime(b, lang,
+                            use24Hour: widget.settings.use24Hour))),
                         DataCell(Text(_diffMinutes(l10n, a, b))),
                       ],
                     );

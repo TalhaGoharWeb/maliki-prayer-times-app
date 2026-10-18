@@ -125,8 +125,10 @@ void main() {
       await tester.enterText(fields.at(2), '67.0');
       await tester.tap(find.text(l10n.saveCompute));
       await tester.pump();
-      // Default: the device zone.
-      expect(location.current!.timeZoneId, isNotNull);
+      // Default: the device wall clock (null zone id) — the picker
+      // offers an explicit IANA zone for far-away places instead of
+      // silently defaulting to a wrong one.
+      expect(location.current!.timeZoneId, isNull);
     });
   });
 

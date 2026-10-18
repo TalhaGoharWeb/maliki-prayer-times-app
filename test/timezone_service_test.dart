@@ -6,7 +6,7 @@ import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
 import 'package:malikiprayertimes/services/timezone_service.dart';
 
-/// Phase 2 tests: the bundled IANA tz database (latest_10y), per-date DST
+/// Phase 2 tests: the bundled IANA tz database (latest_all), per-date DST
 /// offset resolution, zone-id plumbing for manual locations, and the
 /// regression test proving a manual location in another zone renders that
 /// zone's wall-clock times (not the device's).
@@ -94,8 +94,8 @@ void main() {
     });
 
     test(
-        'effectiveZoneIdFor: GPS-device locations keep the device zone '
-        '(even with a stored id)', () {
+        'effectiveZoneIdFor: GPS-device locations use the device wall '
+        'clock (null zone id — even with a stored id)', () {
       const device = SavedLocation(
         name: 'Device location',
         latitude: 24.86,
@@ -103,26 +103,63 @@ void main() {
         isDevice: true,
         timeZoneId: 'America/New_York',
       );
-      expect(TimezoneService.effectiveZoneIdFor(device),
-          TimezoneService.deviceZoneId);
+      expect(TimezoneService.effectiveZoneIdFor(device), isNull);
     });
 
     test(
         'effectiveZoneIdFor: legacy and unknown zones fall back to the '
-        'device zone (never throws)', () {
+        'device wall clock (null — never throws, never UTC)', () {
       const legacy = SavedLocation(
           name: 'Karachi', latitude: 24.86, longitude: 67.0);
-      expect(TimezoneService.effectiveZoneIdFor(legacy),
-          TimezoneService.deviceZoneId);
+      expect(TimezoneService.effectiveZoneIdFor(legacy), isNull);
       const bogus = SavedLocation(
           name: 'X',
           latitude: 0.0,
           longitude: 0.0,
           timeZoneId: 'Not/AZone');
-      expect(TimezoneService.effectiveZoneIdFor(bogus),
-          TimezoneService.deviceZoneId);
-      expect(TimezoneService.effectiveZoneIdFor(null),
-          TimezoneService.deviceZoneId);
+      expect(TimezoneService.effectiveZoneIdFor(bogus), isNull);
+      expect(TimezoneService.effectiveZoneIdFor(null), isNull);
+    });
+
+    test(
+        'REGRESSION (2026-10-18): a device whose platform name is an '
+        'abbreviation ("PKT") never resolves to Etc/UTC', () {
+      // Real Android phones report timeZoneName = "PKT", which is not an
+      // IANA id. The old code mapped it to 'Etc/UTC', rendering every
+      // prayer time 5 hours behind in Pakistan.
+      expect(
+          TimezoneService.deviceIanaZoneId(platformZoneName: 'PKT'), isNull);
+      // 'UTC' IS a genuine IANA zone (zero offset, no DST) in the full
+      // database, so a device reporting it maps correctly — not to a fake.
+      expect(TimezoneService.deviceIanaZoneId(platformZoneName: 'UTC'), 'UTC');
+      // A genuine IANA name still passes through.
+      expect(
+          TimezoneService.deviceIanaZoneId(
+              platformZoneName: 'Asia/Karachi'),
+          'Asia/Karachi');
+    });
+
+    test(
+        'REGRESSION (2026-10-18): device locations render in the device '
+        'wall clock, never UTC', () {
+      const device = SavedLocation(
+        name: 'Qili Piranwali',
+        latitude: 30.16,
+        longitude: 70.55,
+        isDevice: true,
+      );
+      final date = DateTime(2026, 10, 18);
+      // The null zone id is the device-wall-clock frame: the offset comes
+      // from the OS for that date, not from any IANA lookup.
+      expect(TimezoneService.effectiveZoneIdFor(device), isNull);
+      expect(
+        TimezoneService.offsetForLocation(device, date),
+        TimezoneService.deviceOffsetForDate(date),
+      );
+      expect(
+        TimezoneService.offsetForLocation(device, date),
+        DateTime(2026, 10, 18).timeZoneOffset,
+      );
     });
 
     test(
@@ -143,7 +180,7 @@ void main() {
         ),
       );
       expect(effective, zoneId);
-      final offset = TimezoneService.offsetFor(effective, date);
+      final offset = TimezoneService.offsetFor(effective!, date);
       expect(offset, const Duration(hours: -4));
 
       final times = (calculatePrayerTimes(

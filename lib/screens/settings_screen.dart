@@ -150,6 +150,37 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+            // (1b) Time format: 12-hour (default) or 24-hour.
+            _SectionHeader(
+                icon: Icons.schedule, title: l10n.timeFormatSection),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DropdownButtonFormField<bool>(
+                  initialValue: settings.use24Hour,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  items: [
+                    DropdownMenuItem(
+                      value: false,
+                      child: Text(l10n.timeFormat12Hour),
+                    ),
+                    DropdownMenuItem(
+                      value: true,
+                      child: Text(l10n.timeFormat24Hour),
+                    ),
+                  ],
+                  onChanged: (v) =>
+                      settings.setUse24Hour(v ?? false),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
             // (2) Per-prayer adjustments.
             _SectionHeader(
                 icon: Icons.history_edu, title: l10n.adjustmentsSection),

@@ -30,7 +30,9 @@ const _supportedLocales = [
 const _phoneSize = Size(1080, 2400);
 const _phonePixelRatio = 3.0;
 
-final _timePattern = RegExp(r'^\d{2}:\d{2}$');
+// Timetable readout: 24-hour "04:49" or 12-hour with locale day-period
+// markers ("4:49 AM", "4:49 صبح", "٤:٤٩ ص", "4:49 du matin").
+final _timePattern = RegExp(r'^[\d٠-٩]{1,2}:[\d٠-٩]{2}( .*)?$');
 
 String _textOf(Text t) => (t.data ?? t.textSpan?.toPlainText() ?? '').trim();
 

@@ -201,10 +201,12 @@ void main() {
 
         // Home tab (index 0) renders the timetable with a location set.
         // Arabic uses Arabic-Indic digits; Urdu and others use Western.
+        // Hours are 1-2 digits: the default 12-hour format never
+        // zero-pads ("4:49 AM", not "04:49 AM").
         final digitClass = code == 'ar' ? r'[٠-٩]' : r'\d';
         expect(
             find.textContaining(
-                RegExp('$digitClass$digitClass:$digitClass$digitClass')),
+                RegExp('$digitClass{1,2}:$digitClass$digitClass')),
             findsWidgets,
             reason: '$code home timetable');
 

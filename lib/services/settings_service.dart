@@ -21,6 +21,7 @@ class SettingsService extends ChangeNotifier {
   static const _reminderOffsetKey = 'reminder_offset_minutes';
   static const _regionSuggestionShownKey = 'region_suggestion_shown';
   static const _highLatitudeFallbackKey = 'high_latitude_fallback';
+  static const _timeFormatKey = 'time_format_24h';
 
   /// Language codes the app can be switched to. `null` means "system
   /// default" and is always allowed.
@@ -45,6 +46,11 @@ class SettingsService extends ChangeNotifier {
   };
 
   bool _ihtiyatEnabled = true;
+
+  /// Whether prayer times render in 24-hour format. Defaults to false
+  /// (12-hour with locale-correct day-period markers), the common
+  /// convention in Pakistan.
+  bool _use24Hour = false;
 
   /// Per-prayer notification toggles. Defaults to true for every prayer
   /// (including sunrise, which is a timetable marker — the user can switch
@@ -105,6 +111,10 @@ class SettingsService extends ChangeNotifier {
   /// Whether the precautionary Dhuhr/Maghrib delay applies. Defaults to true.
   bool get ihtiyatEnabled => _ihtiyatEnabled;
 
+  /// Whether prayer times render in 24-hour format (false = 12-hour with
+  /// locale-correct day-period markers).
+  bool get use24Hour => _use24Hour;
+
   /// Per-prayer notification toggles, each defaulting to true
   /// (unmodifiable view).
   Map<Prayer, bool> get notificationToggles =>
@@ -144,6 +154,8 @@ class SettingsService extends ChangeNotifier {
     }
 
     service._ihtiyatEnabled = prefs.getBool(_ihtiyatKey) ?? true;
+
+    service._use24Hour = prefs.getBool(_timeFormatKey) ?? false;
 
     service._regionSuggestionShown =
         prefs.getBool(_regionSuggestionShownKey) ?? false;
@@ -215,6 +227,7 @@ class SettingsService extends ChangeNotifier {
       jsonEncode({for (final p in Prayer.values) p.name: _adjustments[p]}),
     );
     await prefs.setBool(_ihtiyatKey, _ihtiyatEnabled);
+    await prefs.setBool(_timeFormatKey, _use24Hour);
     await prefs.setString(_highLatitudeFallbackKey, _highLatitudeFallback.name);
     await prefs.setInt(_reminderOffsetKey, _reminderOffsetMinutes);
     await prefs.setString(
@@ -251,6 +264,14 @@ class SettingsService extends ChangeNotifier {
   Future<void> setIhtiyatEnabled(bool value) async {
     if (_ihtiyatEnabled == value) return;
     _ihtiyatEnabled = value;
+    await _persist();
+    notifyListeners();
+  }
+
+  /// Switches between 12-hour and 24-hour time display.
+  Future<void> setUse24Hour(bool value) async {
+    if (_use24Hour == value) return;
+    _use24Hour = value;
     await _persist();
     notifyListeners();
   }

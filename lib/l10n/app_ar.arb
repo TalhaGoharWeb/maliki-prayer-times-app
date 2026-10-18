@@ -1324,6 +1324,22 @@
   "@timeZonePickerTitle": {
     "description": "Phase 2: Title of the time-zone picker dialog"
   },
+  "timeFormatSection": "تنسيق الوقت",
+  "@timeFormatSection": {
+    "description": "Settings section: 12-hour vs 24-hour time display"
+  },
+  "timeFormat12Hour": "12 ساعة",
+  "@timeFormat12Hour": {
+    "description": "Time format option: 12-hour with day-period markers"
+  },
+  "timeFormat24Hour": "24 ساعة",
+  "@timeFormat24Hour": {
+    "description": "Time format option: 24-hour"
+  },
+  "deviceTimeZoneOption": "المنطقة الزمنية للجهاز",
+  "@deviceTimeZoneOption": {
+    "description": "Time zone picker option: follow the device wall clock"
+  },
   "timeZoneSearchHint": "ابحث عن المناطق الزمنية",
   "@timeZoneSearchHint": {
     "description": "Phase 2: Search hint in the time-zone picker"
@@ -1423,5 +1439,21 @@
   "learnHomeCardBody": "تعريفات مالكية للصلوات الخمس، ومسألة الـ18 درجة، والأسئلة الشائعة — كلها موصولة بأدلة البحث.",
   "@learnHomeCardBody": {
     "description": "Phase 4: body line of the Learn card on the home screen"
+  },
+  "qiblaAligned": "أنت متّجه نحو القبلة",
+  "@qiblaAligned": {
+    "description": "Qibla dial: shown when the device heading is within ±2° of the qibla bearing"
+  },
+  "degreesOff": "الفرق {degrees}°",
+  "@degreesOff": {
+    "description": "Qibla dial: live readout of how many degrees the heading is off the qibla bearing"
+  },
+  "calibrationNeeded": "البوصلة تحتاج إلى معايرة",
+  "@calibrationNeeded": {
+    "description": "Qibla: warning title when the magnetometer field looks wrong"
+  },
+  "calibrationNeededBody": "قراءة المجال المغناطيسي غير طبيعية، فقد يكون السهم مضلّلًا. حرّك هاتفك على شكل الرقم 8 حتى تختفي الرسالة.",
+  "@calibrationNeededBody": {
+    "description": "Qibla: warning body when the magnetometer field looks wrong"
   }
 }

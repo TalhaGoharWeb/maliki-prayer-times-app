@@ -49,21 +49,22 @@ abstract final class TimezoneService {
     return ids;
   }
 
-  /// The device's zone id when the platform reports an IANA name the
-  /// database knows; 'Etc/UTC' otherwise.
+  /// The device's IANA zone id, or null when the platform does not report
+  /// one.
   ///
-  /// The fallback matters on systems whose platform zone name is not an
-  /// IANA id (this sandbox reports 'UTC', which the database does not
-  /// carry — 'Etc/UTC' is the equivalent entry, offset identically zero).
-  /// Real Android/iOS devices report IANA names and never hit the fallback.
-  /// If a platform ever reported an unknown name with a NON-zero offset,
-  /// this fallback would be wrong by that offset — an honest documented
-  /// limit, not a silent invention (no zone is guessed from the offset).
-  static String get deviceZoneId {
+  /// Real Android phones report an ABBREVIATION here (`timeZoneName` =
+  /// "PKT", "EST", …), not an IANA id — so this returns null on them.
+  /// Callers must treat null as "the device wall clock" resolved from the
+  /// OS offset ([deviceOffsetForDate]), never as UTC and never as a guess.
+  /// The previous implementation returned the fake id 'Etc/UTC' on such
+  /// devices, rendering every prayer time in UTC (5 hours behind in
+  /// Pakistan) — fixed 2026-10-18. [platformZoneName] is a test seam for
+  /// the real `DateTime.now().timeZoneName`.
+  static String? deviceIanaZoneId({String? platformZoneName}) {
     ensureInitialized();
-    final name = DateTime.now().timeZoneName;
+    final name = platformZoneName ?? DateTime.now().timeZoneName;
     if (tz.timeZoneDatabase.locations.containsKey(name)) return name;
-    return 'Etc/UTC';
+    return null;
   }
 
   /// True when [zoneId] names a zone in the bundled database.
@@ -87,8 +88,8 @@ abstract final class TimezoneService {
   ///
   /// Throws [tz.TimeZoneNotFoundException] for an unknown [zoneId];
   /// callers should resolve the zone through [effectiveZoneIdFor] (which
-  /// only ever returns known zones) rather than calling this directly with
-  /// user input.
+  /// returns null or a known zone) and use [offsetForLocation] rather than
+  /// calling this directly with user input.
   static Duration offsetFor(String zoneId, DateTime date) {
     ensureInitialized();
     final location = tz.getLocation(zoneId);
@@ -98,17 +99,20 @@ abstract final class TimezoneService {
         .timeZoneOffset;
   }
 
-  /// The zone whose wall clock a location's times are rendered in.
+  /// The zone whose wall clock a location's times are rendered in, or
+  /// null for "the device wall clock".
   ///
-  /// * GPS-device locations (`isDevice`) always use the device zone — the
-  ///   phone travels with the user, so the device zone IS the location's
-  ///   zone (documented limitation: none — this is correct behavior).
   /// * Manual locations use their stored [SavedLocation.timeZoneId] when it
   ///   names a known zone.
-  /// * Anything else (legacy locations saved before Phase 2, unknown zone
-  ///   ids) falls back to the device zone — exactly the pre-Phase-2
-  ///   behavior, never a crash.
-  static String effectiveZoneIdFor(SavedLocation? location) {
+  /// * GPS-device locations ALWAYS return null — the phone travels with the
+  ///   user, so the device wall clock (OS per-date offset) IS the location's
+  ///   zone. No IANA lookup is attempted: real phones report abbreviations
+  ///   like "PKT", and mapping those to a fake zone id was the 2026-10-18
+  ///   UTC bug.
+  /// * Legacy locations saved before Phase 2, or unknown zone ids, also
+  ///   return null — exactly the pre-Phase-2 behavior, never a crash and
+  ///   never UTC.
+  static String? effectiveZoneIdFor(SavedLocation? location) {
     ensureInitialized();
     final id = location?.timeZoneId;
     if (location != null &&
@@ -117,7 +121,24 @@ abstract final class TimezoneService {
         isKnownZone(id)) {
       return id;
     }
-    return deviceZoneId;
+    return null;
+  }
+
+  /// The OS wall-clock offset for the civil [date] — DST-correct per date
+  /// because it asks the platform for that date's offset, not "today's".
+  /// This is the offset used whenever [effectiveZoneIdFor] returns null.
+  static Duration deviceOffsetForDate(DateTime date) =>
+      DateTime(date.year, date.month, date.day).timeZoneOffset;
+
+  /// The UTC offset a location's times render with on [date]: the stored
+  /// IANA zone's offset for manual locations, the device wall-clock offset
+  /// otherwise. A device location can never resolve to 'Etc/UTC' through
+  /// this path — the IANA database is consulted only for stored zone ids.
+  static Duration offsetForLocation(SavedLocation? location, DateTime date) {
+    ensureInitialized();
+    final zoneId = effectiveZoneIdFor(location);
+    if (zoneId != null) return offsetFor(zoneId, date);
+    return deviceOffsetForDate(date);
   }
 
   /// Renders a UTC [instant] as a wall-clock [DateTime] in [zoneId]

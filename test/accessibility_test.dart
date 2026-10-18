@@ -656,8 +656,8 @@ void main() {
   });
 
   group('wave-1 reliability fixes (REL-01/REL-02, E-03)', () {
-    String hhmm(DateTime t) =>
-        '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+    // Expected cell text under the default 12-hour setting.
+    String hhmm(DateTime t) => formatPrayerTime(t, 'en', use24Hour: false);
 
     Widget monthlyFor(SettingsService settings,
             {required PrayerProfile profile}) =>

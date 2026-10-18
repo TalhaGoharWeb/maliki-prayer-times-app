@@ -232,8 +232,13 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
     return '$firstPart–$lastPart';
   }
 
-  String _hhmm(DateTime t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+  /// Centralized prayer-time rendering: 12/24-hour per the user's
+  /// setting, locale digits via [formatPrayerTime].
+  String _timeLabel(DateTime t, String lang) => formatPrayerTime(
+        t,
+        lang,
+        use24Hour: widget.settings.use24Hour,
+      );
 
   void _showDaySheet(int day) {
     final screenContext = context;
@@ -405,7 +410,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                localizeDigits(_hhmm(r.time), lang),
+                                _timeLabel(r.time, lang),
                                 style: AppFonts.timeLabel(context),
                               ),
                               if (chips.isNotEmpty) ...[
@@ -478,7 +483,8 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                           _bandLine(
                             theme,
                             l10n.preferredWord,
-                            bandIkhtiyariText(l10n, b.arabicName, times),
+                            bandIkhtiyariText(l10n, b.arabicName, times,
+                                use24Hour: widget.settings.use24Hour),
                             b.ikhtiyariIsComputed,
                             l10n,
                           ),
@@ -486,7 +492,8 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                           _bandLine(
                             theme,
                             l10n.necessityWord,
-                            bandDaruriText(l10n, b.arabicName, times),
+                            bandDaruriText(l10n, b.arabicName, times,
+                                use24Hour: widget.settings.use24Hour),
                             b.daruriIsComputed,
                             l10n,
                           ),
@@ -914,16 +921,15 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
                           )
                         else ...[
                           _CellTime(
-                            text: l10n.dayCellFajr(localizeDigits(
-                                _hhmm(_adjusted(Prayer.fajr, times.fajr)),
-                                lang)),
+                            text: l10n.dayCellFajr(_timeLabel(
+                                _adjusted(Prayer.fajr, times.fajr), lang)),
                             color: timeFg,
                             adjusted: fajrAdjusted,
                             markerTooltip: l10n.adjustmentMarkerSemantics,
                           ),
                           _CellTime(
-                            text: l10n.dayCellMaghrib(localizeDigits(
-                                _hhmm(_adjusted(Prayer.maghrib, times.maghrib)),
+                            text: l10n.dayCellMaghrib(_timeLabel(
+                                _adjusted(Prayer.maghrib, times.maghrib),
                                 lang)),
                             color: timeFg,
                             adjusted: maghribAdjusted,

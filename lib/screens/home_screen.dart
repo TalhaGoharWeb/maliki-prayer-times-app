@@ -466,6 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
           now: _now,
           languageCode: lang,
           hijriDate: localizeDigits(formatHijriDate(l10n, hijri), lang),
+          use24Hour: settings.use24Hour,
         ),
         const SizedBox(height: 20),
 
@@ -489,7 +490,8 @@ class _HomeScreenState extends State<HomeScreen> {
           final isNext = next != null && row.prayer == next.prayer;
           final time = settings.adjustedTime(
               row.prayer, times.timeFor(row.prayer));
-          final timeLabel = formatPrayerTime(time, lang);
+          final timeLabel = formatPrayerTime(time, lang,
+              use24Hour: settings.use24Hour);
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: _PrayerRowCard(
@@ -531,7 +533,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ...bands.map((b) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: _BandCard(band: b, times: times),
+            child: _BandCard(
+                band: b, times: times, use24Hour: settings.use24Hour),
           );
         }),
         const SizedBox(height: 20),
@@ -682,6 +685,9 @@ class _HeroCard extends StatelessWidget {
   /// Localized Hijri date for today, e.g. "27 Sha'ban 1447 AH".
   final String hijriDate;
 
+  /// Whether times render 24-hour (false = 12-hour with day-period markers).
+  final bool use24Hour;
+
   const _HeroCard({
     required this.next,
     required this.label,
@@ -690,6 +696,7 @@ class _HeroCard extends StatelessWidget {
     required this.now,
     required this.languageCode,
     required this.hijriDate,
+    required this.use24Hour,
   });
 
   String _countdownParts() {
@@ -712,7 +719,8 @@ class _HeroCard extends StatelessWidget {
     final parts = _countdownParts().split(':');
     final localized =
         parts.map((p) => localizeDigits(p, languageCode)).toList();
-    final heroTime = formatPrayerTime(next.time, languageCode);
+    final heroTime = formatPrayerTime(next.time, languageCode,
+        use24Hour: use24Hour);
 
     // Flexible + shrink-to-fit: at large text sizes the three boxes share
     // the row width and scale their content down instead of overflowing.
@@ -1002,7 +1010,11 @@ class _BandCard extends StatelessWidget {
   final PrayerBand band;
   final PrayerTimes times;
 
-  const _BandCard({required this.band, required this.times});
+  /// Whether embedded band times render 24-hour (false = 12-hour).
+  final bool use24Hour;
+
+  const _BandCard(
+      {required this.band, required this.times, required this.use24Hour});
 
   @override
   Widget build(BuildContext context) {
@@ -1071,11 +1083,13 @@ class _BandCard extends StatelessWidget {
             ),
             rangeRow(
               l10n.preferredWord,
-              bandIkhtiyariText(l10n, band.arabicName, times),
+              bandIkhtiyariText(l10n, band.arabicName, times,
+                  use24Hour: use24Hour),
             ),
             rangeRow(
               l10n.necessityWord,
-              bandDaruriText(l10n, band.arabicName, times),
+              bandDaruriText(l10n, band.arabicName, times,
+                  use24Hour: use24Hour),
             ),
           ],
         ),
@@ -1241,6 +1255,9 @@ class _HeroCardOrUnavailable extends StatelessWidget {
   final String? languageCode;
   final String hijriDate;
 
+  /// Whether the hero time renders 24-hour (false = 12-hour).
+  final bool use24Hour;
+
   const _HeroCardOrUnavailable({
     required this.next,
     required this.label,
@@ -1249,6 +1266,7 @@ class _HeroCardOrUnavailable extends StatelessWidget {
     required this.now,
     required this.languageCode,
     required this.hijriDate,
+    required this.use24Hour,
   });
 
   @override
@@ -1289,6 +1307,7 @@ class _HeroCardOrUnavailable extends StatelessWidget {
       now: now,
       languageCode: languageCode,
       hijriDate: hijriDate,
+      use24Hour: use24Hour,
     );
   }
 }

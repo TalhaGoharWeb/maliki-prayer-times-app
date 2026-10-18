@@ -404,12 +404,13 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
 
   Widget _currentPage(AppLocalizations l10n) {
     // Location-zone frame (Phase 2): every computation in this app renders
-    // in the *location's* IANA zone — the stored zone for manual
-    // locations, the device zone for GPS-derived ones — resolved per date
-    // so DST transitions are correct per date, not just "today".
+    // in the *location's* wall clock — the stored IANA zone for manual
+    // locations, the device wall clock for GPS-derived ones (null zone id;
+    // never a fake zone, never UTC) — resolved per date so DST transitions
+    // are correct per date, not just "today".
     final loc = widget.location.current;
-    final zoneId = TimezoneService.effectiveZoneIdFor(loc);
-    final offset = TimezoneService.offsetFor(zoneId, DateTime.now());
+    final String? zoneId = TimezoneService.effectiveZoneIdFor(loc);
+    final offset = TimezoneService.offsetForLocation(loc, DateTime.now());
     final elevationMeters = loc?.elevationMeters ?? 0.0;
     final profile = widget.settings.effectiveProfile;
 
@@ -448,6 +449,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
           timeZoneOffset: offset,
           zoneId: zoneId,
           notifications: widget.notifications,
+          use24Hour: widget.settings.use24Hour,
         ),
       3 => ProfilesScreen(
           settings: widget.settings,
@@ -580,9 +582,10 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
     if (!mounted) return;
     final loc = widget.location.current;
     if (loc == null) return;
-    // Notification fire times use the location's zone (not the device's),
-    // resolved per date so DST transitions schedule correctly overnight;
-    // elevation rides along so sunrise/sunset notifications match the UI.
+    // Notification fire times use the location's wall clock (not a fixed
+    // zone), resolved per date so DST transitions schedule correctly
+    // overnight; elevation rides along so sunrise/sunset notifications match
+    // the UI. A null zone id means the device wall clock.
     final zoneId = TimezoneService.effectiveZoneIdFor(loc);
     final texts = _notificationTexts(
         AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
@@ -590,8 +593,10 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
       coords: Coordinates(loc.latitude, loc.longitude),
       profile: widget.settings.effectiveProfile,
       settings: widget.settings,
-      timeZoneOffset: TimezoneService.offsetFor(zoneId, DateTime.now()),
-      timeZoneOffsetForDate: (date) => TimezoneService.offsetFor(zoneId, date),
+      timeZoneOffset: TimezoneService.offsetForLocation(loc, DateTime.now()),
+      timeZoneOffsetForDate: zoneId != null
+          ? (date) => TimezoneService.offsetFor(zoneId, date)
+          : null,
       elevationMeters: loc.elevationMeters ?? 0.0,
       texts: texts,
     );

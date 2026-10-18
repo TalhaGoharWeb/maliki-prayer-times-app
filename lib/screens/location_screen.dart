@@ -74,9 +74,12 @@ class _LocationScreenState extends State<LocationScreen> {
   final _longitudeController = TextEditingController();
   final _elevationController = TextEditingController();
 
-  /// IANA zone id chosen for the manual location; defaults to the device
-  /// zone (the picker lets the user change it).
-  late String _selectedZoneId;
+  /// IANA zone id chosen for the manual location, or null for the device
+  /// wall clock (the default — the picker lets the user change it). Null
+  /// is the honest default: the platform rarely reports a usable IANA id
+  /// (real phones say "PKT", not "Asia/Karachi"), and defaulting to a
+  /// hardcoded zone would render the wrong times.
+  String? _selectedZoneId;
 
   bool _deviceBusy = false;
   bool _manualBusy = false;
@@ -89,7 +92,8 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedZoneId = TimezoneService.deviceZoneId;
+    // Null = device wall clock (see [_selectedZoneId]).
+    _selectedZoneId = null;
   }
 
   @override
@@ -189,8 +193,9 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   /// Opens the searchable IANA zone picker; the chosen zone id becomes the
-  /// manual location's time zone. Dismissing keeps the previous choice —
-  /// the button is never dead.
+  /// manual location's time zone, or null for the device wall clock.
+  /// Dismissing keeps the previous choice — the button is never dead. The
+  /// picker pops '' for the device-wall-clock entry, which maps to null.
   Future<void> _pickTimeZone() async {
     final picked = await showDialog<String>(
       context: context,
@@ -198,7 +203,7 @@ class _LocationScreenState extends State<LocationScreen> {
           _TimeZonePickerDialog(selectedZoneId: _selectedZoneId),
     );
     if (picked != null && mounted) {
-      setState(() => _selectedZoneId = picked);
+      setState(() => _selectedZoneId = picked.isEmpty ? null : picked);
     }
   }
 
@@ -578,14 +583,14 @@ class _LocationScreenState extends State<LocationScreen> {
                       const SizedBox(height: 10),
                       // Time zone: the location's IANA zone, so times render
                       // in the location's wall clock instead of the device's.
-                      // Defaults to the device zone.
+                      // Defaults to the device wall clock (null).
                       Card(
                         margin: EdgeInsets.zero,
                         child: ListTile(
                           leading: const Icon(Icons.public),
                           title: Text(l10n.fieldTimeZone),
                           subtitle: Text(
-                            _selectedZoneId,
+                            _selectedZoneId ?? l10n.deviceTimeZoneOption,
                             // Zone ids are Latin-script data: pin the Latin
                             // font so they never misrender in Nastaleeq.
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -859,15 +864,18 @@ class _ActiveHorizonCard extends StatelessWidget {
                     '${l10n.datumLabel}: ${l10n.wgs84Datum}',
                   ),
                   // Time zone this location's times render in (the stored
-                  // zone for manual locations, the device zone otherwise).
+                  // zone for manual locations, the device wall clock
+                  // otherwise — never a fake zone, never UTC).
                   Builder(builder: (context) {
-                    final zoneId =
+                    final String? zoneId =
                         TimezoneService.effectiveZoneIdFor(loc);
-                    final offset =
-                        TimezoneService.offsetFor(zoneId, DateTime.now());
+                    final offset = zoneId != null
+                        ? TimezoneService.offsetFor(zoneId, DateTime.now())
+                        : DateTime.now().timeZoneOffset;
                     return metaRow(
                       Icons.public,
-                      '${l10n.timeZoneLabel}: $zoneId '
+                      '${l10n.timeZoneLabel}: '
+                      '${zoneId ?? l10n.deviceTimeZoneOption} '
                       '(${_formatUtcOffset(offset)})',
                     );
                   }),
@@ -1083,8 +1091,9 @@ class _SavedPlaceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final scheme = theme.colorScheme;
-    final zoneId = TimezoneService.effectiveZoneIdFor(place);
+    final String? zoneId = TimezoneService.effectiveZoneIdFor(place);
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -1114,7 +1123,8 @@ class _SavedPlaceRow extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${place.latitude.toStringAsFixed(3)}°, '
-                      '${place.longitude.toStringAsFixed(3)}° · $zoneId',
+                      '${place.longitude.toStringAsFixed(3)}° · '
+                      '${zoneId ?? l10n.deviceTimeZoneOption}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.secondary,
                         // Latin-script data: pin the Latin font so it never
@@ -1149,7 +1159,8 @@ class _SavedPlaceRow extends StatelessWidget {
 /// UTC offset for today, filtered by the search field. Returns the chosen
 /// zone id, or null when dismissed (the caller's previous choice stands).
 class _TimeZonePickerDialog extends StatefulWidget {
-  final String selectedZoneId;
+  /// Currently selected zone id, or null for the device wall clock.
+  final String? selectedZoneId;
 
   const _TimeZonePickerDialog({required this.selectedZoneId});
 
@@ -1194,6 +1205,15 @@ class _TimeZonePickerDialogState extends State<_TimeZonePickerDialog> {
     }
   }
 
+  String _deviceOffsetLabel() {
+    final offset = DateTime.now().timeZoneOffset;
+    final sign = offset.isNegative ? '-' : '+';
+    final totalMinutes = offset.inMinutes.abs();
+    final hours = totalMinutes ~/ 60;
+    final minutes = (totalMinutes % 60).toString().padLeft(2, '0');
+    return 'UTC$sign$hours:$minutes';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1205,6 +1225,27 @@ class _TimeZonePickerDialogState extends State<_TimeZonePickerDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // The honest default: the device wall clock (pops '' → null).
+            // Pinned above the search results so it is always reachable.
+            ListTile(
+              dense: true,
+              selected: widget.selectedZoneId == null,
+              selectedTileColor: scheme.secondaryContainer,
+              leading: const Icon(Icons.smartphone),
+              title: Text(
+                l10n.deviceTimeZoneOption,
+                style: theme.textTheme.bodyMedium,
+              ),
+              trailing: Text(
+                _deviceOffsetLabel(),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.secondary,
+                  fontFamily: AppFonts.latinSans,
+                ),
+              ),
+              onTap: () => Navigator.of(context).pop(''),
+            ),
+            const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
               child: Row(

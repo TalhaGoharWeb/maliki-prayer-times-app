@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:geolocator/geolocator.dart';
 import 'package:malikiprayertimes/models/saved_location.dart';
-import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Coarse permission outcome tracked by [LocationService].
@@ -342,7 +341,10 @@ class LocationService extends ChangeNotifier {
       longitude: loc.longitude,
       isDevice: false,
       placeName: loc.isDevice ? loc.placeName : null,
-      timeZoneId: loc.isDevice ? TimezoneService.deviceZoneId : loc.timeZoneId,
+      // A device-location snapshot keeps the device wall-clock frame
+      // (null): pinning the platform's zone abbreviation (e.g. "PKT") as a
+      // zone id would be wrong, and 'Etc/UTC' was the 2026-10-18 bug.
+      timeZoneId: loc.isDevice ? null : loc.timeZoneId,
       elevationMeters: loc.elevationMeters,
     );
     savedPlaces = [...savedPlaces, snapshot];

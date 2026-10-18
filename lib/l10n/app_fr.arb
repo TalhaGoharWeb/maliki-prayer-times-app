@@ -1324,6 +1324,22 @@
   "@timeZonePickerTitle": {
     "description": "Phase 2: Title of the time-zone picker dialog"
   },
+  "timeFormatSection": "Format de l'heure",
+  "@timeFormatSection": {
+    "description": "Settings section: 12-hour vs 24-hour time display"
+  },
+  "timeFormat12Hour": "12 heures",
+  "@timeFormat12Hour": {
+    "description": "Time format option: 12-hour with day-period markers"
+  },
+  "timeFormat24Hour": "24 heures",
+  "@timeFormat24Hour": {
+    "description": "Time format option: 24-hour"
+  },
+  "deviceTimeZoneOption": "Fuseau horaire de l'appareil",
+  "@deviceTimeZoneOption": {
+    "description": "Time zone picker option: follow the device wall clock"
+  },
   "timeZoneSearchHint": "Rechercher un fuseau horaire",
   "@timeZoneSearchHint": {
     "description": "Phase 2: Search hint in the time-zone picker"
@@ -1423,5 +1439,21 @@
   "learnHomeCardBody": "Définitions malikites des cinq prières, la question des 18° et les questions fréquentes — le tout lié aux preuves de la recherche.",
   "@learnHomeCardBody": {
     "description": "Phase 4: body line of the Learn card on the home screen"
+  },
+  "qiblaAligned": "Aligné avec la Qibla",
+  "@qiblaAligned": {
+    "description": "Qibla dial: shown when the device heading is within ±2° of the qibla bearing"
+  },
+  "degreesOff": "{degrees}° d'écart",
+  "@degreesOff": {
+    "description": "Qibla dial: live readout of how many degrees the heading is off the qibla bearing"
+  },
+  "calibrationNeeded": "La boussole doit être étalonnée",
+  "@calibrationNeeded": {
+    "description": "Qibla: warning title when the magnetometer field looks wrong"
+  },
+  "calibrationNeededBody": "Le champ magnétique semble anormal : la flèche peut être trompeuse. Décrivez un 8 avec votre téléphone jusqu'à disparition de l'avertissement.",
+  "@calibrationNeededBody": {
+    "description": "Qibla: warning body when the magnetometer field looks wrong"
   }
 }
