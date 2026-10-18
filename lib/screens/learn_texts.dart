@@ -114,29 +114,29 @@ const Map<String, LearnStrings> _chrome = {
     title: 'Learn',
     integrityNote:
         'Teaching material drawn from the research evidence — not fiqh '
-        'rulings. Every block names the evidence behind it, and every '
+        'rulings. Every quotation names the book it comes from, and every '
         'modern convention is labeled a convention. Nothing here has been '
         'reviewed by a qualified Maliki scholar.',
   ),
   'ur': LearnStrings(
     title: 'سیکھیں',
     integrityNote:
-        'تحقیقی شواہد سے ماخوذ تعلیمی مواد — فقہی احکام نہیں۔ ہر حصہ اپنے '
-        'شواہد کا نام دیتا ہے، اور ہر جدید کنونشن کو کنونشن ہی کہا گیا ہے۔ '
-        'یہاں کی کسی بات کی اہل مالکی عالم نے نظرثانی نہیں کی۔',
+        'تحقیقی شواہد سے ماخوذ تعلیمی مواد — فقہی احکام نہیں۔ ہر اقتباس اس '
+        'کتاب کا نام دیتا ہے جس سے لیا گیا ہے، اور ہر جدید کنونشن کو کنونشن '
+        'ہی کہا گیا ہے۔ یہاں کی کسی بات کی اہل مالکی عالم نے نظرثانی نہیں کی۔',
   ),
   'ar': LearnStrings(
     title: 'التعليم',
     integrityNote:
-        'مواد تعليمي مستمد من أدلة البحث — وليس أحكاماً فقهية. كل فقرة تذكر '
-        'الدليل الذي تقوم عليه، وكل عرف حديث مسمّى عرفاً. لم يراجع أيَّ شيء '
-        'هنا عالمٌ مالكي مؤهل.',
+        'مواد تعليمي مستمد من أدلة البحث — وليس أحكاماً فقهية. كل اقتباس '
+        'يذكر الكتاب الذي أُخذ منه، وكل عرف حديث مسمّى عرفاً. لم يراجع أيَّ '
+        'شيء هنا عالمٌ مالكي مؤهل.',
   ),
   'fr': LearnStrings(
     title: 'Enseignement',
     integrityNote:
         'Matériel pédagogique tiré des preuves de recherche — pas des règles '
-        'de fiqh. Chaque bloc nomme la preuve qui le fonde, et chaque '
+        'de fiqh. Chaque citation nomme le livre dont elle est tirée, et chaque '
         'convention moderne est étiquetée comme telle. Rien ici n’a été '
         'révisé par un savant malikite qualifié.',
   ),

@@ -50,13 +50,14 @@ Future<void> _pumpLearn(
 }
 
 /// Tall frame (72000 logical px): the whole 27-block teaching section lays
-/// out with every tile expanded, so every block's evidence line exists in
+/// out with every tile expanded, so every block's content exists in
 /// the element tree. (The expanded content grew past the old 48000px frame
 /// when source-citation lines were added to the passages.)
 const _tallFrame = Size(1080, 216000);
 
-/// Expands every teaching block so Arabic passages, bodies, and evidence
-/// references enter the tree.
+/// Expands every teaching block so Arabic passages and bodies enter the
+/// tree. Evidence references stay in the data model and are never
+/// rendered in the UI.
 Future<void> _expandAll(WidgetTester tester) async {
   final count = learnSections.fold<int>(
       0, (n, s) => n + learnContent('en', s.id).blocks.length);
@@ -117,29 +118,29 @@ void main() {
       }
     });
 
-    testWidgets('every block shows its evidence reference (en)',
+    testWidgets('no block renders its raw evidence reference (en)',
         (tester) async {
       await _pumpLearn('en', tester, frame: _tallFrame);
       await _expandAll(tester);
 
-      // Each block's D1/D4 reference line is visible in its tile: no
-      // claim renders without its evidence pointer.
+      // Raw research codes (D1/D4/...) live in the data model only: no
+      // claim renders its evidence pointer in the UI.
       for (final s in learnSections) {
         for (final b in learnContent('en', s.id).blocks) {
-          expect(find.text(b.refs), findsAtLeast(1),
-              reason: '${s.id}/${b.title} hides its evidence refs');
+          expect(find.text(b.refs), findsNothing,
+              reason: '${s.id}/${b.title} leaks its evidence refs into UI');
         }
       }
     });
 
-    testWidgets('every block shows its evidence reference (ar)',
+    testWidgets('no block renders its raw evidence reference (ar)',
         (tester) async {
       await _pumpLearn('ar', tester, frame: _tallFrame);
       await _expandAll(tester);
       for (final s in learnSections) {
         for (final b in learnContent('ar', s.id).blocks) {
-          expect(find.text(b.refs), findsAtLeast(1),
-              reason: 'ar ${s.id}/${b.title} hides its evidence refs');
+          expect(find.text(b.refs), findsNothing,
+              reason: 'ar ${s.id}/${b.title} leaks its evidence refs into UI');
         }
       }
     });

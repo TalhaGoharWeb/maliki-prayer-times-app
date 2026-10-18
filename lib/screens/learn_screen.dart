@@ -7,11 +7,13 @@ import 'package:malikiprayertimes/utils/fonts.dart';
 /// verbatim classical Arabic passages, the 18° classical pedigree with
 /// its honest boundary, dawn-observation studies, a FAQ, and a glossary.
 ///
-/// Integrity: every block names its D1/D4 evidence; modern conventions
-/// are labeled conventions inside the bodies. The header note says what
-/// this section is NOT (teaching material, not fiqh rulings; nothing
-/// reviewed by a qualified Maliki scholar). The screen renders body
-/// content only — the app chrome lives in [MalikiPrayerTimesApp].
+/// Integrity: every block keeps its D1/D4 evidence references in the data
+/// model (they feed the review-status and methodology pipeline); the UI
+/// renders clean teaching content only — no raw research codes. Modern
+/// conventions are labeled conventions inside the bodies. The header note
+/// says what this section is NOT (teaching material, not fiqh rulings;
+/// nothing reviewed by a qualified Maliki scholar). The screen renders
+/// body content only — the app chrome lives in [MalikiPrayerTimesApp].
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key});
 
@@ -124,8 +126,8 @@ class LearnScreen extends StatelessWidget {
     );
   }
 
-  /// One teaching section: eyebrow heading, intro, one expansion tile per
-  /// block, and the section's evidence-reference line.
+  /// One teaching section: eyebrow heading, intro, and one expansion tile
+  /// per block. Evidence references stay in the data model only.
   Widget _section(BuildContext context, String code, LearnSection section) {
     final content = learnContent(code, section.id);
     return Padding(
@@ -149,15 +151,13 @@ class LearnScreen extends StatelessWidget {
           const SizedBox(height: 8),
           for (final block in content.blocks)
             _blockCard(context, block),
-          _evidenceLine(
-              context, learnSectionRefs(code, section.id)),
         ],
       ),
     );
   }
 
-  /// One block: title; tap expands to the Arabic passage (when present),
-  /// the body, and the block's evidence references.
+  /// One block: title; tap expands to the Arabic passage (when present)
+  /// and the body. The block's evidence references are not rendered.
   Widget _blockCard(BuildContext context, LearnBlock block) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
@@ -179,8 +179,6 @@ class LearnScreen extends StatelessWidget {
               color: scheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 10),
-          _evidenceLine(context, block.refs),
         ],
       ),
     );
@@ -225,28 +223,6 @@ class LearnScreen extends StatelessWidget {
               height: 1.9,
             ),
       ),
-    );
-  }
-
-  /// Evidence references: small icon + the D1/D4 reference line, so every
-  /// block visibly names the evidence behind its claims.
-  Widget _evidenceLine(BuildContext context, String refs) {
-    final scheme = Theme.of(context).colorScheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(Icons.article_outlined,
-            size: 14, color: scheme.secondary),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            refs,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: scheme.secondary,
-                ),
-          ),
-        ),
-      ],
     );
   }
 }
