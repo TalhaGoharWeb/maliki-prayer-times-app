@@ -11,7 +11,7 @@ import 'package:malikiprayertimes/screens/learn_texts.dart';
 /// evidence genuinely cannot name the book; new Arabic passages must be
 /// traced through D4 before landing here.
 const _unresolvedSources = <String>{
-  // Currently empty: all 7 passages in the Learn section are traced to an
+  // Currently empty: all 10 passages in the Learn section are traced to an
   // exact book in the research evidence (see the group below).
 };
 
@@ -23,6 +23,9 @@ const _verifiedBooks = <String>{
   '«الرسالة»', // D4 A3.1, A3.4, A3.5 — متن الرسالة لابن أبي زيد القيرواني
   '«مختصر خليل»', // D4 A4.1 — مختصر العلامة خليل (دار الحديث، القاهرة)
   '«تشريح الأفلاك»', // D4 D3.4 — بهاء الدين العاملي (secondary quotation)
+  '«الذخيرة»', // Tawqit proof-check 2026-10-18 — القرافي، كتاب الصيام
+  '«مواهب الجليل»', // Tawqit proof-check 2026-10-18 — الحطاب ناقلا عن البرزلي
+  '«السراج في علم الفلك»', // Tawqit proof-check 2026-10-18 — الأخضري (manuscript tradition)
 };
 
 const _supportedLocales = [
@@ -108,8 +111,8 @@ void main() {
           }
         }
       }
-      expect(byPassage.length, 7,
-          reason: 'expected the 7 known passages across locales');
+      expect(byPassage.length, 10,
+          reason: 'expected the 10 known passages across locales');
       for (final entry in byPassage.entries) {
         expect(entry.value.length, 1,
             reason: 'passage «${entry.key.substring(0, 20)}…» names '
@@ -150,8 +153,8 @@ void main() {
       await _pumpAndExpand('en', tester);
       expect(tester.takeException(), isNull);
       // Glossary/FAQ blocks have no Arabic passage and no source book:
-      // exactly one source line per quoted passage (7 in the en pump).
-      expect(find.textContaining('من كتاب:'), findsNWidgets(7));
+      // exactly one source line per quoted passage (10 in the en pump).
+      expect(find.textContaining('من كتاب:'), findsNWidgets(10));
     });
   });
 }

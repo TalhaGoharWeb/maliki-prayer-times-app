@@ -1,5 +1,7 @@
 library;
 
+import 'package:malikiprayertimes/models/review_status.dart';
+
 /// Localized content for the Learn screen (Phase 4 — the "Enseignement"
 /// teaching section, per the Tawqit pattern).
 ///
@@ -62,8 +64,22 @@ class LearnBlock {
   /// determined from the research evidence (never guessed).
   final String source;
 
-  const LearnBlock(this.title, this.arabic, this.body, this.refs,
-      {this.source = ''});
+  /// Scholarly-review status of this block's claims. Data only — never
+  /// rendered as a label (the user directive of 2026-10-15 forbids
+  /// review-status banners in the UI); the screen's integrity note carries
+  /// the honesty requirement instead. Defaults to
+  /// [ReviewStatus.proposed]: nothing in this section has been reviewed
+  /// by a qualified Maliki scholar.
+  final ReviewStatus reviewStatus;
+
+  const LearnBlock(
+    this.title,
+    this.arabic,
+    this.body,
+    this.refs, {
+    this.source = '',
+    this.reviewStatus = ReviewStatus.proposed,
+  });
 }
 
 /// The localized content of one Learn section.
@@ -321,17 +337,100 @@ const Map<String, Map<String, LearnContent>> _content = {
           'always named as conventions.',
       [
         LearnBlock(
-          'Why can the "preferred until" marker fall before Isha in summer?',
+          'May prayer times be calculated, or must they be watched for?',
+          '«لا أعلم خلافا في إثبات أوقات الصلاة بالحساب في الآلات بالماء والرمل '
+              'وغيرهما، وعلى ذلك أهل الأمصار في سائر الأعصار زمن الشتاء عند الأمطار '
+              'والغيوم»',
+          'They may be calculated — and this is not a modern shortcut. The Maliki '
+              'school said it plainly seven centuries ago. Al-Qarafi (d. 684 AH) wrote in '
+              'his al-Dhakhira: "I know of no disagreement about establishing prayer times '
+              'by calculation, with water-clocks, sand instruments and the like — the '
+              'people of the great cities have done so in every age, in winter, when rain '
+              'and clouds come." He drew the line carefully in his al-Furuq: calculating '
+              'prayer times is one thing; calculating the Ramadan crescent is another, and '
+              'the two are not judged alike. In this app, every time is computed on your '
+              'phone from the astronomical signs themselves — and the method is shown to '
+              'you, never silently adjusted.',
+          'D1 §4.1 · D4 (verification 2026-10-18: al-Dhakhira, Kitab al-Siyam)',
+          source: '«الذخيرة»',
+        ),
+        LearnBlock(
+          'Why should I trust a calculated timetable?',
+          '«وقال البرزلي في أوائله: ظاهر المذهب عندنا قبول قول المؤذن العدل العارف '
+              'مطلقا، أي في الغيم والصحو، في الصلاة والصوم، إذا كان عارفا بالأوقات بالآلات، '
+              'مثل الرمليات والمنقلات وغيرها»',
+          'Because the school trusts the knowledgeable timekeeper. Al-Burzuli — quoted '
+              'by al-Hattab in Mawahib al-Jalil — states the apparent position of the '
+              'Maliki school: the word of an upright, knowledgeable muezzin is accepted '
+              'absolutely, in cloudy skies and in clear ones, for prayer and for fasting, '
+              'when he knows the times by instruments — sand-glasses, astronomical clocks, '
+              'and the like. Ibn Yunus and others stated this generality explicitly in the '
+              'Book of Fasting. A timetable is only as good as the knowledge behind it: '
+              'this app shows you the method, the angles, and the evidence for every time '
+              'it displays, so you are never asked to trust a black box.',
+          'D1 §4.1 · D4 (verification 2026-10-18: Mawahib al-Jalil, bab mawaqit '
+              'al-salat)',
+          source: '«مواهب الجليل»',
+        ),
+        LearnBlock(
+          'Is using astronomy for prayer times the same as astrology?',
+          '«وبعد فاعلم أن علم الفلك ۞ علم عزيز من أجل مسلك / أعني الذي تدرى به الأوقات '
+              '۞ والفجر والقبلة والساعات // وما به تطرق للغيب ۞ فذلك الحرام دون ريب / واعلم '
+              'بأن العلم بالنجوم ۞ علم شريف ليس بالمذموم»',
+          'No — and the jurists drew this line long ago. Al-Akhdari (d. 953 AH) opens '
+              'his astronomical poem al-Siraj with it: the science by which times, the '
+              'dawn, the qibla and the hours are known is "a noble science, among the most '
+              'honorable pursuits" — while anything claiming access to the unseen is '
+              'forbidden "without doubt." Astronomy that finds the prayer times is a '
+              'learned craft; astrology that claims hidden knowledge is another matter '
+              'entirely. (The Arabic verses above are as transmitted in the Tawqit '
+              'educational slides from the manuscript tradition of al-Siraj; no printed '
+              'edition was accessible for word-for-word verification.)',
+          'D1 §4.1 · D4 (al-Siraj attribution verified 2026-10-18; verses per '
+              'manuscript tradition)',
+          source: '«السراج في علم الفلك»',
+        ),
+        LearnBlock(
+          'Why 18° for Fajr?',
           '',
-          'At high latitudes — France, for instance — the twilight that opens Isha '
-              'sometimes lingers past the first third of the night. The preferred '
-              'period still ends at that third, so its calculated end can land before '
-              'Isha itself begins. On 17 May in Paris, for example: Maghrib at 21:31, '
-              'the first third ending at 23:30, Isha only at 23:51, Fajr at 03:30. The '
-              'four schools agree on waiting for the genuine Isha time even when it '
-              'falls past midnight; as Imam Ibn Hajar put it, a substitute sign is '
-              'considered only when the real sign is absent, never when it is present.',
-          'Tawqit Instagram review, Post 1 · D1 §2.7',
+          'Because generations of Muslim astronomers and timekeepers recorded it as '
+              'their working estimate of the observable sign — the true dawn. Al-Biruni '
+              'states the matter plainly in al-Qanun al-Mas’udi: the practitioners of the '
+              'craft observed and "obtained from the laws of its time that when the sun’s '
+              'depression below the horizon is eighteen degrees, that is the time of '
+              'dawn-rise in the east and of the twilight’s disappearance in the west" — '
+              'while adding at once that it is "not a fixed thing," since some of them saw '
+              'it as seventeen degrees (Qanun 2/948–949, Hyderabad ed.). In his Tahdid he '
+              'gives the report from the other side: seventeen degrees per the '
+              'practitioners, eighteen per some — both "taken from experiment and repeated '
+              'testing." Two honesties belong with this. First, it was never unanimous: the '
+              'classical books record a 16°–20° range — 17° and 19° in serious use '
+              'alongside 18°, and no classical Maliki text fixes a degree at all — the '
+              'angle is a convention estimating the sign, not a ruling. Second, these were '
+              'astronomers, not jurists: their authority is observational, and the fiqh '
+              'judgment about the sign stays with the fuqaha’. This app’s default profile '
+              '(Muslim World League, 18°/17°) follows the 1986 MWL Islamic Fiqh Council '
+              'decision; the other profiles name their own conventions honestly.',
+          'D1 §4.2 · Biruni Qanun 2/948-949 & Tahdid (verbatim-verified); King 1973 '
+              '(Habash/Nayrizi "probably"; Battani denial); Tusi Muiniyya 18°',
+        ),
+        LearnBlock(
+          'Why do different countries use different angles?',
+          '',
+          'Because the angle is a national convention for reading the same sky, not a '
+              'ruling about it. Morocco’s tables run on 19°/17° (reported in secondary '
+              'sources — the Habous ministry’s own methodology is unpublished); Egypt on '
+              '19.5°/17.5°; Saudi Arabia on 18.5° for Fajr with a 90-minute interval for '
+              'Isha; Malaysia and Indonesia on 20°/18°; and much of West Africa, including '
+              'Mauritania, on the Muslim World League’s 18°/17°. None of these numbers is '
+              'the fiqh — the fiqh speaks of the true dawn and the red twilight’s '
+              'disappearance, which observers have always read slightly differently by '
+              'place and season. This app offers the main conventions as named profiles '
+              'with their provenance, so you always know which convention you are praying '
+              'by. (One caution: the Tawqit map’s tagline — "the stronger a state’s '
+              'scholarly tradition, the closer it stays to 18°" — is the publisher’s own '
+              'rhetoric, not a scholarly finding.)',
+          'D1 §4.2 · D4 (Morocco secondary-only per pass-2 C) · Tawqit angles map',
         ),
         LearnBlock(
           'Why do times differ between apps?',
@@ -345,6 +444,86 @@ const Map<String, Map<String, LearnContent>> _content = {
               'is unpublished, as with Muslim Pro and IslamicFinder, their timetables '
               'cannot be used to judge anyone else’s.',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
+        ),
+        LearnBlock(
+          'What if I live where Isha or Fajr never occurs?',
+          '',
+          'In the far north in summer, the red twilight may never disappear before dawn '
+              '— so when is Isha, and when does the fast begin? The timekeeper of Fez, '
+              'al-’Alami, put exactly this question to the city’s shaykh al-jama’a, Ibn '
+              'al-Khayyat al-Zukari (d. 1343 AH/1924 CE). His answer chose a "third '
+              'opinion": the night is split at its middle — its first half belongs to the '
+              'twilight, its second half to the dawn; Isha becomes due when the sun’s '
+              'light-effect passes from the west side to the east; Fajr is then prayed '
+              'after Isha, keeping the required order; and the fast is held by the local '
+              'day, "complete the fast until night" (Qur’an 2:187), however long it is. The '
+              'question itself had quoted an older report — al-Qarafi transmitting from '
+              'Imam al-Haramayn (al-Juwayni) in al-Qarafi’s al-Yawaqit: Isha is not prayed '
+              'until the twilight is gone, and it is not qaḍa’ since its time remains; the '
+              'dawn prayer follows the nearest country’s dawn. This is one mufti’s reasoned '
+              'fatwa from the Fez timekeeping tradition — not the school’s mashhur '
+              'doctrine. This app’s answer to the same problem is its high-latitude '
+              'fallback chooser: when the twilight angles are unreachable, it estimates '
+              'from the night itself (middle of the night, and other named conventions) and '
+              'tells you plainly which one is active — the midnight-split at the fatwa’s '
+              'heart is close kin to the "middle of the night" convention.',
+          'D1 §4.5 · Tawqit Fez fatwa series (identities & al-Yawaqit correction per '
+              'strand B 2026-10-18)',
+        ),
+        LearnBlock(
+          'Why can the "preferred until" marker fall before Isha in summer?',
+          '',
+          'At high latitudes — France, for instance — the twilight that opens Isha '
+              'sometimes lingers past the first third of the night. The preferred '
+              'period still ends at that third, so its calculated end can land before '
+              'Isha itself begins. On 17 May in Paris, for example: Maghrib at 21:31, '
+              'the first third ending at 23:30, Isha only at 23:51, Fajr at 03:30. The '
+              'four schools agree on waiting for the genuine Isha time even when it '
+              'falls past midnight; as Imam Ibn Hajar put it, a substitute sign is '
+              'considered only when the real sign is absent, never when it is present.',
+          'Tawqit Instagram review, Post 1 · D1 §2.7',
+        ),
+        LearnBlock(
+          'Why does Isha come after midnight in summer?',
+          '',
+          'For two thoroughly unreligious reasons: time zones and daylight saving. '
+              'France, for example, lives a full hour ahead of its solar time — a wartime '
+              'German imposition from 1940 that was never undone — and then adds another '
+              'hour every summer for daylight saving (since 1976). So by the clock, Isha '
+              'can land at 1 a.m. while the sun is only just past where midnight used to '
+              'be. The religious signs have not moved; the clock has. Do not mistake a '
+              'late-looking timetable for a late religion: the four schools agree that one '
+              'waits for the genuine Isha time even when it falls past midnight.',
+          'D1 §4.5 · Tawqit summer-midnight slide (history: general record)',
+        ),
+        LearnBlock(
+          'Prayer times are very late in summer — what should I do?',
+          '',
+          'The Tawqit slides propose four graduated steps for coping with very late '
+              'summer times — pastoral guidance, not a fatwa of this app. (1) Pray at the '
+              'start of the time whenever you can — "the prayer at the beginning of its '
+              'time" (hadith of Umm Farwa, Sunan Abi Dawud #426; its chain is graded weak, '
+              'though its meaning is established by Ibn Mas’ud’s hadith in the two Sahihs). '
+              '(2) If you cannot, delay Fajr toward the brightening (isfar) — the mashhur '
+              'end of Subh’s preferred time itself. The slides word it as Ibn Habib, '
+              'reported by Ibn Abi Zayd in al-Nawadir from Mu’adh: "when summer comes, '
+              'brighten the Subh, for the night is short and people sleep; do not delay '
+              'Isha, for the night is short, and do not pray it before the twilight is '
+              'gone" — a wording we could not verify against a printed edition, so take the '
+              'step for its substance, which the school’s own rule supports. (3) If even '
+              'that fails, delay Isha to just before Fajr — for "neglect of prayer is only '
+              'to delay it until the time of the next one" (the saying of Abu Hurayra; as '
+              'the Prophet’s ﷺ own words it comes via Abu Qatada in Sahih Muslim). (4) As a '
+              'last resort, combine Maghrib and Isha: Ashhab permitted combining two '
+              'prayers without a specific cause — a real, recognized internal disagreement, '
+              'reported by al-Baji and Ibn Rushd via Khalil’s al-Tawdih (as al-Hattab '
+              'records it) — on the hadith of Ibn ’Abbas that the Prophet ﷺ combined Dhuhr '
+              'with ’Asr and Maghrib with ’Isha "without fear, travel, or rain." Be '
+              'clear-eyed about step 4: it is the minority view, not the mashhur — the '
+              'well-known Maliki position permits combining only by advancing (taqdim), for '
+              'rain or illness.',
+          'D1 §2.9 · Tawqit summer-management slide (attribution corrections per strand '
+              'B 2026-10-18)',
         ),
         LearnBlock(
           'What does daruri (necessity time) mean?',
@@ -636,17 +815,85 @@ const Map<String, Map<String, LearnContent>> _content = {
           'کنونشن ہی کہا گیا ہے۔',
       [
         LearnBlock(
-          'گرمیوں میں «ترجیحی خاتمہ» کا نشان عشاء سے پہلے کیوں آ سکتا ہے؟',
+          'کیا نماز کے اوقات حساب سے نکالے جا سکتے ہیں یا انہیں آنکھ سے دیکھنا ضروری '
+              'ہے؟',
           '',
-          'فرانس جیسے بلند عرض البلد پر گرمیوں کی بعض راتوں میں شفق — عشاء کی قدرتی '
-              'علامت — رات کے پہلے ثلث کے گزرنے کے بعد بھی باقی رہتی ہے۔ ترجیحی مدت تو '
-              'پہلے ثلث پر ختم ہوتی ہے، اس لیے اس کا حسابی خاتمہ کبھی خود عشاء کے وقت '
-              'سے پہلے بھی آ سکتا ہے۔ 17 مئی کو پیرس میں مثلاً: مغرب 21:31، پہلے ثلث کا '
-              'خاتمہ 23:30، عشاء 23:51، فجر 03:30۔ چاروں مذاہب کا متفقہ موقف یہ ہے کہ '
-              'آدھی رات گزر جانے پر بھی اصل عشاء کے وقت کا انتظار کیا جائے؛ امام ابن '
-              'حجر کے الفاظ میں، متبادل علامت کا اعتبار وہاں ہوتا ہے جہاں اصل علامت '
-              'موجود نہ ہو، نہ کہ جہاں وہ موجود ہو۔',
-          'Tawqit Instagram review, Post 1 · D1 §2.7',
+          'حساب جائز ہے — اور یہ کوئی جدید سہولت نہیں۔ مالکی مذہب نے یہ بات سات صدیاں '
+              'پہلے صاف کہہ دی تھی۔ قرافی (متوفی 684ھ) نے الذخیرہ میں لکھا: "مجھے نماز کے '
+              'اوقات کو حساب سے (پانی اور ریت کے آلات وغیرہ سے) ثابت کرنے میں کوئی اختلاف '
+              'معلوم نہیں — تمام زمانوں میں بڑے شہروں کے لوگ سردیوں میں بارش اور بادلوں کے '
+              'وقت یہی کرتے آئے ہیں۔" انہوں نے الفروق میں حد بھی واضح کی: نماز کے اوقات کا '
+              'حساب ایک چیز ہے، رمضان کے چاند کا حساب دوسری، اور دونوں کا حکم ایک جیسا '
+              'نہیں۔ اس ایپ میں ہر وقت آپ کے فون پر انہی فلکی علامات سے حساب کیا جاتا ہے — '
+              'اور طریقہ آپ کو دکھایا جاتا ہے، چھپ کر بدلا نہیں جاتا۔',
+          'D1 §4.1 · D4 (verification 2026-10-18: al-Dhakhira, Kitab al-Siyam)',
+          source: '«الذخيرة»',
+        ),
+        LearnBlock(
+          'حساب شدہ ٹائم ٹیبل پر اعتماد کیوں کیا جائے؟',
+          '',
+          'کیونکہ مذہب ماہر وقت شناس پر اعتماد کرتا ہے۔ برزلی — جنہیں حطاب نے مواہب '
+              'الجلیل میں نقل کیا — مالکی مذہب کا ظاہر قول بیان کرتے ہیں: عادل اور ماہر '
+              'مؤذن کی بات مطلقاً قبول کی جاتی ہے، بادل ہوں یا صاف آسمان، نماز ہو یا روزہ، '
+              'جب وہ آلات — ریت کی گھڑیاں، فلکیاتی گھڑیاں وغیرہ — سے اوقات جانتا ہو۔ ابن '
+              'یونس اور دیگر ائمہ نے کتاب الصوم میں اس عموم کی صراحت کی ہے۔ ٹائم ٹیبل اتنا '
+              'ہی اچھا ہوتا ہے جتنا اس کے پیچھے کا علم: یہ ایپ آپ کو طریقہ، زاویے اور ہر '
+              'وقت کے شواہد دکھاتی ہے، تاکہ آپ سے کبھی کسی بند ڈبے پر اعتماد کرنے کو نہ کہا '
+              'جائے۔',
+          'D1 §4.1 · D4 (verification 2026-10-18: Mawahib al-Jalil, bab mawaqit '
+              'al-salat)',
+          source: '«مواهب الجليل»',
+        ),
+        LearnBlock(
+          'کیا نماز کے لیے فلکیات کا استعمال نجومیت (astrology) ہے؟',
+          '',
+          'نہیں — اور فقہاء نے یہ حد بہت پہلے کھینچ دی تھی۔ اخضری (متوفی 953ھ) اپنی '
+              'فلکیاتی منظومہ السراج کا آغاز اسی سے کرتے ہیں: وہ علم جس سے اوقات، فجر، قبلہ '
+              'اور گھنٹے معلوم ہوں "انتہائی عزیز اور بہترین راستوں میں سے ہے" — جبکہ غیب کا '
+              'دعویٰ کرنے والی چیز "بلا شک حرام" ہے۔ نماز کے اوقات معلوم کرنے والی فلکیات '
+              'ایک سیکھا ہوا فن ہے؛ غیب کا دعویٰ کرنے والی تنجیم بالکل دوسری چیز ہے۔ (اوپر '
+              'عربی اشعار توقیت کی تعلیمی سلائیڈز سے مخطوطی روایت کے مطابق ہیں؛ لفظ بہ لفظ '
+              'تصدیق کے لیے کوئی مطبوعہ نسخہ دستیاب نہ ہو سکا۔)',
+          'D1 §4.1 · D4 (al-Siraj attribution verified 2026-10-18; verses per '
+              'manuscript tradition)',
+          source: '«السراج في علم الفلك»',
+        ),
+        LearnBlock(
+          'فجر کے لیے 18 ڈگری کیوں؟',
+          '',
+          'کیونکہ مسلمان ماہرینِ فلکیات اور موقتین کی نسلوں نے اسے قابلِ مشاہدہ علامت — '
+              'صبحِ صادق — کا عملی تخمینہ قرار دیا۔ بیرونی القانون المسعودی میں صاف کہتا '
+              'ہے: صناعِ فن نے مشاہدہ کر کے "اس کے وقت کے قوانین سے یہ حاصل کیا کہ جب سورج '
+              'انحطاط میں افق سے نیچے اٹھارہ ڈگری ہو تو یہی مشرق میں طلوعِ فجر اور مغرب میں '
+              'مغیبِ شفق کا وقت ہے" — اور ساتھ ہی فوراً یہ بھی کہ یہ "کوئی طے شدہ چیز '
+              'نہیں،" کیونکہ ان میں سے بعض کے نزدیک سترہ ڈگری تھا (قانون 2/948-949، '
+              'حیدرآباد ایڈیشن)۔ اپنی تحدید میں وہی بات دوسری طرف سے: صناع کے نزدیک سترہ '
+              'ڈگری، بعض کے نزدیک اٹھارہ — دونوں "تجربے اور بار بار کے امتحان سے ماخوذ"۔ اس '
+              'کے ساتھ دو دیانت داریاں ضروری ہیں۔ اول، یہ کبھی متفق علیہ نہیں رہا: کلاسیکی '
+              'کتابوں میں 16 سے 20 ڈگری تک کے اقوال ہیں — 17 اور 19 ڈگری بھی مستعمل رہے، '
+              'اور کسی کلاسیکی مالکی نص نے کوئی ڈگری مقرر نہیں کی — زاویہ علامت کا تخمینہ '
+              'ہے، حکم نہیں۔ دوم، یہ حضرات فلکیات دان تھے، فقہاء نہیں: ان کا اختیار '
+              'مشاہداتی ہے، اور علامت کا فقہی فیصلہ فقہاء کے پاس رہتا ہے۔ اس ایپ کا طے شدہ '
+              'پروفائل (رابطہ عالم اسلامی، 18°/17°) 1986ء کے رابطہ کے فقہی مجمع کے فیصلے کی '
+              'پیروی کرتا ہے؛ باقی پروفائلز اپنی اپنی کنونشنز دیانت سے بتاتے ہیں۔',
+          'D1 §4.2 · Biruni Qanun 2/948-949 & Tahdid (verbatim-verified); King 1973 '
+              '(Habash/Nayrizi "probably"; Battani denial); Tusi Muiniyya 18°',
+        ),
+        LearnBlock(
+          'مختلف ممالک مختلف زاویے کیوں استعمال کرتے ہیں؟',
+          '',
+          'کیونکہ زاویہ ایک ہی آسمان کو پڑھنے کی قومی کنونشن ہے، اس کے بارے میں کوئی '
+              'حکم نہیں۔ مراکش کے جدول 19°/17° پر چلتے ہیں (ثانوی ذرائع میں مذکور — وزارتِ '
+              'اوقاف کا اپنا طریقہ شائع شدہ نہیں)؛ مصر 19.5°/17.5° پر؛ سعودی عرب فجر کے لیے '
+              '18.5° اور عشاء کے لیے 90 منٹ کے وقفے پر؛ ملائیشیا اور انڈونیشیا 20°/18° پر؛ '
+              'اور مغربی افریقہ کا بڑا حصہ، موریتانیہ سمیت، رابطہ عالم اسلامی کے 18°/17° '
+              'پر۔ ان میں سے کوئی عدد فقہ نہیں — فقہ صبحِ صادق اور شفقِ احمر کے غائب ہونے '
+              'کی بات کرتی ہے، جسے مشاہدہ کرنے والے ہمیشہ جگہ اور موسم کے لحاظ سے قدرے '
+              'مختلف پڑھتے آئے ہیں۔ یہ ایپ اہم کنونشنز کو نامزد پروفائلز کے طور پر ان کے '
+              'ماخذ کے ساتھ پیش کرتی ہے، تاکہ آپ ہمیشہ جانیں کہ آپ کس کنونشن پر نماز پڑھ '
+              'رہے ہیں۔ (ایک تنبیہ: توقیت کے نقشے کا نعرہ — "جس ریاست کی علمی روایت مضبوط، '
+              'وہ 18 ڈگری سے قریب" — ناشر کی اپنی بلاغت ہے، کوئی علمی نتیجہ نہیں۔)',
+          'D1 §4.2 · D4 (Morocco secondary-only per pass-2 C) · Tawqit angles map',
         ),
         LearnBlock(
           'ایپس کے اوقات آپس میں کیوں مختلف ہوتے ہیں؟',
@@ -660,6 +907,81 @@ const Map<String, Map<String, LearnContent>> _content = {
               'Pro اور IslamicFinder، وہاں ان کے جدول کسی اور کے اوقات کی جانچ کے لیے '
               'استعمال نہیں ہو سکتے۔',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
+        ),
+        LearnBlock(
+          'اگر میں ایسی جگہ رہتا ہوں جہاں عشاء یا فجر کبھی داخل نہ ہو تو کیا کروں؟',
+          '',
+          'شمال کی دور دراز بستیوں میں گرمیوں میں شفقِ احمر فجر سے پہلے کبھی غائب نہیں '
+              'ہوتا — تو عشاء کب ہوگی اور روزہ کب شروع ہوگا؟ فاس کے موقت العلمی نے یہی سوال '
+              'شہر کے شیخ الجماعت ابن الخیاط الزکاری (متوفی 1343ھ/1924ء) کے سامنے رکھا۔ ان '
+              'کے جواب نے "تیسرے قول" کو اختیار کیا: رات نصف پر تقسیم ہوتی ہے — اس کا پہلا '
+              'نصف شفق کا ہے، دوسرا فجر کا؛ عشاء اس وقت واجب ہوتی ہے جب سورج کی روشنی کا '
+              'اثر مغرب سے مشرق کی طرف منتقل ہو؛ پھر فجر عشاء کے بعد پڑھی جاتی ہے، ترتیب '
+              'قائم رکھتے ہوئے؛ اور روزہ مقامی دن کے حساب سے ہوتا ہے، "رات تک روزہ پورا '
+              'کرو" (قرآن 2:187)، چاہے دن کتنا ہی طویل ہو۔ سوال میں ایک قدیم روایت بھی نقل '
+              'ہوئی تھی — قرافی نے الیوافیت میں امام الحرمین (جوینی) سے نقل کیا: عشاء اس '
+              'وقت تک نہ پڑھی جائے جب تک شفق غائب نہ ہو، اور یہ قضا نہیں کیونکہ اس کا وقت '
+              'باقی ہے؛ اور فجر قریبی ملک کی فجر کے حساب سے ہوگی۔ یہ فاس کی توقیت روایت کے '
+              'ایک مفتی کا مدلل فتویٰ ہے — مذہب کا مشہور مسلک نہیں۔ اسی مسئلے کا اس ایپ کا '
+              'جواب اس کا high-latitude fallback chooser ہے: جب شفق کے زاویے ناقابلِ رسائی '
+              'ہوں تو وہ رات ہی سے تخمینہ لگاتا ہے (نصفِ شب وغیرہ نامزد کنونشنز) اور صاف '
+              'بتا دیتا ہے کہ کون سی فعال ہے — فتوے کے دل میں جو نصفِ شب کی تقسیم ہے وہ '
+              '"middle of the night" کنونشن کی قریبی رشتہ دار ہے۔',
+          'D1 §4.5 · Tawqit Fez fatwa series (identities & al-Yawaqit correction per '
+              'strand B 2026-10-18)',
+        ),
+        LearnBlock(
+          'گرمیوں میں «ترجیحی خاتمہ» کا نشان عشاء سے پہلے کیوں آ سکتا ہے؟',
+          '',
+          'فرانس جیسے بلند عرض البلد پر گرمیوں کی بعض راتوں میں شفق — عشاء کی قدرتی '
+              'علامت — رات کے پہلے ثلث کے گزرنے کے بعد بھی باقی رہتی ہے۔ ترجیحی مدت تو '
+              'پہلے ثلث پر ختم ہوتی ہے، اس لیے اس کا حسابی خاتمہ کبھی خود عشاء کے وقت '
+              'سے پہلے بھی آ سکتا ہے۔ 17 مئی کو پیرس میں مثلاً: مغرب 21:31، پہلے ثلث کا '
+              'خاتمہ 23:30، عشاء 23:51، فجر 03:30۔ چاروں مذاہب کا متفقہ موقف یہ ہے کہ '
+              'آدھی رات گزر جانے پر بھی اصل عشاء کے وقت کا انتظار کیا جائے؛ امام ابن '
+              'حجر کے الفاظ میں، متبادل علامت کا اعتبار وہاں ہوتا ہے جہاں اصل علامت '
+              'موجود نہ ہو، نہ کہ جہاں وہ موجود ہو۔',
+          'Tawqit Instagram review, Post 1 · D1 §2.7',
+        ),
+        LearnBlock(
+          'گرمیوں میں عشاء آدھی رات کے بعد کیوں آتی ہے؟',
+          '',
+          'دو بالکل غیر دینی وجوہات سے: ٹائم زون اور ڈے لائٹ سیونگ۔ مثلاً فرانس اپنے '
+              'شمسی وقت سے پورا ایک گھنٹہ آگے جیتا ہے — 1940ء کی جنگی جرمن مسلط کردہ گھڑی '
+              'جو کبھی واپس نہ ہوئی — اور پھر گرمیوں میں ڈے لائٹ سیونگ کا ایک گھنٹہ اور '
+              'بڑھا دیتا ہے (1976ء سے)۔ اس لیے گھڑی کے حساب سے عشاء رات کے 1 بجے بھی آ سکتی '
+              'ہے جبکہ سورج ابھی وہیں ہے جہاں پہلے آدھی رات ہوتی تھی۔ دینی علامات اپنی جگہ '
+              'ہیں؛ گھڑی بدلی ہے۔ دیر سے نظر آنے والے ٹائم ٹیبل کو دیر سے دین نہ سمجھو: '
+              'چاروں مذاہب متفق ہیں کہ آدھی رات گزر جانے پر بھی اصل عشاء کے وقت کا انتظار '
+              'کیا جائے۔',
+          'D1 §4.5 · Tawqit summer-midnight slide (history: general record)',
+        ),
+        LearnBlock(
+          'گرمیوں میں نماز کے اوقات بہت دیر سے آتے ہیں — کیا کروں؟',
+          '',
+          'بہت دیر سے آنے والے گرمائی اوقات سے نمٹنے کے لیے توقیت کی سلائیڈز چار درجہ '
+              'بند اقدامات تجویز کرتی ہیں — یہ رہنمائی ہے، اس ایپ کا فتویٰ نہیں۔ (1) حتی '
+              'الامکان وقت کے شروع میں نماز پڑھو — "نماز اپنے اول وقت میں" (ام فروہ کی '
+              'حدیث، سنن ابی داؤد #426؛ اس کی سند ضعیف قرار دی گئی ہے، اگرچہ اس کا مفہوم '
+              'صحیحین میں ابن مسعود کی حدیث سے ثابت ہے)۔ (2) اگر نہ ہو سکے تو فجر کو اسفار '
+              '(اجالے) کی طرف مؤخر کرو — جو خود صبح کے مستحب وقت کا مشہور خاتمہ ہے۔ سلائیڈز '
+              'اسے ابن حبیب کے الفاظ میں دیتی ہیں، ابن ابی زید کی النوادر میں معاذ سے: "جب '
+              'گرمی آئے تو صبح میں اسفار کرو کیونکہ رات مختصر ہے اور لوگ سوئے ہوتے ہیں؛ '
+              'عشاء میں تاخیر نہ کرو کیونکہ رات مختصر ہے، اور اسے شفق کے غائب ہونے سے پہلے '
+              'نہ پڑھو" — یہ الفاظ ہمیں کسی مطبوعہ نسخے میں نہ مل سکے، اس لیے اس قدم کو اس '
+              'کے مضمون کی بنا پر لو، جس کی تائید مذہب کا اپنا قاعدہ کرتا ہے۔ (3) اگر یہ '
+              'بھی نہ ہو سکے تو عشاء کو فجر سے بالکل پہلے تک مؤخر کر دو — کیونکہ "نماز میں '
+              'کوتاہی یہی ہے کہ اسے اگلی نماز کے وقت تک مؤخر کر دیا جائے" (ابو ہریرہ کا '
+              'قول؛ نبی ﷺ کے الفاظ کے طور پر یہ صحیح مسلم میں ابو قتادہ سے آتا ہے)۔ (4) '
+              'آخری چارہ کار کے طور پر مغرب اور عشاء جمع کر لو: اشہب بغیر کسی خاص سبب کے دو '
+              'نمازیں جمع کرنے کی اجازت دیتے تھے — یہ ایک حقیقی تسلیم شدہ داخلی اختلاف ہے، '
+              'باجی اور ابن رشد نے خلیل کی التوضیح کے واسطے سے نقل کیا (جیسے حطاب نے درج '
+              'کیا) — ابن عباس کی حدیث کی بنیاد پر کہ نبی ﷺ نے "بغیر خوف، سفر یا بارش کے" '
+              'ظہر و عصر اور مغرب و عشاء جمع فرمائیں۔ چوتھے قدم کے بارے میں آنکھیں کھلی '
+              'رکھو: یہ اقلیتی قول ہے، مشہور نہیں — مشہور مالکی موقف جمع کی اجازت صرف تقدیم '
+              'کے ساتھ، بارش یا بیماری کے لیے دیتا ہے۔',
+          'D1 §2.9 · Tawqit summer-management slide (attribution corrections per strand '
+              'B 2026-10-18)',
         ),
         LearnBlock(
           'وقتِ ضرورت (ضروری) سے کیا مراد ہے؟',
@@ -938,6 +1260,109 @@ const Map<String, Map<String, LearnContent>> _content = {
       'أجوبة تبقى داخل أدلة البحث — والأعراف تُسمّى أعرافاً دائماً.',
       [
         LearnBlock(
+          'هل يجوز حساب أوقات الصلاة أم يجب ترقبها بالعين؟',
+          '',
+          'يجوز حسابها — وليس هذا تسهيلا عصريا. قال المذهب المالكي ذلك صراحة قبل سبعة '
+              'قرون. قال القرافي (ت 684هـ) في الذخيرة: «لا أعلم خلافا في إثبات أوقات الصلاة '
+              'بالحساب في الآلات بالماء والرمل وغيرهما، وعلى ذلك أهل الأمصار في سائر '
+              'الأعصار زمن الشتاء عند الأمطار والغيوم». وفرّق في الفروق بين حساب أوقات '
+              'الصلاة وحساب هلال رمضان، فلا يقاس أحدهما على الآخر. في هذا التطبيق تحسب كل '
+              'الأوقات على هاتفك من العلامات الفلكية نفسها، والطريقة معلنة لك لا مخفاة.',
+          'D1 §4.1 · D4 (verification 2026-10-18: al-Dhakhira, Kitab al-Siyam)',
+          source: '«الذخيرة»',
+        ),
+        LearnBlock(
+          'لماذا أثق بجدول محسوب؟',
+          '',
+          'لأن المذهب يثق بالمؤقت العارف. قال البرزلي — ونقله الحطاب في مواهب الجليل — '
+              'إن ظاهر المذهب قبول قول المؤذن العدل العارف مطلقا: في الغيم والصحو، في '
+              'الصلاة والصوم، إذا كان عارفا بالأوقات بالآلات كالرمليات والمنقلات وغيرها. '
+              'وقد نص ابن يونس وغيره على هذا العموم في كتاب الصوم. والجدول إنما يكون بقدر '
+              'العلم الذي وراءه: هذا التطبيق يريك الطريقة والزوايا والدليل على كل وقت '
+              'يعرضه، فلا يطلب منك أبدا أن تثق بصندوق مغلق.',
+          'D1 §4.1 · D4 (verification 2026-10-18: Mawahib al-Jalil, bab mawaqit '
+              'al-salat)',
+          source: '«مواهب الجليل»',
+        ),
+        LearnBlock(
+          'هل استعمال الفلك لأوقات الصلاة تنجيم؟',
+          '',
+          'لا — وقد رسم الفقهاء هذا الحد منذ زمن بعيد. يفتتح الأخضري (ت 953هـ) منظومته '
+              'الفلكية السراج به: العلم الذي تدرى به الأوقات والفجر والقبلة والساعات «علم '
+              'عزيز من أجل مسلك»، أما ما يدعي الوصول إلى الغيب فـ«حرام دون ريب». فالفلك '
+              'الذي يعين أوقات الصلاة صنعة متعلمة، والتنجيم الذي يدعي علم الغيب شيء آخر '
+              'تماما. (الأبيات العربية أعلاه كما وردت في الشرائح التعليمية لتوقيت عن '
+              'المخطوطات؛ لم يتيسر نسخة مطبوعة للتحقق اللفظي.)',
+          'D1 §4.1 · D4 (al-Siraj attribution verified 2026-10-18; verses per '
+              'manuscript tradition)',
+          source: '«السراج في علم الفلك»',
+        ),
+        LearnBlock(
+          'لماذا 18 درجة للفجر؟',
+          '',
+          'لأن أجيالا من الفلكيين والموقتين المسلمين سجلوها تقديرهم العملي للعلامة '
+              'المشاهدة — الفجر الصادق. يقول البيروني صراحة في القانون المسعودي: إن أصحاب '
+              'هذه الصناعة رصدوا "فحصلوا من قوانين وقته أن انحطاط الشمس تحت الأفق متى كان '
+              'ثمانية عشر جزءا كان ذلك وقت طلوع الفجر في المشرق ووقت مغيب الشفق في المغرب" '
+              '— ويضيف في الحال أنه "ليس شيئا معينا" لأن بعضهم رأى سبعة عشر جزءا (القانون '
+              '2/948-949، طبعة حيدرآباد). وفي التحديد يورد الخبر من الجهة الأخرى: سبعة عشر '
+              'جزءا عند أصحاب الصناعة وثمانية عشر عند بعضهم — والمقداران "مأخوذان من '
+              'التجربة والامتحان المترادف". ويلزم مع هذا أمانتان. الأولى: لم يكن إجماعا قط '
+              '— ففي الكتب نفسها أقوال تتراوح بين 16 و20 درجة — والسبع عشرة والتسع عشرة '
+              'مستعملة بجد، ولم ينص أي متن مالكي كلاسيكي على درجة — فالزاوية تقدير للعلامة '
+              'لا حكم شرعي. الثانية: هؤلاء فلكيون لا فقهاء، فحجتهم رصدية، والحكم الفقهي في '
+              'العلامة للفقهاء. الملف الافتراضي في هذا التطبيق (رابطة العالم الإسلامي '
+              '18/17) يتبع قرار مجمع الفقه الإسلامي 1986م؛ والملفات الأخرى تسمي عرفها '
+              'بأمانة.',
+          'D1 §4.2 · Biruni Qanun 2/948-949 & Tahdid (verbatim-verified); King 1973 '
+              '(Habash/Nayrizi "probably"; Battani denial); Tusi Muiniyya 18°',
+        ),
+        LearnBlock(
+          'لماذا تستعمل الدول زوايا مختلفة؟',
+          '',
+          'لأن الزاوية عرف وطني لقراءة السماء نفسها، وليست حكما فيها. جداول المغرب على '
+              '19/17 (مذكور في مصادر ثانوية — ومنهجية وزارة الأوقاف نفسها غير منشورة)؛ ومصر '
+              'على 19.5/17.5؛ والسعودية على 18.5 للفجر مع فاصل 90 دقيقة للعشاء؛ وماليزيا '
+              'وإندونيسيا على 20/18؛ وكثير من غرب أفريقيا، ومنها موريتانيا، على 18/17 '
+              'لرابطة العالم الإسلامي. ولا واحد من هذه الأرقام هو الفقه — فالفقه يتكلم عن '
+              'الفجر الصادق ومغيب الشفق الأحمر، وهما ما اختلف القراء في رصدهما دائما '
+              'باختلاف المكان والموسم. يعرض هذا التطبيق الأعراف الرئيسية ملفاتٍ مسماة مع '
+              'مصادرها، لتعلم دائما بأي عرف تصلي. (تنبيه: شعار خريطة توقيت — «كلما قويت '
+              'التقاليد العلمية للدولة اقتربت من 18» — بلاغة الناشر نفسه، وليس نتيجة '
+              'علمية.)',
+          'D1 §4.2 · D4 (Morocco secondary-only per pass-2 C) · Tawqit angles map',
+        ),
+        LearnBlock(
+          'لماذا تختلف الأوقات بين التطبيقات؟',
+          '',
+          'وراء التسميات ستجد غالباً فقهاً واحداً وأعرافاً برمجية مختلفة: تطبيق '
+              'يفتتح الفجر على 18° وآخر على 20°؛ هذا يضيف دقائق احتياط وذاك لا يضيف؛ '
+              'وكلٌّ يعالج العروض العالية على طريقته. وأمران يستحقان الانتباه: تسميات '
+              'الأعراف ليست دائماً ما تدّعيه — فتسمية UOIF بـ12°/12° مثلاً متنازع عليها '
+              'مقابل دعوى 15°/15°. وحيث لا يُنشَر منهج الحساب أصلاً، كما في Muslim Pro '
+              'وIslamicFinder، فلا تصلح جداولهما لاختبار جداول غيرهما.',
+          'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
+        ),
+        LearnBlock(
+          'ماذا لو كنت حيث لا يأتي العشاء ولا الفجر؟',
+          '',
+          'في أقصى الشمال صيفا قد لا يغيب الشفق الأحمر قبل الفجر أبدا — فمتى العشاء '
+              'ومتى يبدأ الصوم؟ عرض موقت فاس العلمي هذا السؤال بعينه على شيخ الجماعة '
+              'بالمدينة ابن الخياط الزكاري (ت 1343هـ/1924م). فاختار جوابه "القول الثالث": '
+              'ينتصف الليل — نصفه الأول للشفق ونصفه الثاني للفجر؛ ويجب العشاء حين ينتقل أثر '
+              'الشمس من المغرب إلى المشرق؛ ثم يصلى الفجر بعد العشاء حفظا للترتيب؛ والصوم '
+              'بالنهار المحلي ﴿ثم أتموا الصيام إلى الليل﴾ مهما طال. وقد نقل في السؤال رواية '
+              'أقدم — روى القرافي في اليواقيت عن إمام الحرمين (الجويني): لا تصلى العشاء حتى '
+              'يغيب الشفق ولا تكون قضاء لبقاء وقتها، ويتحرى بصلاة الصبح فجر من يليهم من '
+              'البلاد. وهذه فتوى معللة لمفت من تقليد التوقيت الفاسي — ليست مشهور المذهب. '
+              'وجواب هذا التطبيق عن المشكلة نفسها هو منتقي الطوارئ لخطوط العرض العليا: إذا '
+              'تعذر بلوغ زوايا الشفق قدّر من الليل نفسه (منتصف الليل وغيره من الأعراف '
+              'المسماة) وأخبرك صراحة أيها يعمل — وقسمة منتصف الليل في قلب الفتوى قريبة '
+              'النسب من عرف «منتصف الليل».',
+          'D1 §4.5 · Tawqit Fez fatwa series (identities & al-Yawaqit correction per '
+              'strand B 2026-10-18)',
+        ),
+        LearnBlock(
           'لماذا قد تسبق علامة "نهاية المفضل" العشاء في الصيف؟',
           '',
           'في العروض العالية — كفرنسا مثلاً — يتأخر غياب الشفق، وهو العلامة '
@@ -950,15 +1375,38 @@ const Map<String, Map<String, LearnContent>> _content = {
           'Tawqit Instagram review, Post 1 · D1 §2.7',
         ),
         LearnBlock(
-          'لماذا تختلف الأوقات بين التطبيقات؟',
+          'لماذا يأتي العشاء بعد منتصف الليل صيفا؟',
           '',
-          'وراء التسميات ستجد غالباً فقهاً واحداً وأعرافاً برمجية مختلفة: تطبيق '
-              'يفتتح الفجر على 18° وآخر على 20°؛ هذا يضيف دقائق احتياط وذاك لا يضيف؛ '
-              'وكلٌّ يعالج العروض العالية على طريقته. وأمران يستحقان الانتباه: تسميات '
-              'الأعراف ليست دائماً ما تدّعيه — فتسمية UOIF بـ12°/12° مثلاً متنازع عليها '
-              'مقابل دعوى 15°/15°. وحيث لا يُنشَر منهج الحساب أصلاً، كما في Muslim Pro '
-              'وIslamicFinder، فلا تصلح جداولهما لاختبار جداول غيرهما.',
-          'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
+          'لسببين لا علاقة لهما بالدين: المناطق الزمنية والتوقيت الصيفي. ففرنسا مثلا '
+              'تعيش متقدمة ساعة كاملة على وقتها الشمسي — فرض ألماني زمن الحرب سنة 1940م لم '
+              'يلغ قط — ثم تضيف ساعة أخرى كل صيف للتوقيت الصيفي (منذ 1976م). فبالساعة قد '
+              'يأتي العشاء الواحدة ليلا بينما الشمس لم تتجاوز بعد موضع منتصف الليل القديم. '
+              'العلامات الدينية لم تتحرك؛ الساعة هي التي تحركت. فلا تحسبن جدولا متأخر '
+              'المظهر دينا متأخرا: المذاهب الأربعة متفقة على انتظار وقت العشاء الحقيقي ولو '
+              'جاوز منتصف الليل.',
+          'D1 §4.5 · Tawqit summer-midnight slide (history: general record)',
+        ),
+        LearnBlock(
+          'أوقات الصلاة متأخرة جدا في الصيف — ماذا أفعل؟',
+          '',
+          'تقترح شرائح توقيت أربع خطوات متدرجة لمواجهة تأخر الأوقات الصيفية — إرشاد '
+              'عملي لا فتوى من هذا التطبيق. (1) صل في أول الوقت ما استطعت — «الصلاة في أول '
+              'وقتها» (حديث أم فروة، سنن أبي داود رقم 426؛ سنده ضعيف، ومعناه ثابت بحديث ابن '
+              'مسعود في الصحيحين). (2) فإن لم تقدر فأخر الفجر إلى الإسفار — وهو نفسه نهاية '
+              'الوقت المختار للصبح في المشهور. تورد الشرائح ذلك بلفظ ابن حبيب — رواه ابن '
+              'أبي زيد في النوادر عن معاذ — «وإذا كان الصيف فأسفر بالصبح فإن الليل قصير '
+              'والناس ينامون، ولا تعتم بالعشاء فإن الليل قصير، ولا تصلها قبل الشفق» — ولم '
+              'نقف على هذا اللفظ في نسخة مطبوعة، فخذ بالخطوة لمضمونها الذي يؤيده قاعد '
+              'المذهب نفسه. (3) فإن تعذر فأخر العشاء إلى قبيل الفجر — فـ«التفريط في الصلاة '
+              'أن تؤخرها إلى وقت التي بعدها» (قول أبي هريرة؛ ومرفوعا إلى النبي ﷺ من حديث '
+              'أبي قتادة في صحيح مسلم). (4) وآخر الدواء الجمع بين المغرب والعشاء: أجاز أشهب '
+              'الجمع بين الصلاتين لغير سبب — خلاف داخلي حقيقي معتبر، حكاه الباجي وابن رشد '
+              'بواسطة توضيح خليل (كما أورده الحطاب) — لحديث ابن عباس أن النبي ﷺ جمع بين '
+              'الظهر والعصر والمغرب والعشاء «في غير خوف ولا سفر ولا مطر». وكن على بينة في '
+              'الخطوة الرابعة: هي قول الأقلية لا المشهور — فالمشهور المالكي لا يجيز الجمع '
+              'إلا تقديما لعذر المطر أو المرض.',
+          'D1 §2.9 · Tawqit summer-management slide (attribution corrections per strand '
+              'B 2026-10-18)',
         ),
         LearnBlock(
           'ما معنى الضروري (وقت الضرورة)؟',
@@ -1262,18 +1710,99 @@ const Map<String, Map<String, LearnContent>> _content = {
           'conventions sont toujours nommées comme telles.',
       [
         LearnBlock(
-          'Pourquoi le repère « fin préférée » peut-il précéder l’Isha en '
-              'été ?',
+          'Peut-on calculer les horaires de prière, ou faut-il les observer ?',
           '',
-          'Aux hautes latitudes — la France, par exemple — le crépuscule qui ouvre '
-              'l’Isha s’attarde parfois au-delà du premier tiers de la nuit. Or la '
-              'période préférée s’achève à ce tiers : sa fin calculée peut donc tomber '
-              'avant l’heure de l’Isha elle-même. À Paris, le 17 mai : Maghrib à 21h31, '
-              'fin du premier tiers à 23h30, Isha à 23h51, Fajr à 03h30. Les quatre '
-              'écoles s’accordent à attendre l’heure réelle de l’Isha, même passée '
-              'minuit ; comme le dit l’imam Ibn Hajar, un signe de substitution n’a de '
-              'sens que là où le vrai signe fait défaut, jamais là où il est présent.',
-          'Tawqit Instagram review, Post 1 · D1 §2.7',
+          'Oui, on peut les calculer — et ce n’est pas un raccourci moderne. L’école '
+              'malikite l’a dit plainement il y a sept siècles. Al-Qarafi (m. 684 H.) écrit '
+              'dans sa Dhakhira : « Je ne connais aucune divergence concernant '
+              'l’établissement des temps de prière par le calcul, au moyen d’instruments à '
+              'eau, à sable et autres — les habitants des grandes villes l’ont fait à '
+              'toutes les époques, en hiver, lors des pluies et des nuages. » Dans ses '
+              'Furuq, il trace soigneusement la limite : calculer les horaires de prière '
+              'est une chose, calculer le croissant de Ramadan en est une autre. Dans cette '
+              'application, chaque horaire est calculé sur votre téléphone à partir des '
+              'signes astronomiques eux-mêmes — et la méthode vous est montrée, jamais '
+              'modifiée en silence.',
+          'D1 §4.1 · D4 (verification 2026-10-18: al-Dhakhira, Kitab al-Siyam)',
+          source: '«الذخيرة»',
+        ),
+        LearnBlock(
+          'Pourquoi faire confiance à un horaire calculé ?',
+          '',
+          'Parce que l’école fait confiance au connaisseur des horaires. Al-Burzuli — '
+              'cité par al-Hattab dans les Mawahib al-Jalil — énonce l’avis apparent de '
+              'l’école malikite : on accepte absolument la parole du muezzin intègre et '
+              'connaisseur, par temps couvert comme par ciel dégagé, pour la prière comme '
+              'pour le jeûne, dès lors qu’il connaît les horaires au moyen d’instruments — '
+              'sabliers, horloges astronomiques et autres. Ibn Yunus et d’autres ont '
+              'explicitement affirmé cette généralité dans le Livre du jeûne. Un horaire ne '
+              'vaut que le savoir qui le fonde : cette application vous montre la méthode, '
+              'les angles et la preuve de chaque horaire affiché — on ne vous demande '
+              'jamais de faire confiance à une boîte noire.',
+          'D1 §4.1 · D4 (verification 2026-10-18: Mawahib al-Jalil, bab mawaqit '
+              'al-salat)',
+          source: '«مواهب الجليل»',
+        ),
+        LearnBlock(
+          'Utiliser l’astronomie pour les prières, est-ce de l’astrologie ?',
+          '',
+          'Non — et les juristes ont tracé cette limite il y a longtemps. Al-Akhdari '
+              '(m. 953 H.) ouvre son poème astronomique al-Siraj sur ce point : la science '
+              'par laquelle on connaît les temps, l’aube, la qibla et les heures est « une '
+              'science précieuse, parmi les plus honorables voies » — tandis que ce qui '
+              'prétend accéder à l’invisible est interdit « sans aucun doute ». '
+              'L’astronomie qui détermine les horaires de prière est un savoir qui '
+              's’apprend ; l’astrologie qui prétend connaître le caché est tout autre '
+              'chose. (Les vers arabes ci-dessus sont transmis dans les diapositives '
+              'pédagogiques de Tawqit d’après la tradition manuscrite d’al-Siraj ; aucune '
+              'édition imprimée n’était accessible pour une vérification mot à mot.)',
+          'D1 §4.1 · D4 (al-Siraj attribution verified 2026-10-18; verses per '
+              'manuscript tradition)',
+          source: '«السراج في علم الفلك»',
+        ),
+        LearnBlock(
+          'Pourquoi 18° pour le fajr ?',
+          '',
+          'Parce que des générations d’astronomes et de muwaqqits musulmans l’ont '
+              'consignée comme leur estimation pratique du signe observable — l’aube vraie. '
+              'Al-Biruni s’exprime sans détour dans son Qanun al-Mas’udi : les praticiens '
+              'du métier observèrent et « obtinrent des lois de son temps que, lorsque la '
+              'dépression du soleil sous l’horizon est de dix-huit degrés, c’est le moment '
+              'du lever de l’aube à l’est et de la disparition du crépuscule à l’ouest » — '
+              'en ajoutant aussitôt que ce n’est « pas une chose fixe », puisque certains '
+              'd’entre eux voyaient dix-sept degrés (Qanun 2/948-949, éd. d’Hyderabad). '
+              'Dans son Tahdid il rapporte la même chose sous l’autre angle : dix-sept '
+              'degrés selon les praticiens, dix-huit selon certains — les deux « pris de '
+              'l’expérience et de l’examen répété ». Deux honnêtetés s’imposent. D’abord, '
+              'ce ne fut jamais unanime : les mêmes livres rapportent une fourchette de 16° '
+              'à 20° — 17° et 19° aussi en usage sérieux, et aucun texte malikite classique '
+              'ne fixe un degré — l’angle est une estimation du signe, pas une règle. '
+              'Ensuite, c’étaient des astronomes, non des juristes : leur autorité est '
+              'observationnelle, et le jugement fiqh sur le signe reste aux fuqaha’. Le '
+              'profil par défaut de cette application (Ligue islamique mondiale, 18°/17°) '
+              'suit la décision de 1986 du Conseil de fiqh de la Ligue ; les autres profils '
+              'nomment leurs propres conventions en toute honnêteté.',
+          'D1 §4.2 · Biruni Qanun 2/948-949 & Tahdid (verbatim-verified); King 1973 '
+              '(Habash/Nayrizi "probably"; Battani denial); Tusi Muiniyya 18°',
+        ),
+        LearnBlock(
+          'Pourquoi les pays utilisent-ils des angles différents ?',
+          '',
+          'Parce que l’angle est une convention nationale pour lire le même ciel, pas '
+              'une règle à son sujet. Les horaires du Maroc suivent 19°/17° (rapporté par '
+              'des sources secondaires — la méthodologie du ministère des Habous n’est pas '
+              'publiée) ; l’Égypte 19,5°/17,5° ; l’Arabie saoudite 18,5° pour le fajr avec '
+              'un intervalle de 90 minutes pour l’icha ; la Malaisie et l’Indonésie 20°/18° '
+              '; et une grande partie de l’Afrique de l’Ouest, dont la Mauritanie, le '
+              '18°/17° de la Ligue islamique mondiale. Aucun de ces chiffres n’est le fiqh '
+              '— le fiqh parle de l’aube vraie et de la disparition du crépuscule rouge, '
+              'que les observateurs ont toujours lus légèrement différemment selon le lieu '
+              'et la saison. Cette application propose les principales conventions comme '
+              'profils nommés avec leur provenance, pour que vous sachiez toujours selon '
+              'quelle convention vous priez. (Une mise en garde : le slogan de la carte '
+              'Tawqit — « plus la tradition savante d’un État est forte, plus il reste '
+              'proche des 18° » — est la rhétorique de l’éditeur, pas un résultat savant.)',
+          'D1 §4.2 · D4 (Morocco secondary-only per pass-2 C) · Tawqit angles map',
         ),
         LearnBlock(
           'Pourquoi les heures diffèrent-elles d’une application à l’autre ?',
@@ -1288,6 +1817,90 @@ const Map<String, Map<String, LearnContent>> _content = {
               'chez Muslim Pro et IslamicFinder, leurs horaires ne peuvent juger ceux '
               'des autres.',
           'D1 §4.6–4.7 · D4 NEG-5 · C3.2',
+        ),
+        LearnBlock(
+          'Et si j’habite là où l’icha ou le fajr n’arrive jamais ?',
+          '',
+          'dans le Grand Nord en été, le crépuscule rouge peut ne jamais disparaître '
+              'avant l’aube — quand donc l’icha, et quand commence le jeûne ? Le muwaqqit '
+              'de Fès, al-’Alami, posa exactement cette question au cheikh al-jama’a de la '
+              'ville, Ibn al-Khayyat al-Zukari (m. 1343 H./1924). Sa réponse retint un « '
+              'troisième avis » : la nuit se partage en son milieu — sa première moitié au '
+              'crépuscule, sa seconde à l’aube ; l’icha devient dû quand l’effet de la '
+              'lumière solaire passe de l’ouest à l’est ; le fajr se prie ensuite après '
+              'l’icha, dans l’ordre requis ; et le jeûne suit le jour local, « accomplissez '
+              'le jeûne jusqu’à la nuit » (Coran 2:187), si long soit-il. La question '
+              'citait aussi un rapport plus ancien — al-Qarafi transmettant de l’Imam '
+              'al-Haramayn (al-Juwayni) dans ses Yawaqit : on ne prie l’icha que le '
+              'crépuscule dissipé, et ce n’est pas un qaḍa’ car son temps demeure ; la '
+              'prière de l’aube suit le fajr du pays le plus proche. C’est la fatwa motivée '
+              'd’un mufti de la tradition fassie du tawqit — pas la doctrine mashhur de '
+              'l’école. La réponse de cette application au même problème est son sélecteur '
+              'de repli hautes latitudes : quand les angles crépusculaires sont '
+              'inatteignables, il estime à partir de la nuit elle-même (milieu de la nuit '
+              'et autres conventions nommées) et vous dit plainement laquelle est active — '
+              'le partage de minuit au cœur de la fatwa est proche parent de la convention '
+              'du « milieu de la nuit ».',
+          'D1 §4.5 · Tawqit Fez fatwa series (identities & al-Yawaqit correction per '
+              'strand B 2026-10-18)',
+        ),
+        LearnBlock(
+          'Pourquoi le repère « fin préférée » peut-il précéder l’Isha en '
+              'été ?',
+          '',
+          'Aux hautes latitudes — la France, par exemple — le crépuscule qui ouvre '
+              'l’Isha s’attarde parfois au-delà du premier tiers de la nuit. Or la '
+              'période préférée s’achève à ce tiers : sa fin calculée peut donc tomber '
+              'avant l’heure de l’Isha elle-même. À Paris, le 17 mai : Maghrib à 21h31, '
+              'fin du premier tiers à 23h30, Isha à 23h51, Fajr à 03h30. Les quatre '
+              'écoles s’accordent à attendre l’heure réelle de l’Isha, même passée '
+              'minuit ; comme le dit l’imam Ibn Hajar, un signe de substitution n’a de '
+              'sens que là où le vrai signe fait défaut, jamais là où il est présent.',
+          'Tawqit Instagram review, Post 1 · D1 §2.7',
+        ),
+        LearnBlock(
+          'Pourquoi l’icha dépasse-t-il minuit en été ?',
+          '',
+          'Pour deux raisons nullement religieuses : les fuseaux horaires et l’heure '
+              'd’été. La France, par exemple, vit avec une heure d’avance sur son temps '
+              'solaire — une imposition allemande du temps de guerre, en 1940, jamais '
+              'annulée — puis ajoute une heure chaque été pour l’heure d’été (depuis 1976). '
+              'À l’horloge, l’icha peut donc tomber à 1h du matin alors que le soleil n’a '
+              'guère dépassé l’ancien minuit. Les signes religieux n’ont pas bougé ; c’est '
+              'l’horloge qui a bougé. Ne prenez pas un horaire d’apparence tardive pour une '
+              'religion tardive : les quatre écoles s’accordent à attendre l’heure '
+              'véritable de l’icha même quand elle dépasse minuit.',
+          'D1 §4.5 · Tawqit summer-midnight slide (history: general record)',
+        ),
+        LearnBlock(
+          'Les horaires sont très tardifs en été — que faire ?',
+          '',
+          'les diapositives Tawqit proposent quatre paliers pour gérer des horaires '
+              'd’été très tardifs — un accompagnement pastoral, pas une fatwa de cette '
+              'application. (1) Priez au début du temps autant que possible — « la prière '
+              'au début de son temps » (hadith d’Umm Farwa, Sunan d’Abi Dawud n° 426 ; sa '
+              'chaîne est jugée faible, mais son sens est établi par le hadith d’Ibn Mas’ud '
+              'dans les deux Sahihs). (2) Sinon, retardez le fajr vers l’isfar (la clarté) '
+              '— qui est elle-même la fin mashhur du temps préféré du subh. Les '
+              'diapositives le formulent comme une parole d’Ibn Habib, rapportée par Ibn '
+              'Abi Zayd dans les Nawadir d’après Mu’adh : « quand vient l’été, prie le subh '
+              'à la clarté, car la nuit est courte et les gens dorment ; ne retarde pas '
+              'l’icha, car la nuit est courte, et ne la prie pas avant la disparition du '
+              'crépuscule » — formulation que nous n’avons pas retrouvée dans une édition '
+              'imprimée : retenez le palier pour son contenu, que la règle de l’école '
+              'conforte. (3) À défaut, retardez l’icha jusqu’avant le fajr — car « la '
+              'négligence dans la prière n’est que de la retarder jusqu’au temps de la '
+              'suivante » (parole d’Abu Hurayra ; remontant au Prophète ﷺ par Abu Qatada '
+              'dans le Sahih de Muslim). (4) En dernier recours, regroupez maghrib et icha '
+              ': Achhab permettait de regrouper deux prières sans cause particulière — une '
+              'divergence interne réelle et reconnue, rapportée par al-Baji et Ibn Rushd '
+              'via le Tawdih de Khalil (comme l’enregistre al-Hattab) — d’après le hadith '
+              'd’Ibn ’Abbas : le Prophète ﷺ regroupa le dohr et l’asr, le maghrib et l’icha '
+              '« sans crainte, ni voyage, ni pluie ». Soyez lucide sur le palier 4 : c’est '
+              'l’avis minoritaire, pas le mashhur — la position malikite bien connue ne '
+              'permet le regroupement qu’en avançant (taqdim), pour la pluie ou la maladie.',
+          'D1 §2.9 · Tawqit summer-management slide (attribution corrections per strand '
+              'B 2026-10-18)',
         ),
         LearnBlock(
           'Que signifie daruri (temps de nécessité) ?',
