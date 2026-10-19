@@ -207,11 +207,14 @@ String qadaRuleDomainName(QadaRuleDomain domain) =>
 
 /// One fiqh rule in the registry: data only, never a ruling issued.
 ///
-/// Rules the program verified against a primary-source text it actually
-/// read carry [ReviewStatus.reviewed] with the reading recorded in
-/// [reviewNote] (book, chapter, URL/edition, date). Note the D7
-/// scholarly review is still outstanding for every rule: [reviewerName]
-/// stays null until a scholar's answers are recorded. Everything else is
+/// Rules the program verified against a source it actually read carry
+/// [ReviewStatus.reviewed] with the reading recorded in [reviewNote]
+/// (book, chapter, URL/edition, date); reviewed rules divide into
+/// primary-text reads (QH-001..QH-004) and a secondary-manual read
+/// (QH-103..QH-107 — an English contemporary manual, explicitly not a
+/// primary classical Arabic text). Note the D7 scholarly review is still
+/// outstanding for every rule: [reviewerName] stays null until a
+/// scholar's answers are recorded. Everything else is
 /// [ReviewStatus.proposed], and [notes] names exactly what is unverified.
 class QadaRule {
   /// Registry id, e.g. 'QH-001'.
@@ -565,10 +568,15 @@ abstract final class MalikiQadaRulesEngine {
 ///
 /// QH-001..QH-004 were verified against a primary-source text actually
 /// read (Mukhtasar Khalil, Kitab al-Salat — see each rule's
-/// [QadaRule.reviewNote]). The D7 scholarly review is still outstanding
-/// for every rule. QH-101 and above are proposed: their [QadaRule.notes]
-/// name exactly what is unverified, and no citation, page number, or
-/// quotation is asserted for them.
+/// [QadaRule.reviewNote]). QH-103..QH-107 were engineering-verified
+/// against a contemporary secondary manual actually read (Mathieu
+/// Gallant, Students' Guide to Maliki Fiqh, Ch. 1, §§29–31 — see each
+/// rule's [QadaRule.reviewNote]); this is not a primary classical
+/// Arabic text and does not substitute for one. The D7 scholarly review
+/// is still outstanding for every rule. QH-101, QH-102, QH-108, QH-109
+/// are proposed: their [QadaRule.notes] name exactly what is
+/// unverified, and no citation, page number, or quotation is asserted
+/// for them.
 abstract final class QadaRulesRegistry {
   /// All registered rules, in registry order.
   ///
@@ -652,7 +660,9 @@ abstract final class QadaRulesRegistry {
           notes:
               'Unresolved: this passage governs delay into daruri time '
               'without sin; it does not address whether prayers missed '
-              'during hayd are made up afterwards (see QH-103, unverified). '
+              'during hayd are made up afterwards (see QH-103, '
+              'engineering-verified against a secondary manual; the D7 '
+              'scholarly review is still outstanding). '
               'The engine must not infer the latter from the former.',
         ),
         QadaRule(
@@ -729,6 +739,8 @@ abstract final class QadaRulesRegistry {
         // Proposed: registered as data only. No citation, page number,
         // quotation, or endorsement is asserted for any of these; each
         // rule's notes name exactly what is unverified.
+        // (QH-103..QH-107 were moved above: they are now
+        // engineering-verified against the Gallant secondary manual.)
         // ---------------------------------------------------------------
         QadaRule(
           id: 'QH-101',
@@ -787,99 +799,238 @@ abstract final class QadaRulesRegistry {
         QadaRule(
           id: 'QH-103',
           domain: QadaRuleDomain.hayd,
-          title: 'Prayers missed during hayd are not made up',
+          title:
+              'Prayer neither obligatory nor valid during hayd/nifas; no qada for missed prayers',
           sourceIdentification:
-              'Commonly attributed basis: the hadith of \u2019A\u2019isha '
-              '(\u201cwe were commanded to make up fasting but not '
-              'prayer\u201d) \u2014 text not yet read in this program; '
-              'collection, wording, and grading unverified. No citation '
-              'asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 1: Ritual Purity, \u00a731 (Prohibitions of Menses and '
+              'Lochia) \u2014 English contemporary manual, last update '
+              '2024-04-24. A secondary source, not a primary classical '
+              'Arabic text.',
           englishSummary:
-              'As commonly understood, prayers missed during menstruation '
-              'are not made up afterwards (unlike missed fasts).',
-          status: ReviewStatus.proposed,
+              'Prayer is not obligatory for a woman during her menses or '
+              'lochia, and no ritual prayer is valid for her in that '
+              'state \u2014 obligatory, voluntary, funeral prayer, or the '
+              'prostrations of forgetfulness and recitation. It is not '
+              'prescribed for her to make up any of the prayers she '
+              'missed during her menses or lochia. Fasting differs: '
+              'fasting is likewise not obligatory or valid during menses '
+              'or lochia, but the Ramadan fasts missed because of them '
+              'must be made up. (This app tracks prayers, not fasts; the '
+              'fasting distinction is recorded here only as the manual\u2019s '
+              'stated boundary of the rule.)',
+          conditions: const <String>[
+            'The woman is in a state of menses or lochia as those terms '
+                'are defined in QH-104/QH-106.',
+          ],
+          exceptions: const <String>[
+            'Ramadan fasts missed during menses or lochia must be made '
+                'up \u2014 the manual\u2019s stated exception to the '
+                'no-makeup rule, applying to fasting only.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a731 (Prohibitions '
+              'of Menses and Lochia), English contemporary manual, last '
+              'update 2024-04-24, on 2026-10-19. This is a secondary '
+              'source, not a primary classical Arabic text; primary-text '
+              'verification and the D7 scholarly review are still '
+              'outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: the hadith text, its collection, wording, and '
-              'grading have not been read in this program. assessBleeding '
-              'must not use this rule; it is data-model only.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: assessBleeding never auto-applies '
+              'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
           id: 'QH-104',
           domain: QadaRuleDomain.hayd,
-          title: 'Minimum and maximum duration of hayd',
+          title: 'Duration thresholds for hayd',
           sourceIdentification:
-              'Expected location: Maliki fiqh works, bab al-hayd (exact '
-              'passage not yet located or read in this program). No '
-              'thresholds asserted here.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 1: Ritual Purity, \u00a729 (Menses) \u2014 English '
+              'contemporary manual, last update 2024-04-24. A secondary '
+              'source, not a primary classical Arabic text.',
           englishSummary:
-              'The school defines minimum and maximum day thresholds for '
-              'what counts as menstrual bleeding; this registry records '
-              'NONE of them because no passage has been read.',
-          status: ReviewStatus.proposed,
+              'For worship rulings there is no minimum duration of menses: '
+              'a single isolated gush of untriggered vaginal bleeding '
+              'counts as menses (ghusl required, fasting invalidated, '
+              'intercourse forbidden until ghusl); mere soiling of the '
+              'vulva without gushing counts only if it lasted more than '
+              'an instant. The minimum purity between menses is 15 days. '
+              'Maximum menses: 15 days for the non-pregnant (first-timer '
+              'and habituated alike); a pregnant woman in months 3\u20135 '
+              'has up to 20 days, from month 6 up to 30 days (no extra '
+              'three days for the pregnant). A habituated woman\u2019s norm '
+              'is her longest period to date plus 3 additional days, '
+              'capped at 15 days total. Irregular bleeding: bleeding days '
+              'separated by fewer than 15 blood-free days are added '
+              'together until the maximum; bleeding past the maximum is '
+              'metrorrhagia. Menses end with qassah (milky white liquid) '
+              'or a clean rag test. Age bands: under 9 or over 70 lunar '
+              'years \u2014 not menses; 9\u201313 and 50\u201369 \u2014 '
+              'consult expert women; 14\u201349 \u2014 menses.',
+          conditions: const <String>[
+            'Untriggered vaginal bleeding of a woman of childbearing '
+                'capacity (see age bands above); pregnancy modifies the '
+                'maximum.',
+          ],
+          exceptions: const <String>[
+            'Bleeding triggered by childbirth (lochia), illness '
+                '(metrorrhagia), hymen/ vessel rupture, or drugs is not '
+                'menses.',
+            'For the divorced/widowed waiting period the manual gives a '
+                'different minimum (a day or a good part of a day) \u2014 '
+                'outside this rule\u2019s worship-rulings scope.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a729 (Menses), '
+              'English contemporary manual, last update 2024-04-24, on '
+              '2026-10-19. This is a secondary source, not a primary '
+              'classical Arabic text; primary-text verification and the '
+              'D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: this engine asserts no day thresholds. No minimum '
-              'or maximum may be used in any assessment until a '
-              'primary-source passage is read or a scholarly review is '
-              'recorded.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: assessBleeding never auto-applies '
+              'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
           id: 'QH-105',
           domain: QadaRuleDomain.nifas,
           title: 'Nifas excuses from prayer like hayd',
           sourceIdentification:
-              'Expected location: Maliki fiqh works, bab al-nifas (exact '
-              'passage not yet located or read in this program). No '
-              'citation asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 1: Ritual Purity, \u00a731 (Prohibitions of Menses and '
+              'Lochia) \u2014 English contemporary manual, last update '
+              '2024-04-24. A secondary source, not a primary classical '
+              'Arabic text.',
           englishSummary:
-              'As commonly understood, postpartum bleeding excuses a woman '
-              'from prayer in the same way menstruation does.',
-          status: ReviewStatus.proposed,
+              'The manual treats menses and lochia jointly throughout its '
+              'prohibitions section: prayer is not obligatory for a woman '
+              'during her lochia any more than during her menses, and no '
+              'ritual prayer is valid for her in either state. It is not '
+              'prescribed for her to make up prayers missed during her '
+              'lochia.',
+          conditions: const <String>[
+            'The woman is in a state of lochia as defined in QH-106.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a731 (Prohibitions '
+              'of Menses and Lochia), English contemporary manual, last '
+              'update 2024-04-24, on 2026-10-19. This is a secondary '
+              'source, not a primary classical Arabic text; primary-text '
+              'verification and the D7 scholarly review are still '
+              'outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: no primary-source passage on nifas has been read '
-              'in this program. The passage read for QH-002 lists hayd '
-              'among the excuses; nifas\u2019s treatment was not read and '
-              'must not be assumed identical.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: assessBleeding never auto-applies '
+              'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
           id: 'QH-106',
           domain: QadaRuleDomain.nifas,
-          title: 'Maximum duration of nifas',
+          title: 'Duration of nifas: up to 60 bleeding days',
           sourceIdentification:
-              'Expected location: Maliki fiqh works, bab al-nifas (exact '
-              'passage not yet located or read in this program). No '
-              'thresholds asserted here.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 1: Ritual Purity, \u00a730 (Lochia) \u2014 English '
+              'contemporary manual, last update 2024-04-24. A secondary '
+              'source, not a primary classical Arabic text.',
           englishSummary:
-              'The school defines a maximum duration for postpartum '
-              'bleeding; this registry records none because no passage has '
-              'been read.',
-          status: ReviewStatus.proposed,
+              'The minimum duration of lochia is a short moment; the '
+              'maximum is 60 bleeding days, whether continuous or '
+              'interrupted by blood-free days. With irregular postpartum '
+              'bleeding she makes ghusl and prays each time the bleeding '
+              'stops. Bleeding past 60 days is metrorrhagia. If bleeding '
+              'ceases for 15 or more successive blood-free days and then '
+              'resumes, the new bleeding is menses, not lochia.',
+          conditions: const <String>[
+            'Post-childbirth vaginal bleeding (the manual notes lochia '
+                'discharge may be blood, yellowish sufrah, or dark kudrah).',
+          ],
+          exceptions: const <String>[
+            'Twins: the manual states bleeding days around separate '
+                'deliveries are combined, with exceptions \u2014 the '
+                'section\u2019s text is too garbled in the supplied copy '
+                'to encode the conditions, so they are not asserted here.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a730 (Lochia), '
+              'English contemporary manual, last update 2024-04-24, on '
+              '2026-10-19. This is a secondary source, not a primary '
+              'classical Arabic text; primary-text verification and the '
+              'D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: this engine asserts no day threshold for nifas. '
-              'None may be used until a primary-source passage is read or a '
-              'scholarly review is recorded.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. The '
+              'twins-delivery exception could not be confidently encoded '
+              'from the supplied copy. This rule is data-model only: '
+              'assessBleeding never auto-applies it and no Qada balance '
+              'is ever altered on its basis.',
         ),
         QadaRule(
           id: 'QH-107',
           domain: QadaRuleDomain.istihada,
-          title: 'Istihada does not excuse from prayer',
+          title: 'Metrorrhagia: pray and fast once past the maximum',
           sourceIdentification:
-              'Expected location: Maliki fiqh works, bab al-istihada (exact '
-              'passage not yet located or read in this program). No '
-              'citation asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 1: Ritual Purity, \u00a729 (Menses) \u2014 English '
+              'contemporary manual, last update 2024-04-24. A secondary '
+              'source, not a primary classical Arabic text.',
           englishSummary:
-              'As commonly understood, non-menstrual bleeding (istihada) '
-              'does not excuse a woman from prayer; this registry asserts '
-              'no procedural detail.',
-          status: ReviewStatus.proposed,
+              'Once a woman experiencing untriggered vaginal bleeding '
+              'reaches the maximum number of days she can legally count '
+              'as menses, she is afflicted with metrorrhagia: she must '
+              'make ghusl, pray and fast, and she may do anything '
+              'permissible for a woman outside her menstrual period, '
+              'even if the bleeding continues through the following '
+              'minimum 15-day purity period.',
+          conditions: const <String>[
+            'Her bleeding has reached the maximum duration for her '
+                'category (see QH-104) without ceasing.',
+          ],
+          exceptions: const <String>[
+            'If the blood later takes on menstrual characteristics '
+                '(colour, smell, thickness, cramps) after 15 purity days, '
+                'a new menstrual period may begin \u2014 the manual\u2019s '
+                'detailed conditions are not encoded here.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a729 (Menses), '
+              'English contemporary manual, last update 2024-04-24, on '
+              '2026-10-19. This is a secondary source, not a primary '
+              'classical Arabic text; primary-text verification and the '
+              'D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: no primary-source passage on istihada has been '
-              'read in this program. No procedural detail is asserted. '
-              'assessBleeding must not use this rule.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: assessBleeding never auto-applies '
+              'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
           id: 'QH-108',

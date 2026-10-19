@@ -456,11 +456,69 @@ void main() {
       for (final r in reviewed) {
         expect(r.reviewDate, isNotNull, reason: r.id);
         expect(r.reviewNote, isNotNull, reason: r.id);
-        expect(r.reviewNote, contains('shamela.ws'), reason: r.id);
-        expect(r.arabicSourceText, isNotNull, reason: r.id);
         // Engineering verification is not a scholarly review.
         expect(r.reviewerName, isNull, reason: r.id);
       }
+    });
+
+    test('primary-text reviewed rules quote the read matn passage', () {
+      for (final id in ['QH-001', 'QH-002', 'QH-003', 'QH-004']) {
+        final r = MalikiQadaRulesEngine.ruleById(id)!;
+        expect(r.reviewNote, contains('shamela.ws'), reason: id);
+        expect(r.arabicSourceText, isNotNull, reason: id);
+      }
+    });
+
+    test('Gallant-verified rules name the secondary manual, quote no Arabic',
+        () {
+      for (final id in ['QH-103', 'QH-104', 'QH-105', 'QH-106', 'QH-107']) {
+        final r = MalikiQadaRulesEngine.ruleById(id)!;
+        expect(r.status, ReviewStatus.reviewed, reason: id);
+        expect(r.reviewDate, DateTime.utc(2026, 10, 19), reason: id);
+        expect(r.sourceIdentification, contains('Mathieu Gallant'),
+            reason: id);
+        expect(r.sourceIdentification, contains('secondary source'),
+            reason: id);
+        expect(r.reviewNote, contains('Mathieu Gallant'), reason: id);
+        expect(r.reviewNote, contains('secondary source'), reason: id);
+        expect(r.reviewNote, contains('D7 scholarly review'), reason: id);
+        // No Arabic quotation without a read Arabic passage.
+        expect(r.arabicSourceText, isNull, reason: id);
+        expect(r.reviewerName, isNull, reason: id);
+        expect(r.ruleVersion, '1.0', reason: id);
+        // Data-model only: nothing here authorises classification.
+        expect(r.classifiesBleeding, isFalse, reason: id);
+      }
+    });
+
+    test('QH-104 records the manual\u2019s duration thresholds', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-104')!;
+      final s = r.englishSummary;
+      expect(s, contains('15 days'), reason: 'max menses / min purity');
+      expect(s, contains('20 days'), reason: 'pregnancy months 3-5');
+      expect(s, contains('30 days'), reason: 'pregnancy month 6+');
+      expect(s, contains('no minimum'), reason: 'no-minimum worship ruling');
+    });
+
+    test('QH-103 records no-qada plus the fasting boundary', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-103')!;
+      expect(r.englishSummary, contains('not prescribed'));
+      expect(r.englishSummary, contains('Ramadan'));
+      expect(r.englishSummary, contains('not fasts'));
+    });
+
+    test('QH-106 records the 60-day nifas maximum', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-106')!;
+      expect(r.englishSummary, contains('60'));
+      expect(r.englishSummary, contains('metrorrhagia'));
+    });
+
+    test('QH-107 records the metrorrhagia procedure', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-107')!;
+      final s = r.englishSummary.toLowerCase();
+      expect(s, contains('ghusl'));
+      expect(s, contains('pray'));
+      expect(s, contains('fast'));
     });
 
     test('ruleById finds rules and returns null for unknown ids', () {
