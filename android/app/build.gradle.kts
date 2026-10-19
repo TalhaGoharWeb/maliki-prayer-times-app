@@ -74,6 +74,15 @@ android {
             } else {
                 signingConfigs.getByName("testkey")
             }
+            // Resource shrinking is OFF: the adhan recording
+            // (res/raw/tunisi_adhan.mp3) is referenced only by name string
+            // from Dart (RawResourceAndroidNotificationSound), which the
+            // R8-driven resource shrinker cannot trace. tools:keep in
+            // res/values/keep.xml was verified NOT to protect it (the raw
+            // entry was present in the linked .ap_ but stripped from the
+            // shrunk .ap_), so shrinking stays disabled to keep the adhan
+            // reliably in the APK. Code shrinking (R8) remains enabled.
+            isShrinkResources = false
         }
     }
 }
