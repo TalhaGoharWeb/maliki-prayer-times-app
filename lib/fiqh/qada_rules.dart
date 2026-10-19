@@ -568,15 +568,15 @@ abstract final class MalikiQadaRulesEngine {
 ///
 /// QH-001..QH-004 were verified against a primary-source text actually
 /// read (Mukhtasar Khalil, Kitab al-Salat — see each rule's
-/// [QadaRule.reviewNote]). QH-103..QH-107 were engineering-verified
+/// [QadaRule.reviewNote]). QH-101..QH-109 were engineering-verified
 /// against a contemporary secondary manual actually read (Mathieu
-/// Gallant, Students' Guide to Maliki Fiqh, Ch. 1, §§29–31 — see each
-/// rule's [QadaRule.reviewNote]); this is not a primary classical
-/// Arabic text and does not substitute for one. The D7 scholarly review
-/// is still outstanding for every rule. QH-101, QH-102, QH-108, QH-109
-/// are proposed: their [QadaRule.notes] name exactly what is
-/// unverified, and no citation, page number, or quotation is asserted
-/// for them.
+/// Gallant, Students' Guide to Maliki Fiqh, Ch. 1, §§29–31 and Ch. 2,
+/// §§2, 14, 24, 25 — see each rule's [QadaRule.reviewNote]); this is
+/// not a primary classical Arabic text and does not substitute for one.
+/// The D7 scholarly review is still outstanding for every rule. No rule
+/// is proposed: should a future rule be registered before verification,
+/// its [QadaRule.notes] must name exactly what is unverified, and no
+/// citation, page number, or quotation may be asserted for it.
 abstract final class QadaRulesRegistry {
   /// All registered rules, in registry order.
   ///
@@ -736,65 +736,118 @@ abstract final class QadaRulesRegistry {
               'has not been read.',
         ),
         // ---------------------------------------------------------------
-        // Proposed: registered as data only. No citation, page number,
-        // quotation, or endorsement is asserted for any of these; each
-        // rule's notes name exactly what is unverified.
-        // (QH-103..QH-107 were moved above: they are now
-        // engineering-verified against the Gallant secondary manual.)
+        // Engineering-verified against the Gallant secondary manual
+        // (2026-10-19). Data-model only: no engine behavior changes on
+        // their basis; primary-text verification and the D7 scholarly
+        // review are still outstanding for every rule.
         // ---------------------------------------------------------------
         QadaRule(
           id: 'QH-101',
           domain: QadaRuleDomain.qadaObligation,
-          title: 'Missed prayers without excuse must be made up',
+          title:
+              'Every missed individually-obligatory prayer is made up (qada)',
           sourceIdentification:
-              'Expected location: Mukhtasar Khalil, chapter on qada\u2019 '
-              'al-fawa\u2019it (exact passage not yet located or read in '
-              'this program). No page number asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 2: Prayer, \u00a714 (Making Up Prayers) \u2014 English '
+              'contemporary manual, last update 2024-04-26. A secondary '
+              'source, not a primary classical Arabic text.',
           englishSummary:
-              'As commonly understood, a prayer whose entire daruri time '
-              'passes without performance and without a valid excuse '
-              'remains a debt and must be made up (qada).',
+              'It is obligatory for every morally-responsible Muslim to '
+              'make up all individually-obligatory prayers he missed or '
+              'performed invalidly while being Muslim and while these '
+              'prayers were obligatory for him \u2014 regardless of whether '
+              'they were missed intentionally, out of forgetfulness, '
+              'through sinful intoxication, or through sleep. Hastening to '
+              'make up missed prayers is obligatory; qada may be performed '
+              'at any time, even at times when voluntary prayer is '
+              'forbidden. One who owes past prayers must refrain from '
+              'voluntary prayers, except Fajr, Shaf\u2019, Witr, the Eid '
+              'prayer, the eclipse prayer, and the drought prayer.',
           conditions: const <String>[
-            'The full daruri time passed without the prayer being performed.',
-            'No valid excuse covered the miss.',
+            'The person was Muslim and morally responsible when the '
+                'prayer was missed.',
+            'The prayer was individually obligatory at that time.',
+            'The prayer was missed or performed invalidly and not redone '
+                'before its second time ended.',
           ],
           exceptions: const <String>[
-            'Excuses such as those in QH-002 remove the sin of delay; '
-                'whether they remove the makeup obligation differs by '
-                'excuse and is not settled in this registry.',
+            'The eight excuse-list items in QH-002/\u00a72 lift the makeup '
+                'obligation itself (menses, lochia, insanity, fainting or '
+                'coma, childhood, non-sinful intoxication, absence of '
+                'purifying water and pure earth, disbelief followed by '
+                'conversion).',
+            'Voluntary prayers need not be made up unless intentionally '
+                'and sinfully aborted or invalidated after being started.',
           ],
-          status: ReviewStatus.proposed,
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a714 (Making Up '
+              'Prayers), English contemporary manual, last update '
+              '2024-04-26, on 2026-10-19. This is a secondary source, not '
+              'a primary classical Arabic text; primary-text verification '
+              'and the D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: no primary-source passage for this rule has been '
-              'read in this program. The English summary states the commonly '
-              'understood doctrine only and must not be presented as an '
-              'established ruling.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: no engine behavior changes on its '
+              'basis.',
         ),
         QadaRule(
           id: 'QH-102',
           domain: QadaRuleDomain.ordering,
           title:
-              'Multiple missed prayers are made up in chronological order (tartib)',
+              'Missed prayers are made up in sequence; a few missed prayers '
+              'come before the current prayer (tartib)',
           sourceIdentification:
-              'Expected location: Mukhtasar Khalil and its commentaries, '
-              'discussion of tartib al-fawa\u2019it (exact passage not yet '
-              'located or read in this program). No page number asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 2: Prayer, \u00a714 (Making Up Prayers) \u2014 English '
+              'contemporary manual, last update 2024-04-26. A secondary '
+              'source, not a primary classical Arabic text.',
           englishSummary:
-              'As commonly understood, when several prayers have been '
-              'missed, they are made up in the order in which they were '
-              'missed, before the current prayer.',
+              'Respecting the sequence of missed prayers is obligatory but '
+              'NOT a condition of validity (the mashhur position; the '
+              'manual notes some of these rulings are built upon the weak '
+              'opinion that sequence is a validity condition). One who '
+              'owes a few missed prayers \u2014 five or less (a variant '
+              'says four or less; the manual\u2019s fatwa guidance uses '
+              'five-or-less unless it would push the current prayer past '
+              'its second time, in which case four-or-less) \u2014 must '
+              'perform them before the current prayer; this too is an '
+              'obligation, not a validity condition. Shared-time pairs are '
+              'ordered: Zuhr before \u2018Asr, Maghrib before \u2018Ishaa\u2019.',
           conditions: const <String>[
-            'More than one prayer was missed.',
+            'More than one prayer was missed (sequence among them).',
+            'For the before-current-prayer rule: five or fewer prayers '
+                'are owed (four or fewer on the variant, per the fatwa '
+                'guidance recorded here).',
           ],
-          status: ReviewStatus.proposed,
+          exceptions: const <String>[
+            'One who owes more than six missed prayers performs the '
+                'current prayer first (recommended), unless making up the '
+                'missed prayers would push the current prayer past its '
+                'first or second time, when the current prayer becomes '
+                'obligatory first.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a714 (Making Up '
+              'Prayers), English contemporary manual, last update '
+              '2024-04-26, on 2026-10-19. This is a secondary source, not '
+              'a primary classical Arabic text; primary-text verification '
+              'and the D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: no primary-source passage for the general tartib '
-              'doctrine has been read in this program. Only the narrow '
-              'remembered-prayer case is verified (QH-003); the general '
-              'rule, its conditions, and its exceptions must not be inferred '
-              'from it.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: no engine behavior changes on its '
+              'basis.',
         ),
         QadaRule(
           id: 'QH-103',
@@ -1035,45 +1088,113 @@ abstract final class QadaRulesRegistry {
         QadaRule(
           id: 'QH-108',
           domain: QadaRuleDomain.traveler,
-          title: 'Making up prayers missed while traveling',
+          title:
+              'Traveler makeup: missed as traveler is shortened, missed as '
+              'resident is full',
           sourceIdentification:
-              'Expected location: Mukhtasar Khalil and commentaries, '
-              'discussion of qada\u2019 al-musafir (exact passage not yet '
-              'located or read in this program). No citation asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 2: Prayer, \u00a724 (Shortening Prayers) \u2014 English '
+              'contemporary manual, last update 2024-11-28. A secondary '
+              'source, not a primary classical Arabic text.',
           englishSummary:
-              'Whether a traveler makes up prayers missed on a journey in '
-              'shortened or complete form is not stated in this registry: '
-              'no passage has been read.',
-          status: ReviewStatus.proposed,
+              'A four-rak\u2019ah prayer missed while having the legal '
+              'status of traveler is made up shortened to two '
+              'raka\u2019aat, even if one is a resident when making it up; '
+              'a prayer missed as a resident is made up full, even if one '
+              'is a traveler when making it up. The travel threshold is '
+              '48 shar\u2019ii miles (about 74.64 km per Shaykh Mahmoud / '
+              'about 80 km per Shaykh Zohir \u2014 consistent with this '
+              'app\u2019s existing 80 km threshold). Traveler status is '
+              'lifted by entering one\u2019s hometown or wife\u2019s '
+              'residence, by intending to stay four full days or more '
+              '(20+ prayers), or by forming that intention mid-location. '
+              'The manual\u2019s rak\u2019ah-boundary tables for '
+              'departing/arriving near the end of a prayer\u2019s second '
+              'time are recorded here as reference only and are not '
+              'encoded as engine logic.',
+          conditions: const <String>[
+            'The journey was permissible and the traveler intended at '
+                'least 48 shar\u2019ii miles.',
+            'The prayer\u2019s second time expired while the person held '
+                'traveler (or resident) status, as applicable.',
+          ],
+          exceptions: const <String>[
+            'Hajj-specific shortening rules and the military-service '
+                'exception are not encoded; see the manual\u2019s \u00a724.',
+            'If one cannot remember whether the prayer was missed as '
+                'traveler or resident, the manual recommends making it up '
+                'full and then shortened \u2014 recorded as reference '
+                'only, not encoded.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a724 (Shortening '
+              'Prayers), English contemporary manual, last update '
+              '2024-11-28, on 2026-10-19. This is a secondary source, not '
+              'a primary classical Arabic text; primary-text verification '
+              'and the D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: no primary-source passage has been read. No '
-              'outcome (shortened vs. complete) is asserted; the engine must '
-              'not default either way.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: no engine behavior changes on its '
+              'basis, and the app\u2019s 80 km travel threshold is '
+              'unchanged.',
         ),
         QadaRule(
           id: 'QH-109',
           domain: QadaRuleDomain.qadaObligation,
           title:
-              'Prayer missed through sleep or forgetfulness is made up when remembered',
+              'Sleep and forgetfulness: the prayer is still made up; sleep '
+              'excuses delay without sin but not the makeup debt',
           sourceIdentification:
-              'Commonly attributed basis: the hadith \u201cwhoever forgets '
-              'a prayer or sleeps through it, its expiation is to pray it '
-              'when he remembers\u201d \u2014 text not yet read in this '
-              'program; collection, wording, and grading unverified. No '
-              'citation asserted.',
+              'Mathieu Gallant, Students\u2019 Guide to Maliki Fiqh, '
+              'Ch. 2: Prayer, \u00a714 (Making Up Prayers) and \u00a72 '
+              '(Prayer Times) \u2014 English contemporary manual, last '
+              'updates 2024-04-26 and 2024-04-19. A secondary source, not '
+              'a primary classical Arabic text.',
           englishSummary:
-              'As commonly understood, one who misses a prayer through '
-              'sleep or forgetfulness makes it up when he wakes or '
-              'remembers.',
-          status: ReviewStatus.proposed,
+              'A prayer missed through sleep or forgetfulness is made up '
+              'when one wakes or remembers (\u00a714 lists sleep and '
+              'forgetfulness alongside intentional misses as cases the '
+              'qada obligation covers). \u00a72 lists sleep and '
+              'absent-mindedness among the ten valid reasons for praying '
+              'in the second time without sin \u2014 but only eight of '
+              'those reasons lift the makeup obligation afterward, and '
+              'sleep is not among the eight. The two lists must not be '
+              'conflated: sleep removes the sin of delay, not the debt '
+              'of qada.',
+          conditions: const <String>[
+            'The prayer was missed because the person slept through its '
+                'time or forgot it.',
+            'The person has since woken or remembered.',
+          ],
+          exceptions: const <String>[
+            'General anesthesia is given the same ruling as sleep per the '
+                'manual\u2019s cited shaykh \u2014 recorded as reference '
+                'only.',
+          ],
+          status: ReviewStatus.reviewed,
+          reviewDate: DateTime.utc(2026, 10, 19),
+          reviewNote:
+              'Engineering verification: content read in Mathieu Gallant, '
+              'Students\u2019 Guide to Maliki Fiqh, \u00a714 (Making Up '
+              'Prayers) and \u00a72 (Prayer Times), English contemporary '
+              'manual, last updates 2024-04-26 and 2024-04-19, on '
+              '2026-10-19. This is a secondary source, not a primary '
+              'classical Arabic text; primary-text verification and the '
+              'D7 scholarly review are still outstanding.',
           ruleVersion: '1.0',
           notes:
-              'UNVERIFIED: the hadith text, its collection, wording, and '
-              'grading have not been read in this program. Note the matn '
-              'passage read for QH-002 lists sleep and forgetfulness among '
-              'the excuses for delay into daruri time; the '
-              'makeup-after-the-time question is separate and unverified.',
+              'Unresolved: the manual\u2019s underlying classical sources '
+              'and the commonly attributed hadith on sleep/forgetfulness '
+              'were not read in this program; primary-text verification '
+              'and the D7 scholarly review are still outstanding. This '
+              'rule is data-model only: no engine behavior changes on its '
+              'basis.',
         ),
       ];
 

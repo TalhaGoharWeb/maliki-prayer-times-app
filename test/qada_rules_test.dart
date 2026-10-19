@@ -436,7 +436,8 @@ void main() {
     test('proposed rules name what is unverified and have no reviewer', () {
       final proposed = QadaRulesRegistry.allRules()
           .where((r) => r.status == ReviewStatus.proposed);
-      expect(proposed, isNotEmpty);
+      // All 13 rules are currently engineering-verified, so this is
+      // vacuous today; it guards any future proposed registration.
       for (final r in proposed) {
         expect(r.notes.trim(), isNotEmpty,
             reason: '${r.id}: proposed rules must say what is unverified');
@@ -451,8 +452,23 @@ void main() {
       final reviewed = QadaRulesRegistry.allRules()
           .where((r) => r.status == ReviewStatus.reviewed)
           .toList();
-      expect(reviewed.map((r) => r.id),
-          containsAll(['QH-001', 'QH-002', 'QH-003', 'QH-004']));
+      expect(
+          reviewed.map((r) => r.id),
+          containsAll([
+            'QH-001',
+            'QH-002',
+            'QH-003',
+            'QH-004',
+            'QH-101',
+            'QH-102',
+            'QH-103',
+            'QH-104',
+            'QH-105',
+            'QH-106',
+            'QH-107',
+            'QH-108',
+            'QH-109',
+          ]));
       for (final r in reviewed) {
         expect(r.reviewDate, isNotNull, reason: r.id);
         expect(r.reviewNote, isNotNull, reason: r.id);
@@ -471,7 +487,17 @@ void main() {
 
     test('Gallant-verified rules name the secondary manual, quote no Arabic',
         () {
-      for (final id in ['QH-103', 'QH-104', 'QH-105', 'QH-106', 'QH-107']) {
+      for (final id in [
+        'QH-101',
+        'QH-102',
+        'QH-103',
+        'QH-104',
+        'QH-105',
+        'QH-106',
+        'QH-107',
+        'QH-108',
+        'QH-109',
+      ]) {
         final r = MalikiQadaRulesEngine.ruleById(id)!;
         expect(r.status, ReviewStatus.reviewed, reason: id);
         expect(r.reviewDate, DateTime.utc(2026, 10, 19), reason: id);
@@ -519,6 +545,44 @@ void main() {
       expect(s, contains('ghusl'));
       expect(s, contains('pray'));
       expect(s, contains('fast'));
+    });
+
+    test('QH-101 records the qada obligation and its boundaries', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-101')!;
+      final s = r.englishSummary;
+      expect(s, contains('Hastening'));
+      expect(s, contains('any time'));
+      expect(s, contains('voluntary prayers'));
+      expect(s, contains('Fajr'));
+      expect(r.exceptions.join(' '), contains('menses'));
+    });
+
+    test('QH-102 records tartib as obligation, not validity condition', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-102')!;
+      final s = r.englishSummary;
+      expect(s, contains('NOT a condition of validity'));
+      expect(s, contains('five or less'));
+      expect(s, contains('four or less'));
+      expect(s, contains('mashhur'));
+    });
+
+    test('QH-108 records the 48-mile threshold and shortened-vs-full rule',
+        () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-108')!;
+      final s = r.englishSummary;
+      expect(s, contains('48 shar'));
+      expect(s, contains('80 km'));
+      expect(s, contains('shortened'));
+      expect(s, contains('four full days'));
+      expect(s, contains('20+ prayers'));
+    });
+
+    test('QH-109 keeps sleep distinct from the makeup-lifting excuses', () {
+      final r = MalikiQadaRulesEngine.ruleById('QH-109')!;
+      final s = r.englishSummary;
+      expect(s, contains('made up'));
+      expect(s, contains('eight'));
+      expect(s, contains('must not be conflated'));
     });
 
     test('ruleById finds rules and returns null for unknown ids', () {
