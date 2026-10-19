@@ -1,0 +1,57 @@
+# Builds an UNSIGNED iOS .ipa for sideloading (no Apple Developer account).
+#
+# Why unsigned: only Apple-signed apps install on a stock iPhone, and
+# signing needs either a paid Apple Developer account ($99/yr) or the
+# device owner's own free Apple ID applied at install time. This workflow
+# builds the .ipa on GitHub's Mac runners without signing; the user
+# installs it with Sideloadly (or AltStore), which signs it with their
+# free Apple ID during sideloading (certificate lasts 7 days, re-sign
+# weekly). Free-first: no paid account involved.
+#
+# Trigger: Actions tab -> "Build unsigned iOS IPA" -> Run workflow,
+# or via API: POST /repos/{owner}/{repo}/actions/workflows/ios-unsigned-ipa.yml/dispatches
+# with {"ref": "master"}.
+name: Build unsigned iOS IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.5'
+
+      - run: flutter pub get
+      # gen-l10n must run before analyze: the AppLocalizations classes are
+      # generated (git-ignored) and analyze needs them.
+      - run: flutter gen-l10n
+      - run: flutter analyze
+      - run: flutter test
+
+      # CocoaPods: install the plugin pods (uses the committed ios/Podfile).
+      - run: |
+          cd ios
+          pod install
+
+      # --no-codesign: no Apple signing identity on the runner. The .ipa is
+      # packaged manually below; Sideloadly/AltStore sign it at install time.
+      - run: flutter build ios --release --no-codesign
+
+      - name: Package unsigned IPA
+        run: |
+          rm -rf Payload maliki-prayer-times-ios-unsigned.ipa
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry maliki-prayer-times-ios-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: maliki-prayer-times-ios-unsigned
+          path: maliki-prayer-times-ios-unsigned.ipa
+          if-no-files-found: error
