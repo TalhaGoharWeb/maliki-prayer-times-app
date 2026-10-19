@@ -507,7 +507,10 @@ void main() {
             reason: id);
         expect(r.reviewNote, contains('Mathieu Gallant'), reason: id);
         expect(r.reviewNote, contains('secondary source'), reason: id);
-        expect(r.reviewNote, contains('D7 scholarly review'), reason: id);
+        expect(r.reviewNote,
+            contains('declared scholarly-verified by the user on 2026-10-19'),
+            reason: id);
+        expect(r.reviewNote, contains('malikifiqhqa.com'), reason: id);
         // No Arabic quotation without a read Arabic passage.
         expect(r.arabicSourceText, isNull, reason: id);
         expect(r.reviewerName, isNull, reason: id);

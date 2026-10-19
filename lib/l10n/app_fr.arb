@@ -798,9 +798,17 @@
   "@travelQasrInfo": {
     "description": "Travel mode qasr explanation"
   },
-  "travelJamNote": "Le regroupement (jam') : l'école malikite ne permet que le jam' taqdim — pour la pluie, la maladie ou le voyage.",
+  "travelJamNote": "Regroupement (jam') : en voyage, il est permis de joindre Dhuhr à 'Asr et Maghrib à 'Isha au premier temps (taqdim) comme au second (ta'khir), une fois sorti des limites de la ville, pour un voyage d'environ 64 km (40 miles) ou plus, dans un but licite. Pour la pluie, joindre Maghrib à 'Isha au premier temps est recommandé pour la congrégation de la mosquée ; pour la maladie, le regroupement au premier temps est permis.",
   "@travelJamNote": {
-    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+    "description": "Travel/jam' note: travel jam' permitted in either direction; rain/illness taqdim guidance"
+  },
+  "travelPlaneQasrTip": "En avion, vous pouvez commencer à raccourcir vos prières dès votre arrivée à l'aéroport.",
+  "@travelPlaneQasrTip": {
+    "description": "Travel tip: qasr may begin at the airport"
+  },
+  "travelPlanePrayerTip": "Dans l'avion, mieux vaut prier au sol (en regroupant si besoin) ; sinon priez à l'arrière face à la qibla du mieux possible, ou à votre siège — légère inclinaison pour le ruku', plus profonde pour le sujud.",
+  "@travelPlanePrayerTip": {
+    "description": "Travel tip: how to pray on a plane"
   },
   "travelDistanceNote": "La distance de voyage malikite est de quatre barid — environ 80 km (approximation).",
   "@travelDistanceNote": {

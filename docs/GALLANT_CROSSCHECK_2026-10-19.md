@@ -145,3 +145,125 @@ from the readable portions only; nothing was reconstructed by guesswork.
 The manual's own cited shaykhs (Mahmoud, Zohir, al-Maghiilii) are
 recorded as the manual's attributions, not as independently verified
 statements.
+
+---
+
+## 3. Resolution — 2026-10-19 (user's scholarly-verification clearance)
+
+On 2026-10-19 the user declared: "All the pdf and links are scholarly
+verified so nothing to review." This covers the Gallant manual sections
+(§§2, 14, 24, 25, 29–31) and the six malikifiqhqa.com entries listed
+below. The review gate is therefore resolved for these sources, and the
+flagged findings were acted on instead of held. The sources remain what
+they are — contemporary secondary works, not primary classical Arabic
+texts — and are described as such in-code.
+
+### D1 resolved: travel jam' in either direction
+
+The app's Travel guidance (`travelJamNote`, all 4 locales) previously
+said only jam' taqdim is permitted. It now reads: while travelling,
+joining Dhuhr with 'Asr and Maghrib with 'Isha is a permissible
+dispensation at either the earlier time (taqdim) or the later time
+(ta'khir), once the traveler has left the city limits on a journey of
+about 40 miles (64 km) or more for a permissible purpose. Two verified
+sources support this:
+
+- Gallant §25: travel jam' is "permissible but suboptimal" (mashhur),
+  explicitly allowing joining "upon halting or arriving, during 'Asr's
+  first or second time" (and likewise Maghrib + 'Isha during 'Isha's
+  time). The manual also notes the Dardir/Dusuuqi/Saawi view that the
+  in-a-hurry condition is not required (recorded as the manual's
+  dispute note, not adopted as an app claim).
+- Rami Nsour, "How do I combine prayers when traveling?"
+  (malikifiqhqa.com/entry/qa/combine): "You can pray Dhuhr and 'Asr
+  together in either time. Likewise, Maghrib and 'Isha in either
+  time," with worked examples of both taqdim (at a lunch break in
+  Dhuhr's time) and ta'khir (after arriving at the destination),
+  a 40-mile minimum, and the condition that the trip must not be for a
+  sinful act.
+
+The earlier taqdim-only position (al-Qarafi's "two shared times" from
+the D-research) is superseded in the app's guidance by these two
+concordant verified sources. Rain guidance is unchanged (joining
+Maghrib with 'Isha at the earlier time is recommended for the mosque
+congregation — Gallant §25; the app does not assert the
+mosque/congregation conditions as its own claim) and illness guidance
+is unchanged (joining at the earlier time is permitted).
+
+### New Travel tips (verified sources, all 4 locales)
+
+- **Airport rule** (`travelPlaneQasrTip`): by plane, one may begin
+  shortening prayers upon reaching the airport. Source: Rehma Asghar,
+  "How do we measure travel distance?"
+  (malikifiqhqa.com/entry/travel-distance): "The exception to this
+  would be if you are traveling via plane as you can begin shortening
+  as soon as you reach the airport."
+- **Praying on the plane** (`travelPlanePrayerTip`): best to pray on
+  the ground (combining when needed); otherwise pray in the back
+  facing the qibla as best one can, or at one's seat — slight bow for
+  ruku', deeper for sujud. Source: Tariq Patanam, "How do I pray on
+  an airplane?" (malikifiqhqa.com/entry/qa/plane, reviewed by Rami
+  Nsour), which orders the options exactly this way.
+
+### malikifiqhqa.com corroborations
+
+- **travel-distance** (Rehma Asghar; sources given as Sharnubi on
+  Matn al-'Izziya and Ibn 'Ashir's Murshid al-Mu'in): the travel
+  distance is 4 burud = 48 Arabic miles ≈ 77.6 km, with "down to 40
+  miles or 64 km" qualifying and 40 as "the safest" (35 too little,
+  36–39 differed upon); qasr is sunnah; <20 prayers at the
+  destination. **Consistent with the app's 80 km auto-suggest
+  threshold** (conservative — above both the 77.6 km and 64 km
+  figures) and with QH-108's 48-mile/80 km rule. The city-limits
+  measurement start (not one's doorstep) is noted as a refinement the
+  app's home-point distance does not model.
+- **prayer-times** (Omar Waley, reviewed by Shadee Elmasry; sourced
+  from Aqrab al-Masalik with Arabic quotations): full agreement with
+  the app's ikhtiyari/daruri registry — Maghrib's narrow 15–20 minute
+  window, Isha from the disappearance of the redness to the first
+  third of the night, Subh to isfar, the one-rak'ah catching rule.
+  Independently attests the matn phrasing «واثم المؤخر له إلا لعذر»
+  (cf. the Khalil-matn verification of QH-002).
+- **qa/hayd** (Heraa Hashmi & Tariq Patanam; footnotes state it was
+  built on Shaykh Abdallah Mathieu Gallant's own notes, checked
+  against named shuyukh): point-by-point corroboration of QH-103
+  through QH-107 — no minimum hayd length, 15-day minimum purity,
+  15-day first-timer max, longest-plus-3 capped at 15, pregnant bands
+  20/30 days, irregular-day tracking, qassah/cloth end-test, no prayer
+  makeup, Ramadan fasts made up, and the same rak'ah-window charts
+  for bleeding that begins near a prayer's end. Noted difference of
+  opinion: whether the "day" for counting runs Maghrib-to-Maghrib
+  (per the entry's main text, via al-Ajhuri's reading of al-Hattab),
+  Fajr-to-Fajr, or 24 hours from first blood — recorded, not
+  adjudicated; the app performs no classification either way.
+- **adhan** (Tariq Patanam & Heraa Hashmi, reviewed by Mohamed
+  Soliman Al-Ghati): the Maliki adhan opens with two takbirs (not
+  four) and uses tarji' — the two shahadas said softly twice, then
+  loudly twice; excessive melody (tatrib) discouraged, moderate melody
+  (tahbir) permitted. **Recorded as the wording reference for the
+  future adhan-audio feature; no code changed.** (The user-supplied
+  Tunisi adhan MP3 notification sound is being implemented separately
+  and is out of scope for this report.)
+
+### Rule review notes (QH-101–QH-109)
+
+All nine rules' `reviewNote`/`notes` now read "declared
+scholarly-verified by the user on 2026-10-19", naming Gallant §§2/14/
+24/25/29–31 and the malikifiqhqa.com entries as the sources, while
+keeping the honest "secondary source, not a primary classical Arabic
+text" phrase. `ruleVersion` stays `1.0`. No behavior change:
+`assessBleeding` still never classifies and no balance is ever
+altered on these rules' basis.
+
+### Still open (not covered by this clearance)
+
+- The §2 observations O1–O4 (high-latitude Isha convention, Isha
+  qada' at Subh, night-definition minutes, zawaal) remain recorded
+  differences of convention, unchanged.
+- QH-001–QH-004 keep their matn-read verification notes (shamela
+  read, D7 still noted as not independently conducted) — the user's
+  clearance covered the PDFs and links, and these rules' notes were
+  left as written.
+- Primary-text (classical Arabic) verification of the Gallant
+  manual's underlying sources remains undone, as the rules'
+  `sourceIdentification` fields honestly state.

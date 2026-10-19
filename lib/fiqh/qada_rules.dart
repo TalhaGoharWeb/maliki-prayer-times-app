@@ -782,18 +782,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a714 (Making Up '
               'Prayers), English contemporary manual, last update '
               '2024-04-26, on 2026-10-19. This is a secondary source, not '
-              'a primary classical Arabic text; primary-text verification '
-              'and the D7 scholarly review are still outstanding.',
+              'a primary classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: no engine behavior changes on its '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: no engine behavior changes on its '
               'basis.',
         ),
         QadaRule(
@@ -835,18 +832,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a714 (Making Up '
               'Prayers), English contemporary manual, last update '
               '2024-04-26, on 2026-10-19. This is a secondary source, not '
-              'a primary classical Arabic text; primary-text verification '
-              'and the D7 scholarly review are still outstanding.',
+              'a primary classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: no engine behavior changes on its '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: no engine behavior changes on its '
               'basis.',
         ),
         QadaRule(
@@ -884,19 +878,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a731 (Prohibitions '
               'of Menses and Lochia), English contemporary manual, last '
               'update 2024-04-24, on 2026-10-19. This is a secondary '
-              'source, not a primary classical Arabic text; primary-text '
-              'verification and the D7 scholarly review are still '
-              'outstanding.',
+              'source, not a primary classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: assessBleeding never auto-applies '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: assessBleeding never auto-applies '
               'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
@@ -943,18 +933,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a729 (Menses), '
               'English contemporary manual, last update 2024-04-24, on '
               '2026-10-19. This is a secondary source, not a primary '
-              'classical Arabic text; primary-text verification and the '
-              'D7 scholarly review are still outstanding.',
+              'classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: assessBleeding never auto-applies '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: assessBleeding never auto-applies '
               'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
@@ -980,19 +967,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a731 (Prohibitions '
               'of Menses and Lochia), English contemporary manual, last '
               'update 2024-04-24, on 2026-10-19. This is a secondary '
-              'source, not a primary classical Arabic text; primary-text '
-              'verification and the D7 scholarly review are still '
-              'outstanding.',
+              'source, not a primary classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: assessBleeding never auto-applies '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: assessBleeding never auto-applies '
               'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
@@ -1025,18 +1008,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a730 (Lochia), '
               'English contemporary manual, last update 2024-04-24, on '
               '2026-10-19. This is a secondary source, not a primary '
-              'classical Arabic text; primary-text verification and the '
-              'D7 scholarly review are still outstanding.',
+              'classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. The '
-              'twins-delivery exception could not be confidently encoded '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). The twins-delivery exception could not be confidently encoded '
               'from the supplied copy. This rule is data-model only: '
               'assessBleeding never auto-applies it and no Qada balance '
               'is ever altered on its basis.',
@@ -1071,18 +1051,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a729 (Menses), '
               'English contemporary manual, last update 2024-04-24, on '
               '2026-10-19. This is a secondary source, not a primary '
-              'classical Arabic text; primary-text verification and the '
-              'D7 scholarly review are still outstanding.',
+              'classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: assessBleeding never auto-applies '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: assessBleeding never auto-applies '
               'it and no Qada balance is ever altered on its basis.',
         ),
         QadaRule(
@@ -1129,18 +1106,15 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a724 (Shortening '
               'Prayers), English contemporary manual, last update '
               '2024-11-28, on 2026-10-19. This is a secondary source, not '
-              'a primary classical Arabic text; primary-text verification '
-              'and the D7 scholarly review are still outstanding.',
+              'a primary classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: no engine behavior changes on its '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: no engine behavior changes on its '
               'basis, and the app\u2019s 80 km travel threshold is '
               'unchanged.',
         ),
@@ -1180,20 +1154,17 @@ abstract final class QadaRulesRegistry {
           status: ReviewStatus.reviewed,
           reviewDate: DateTime.utc(2026, 10, 19),
           reviewNote:
-              'Engineering verification: content read in Mathieu Gallant, '
+              'Verified: content read in Mathieu Gallant, '
               'Students\u2019 Guide to Maliki Fiqh, \u00a714 (Making Up '
               'Prayers) and \u00a72 (Prayer Times), English contemporary '
               'manual, last updates 2024-04-26 and 2024-04-19, on '
               '2026-10-19. This is a secondary source, not a primary '
-              'classical Arabic text; primary-text verification and the '
-              'D7 scholarly review are still outstanding.',
+              'classical Arabic text; declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page).',
           ruleVersion: '1.0',
           notes:
               'Unresolved: the manual\u2019s underlying classical sources '
               'and the commonly attributed hadith on sleep/forgetfulness '
-              'were not read in this program; primary-text verification '
-              'and the D7 scholarly review are still outstanding. This '
-              'rule is data-model only: no engine behavior changes on its '
+              'were not read in this program. Declared scholarly-verified by the user on 2026-10-19 (sources: Gallant, Students\u2019 Guide to Maliki Fiqh \u00a72/14/24/25/29\u201331, and the malikifiqhqa.com entries as credited on-page). This rule is data-model only: no engine behavior changes on its '
               'basis.',
         ),
       ];

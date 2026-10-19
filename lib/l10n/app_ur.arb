@@ -798,13 +798,21 @@
   "@travelQasrInfo": {
     "description": "Travel mode qasr explanation"
   },
-  "travelJamNote": "جمع: مالکی مذہب میں صرف پہلے وقت میں جمع کرنا جائز ہے (جمع تقدیم) — بارش، بیماری یا سفر کے لیے۔",
+  "travelJamNote": "جمع: سفر میں ظہر کو عصر کے ساتھ اور مغرب کو عشاء کے ساتھ پہلے وقت (جمعِ تقدیم) یا بعد والے وقت (جمعِ تاخیر) میں جمع کرنا جائز ہے، بشرطیکہ شہر کی حدود سے نکل چکے ہوں، سفر تقریباً 40 میل (64 کلومیٹر) یا اس سے زیادہ کا ہو اور جائز مقصد کے لیے ہو۔ بارش کی صورت میں مسجد کی جماعت کے ساتھ مغرب و عشاء کو پہلے وقت میں جمع کرنا مستحب ہے؛ بیماری میں پہلے وقت میں جمع کرنا جائز ہے۔",
   "@travelJamNote": {
-    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+    "description": "Travel/jam' note: travel jam' permitted in either direction; rain/illness taqdim guidance"
   },
   "travelDistanceNote": "مالکی مذہب میں سفر کی مسافت چار برید ہے — تقریباً 80 کلومیٹر۔ یہ اندازہ ہے۔",
   "@travelDistanceNote": {
     "description": "Travel distance note (four barid, approximate)"
+  },
+  "travelPlaneQasrTip": "ہوائی جہاز کے سفر میں ایئرپورٹ پہنچتے ہی نمازیں قصر کرنا شروع کر سکتے ہیں۔",
+  "@travelPlaneQasrTip": {
+    "description": "Travel tip: qasr may begin at the airport"
+  },
+  "travelPlanePrayerTip": "جہاز میں بہتر ہے کہ زمین پر نماز پڑھیں (ضرورت ہو تو جمع کر کے)؛ ورنہ جہاز کے پچھلے حصے میں قبلہ رخ ہو کر جتنا ممکن ہو، یا اپنی نشست پر نماز پڑھیں — رکوع کے لیے ہلکا جھکیں اور سجدے کے لیے زیادہ جھکیں۔",
+  "@travelPlanePrayerTip": {
+    "description": "Travel tip: how to pray on a plane"
   },
   "travelSuggestion": "آپ گھر سے تقریباً {km} کلومیٹر دور معلوم ہوتے ہیں۔ سفر کا موڈ چالو کریں؟",
   "@travelSuggestion": {

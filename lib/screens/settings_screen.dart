@@ -332,6 +332,20 @@ class SettingsScreen extends StatelessWidget {
                                 color: scheme.onTertiaryFixed,
                               ),
                             ),
+                            const SizedBox(height: 10),
+                            Text(
+                              l10n.travelPlaneQasrTip,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: scheme.onTertiaryFixed,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              l10n.travelPlanePrayerTip,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: scheme.onTertiaryFixed,
+                              ),
+                            ),
                           ],
                         ),
                       ),

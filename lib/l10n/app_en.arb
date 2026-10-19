@@ -2124,13 +2124,21 @@
   "@travelQasrInfo": {
     "description": "Travel mode qasr explanation"
   },
-  "travelJamNote": "Combining (jam'): the Maliki school permits joining at the earlier time only (jam' taqdim) — for rain, illness or travel.",
+  "travelJamNote": "Combining (jam'): while travelling it is a permissible dispensation to join Dhuhr with 'Asr and Maghrib with 'Isha at either the earlier time (taqdim) or the later time (ta'khir), once you have left your city limits on a journey of about 40 miles (64 km) or more for a permissible purpose. For rain, joining Maghrib with 'Isha at the earlier time is recommended for the mosque congregation; for illness, joining at the earlier time is permitted.",
   "@travelJamNote": {
-    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+    "description": "Travel/jam' note: travel jam' permitted in either direction; rain/illness taqdim guidance"
   },
   "travelDistanceNote": "The Maliki travel distance is four barid — about 80 km. This is an approximation; the classical measure is in barid, not kilometres.",
   "@travelDistanceNote": {
     "description": "Travel distance note (four barid, approximate)"
+  },
+  "travelPlaneQasrTip": "By plane, you may begin shortening your prayers as soon as you reach the airport.",
+  "@travelPlaneQasrTip": {
+    "description": "Travel tip: qasr may begin at the airport"
+  },
+  "travelPlanePrayerTip": "On the plane, it is best to pray on the ground (combining when needed); otherwise pray in the back facing the qibla as best you can, or at your seat — bowing slightly for ruku' and deeper for sujud.",
+  "@travelPlanePrayerTip": {
+    "description": "Travel tip: how to pray on a plane"
   },
   "travelSuggestion": "You seem to be about {km} km from home. Enable travel mode?",
   "@travelSuggestion": {

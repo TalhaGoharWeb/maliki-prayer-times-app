@@ -798,9 +798,17 @@
   "@travelQasrInfo": {
     "description": "Travel mode qasr explanation"
   },
-  "travelJamNote": "الجمع عند المالكية جمع تقديم فقط — للمطر أو المرض أو السفر.",
+  "travelJamNote": "الجمع في السفر رخصة جائزة: يجوز جمع الظهر مع العصر والمغرب مع العشاء في الوقت الأول (جمع تقديم) أو في الوقت الثاني (جمع تأخير)، بعد الخروج من حدود المدينة، لمسافة أربعين ميلاً (٦٤ كم) فأكثر، لغرض مباح. وفي المطر يستحب جمع المغرب مع العشاء جمع تقديم لجماعة المسجد؛ وفي المرض يجوز الجمع في الوقت الأول.",
   "@travelJamNote": {
-    "description": "Travel/jam' note (Maliki jam' taqdim only)"
+    "description": "Travel/jam' note: travel jam' permitted in either direction; rain/illness taqdim guidance"
+  },
+  "travelPlaneQasrTip": "في السفر بالطائرة يجوز البدء بقصر الصلاة من الوصول إلى المطار.",
+  "@travelPlaneQasrTip": {
+    "description": "Travel tip: qasr may begin at the airport"
+  },
+  "travelPlanePrayerTip": "في الطائرة الأفضل الصلاة على الأرض (مع الجمع عند الحاجة)؛ وإلا فصلِّ في مؤخرة الطائرة مستقبل القبلة قدر المستطاع، أو في مقعدك — بانحناءة خفيفة للركوع وأعمق للسجود.",
+  "@travelPlanePrayerTip": {
+    "description": "Travel tip: how to pray on a plane"
   },
   "travelDistanceNote": "مسافة السفر عند المالكية أربعة بُرُد — نحو 80 كم، وهذا تقدير تقريبي.",
   "@travelDistanceNote": {
