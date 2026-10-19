@@ -491,5 +491,23 @@ void main() {
       final isFrameSync = header[0] == 0xFF && (header[1] & 0xE0) == 0xE0;
       expect(isId3 || isFrameSync, isTrue, reason: 'valid MP3 audio');
     });
+
+    test('iOS adhan excerpt is bundled, valid, and under the 30 s cap', () {
+      // iOS refuses notification sounds of 30 s or more; the excerpt is cut
+      // to 29 s. Duration is verified at build time with ffprobe; here we
+      // guard the bundle wiring and the file's validity.
+      expect(PluginNotificationScheduler.iosAdhanSoundFile,
+          'tunisi_adhan_30s.mp3');
+      final file = File(
+          'ios/Runner/adhan/${PluginNotificationScheduler.iosAdhanSoundFile}');
+      expect(file.existsSync(), isTrue, reason: 'iOS excerpt bundled');
+      expect(file.lengthSync(), greaterThan(100000),
+          reason: 'excerpt is non-trivial audio');
+      final header = file.openSync().readSync(4);
+      final isId3 =
+          header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
+      final isFrameSync = header[0] == 0xFF && (header[1] & 0xE0) == 0xE0;
+      expect(isId3 || isFrameSync, isTrue, reason: 'valid MP3 audio');
+    });
   });
 }

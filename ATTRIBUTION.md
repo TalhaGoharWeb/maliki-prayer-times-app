@@ -102,9 +102,11 @@ copyleft, no proprietary terms, LICENSE files present and read).
   license are not known to the project — the file is used solely on the
   owner's direction and responsibility. Re-verify redistribution rights
   before any public release that bundles this file.
-- **iOS note:** iOS caps notification sounds at 30 s; the 122 s recording
-  exceeds it, so the iOS sound wiring is pending the owner's choice (trim
-  an excerpt vs default sound).
+- **iOS:** the platform caps notification sounds at 30 s, so a 29 s excerpt
+  (`ios/Runner/adhan/tunisi_adhan_30s.mp3`, opening takbirs with a 2 s
+  fade-out, wired into the Xcode project's Resources build phase) plays for
+  the at-time prayer notifications via `DarwinNotificationDetails(sound:)`.
+  Chosen by the owner 2026-10-19 ("trim a 30-second excerpt for iPhone").
 
 ## Qada tracker: encrypted storage for sensitive records
 

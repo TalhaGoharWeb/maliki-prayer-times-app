@@ -93,6 +93,10 @@ class PluginNotificationScheduler implements NotificationScheduler {
   /// adhan recording played for at-time prayer notifications.
   static const adhanSoundResource = 'tunisi_adhan';
 
+  /// iOS bundle file (≤30 s platform cap) of the trimmed adhan excerpt,
+  /// wired into the Xcode project under `ios/Runner/adhan/`.
+  static const iosAdhanSoundFile = 'tunisi_adhan_30s.mp3';
+
   static const _adhanSound =
       RawResourceAndroidNotificationSound(adhanSoundResource);
 
@@ -215,7 +219,9 @@ class PluginNotificationScheduler implements NotificationScheduler {
           priority: Priority.high,
           sound: adhanSound ? _adhanSound : null,
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          sound: adhanSound ? iosAdhanSoundFile : null,
+        ),
       ),
       androidScheduleMode: exact
           ? AndroidScheduleMode.exactAllowWhileIdle
