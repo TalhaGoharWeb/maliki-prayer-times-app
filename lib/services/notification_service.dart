@@ -396,6 +396,23 @@ class NotificationService {
   /// Asks the user for notification permission. Returns true when granted.
   Future<bool> requestPermissions() => _scheduler.requestPermissions();
 
+  /// Whether the first-launch permission rationale (v2) has been shown.
+  /// v1 fired the system dialog directly from initState, which users could
+  /// miss or dismiss without noticing; v2 shows an in-app rationale first
+  /// and the flag key is bumped so it is offered again.
+  static const _permissionRationaleKey = 'notif_permission_asked_v2';
+
+  Future<bool> permissionRationaleShown() async =>
+      (await SharedPreferences.getInstance())
+          .getBool(_permissionRationaleKey) ??
+      false;
+
+  /// Records that the v2 permission rationale was shown (whether the user
+  /// proceeded to the system prompt or not), so it is offered exactly once.
+  Future<void> markPermissionRationaleShown() async =>
+      (await SharedPreferences.getInstance())
+          .setBool(_permissionRationaleKey, true);
+
   /// Android: whether exact alarms are allowed. When false, notifications are
   /// scheduled inexact and may arrive late.
   Future<bool> canScheduleExactAlarms() =>

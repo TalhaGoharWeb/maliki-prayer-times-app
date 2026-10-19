@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
@@ -19,7 +20,6 @@ import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,9 +95,6 @@ class MalikiPrayerTimesApp extends StatefulWidget {
 class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
   int _index = 0;
 
-  /// Guard so the notification permission prompt appears exactly once.
-  static const _notifAskedKey = 'notif_permission_asked_v1';
-
   /// The travel auto-suggest dialog is offered at most once per launch.
   bool _travelSuggestShown = false;
 
@@ -107,7 +104,6 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
     widget.settings.addListener(_onServicesChanged);
     widget.location.addListener(_onServicesChanged);
     widget.travel?.addListener(_onServicesChanged);
-    _askNotificationPermissionOnce();
     WidgetsBinding.instance.addPostFrameCallback((_) => _maybeSuggestTravel());
   }
 
@@ -154,17 +150,6 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         homeLng: home.longitude,
       );
     }
-  }
-
-  /// Asks for notification permission right after the splash closes, once
-  /// ever. Skipped in widget tests (no real notification plugin there).
-  Future<void> _askNotificationPermissionOnce() async {
-    final notifications = widget.notifications;
-    if (notifications == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_notifAskedKey) == true) return;
-    await notifications.requestPermissions();
-    await prefs.setBool(_notifAskedKey, true);
   }
 
   @override
@@ -576,6 +561,49 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
         AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
     await widget.notifications.init(texts: texts);
     await _reschedule();
+    await _maybeAskNotificationPermission();
+  }
+
+  /// Shows the notification permission rationale once ever, then the system
+  /// prompt. v1 fired the system dialog directly from initState, which users
+  /// could miss or dismiss without noticing; v2 shows this visible in-app
+  /// prompt first (in their language). Skipped in widget tests (no real
+  /// notification plugin there — the bootstrap is not built).
+  Future<void> _maybeAskNotificationPermission() async {
+    final notifications = widget.notifications;
+    if (await notifications.permissionRationaleShown()) return;
+    final enabled = await notifications.areNotificationsEnabled();
+    // iOS offers no non-prompting status check (always reports enabled), so
+    // the first launch always asks there; on Android skip when already on.
+    final needsAsk =
+        defaultTargetPlatform == TargetPlatform.iOS || !enabled;
+    if (!needsAsk) {
+      await notifications.markPermissionRationaleShown();
+      return;
+    }
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final allow = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.permissionRationaleTitle),
+        content: Text(l10n.permissionRationaleBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.permissionRationaleLater),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.permissionRationaleAllow),
+          ),
+        ],
+      ),
+    );
+    await notifications.markPermissionRationaleShown();
+    if (allow == true && mounted) {
+      await notifications.requestPermissions();
+    }
   }
 
   Future<void> _reschedule() async {

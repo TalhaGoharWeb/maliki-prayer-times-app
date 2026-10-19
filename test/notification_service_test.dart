@@ -531,5 +531,16 @@ void main() {
       expect(s.scheduledUtc,
           now.add(const Duration(seconds: 5)));
     });
+
+    test('permission rationale flag starts false and persists once marked', () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = NotificationService(scheduler: FakeNotificationScheduler());
+      expect(await service.permissionRationaleShown(), isFalse);
+      await service.markPermissionRationaleShown();
+      expect(await service.permissionRationaleShown(), isTrue);
+      // A second service instance sees the persisted flag.
+      final again = NotificationService(scheduler: FakeNotificationScheduler());
+      expect(await again.permissionRationaleShown(), isTrue);
+    });
   });
 }

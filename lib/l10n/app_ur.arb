@@ -317,6 +317,22 @@
   "@requestPermissionButton": {
     "description": "Button: request notification permission"
   },
+  "permissionRationaleTitle": "اطلاعات کی اجازت دیں؟",
+  "@permissionRationaleTitle": {
+    "description": "First-launch dialog title: asks for notification permission"
+  },
+  "permissionRationaleBody": "مالکی نماز ٹائمز آپ کو ہر نماز کے وقت اذان کے ساتھ مطلع کرتی ہے۔ اطلاعات کی اجازت دیں تاکہ آپ کی کوئی نماز نہ چھوٹے۔",
+  "@permissionRationaleBody": {
+    "description": "First-launch dialog body: explains why notifications are needed"
+  },
+  "permissionRationaleAllow": "اجازت دیں",
+  "@permissionRationaleAllow": {
+    "description": "First-launch dialog button: proceed to the system permission prompt"
+  },
+  "permissionRationaleLater": "ابھی نہیں",
+  "@permissionRationaleLater": {
+    "description": "First-launch dialog button: skip the permission prompt for now"
+  },
   "exactAlarmTitle": "عین وقت کے الارم",
   "@exactAlarmTitle": {
     "description": "Row title: Android exact-alarm status"

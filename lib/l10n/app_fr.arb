@@ -317,6 +317,22 @@
   "@requestPermissionButton": {
     "description": "Button: request notification permission"
   },
+  "permissionRationaleTitle": "Autoriser les notifications ?",
+  "@permissionRationaleTitle": {
+    "description": "First-launch dialog title: asks for notification permission"
+  },
+  "permissionRationaleBody": "Maliki Prayer Times vous notifie à chaque prière avec l'adhan. Autorisez les notifications pour ne manquer aucune prière.",
+  "@permissionRationaleBody": {
+    "description": "First-launch dialog body: explains why notifications are needed"
+  },
+  "permissionRationaleAllow": "Autoriser",
+  "@permissionRationaleAllow": {
+    "description": "First-launch dialog button: proceed to the system permission prompt"
+  },
+  "permissionRationaleLater": "Plus tard",
+  "@permissionRationaleLater": {
+    "description": "First-launch dialog button: skip the permission prompt for now"
+  },
   "exactAlarmTitle": "Alarmes à heure exacte",
   "@exactAlarmTitle": {
     "description": "Row title: Android exact-alarm status"

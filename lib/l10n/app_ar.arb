@@ -317,6 +317,22 @@
   "@requestPermissionButton": {
     "description": "Button: request notification permission"
   },
+  "permissionRationaleTitle": "السماح بالإشعارات؟",
+  "@permissionRationaleTitle": {
+    "description": "First-launch dialog title: asks for notification permission"
+  },
+  "permissionRationaleBody": "تطبيق مواقيت الصلاة المالكية ينبهك عند كل صلاة بالأذان. اسمح بالإشعارات حتى لا تفوتك صلاة.",
+  "@permissionRationaleBody": {
+    "description": "First-launch dialog body: explains why notifications are needed"
+  },
+  "permissionRationaleAllow": "سماح",
+  "@permissionRationaleAllow": {
+    "description": "First-launch dialog button: proceed to the system permission prompt"
+  },
+  "permissionRationaleLater": "ليس الآن",
+  "@permissionRationaleLater": {
+    "description": "First-launch dialog button: skip the permission prompt for now"
+  },
   "exactAlarmTitle": "منبهات الوقت الدقيق",
   "@exactAlarmTitle": {
     "description": "Row title: Android exact-alarm status"
