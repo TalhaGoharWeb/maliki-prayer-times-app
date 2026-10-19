@@ -345,6 +345,34 @@
   "@notificationScheduleError": {
     "description": "Error when rescheduling notifications fails"
   },
+  "testNotificationTitle": "Notification de test",
+  "@testNotificationTitle": {
+    "description": "Card/notification title for the test notification"
+  },
+  "testNotificationBody": "Si vous entendez l’adhan, les notifications fonctionnent.",
+  "@testNotificationBody": {
+    "description": "Body of the test notification"
+  },
+  "testNotificationSend": "Envoyer",
+  "@testNotificationSend": {
+    "description": "Button label that fires the test notification"
+  },
+  "testNotificationHint": "L’adhan retentira dans environ 5 secondes pour vérifier le son.",
+  "@testNotificationHint": {
+    "description": "Hint under the test-notification row"
+  },
+  "testNotificationSent": "Notification de test programmée — montez le volume et désactivez Ne pas déranger.",
+  "@testNotificationSent": {
+    "description": "Confirmation after scheduling the test notification"
+  },
+  "testNotificationSentInexact": "Notification de test programmée — les alarmes exactes sont désactivées, elle peut arriver en retard.",
+  "@testNotificationSentInexact": {
+    "description": "Confirmation when exact alarms are not allowed"
+  },
+  "testNotificationNoPermission": "Les notifications ne sont pas activées — autorisez-les d’abord, puis réessayez.",
+  "@testNotificationNoPermission": {
+    "description": "Error when notifications are disabled"
+  },
   "notifTitle": "Heure de {prayer}",
   "@notifTitle": {
     "description": "Notification title at prayer time",
@@ -1467,8 +1495,7 @@
   "hnLoadError": "Impossible de charger vos enregistrements. Veuillez rouvrir cet écran et réessayer.",
   "@hnLoadError": {
     "description": "Hayd & Nifas: error shown when the encrypted records cannot be loaded"
-  }
-,
+  },
   "qada2MadeUp": "Rattrapées : {count}",
   "@qada2MadeUp": {
     "description": "Qada v2: completed headline",

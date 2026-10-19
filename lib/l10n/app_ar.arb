@@ -345,6 +345,34 @@
   "@notificationScheduleError": {
     "description": "Error when rescheduling notifications fails"
   },
+  "testNotificationTitle": "إشعار تجريبي",
+  "@testNotificationTitle": {
+    "description": "Card/notification title for the test notification"
+  },
+  "testNotificationBody": "إذا سمعت الأذان فالإشعارات تعمل.",
+  "@testNotificationBody": {
+    "description": "Body of the test notification"
+  },
+  "testNotificationSend": "إرسال",
+  "@testNotificationSend": {
+    "description": "Button label that fires the test notification"
+  },
+  "testNotificationHint": "سيُسمَع الأذان بعد نحو 5 ثوانٍ لتتحقق من الصوت.",
+  "@testNotificationHint": {
+    "description": "Hint under the test-notification row"
+  },
+  "testNotificationSent": "تم جدولة الإشعار التجريبي — ارفع الصوت وأوقف وضع عدم الإزعاج.",
+  "@testNotificationSent": {
+    "description": "Confirmation after scheduling the test notification"
+  },
+  "testNotificationSentInexact": "تم جحولة الإشعار التجريبي — التنبيهات الدقيقة متوقفة فقد يتأخر.",
+  "@testNotificationSentInexact": {
+    "description": "Confirmation when exact alarms are not allowed"
+  },
+  "testNotificationNoPermission": "الإشعارات غير مفعّلة — اسمح بها أولاً ثم حاول مجدداً.",
+  "@testNotificationNoPermission": {
+    "description": "Error when notifications are disabled"
+  },
   "notifTitle": "وقت {prayer}",
   "@notifTitle": {
     "description": "Notification title at prayer time",
@@ -1467,8 +1495,7 @@
   "hnLoadError": "تعذّر تحميل سجلّاتك. يُرجى إعادة فتح هذه الشاشة والمحاولة مجددًا.",
   "@hnLoadError": {
     "description": "Hayd & Nifas: error shown when the encrypted records cannot be loaded"
-  }
-,
+  },
   "qada2MadeUp": "تم قضاؤها: {count}",
   "@qada2MadeUp": {
     "description": "Qada v2: completed headline",

@@ -187,6 +187,55 @@ class _NotificationSettingsSectionState
     );
   }
 
+  Future<void> _sendTest(AppLocalizations l10n) async {
+    final enabled = await widget.notifications.areNotificationsEnabled();
+    if (!mounted) return;
+    if (!enabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.testNotificationNoPermission)),
+      );
+      return;
+    }
+    try {
+      await widget.notifications.sendTestNotification(
+        title: l10n.testNotificationTitle,
+        body: l10n.testNotificationBody,
+      );
+      if (!mounted) return;
+      final exact = await widget.notifications.canScheduleExactAlarms();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(exact
+              ? l10n.testNotificationSent
+              : l10n.testNotificationSentInexact),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.notificationScheduleError)),
+      );
+    }
+  }
+
+  Widget _testCard(AppLocalizations l10n, ThemeData theme) {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.volume_up),
+        title: Text(l10n.testNotificationTitle),
+        subtitle: Text(
+          l10n.testNotificationHint,
+          style: theme.textTheme.bodySmall,
+        ),
+        trailing: TextButton(
+          onPressed: () => _sendTest(l10n),
+          child: Text(l10n.testNotificationSend),
+        ),
+      ),
+    );
+  }
+
   Widget _toggleRow(
       AppLocalizations l10n, SettingsService settings, Prayer prayer) {
     return SwitchListTile(
@@ -265,6 +314,8 @@ class _NotificationSettingsSectionState
             ),
             const SizedBox(height: 4),
             _offsetPicker(l10n, theme, settings),
+            const SizedBox(height: 4),
+            _testCard(l10n, theme),
             const SizedBox(height: 4),
             if (isAndroid)
               Card(

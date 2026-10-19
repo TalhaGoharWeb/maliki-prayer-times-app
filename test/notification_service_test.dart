@@ -509,5 +509,27 @@ void main() {
       final isFrameSync = header[0] == 0xFF && (header[1] & 0xE0) == 0xE0;
       expect(isId3 || isFrameSync, isTrue, reason: 'valid MP3 audio');
     });
+
+    test('sendTestNotification fires in ~5 s with the adhan sound', () async {
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      final now = DateTime.utc(2026, 10, 19, 12, 0, 0);
+      await service.sendTestNotification(
+        title: 't',
+        body: 'b',
+        now: now,
+      );
+
+      expect(fake.scheduled, hasLength(1));
+      final s = fake.scheduled.single;
+      expect(s.id, NotificationService.testNotificationId);
+      expect(s.title, 't');
+      expect(s.body, 'b');
+      expect(s.adhanSound, isTrue);
+      expect(s.exact, isTrue);
+      expect(s.scheduledUtc,
+          now.add(const Duration(seconds: 5)));
+    });
   });
 }

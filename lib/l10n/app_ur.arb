@@ -345,6 +345,34 @@
   "@notificationScheduleError": {
     "description": "Error when rescheduling notifications fails"
   },
+  "testNotificationTitle": "آزمائشی اطلاع",
+  "@testNotificationTitle": {
+    "description": "Card/notification title for the test notification"
+  },
+  "testNotificationBody": "اگر آپ اذان سن سکتے ہیں تو اطلاعات درست کام کر رہی ہیں۔",
+  "@testNotificationBody": {
+    "description": "Body of the test notification"
+  },
+  "testNotificationSend": "بھیجیں",
+  "@testNotificationSend": {
+    "description": "Button label that fires the test notification"
+  },
+  "testNotificationHint": "تقریباً 5 سیکنڈ میں اذان بجے گی تاکہ آپ آواز چیک کر سکیں۔",
+  "@testNotificationHint": {
+    "description": "Hint under the test-notification row"
+  },
+  "testNotificationSent": "آزمائشی اطلاع بھیج دی گئی — آواز تیز کریں اور ڈو ناٹ ڈسٹرب بند کریں۔",
+  "@testNotificationSent": {
+    "description": "Confirmation after scheduling the test notification"
+  },
+  "testNotificationSentInexact": "آزمائشی اطلاع بھیج دی گئی — درست الارم بند ہے، اس لیے تاخیر ہو سکتی ہے۔",
+  "@testNotificationSentInexact": {
+    "description": "Confirmation when exact alarms are not allowed"
+  },
+  "testNotificationNoPermission": "اطلاعات فعال نہیں ہیں — پہلے اجازت دیں، پھر دوبارہ کوشش کریں۔",
+  "@testNotificationNoPermission": {
+    "description": "Error when notifications are disabled"
+  },
   "notifTitle": "{prayer} کا وقت",
   "@notifTitle": {
     "description": "Notification title at prayer time",
@@ -1467,8 +1495,7 @@
   "hnLoadError": "آپ کا ریکارڈ لوڈ نہیں ہو سکا۔ براہ کرم یہ اسکرین دوبارہ کھول کر کوشش کریں۔",
   "@hnLoadError": {
     "description": "Hayd & Nifas: error shown when the encrypted records cannot be loaded"
-  }
-,
+  },
   "qada2MadeUp": "مکمل شدہ: {count}",
   "@qada2MadeUp": {
     "description": "Qada v2: completed headline",

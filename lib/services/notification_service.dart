@@ -439,6 +439,31 @@ class NotificationService {
     );
   }
 
+  /// One-time test notification id. Kept clear of the prayer ids
+  /// ([Prayer.index]), the reminder block ([reminderIdBase] + index), the
+  /// sun–qibla reminder ([sunReminderId]) and the qada reminder (2000).
+  static const int testNotificationId = 999;
+
+  /// Schedules a one-shot test notification ~5 s in the future that plays
+  /// the adhan sound, so the user can verify notifications and the adhan
+  /// audio end to end without waiting for a prayer time.
+  Future<void> sendTestNotification({
+    required String title,
+    required String body,
+    DateTime? now,
+  }) async {
+    final exact = await _scheduler.canScheduleExactAlarms();
+    await _scheduler.schedule(
+      id: testNotificationId,
+      title: title,
+      body: body,
+      scheduledUtc:
+          (now ?? DateTime.now()).toUtc().add(const Duration(seconds: 5)),
+      exact: exact,
+      adhanSound: true,
+    );
+  }
+
   /// Cancels the sun-alignment reminder and clears the persisted record.
   Future<void> cancelSunReminder() async {
     final prefs = await SharedPreferences.getInstance();

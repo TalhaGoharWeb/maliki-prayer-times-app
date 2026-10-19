@@ -984,6 +984,34 @@
   "@notificationScheduleError": {
     "description": "Error when rescheduling notifications fails"
   },
+  "testNotificationTitle": "Test notification",
+  "@testNotificationTitle": {
+    "description": "Card/notification title for the test notification"
+  },
+  "testNotificationBody": "If you can hear the adhan, notifications are working.",
+  "@testNotificationBody": {
+    "description": "Body of the test notification"
+  },
+  "testNotificationSend": "Send",
+  "@testNotificationSend": {
+    "description": "Button label that fires the test notification"
+  },
+  "testNotificationHint": "Plays the adhan in about 5 seconds so you can check the sound.",
+  "@testNotificationHint": {
+    "description": "Hint under the test-notification row"
+  },
+  "testNotificationSent": "Test notification scheduled — turn your volume up and switch off Do Not Disturb.",
+  "@testNotificationSent": {
+    "description": "Confirmation after scheduling the test notification"
+  },
+  "testNotificationSentInexact": "Test notification scheduled — exact alarms are off, so it may arrive late.",
+  "@testNotificationSentInexact": {
+    "description": "Confirmation when exact alarms are not allowed"
+  },
+  "testNotificationNoPermission": "Notifications are not enabled — allow them first, then try again.",
+  "@testNotificationNoPermission": {
+    "description": "Error when notifications are disabled"
+  },
   "notifTitle": "{prayer} time",
   "@notifTitle": {
     "description": "Notification title at prayer time",
