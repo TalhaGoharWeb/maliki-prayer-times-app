@@ -247,7 +247,7 @@ class _MalikiPrayerTimesAppState extends State<MalikiPrayerTimesApp> {
         children: [
           ClipOval(
             child: Image.asset(
-              'assets/branding/compass_rose.png',
+              SplashScreen.logoAsset,
               width: 46,
               height: 46,
               fit: BoxFit.cover,

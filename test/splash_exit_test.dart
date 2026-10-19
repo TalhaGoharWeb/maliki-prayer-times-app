@@ -77,7 +77,7 @@ void main() {
 
       final image = tester.widget<Image>(find.byType(Image));
       expect((image.image as AssetImage).assetName, SplashScreen.logoAsset,
-          reason: 'splash shows the compass-rose brand art');
+          reason: 'splash shows the brand art');
       expect(find.text('Maliki Prayer Times'), findsOneWidget);
       expect(find.byType(CustomPaint), findsWidgets,
           reason: 'hand-drawn star loader is present');

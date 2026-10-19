@@ -5,15 +5,16 @@ import 'package:malikiprayertimes/utils/fonts.dart';
 
 /// Launch splash: deep-green brand screen shown briefly at startup.
 ///
-/// Compass-rose brand mark (1024x1024 PNG, fully transparent corners) centered
-/// on the Maliki deep green, "Maliki Prayer Times" in Source Serif 4 beneath
-/// it, a hand-drawn rotating eight-pointed star loader, and the two credit
-/// lines pinned to the bottom. The credit strings are verbatim proper-name
-/// credits (user's exact spellings) and are intentionally not localized.
+/// User-supplied compass-rose brand mark (904x904 PNG, black background
+/// keyed out to transparency) centered on the Maliki deep green,
+/// "Maliki Prayer Times" in Source Serif 4 beneath it, a hand-drawn
+/// rotating eight-pointed star loader, and the two credit lines pinned to
+/// the bottom. The credit strings are verbatim proper-name credits (user's
+/// exact spellings) and are intentionally not localized.
 class SplashScreen extends StatefulWidget {
-  /// Brand mark: compass rose with transparent corners, so it sits on the
-  /// deep green with no box.
-  static const String logoAsset = 'assets/branding/compass_rose.png';
+  /// Brand mark: compass rose with the black surround keyed to transparent,
+  /// so it sits on the deep green with no box.
+  static const String logoAsset = 'assets/branding/splash_logo.png';
 
   /// Deep green shared with the native Android launch background.
   static const Color splashGreen = Color(0xFF003527);
