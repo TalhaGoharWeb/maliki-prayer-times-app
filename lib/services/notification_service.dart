@@ -25,12 +25,18 @@ class ScheduledNotification {
   final DateTime scheduledUtc;
   final bool exact;
 
+  /// True when this notification was routed to the adhan-sound channel
+  /// (at-time prayer notifications). Reminders and other alerts use the
+  /// default sound.
+  final bool adhanSound;
+
   const ScheduledNotification({
     required this.id,
     required this.title,
     required this.body,
     required this.scheduledUtc,
     required this.exact,
+    this.adhanSound = false,
   });
 }
 
@@ -62,12 +68,16 @@ abstract class NotificationScheduler {
 
   /// Schedules one notification at the UTC instant [scheduledUtc].
   /// [exact] selects an exact vs inexact Android schedule mode.
+  /// [adhanSound], when true, plays the adhan recording instead of the
+  /// default notification sound (Android: separate notification channel,
+  /// since the sound belongs to the channel on Android 8+).
   Future<void> schedule({
     required int id,
     required String title,
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
+    bool adhanSound = false,
   });
 
   /// Cancels the notification with [id].
@@ -79,10 +89,29 @@ abstract class NotificationScheduler {
 
 /// Real [NotificationScheduler] backed by `flutter_local_notifications`.
 class PluginNotificationScheduler implements NotificationScheduler {
+  /// Raw resource name (`res/raw/<name>.mp3`) of the user-supplied Tunisian
+  /// adhan recording played for at-time prayer notifications.
+  static const adhanSoundResource = 'tunisi_adhan';
+
+  static const _adhanSound =
+      RawResourceAndroidNotificationSound(adhanSoundResource);
+
+  /// At-time prayer notifications: announced with the adhan.
   static const _channel = AndroidNotificationChannel(
     'prayer_times',
     'Prayer times',
-    description: 'Prayer-time and pre-prayer reminder notifications.',
+    description: 'Prayer-time notifications, announced with the adhan.',
+    importance: Importance.high,
+    sound: _adhanSound,
+  );
+
+  /// Pre-prayer reminders and other alerts: default notification sound.
+  /// (On Android 8+ the sound belongs to the channel, so the adhan and the
+  /// default sound need separate channels.)
+  static const _reminderChannel = AndroidNotificationChannel(
+    'prayer_times_reminders',
+    'Prayer reminders',
+    description: 'Pre-prayer reminders and other alerts.',
     importance: Importance.high,
   );
 
@@ -99,10 +128,15 @@ class PluginNotificationScheduler implements NotificationScheduler {
       iOS: DarwinInitializationSettings(),
     );
     await _plugin.initialize(settings: settings);
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_channel);
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    // Channels are immutable once created: delete first so an upgrade from
+    // an earlier app version picks up the adhan sound (no-op on fresh
+    // installs).
+    await android?.deleteNotificationChannel(channelId: _channel.id);
+    await android?.deleteNotificationChannel(channelId: _reminderChannel.id);
+    await android?.createNotificationChannel(_channel);
+    await android?.createNotificationChannel(_reminderChannel);
   }
 
   @override
@@ -164,6 +198,7 @@ class PluginNotificationScheduler implements NotificationScheduler {
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
+    bool adhanSound = false,
   }) async {
     final when = tz.TZDateTime.from(scheduledUtc.toUtc(), tz.UTC);
     await _plugin.zonedSchedule(
@@ -171,11 +206,14 @@ class PluginNotificationScheduler implements NotificationScheduler {
       scheduledDate: when,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          _channel.id,
-          _channel.name,
-          channelDescription: _channel.description,
+          adhanSound ? _channel.id : _reminderChannel.id,
+          adhanSound ? _channel.name : _reminderChannel.name,
+          channelDescription: adhanSound
+              ? _channel.description
+              : _reminderChannel.description,
           importance: Importance.high,
           priority: Priority.high,
+          sound: adhanSound ? _adhanSound : null,
         ),
         iOS: const DarwinNotificationDetails(),
       ),
@@ -234,6 +272,7 @@ class FakeNotificationScheduler implements NotificationScheduler {
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
+    bool adhanSound = false,
   }) async {
     scheduled.add(ScheduledNotification(
       id: id,
@@ -241,6 +280,7 @@ class FakeNotificationScheduler implements NotificationScheduler {
       body: body,
       scheduledUtc: scheduledUtc.toUtc(),
       exact: exact,
+      adhanSound: adhanSound,
     ));
   }
 
@@ -489,12 +529,15 @@ class NotificationService {
         fireUtc = prayerUtcFor(prayer, tomorrowWall);
       }
       if (fireUtc == null || !fireUtc.isAfter(nowUtc)) continue;
+      // The adhan announces the five prayers; sunrise is not a salat, so
+      // its notification keeps the default sound.
       await _scheduler.schedule(
         id: prayer.index,
         title: texts.titleFor(prayer),
         body: texts.bodyFor(prayer),
         scheduledUtc: fireUtc,
         exact: exact,
+        adhanSound: prayer != Prayer.sunrise,
       );
       if (reminderMinutes > 0) {
         final reminderUtc =

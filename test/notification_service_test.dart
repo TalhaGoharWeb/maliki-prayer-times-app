@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/high_latitude.dart';
@@ -437,6 +439,57 @@ void main() {
         expect(s.notificationToggles[p], isTrue, reason: 'toggle for $p');
       }
       expect(s.reminderOffsetMinutes, 0);
+    });
+  });
+
+  group('adhan notification sound', () {
+    test('at-time prayer notifications use the adhan; reminders do not',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      // Enable a pre-prayer reminder so both notification kinds are scheduled.
+      await settings.setReminderOffsetMinutes(15);
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      final now = DateTime.utc(2026, 10, 15, 10, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      final byId = {for (final s in fake.scheduled) s.id: s};
+      for (final p in Prayer.values) {
+        final s = byId[p.index];
+        expect(s, isNotNull, reason: 'at-time for ${p.name}');
+        // The adhan announces the five prayers; sunrise is not a salat.
+        expect(s!.adhanSound, p != Prayer.sunrise,
+            reason: 'adhanSound for ${p.name}');
+      }
+      final reminders =
+          fake.scheduled.where((s) => s.id >= reminderIdBase);
+      expect(reminders, isNotEmpty);
+      for (final s in reminders) {
+        expect(s.adhanSound, isFalse, reason: 'reminder id ${s.id}');
+      }
+    });
+
+    test('adhan raw resource is bundled and matches the declared name', () {
+      expect(PluginNotificationScheduler.adhanSoundResource, 'tunisi_adhan');
+      final file = File(
+          'android/app/src/main/res/raw/${PluginNotificationScheduler.adhanSoundResource}.mp3');
+      expect(file.existsSync(), isTrue, reason: 'raw resource bundled');
+      expect(file.lengthSync(), greaterThan(1000000));
+      final header = file.openSync().readSync(4);
+      // MP3 magic: ID3 tag or an MPEG frame-sync word (0xFF 0xE0 mask).
+      final isId3 =
+          header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
+      final isFrameSync = header[0] == 0xFF && (header[1] & 0xE0) == 0xE0;
+      expect(isId3 || isFrameSync, isTrue, reason: 'valid MP3 audio');
     });
   });
 }

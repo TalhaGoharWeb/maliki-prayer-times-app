@@ -88,6 +88,24 @@ this app is presented as scholar-reviewed.
 Both passed the license gate (permissive: MIT/Apache-2.0/BSD — no
 copyleft, no proprietary terms, LICENSE files present and read).
 
+## Notification sound: Tunisian adhan recording (user-supplied)
+
+- **File:** `android/app/src/main/res/raw/tunisi_adhan.mp3` (3.9 MB, MP3,
+  64 kbps, 44.1 kHz stereo, ~122 s) — played for the at-time notifications
+  of the five prayers via the Android `prayer_times` notification channel
+  (`RawResourceAndroidNotificationSound('tunisi_adhan')`). Pre-prayer
+  reminders, the sun–qibla reminder, and qada reminders use a separate
+  `prayer_times_reminders` channel with the default sound.
+- **Provenance:** supplied directly by the app owner (Muhammad Talha Bin
+  Farid) on 2026-10-19 with the instruction to use it as the notification
+  sound for each salat timing. The original recording artist, source, and
+  license are not known to the project — the file is used solely on the
+  owner's direction and responsibility. Re-verify redistribution rights
+  before any public release that bundles this file.
+- **iOS note:** iOS caps notification sounds at 30 s; the 122 s recording
+  exceeds it, so the iOS sound wiring is pending the owner's choice (trim
+  an excerpt vs default sound).
+
 ## Qada tracker: encrypted storage for sensitive records
 
 - **flutter_secure_storage** — BSD-3-Clause — 11.2.0 —
