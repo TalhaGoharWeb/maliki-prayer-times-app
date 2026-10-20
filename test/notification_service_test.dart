@@ -21,9 +21,10 @@ NotificationTexts _texts() => NotificationTexts(
     );
 
 /// Expected fire instants (UTC) per notification id, computed straight from
-/// the engine through [SettingsService.adjustedTime]: the next upcoming
-/// occurrence per enabled prayer (today when still future, else tomorrow) —
-/// the same contract [NotificationService.rescheduleAll] must honor.
+/// the engine through [SettingsService.adjustedTime]: every enabled
+/// prayer's occurrence on each of the next [scheduleDaysAhead] civil days
+/// whose fire time is still in the future, in per-day id blocks — the
+/// contract [NotificationService.rescheduleAll] must honor.
 Map<int, DateTime> _expected({
   required SettingsService settings,
   required DateTime nowUtc,
@@ -31,7 +32,6 @@ Map<int, DateTime> _expected({
   final result = <int, DateTime>{};
   final nowWall = nowUtc.add(_offset);
   final todayWall = DateTime.utc(nowWall.year, nowWall.month, nowWall.day);
-  final tomorrowWall = todayWall.add(const Duration(days: 1));
   final reminder = settings.reminderOffsetMinutes;
 
   DateTime prayerUtcFor(Prayer p, DateTime date) {
@@ -45,16 +45,19 @@ Map<int, DateTime> _expected({
     return settings.adjustedTime(p, times.timeFor(p)).subtract(_offset);
   }
 
-  for (final p in Prayer.values) {
-    if (!(settings.notificationToggles[p] ?? false)) continue;
-    var fireUtc = prayerUtcFor(p, todayWall);
-    if (!fireUtc.isAfter(nowUtc)) fireUtc = prayerUtcFor(p, tomorrowWall);
-    if (!fireUtc.isAfter(nowUtc)) continue;
-    result[p.index] = fireUtc;
-    if (reminder > 0) {
-      final reminderUtc = fireUtc.subtract(Duration(minutes: reminder));
-      if (reminderUtc.isAfter(nowUtc)) {
-        result[reminderIdBase + p.index] = reminderUtc;
+  for (var d = 0; d < scheduleDaysAhead; d++) {
+    final date = todayWall.add(Duration(days: d));
+    for (final p in Prayer.values) {
+      if (!(settings.notificationToggles[p] ?? false)) continue;
+      final fireUtc = prayerUtcFor(p, date);
+      if (!fireUtc.isAfter(nowUtc)) continue;
+      result[d * atTimeDayStride + p.index] = fireUtc;
+      if (reminder > 0) {
+        final reminderUtc = fireUtc.subtract(Duration(minutes: reminder));
+        if (reminderUtc.isAfter(nowUtc)) {
+          result[reminderIdBase + d * reminderDayStride + p.index] =
+              reminderUtc;
+        }
       }
     }
   }
@@ -86,10 +89,38 @@ void main() {
           expected.keys.toSet());
       for (final s in fake.scheduled) {
         expect(s.scheduledUtc, expected[s.id], reason: 'id ${s.id}');
-        expect(s.title, 'title-${Prayer.values[s.id].name}');
-        expect(s.body, 'body-${Prayer.values[s.id].name}');
+        final prayer = Prayer.values[s.id % atTimeDayStride];
+        expect(s.title, 'title-${prayer.name}');
+        expect(s.body, 'body-${prayer.name}');
         expect(s.exact, isTrue);
       }
+    });
+
+    test('a full week of occurrences is armed with unique ids', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      // 00:30 UTC: every prayer today is still ahead, so all
+      // scheduleDaysAhead × 6 occurrences must be armed.
+      final now = DateTime.utc(2026, 10, 15, 0, 30);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      expect(fake.scheduled.length, scheduleDaysAhead * Prayer.values.length);
+      final ids = fake.scheduled.map((s) => s.id).toSet();
+      expect(ids.length, fake.scheduled.length, reason: 'ids are unique');
+      for (final s in fake.scheduled) {
+        expect(s.scheduledUtc.isAfter(now), isTrue);
+      }
+      expect(await service.pendingScheduledCount(), fake.scheduled.length);
     });
 
     test('each scheduled date uses its own UTC offset across a DST change',
@@ -152,11 +183,12 @@ void main() {
       final today = DateTime.utc(2026, 10, 24);
       final tomorrow = DateTime.utc(2026, 10, 25);
 
-      // Post-transition date scheduled in its own +1 frame...
+      // Post-transition date scheduled in its own +1 frame (day-offset 1
+      // block)...
       final fajrTomorrow =
           prayerUtc(Prayer.fajr, tomorrow, const Duration(hours: 1));
-      expect(byId[Prayer.fajr.index], fajrTomorrow);
-      // ...pre-transition date keeps today's +2 frame.
+      expect(byId[atTimeDayStride + Prayer.fajr.index], fajrTomorrow);
+      // ...pre-transition date keeps today's +2 frame (day-offset 0 block).
       expect(byId[Prayer.isha.index],
           prayerUtc(Prayer.isha, today, const Duration(hours: 2)));
 
@@ -169,8 +201,8 @@ void main() {
           .subtract(const Duration(hours: 1));
       expect(mixedEarly.difference(fajrTomorrow), const Duration(hours: -1));
       expect(mixedLate.difference(fajrTomorrow), const Duration(hours: 1));
-      expect(byId[Prayer.fajr.index], isNot(mixedEarly));
-      expect(byId[Prayer.fajr.index], isNot(mixedLate));
+      expect(byId[atTimeDayStride + Prayer.fajr.index], isNot(mixedEarly));
+      expect(byId[atTimeDayStride + Prayer.fajr.index], isNot(mixedLate));
     });
 
     test('past prayer times are skipped, nothing fires immediately', () async {
@@ -179,7 +211,8 @@ void main() {
       final fake = FakeNotificationScheduler();
       final service = NotificationService(scheduler: fake);
 
-      // 23:00 UTC: every prayer today is past; only tomorrow's six remain.
+      // 23:00 UTC: every prayer today is past; the remaining six days of
+      // the armed week remain (6 days × 6 prayers).
       final now = DateTime.utc(2026, 10, 15, 23, 0);
       await service.rescheduleAll(
         coords: _nouakchott,
@@ -191,7 +224,7 @@ void main() {
       );
 
       final expected = _expected(settings: settings, nowUtc: now);
-      expect(expected.length, 6);
+      expect(expected.length, (scheduleDaysAhead - 1) * Prayer.values.length);
       expect(fake.scheduled.map((s) => s.id).toSet(),
           expected.keys.toSet());
       for (final s in fake.scheduled) {
@@ -248,8 +281,10 @@ void main() {
           expected.keys.toSet());
       for (final s in fake.scheduled) {
         if (s.id >= reminderIdBase) {
-          final prayer = Prayer.values[s.id - reminderIdBase];
-          final main = expected[prayer.index]!;
+          final rem = s.id - reminderIdBase;
+          final day = rem ~/ reminderDayStride;
+          final prayer = Prayer.values[rem % reminderDayStride];
+          final main = expected[day * atTimeDayStride + prayer.index]!;
           expect(s.scheduledUtc, main.subtract(const Duration(minutes: 10)));
           expect(s.title, 'rem-title-${prayer.name}-10');
           expect(s.body, 'rem-body-${prayer.name}-10');
@@ -462,13 +497,18 @@ void main() {
         now: now,
       );
 
-      final byId = {for (final s in fake.scheduled) s.id: s};
+      // At-time entries live in per-day blocks below reminderIdBase; the
+      // prayer is the id modulo the day stride.
+      final atTime = fake.scheduled.where((s) => s.id < reminderIdBase);
       for (final p in Prayer.values) {
-        final s = byId[p.index];
-        expect(s, isNotNull, reason: 'at-time for ${p.name}');
+        final entries =
+            atTime.where((s) => s.id % atTimeDayStride == p.index);
+        expect(entries, isNotEmpty, reason: 'at-time for ${p.name}');
         // The adhan announces the five prayers; sunrise is not a salat.
-        expect(s!.adhanSound, p != Prayer.sunrise,
-            reason: 'adhanSound for ${p.name}');
+        for (final s in entries) {
+          expect(s.adhanSound, p != Prayer.sunrise,
+              reason: 'adhanSound for ${p.name}');
+        }
       }
       final reminders =
           fake.scheduled.where((s) => s.id >= reminderIdBase);

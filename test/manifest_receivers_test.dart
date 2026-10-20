@@ -40,4 +40,29 @@ void main() {
     expect(receiverTag!.group(0)!.contains('android:exported="false"'), isTrue,
         reason: 'ScheduledNotificationReceiver must not be exported');
   });
+
+  // Regression test for the "test notification works, prayer times never
+  // fire" bug (2026-10-20, v1.3.3): the manifest declared BOTH
+  // SCHEDULE_EXACT_ALARM and USE_EXACT_ALARM. On Android 14+, with both
+  // declared, exact-alarm capability is judged by the SCHEDULE_EXACT_ALARM
+  // app-op, which is denied by default on fresh installs — so every prayer
+  // alarm was scheduled inexact and Doze/OEM battery managers deferred or
+  // dropped them, while the test notification (seconds away, awake phone)
+  // still arrived. USE_EXACT_ALARM alone is granted at install.
+  test('AndroidManifest declares USE_EXACT_ALARM and NOT '
+      'SCHEDULE_EXACT_ALARM', () {
+    final manifest = File('android/app/src/main/AndroidManifest.xml');
+    final xml = manifest.readAsStringSync();
+    expect(
+      xml.contains('android.permission.USE_EXACT_ALARM'),
+      isTrue,
+      reason: 'USE_EXACT_ALARM must be declared for exact prayer alarms',
+    );
+    expect(
+      xml.contains('android.permission.SCHEDULE_EXACT_ALARM'),
+      isFalse,
+      reason:
+          'SCHEDULE_EXACT_ALARM must NOT be declared alongside USE_EXACT_ALARM: on Android 14+ it shadows the install-time grant and exact alarms read as denied by default',
+    );
+  });
 }

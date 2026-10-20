@@ -15,13 +15,23 @@ int _slotMinutesAhead(int aheadMinutes) {
 void main() {
   group('id and key conventions', () {
     test('notificationId collides with no existing notification id', () {
-      final prayerIds = Prayer.values.map((p) => p.index);
-      final reminderIds =
-          Prayer.values.map((p) => reminderIdBase + p.index);
+      // Prayer notifications live in per-day blocks across the armed week:
+      // at-time 0–65, reminders 1000–1605.
+      final prayerIds = [
+        for (var d = 0; d < scheduleDaysAhead; d++)
+          for (final p in Prayer.values) d * atTimeDayStride + p.index,
+      ];
+      final reminderIds = [
+        for (var d = 0; d < scheduleDaysAhead; d++)
+          for (final p in Prayer.values)
+            reminderIdBase + d * reminderDayStride + p.index,
+      ];
       expect(prayerIds, everyElement(isNot(QadaReminders.notificationId)));
       expect(reminderIds, everyElement(isNot(QadaReminders.notificationId)));
       expect(QadaReminders.notificationId,
           isNot(NotificationService.sunReminderId));
+      expect(QadaReminders.notificationId,
+          isNot(NotificationService.testNotificationId));
     });
 
     test('minutesKey is the agreed Worker B literal', () {

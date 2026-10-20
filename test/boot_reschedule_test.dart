@@ -41,9 +41,10 @@ Map<String, Object?> _prefsMap({
     };
 
 /// Expected at-time fire instants (UTC) per notification id, computed straight
-/// from the engine: the next upcoming occurrence per prayer (today when still
-/// future, else tomorrow) — the contract rescheduleAll honors for enabled
-/// prayers when no reminder offset is set.
+/// from the engine: every prayer's occurrence on each of the next
+/// [scheduleDaysAhead] civil days whose fire time is still in the future, in
+/// per-day id blocks — the contract rescheduleAll honors for enabled prayers
+/// when no reminder offset is set.
 Map<int, DateTime> _expectedAtTimes({
   required Coordinates coords,
   required PrayerProfile profile,
@@ -53,7 +54,6 @@ Map<int, DateTime> _expectedAtTimes({
   final result = <int, DateTime>{};
   final nowWall = nowUtc.add(offset);
   final today = DateTime.utc(nowWall.year, nowWall.month, nowWall.day);
-  final tomorrow = today.add(const Duration(days: 1));
 
   DateTime utcFor(Prayer prayer, DateTime date) {
     final times = (calculatePrayerTimes(
@@ -68,10 +68,14 @@ Map<int, DateTime> _expectedAtTimes({
     return times.timeFor(prayer).subtract(offset);
   }
 
-  for (final prayer in Prayer.values) {
-    var fire = utcFor(prayer, today);
-    if (!fire.isAfter(nowUtc)) fire = utcFor(prayer, tomorrow);
-    if (fire.isAfter(nowUtc)) result[prayer.index] = fire;
+  for (var d = 0; d < scheduleDaysAhead; d++) {
+    final date = today.add(Duration(days: d));
+    for (final prayer in Prayer.values) {
+      final fire = utcFor(prayer, date);
+      if (fire.isAfter(nowUtc)) {
+        result[d * atTimeDayStride + prayer.index] = fire;
+      }
+    }
   }
   return result;
 }
@@ -172,9 +176,7 @@ void main() {
       }
       // The boot path has no localizations; the plain-English fallback texts
       // are used for the re-created schedule.
-      final fajr =
-          fake.scheduled.firstWhere((s) => s.id == Prayer.fajr.index);
-      expect(fajr.title, 'Fajr time');
+      final fajr = fake.scheduled.firstWhere((s) => s.title == 'Fajr time');
       expect(fajr.body, 'It is now time for Fajr.');
     });
   });

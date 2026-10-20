@@ -1013,6 +1013,16 @@
     "description": "Button label that fires the test notification"
   },
   "testNotificationHint": "Plays the adhan in about 5 seconds so you can check the sound.",
+  "scheduledAlertsTitle": "Scheduled alerts",
+  "scheduledAlertsBody": "{count} alerts are armed on this phone for the coming week.",
+  "@scheduledAlertsBody": {
+    "description": "Delivery diagnostic: how many notifications are currently armed with the system",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },

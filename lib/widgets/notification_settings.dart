@@ -57,6 +57,7 @@ class _NotificationSettingsSectionState
     extends State<NotificationSettingsSection> {
   late Future<bool> _permissionFuture;
   late Future<bool> _exactAlarmFuture;
+  late Future<int> _pendingFuture;
 
   @override
   void initState() {
@@ -67,6 +68,7 @@ class _NotificationSettingsSectionState
   void _refreshStatuses() {
     _permissionFuture = widget.notifications.areNotificationsEnabled();
     _exactAlarmFuture = widget.notifications.canScheduleExactAlarms();
+    _pendingFuture = widget.notifications.pendingScheduledCount();
   }
 
   String _prayerLabel(AppLocalizations l10n, Prayer p) => switch (p) {
@@ -110,6 +112,9 @@ class _NotificationSettingsSectionState
         );
       }
     }
+    // The armed-alert count changes with every reschedule; re-read it so
+    // the diagnostic card below reflects the schedule just written.
+    if (mounted) setState(_refreshStatuses);
   }
 
   Future<void> _onToggle(
@@ -181,6 +186,33 @@ class _NotificationSettingsSectionState
                     },
                     child: Text(l10n.openExactAlarmSettingsButton),
                   ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Delivery diagnostic: how many notifications are armed with the
+  /// system right now. A week of prayers is dozens; zero (or far fewer
+  /// than expected) means scheduling itself is broken, while a healthy
+  /// count with nothing arriving points at the phone's battery manager.
+  Widget _scheduledCard(AppLocalizations l10n, ThemeData theme) {
+    final lang = Localizations.localeOf(context).languageCode;
+    return Card(
+      child: FutureBuilder<int>(
+        future: _pendingFuture,
+        builder: (context, snapshot) {
+          final count = snapshot.data;
+          return ListTile(
+            leading: const Icon(Icons.schedule),
+            title: Text(l10n.scheduledAlertsTitle),
+            subtitle: Text(
+              count == null
+                  ? '…'
+                  : l10n.scheduledAlertsBody(
+                      localizeDigits('$count', lang)),
+              style: theme.textTheme.bodySmall,
+            ),
           );
         },
       ),
@@ -305,6 +337,7 @@ class _NotificationSettingsSectionState
             const SizedBox(height: 4),
             _permissionCard(l10n, theme),
             _exactAlarmCard(l10n, theme),
+            _scheduledCard(l10n, theme),
             Card(
               child: Column(
                 children: [

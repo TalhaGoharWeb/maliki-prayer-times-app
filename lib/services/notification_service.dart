@@ -11,10 +11,26 @@ import 'package:malikiprayertimes/services/timezone_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-/// Stable id offset for pre-prayer reminder notifications: the reminder for
-/// [Prayer] `p` uses id `reminderIdBase + p.index`, while the at-time
-/// notification uses `p.index`.
+/// Stable id base for pre-prayer reminder notifications. Ids are laid out
+/// in per-day blocks (see [NotificationService.rescheduleAll]): the at-time
+/// notification for day-offset `d` and prayer `p` uses id
+/// `d * atTimeDayStride + p.index` (0–65), and its reminder uses
+/// `reminderIdBase + d * reminderDayStride + p.index` (1000–1605). The
+/// blocks stay clear of the sun–qibla reminder (950), the test
+/// notification (999) and the qada reminder (2000).
 const int reminderIdBase = 1000;
+
+/// Days of prayer notifications kept armed ahead of time. Scheduling only
+/// the single next occurrence per prayer (the pre-1.3.4 model) meant the
+/// chain silently ended whenever the user did not open the app (or reboot)
+/// on a given day; a week of armed alarms survives ordinary use.
+const int scheduleDaysAhead = 7;
+
+/// Per-day id stride for at-time prayer notifications.
+const int atTimeDayStride = 10;
+
+/// Per-day id stride inside the reminder block.
+const int reminderDayStride = 100;
 
 /// One scheduled notification, as recorded by [FakeNotificationScheduler].
 @immutable
@@ -85,6 +101,13 @@ abstract class NotificationScheduler {
 
   /// Cancels every notification scheduled by this app.
   Future<void> cancelAll();
+
+  /// How many notifications are currently armed with the platform. Shown
+  /// in Settings as a delivery diagnostic: after a reschedule it should
+  /// be in the dozens (a week of prayers); zero means scheduling itself
+  /// is broken, while a healthy count with no delivery points at the
+  /// phone's battery manager.
+  Future<int> pendingCount();
 }
 
 /// Real [NotificationScheduler] backed by `flutter_local_notifications`.
@@ -236,6 +259,10 @@ class PluginNotificationScheduler implements NotificationScheduler {
 
   @override
   Future<void> cancelAll() => _plugin.cancelAll();
+
+  @override
+  Future<int> pendingCount() async =>
+      (await _plugin.pendingNotificationRequests()).length;
 }
 
 /// Test double for [NotificationScheduler]: records every schedule/cancel
@@ -300,6 +327,9 @@ class FakeNotificationScheduler implements NotificationScheduler {
     cancelAllCount++;
     scheduled.clear();
   }
+
+  @override
+  Future<int> pendingCount() async => scheduled.length;
 }
 
 /// Localized strings for prayer notifications. The coordinator builds these
@@ -350,14 +380,15 @@ Duration _deviceOffsetForDate(DateTime date) =>
 /// Schedules prayer-time notifications from the calculation engine.
 ///
 /// ## Scheduling model
-/// [rescheduleAll] cancels everything, then schedules each enabled prayer's
-/// next at-time notification (id = [Prayer.index]) and, when a reminder
-/// offset is set, its pre-prayer reminder (id = [reminderIdBase] +
-/// [Prayer.index]): today's time when still upcoming, otherwise tomorrow's.
-/// Ids are stable per prayer, so exactly one upcoming occurrence exists per
-/// prayer. Times come from the same [SettingsService.adjustedTime] logic the
-/// UI shows, minus the reminder offset. Times already past are skipped so
-/// nothing fires immediately.
+/// [rescheduleAll] cancels everything, then arms a week of notifications:
+/// for each of the next [scheduleDaysAhead] civil days, each enabled
+/// prayer's at-time notification (id = day-offset block + [Prayer.index])
+/// and, when a reminder offset is set, its pre-prayer reminder (id =
+/// [reminderIdBase] + day-offset block + [Prayer.index]). Times come from
+/// the same [SettingsService.adjustedTime] logic the UI shows, minus the
+/// reminder offset. Times already past are skipped so nothing fires
+/// immediately. Arming a week ahead means delivery no longer depends on
+/// the user opening the app every day.
 ///
 /// The app is expected to call [rescheduleAll] whenever it starts and
 /// whenever the location, profile, adjustments, toggles, or reminder offset
@@ -425,9 +456,13 @@ class NotificationService {
   /// Cancels every notification scheduled by this app.
   Future<void> cancelAll() => _scheduler.cancelAll();
 
+  /// How many notifications are currently armed with the platform (the
+  /// Settings delivery diagnostic; see [NotificationScheduler.pendingCount]).
+  Future<int> pendingScheduledCount() => _scheduler.pendingCount();
+
   /// One-time notification id reserved for the Qibla sun-alignment reminder.
-  /// Kept clear of the prayer ids ([Prayer.index]) and the reminder block
-  /// ([reminderIdBase] + [Prayer.index]).
+  /// Kept clear of the at-time prayer blocks (0–65) and the reminder
+  /// blocks (1000–1605).
   static const int sunReminderId = 950;
   static const _sunReminderUtcKey = 'sun_reminder_utc';
   static const _sunReminderTitleKey = 'sun_reminder_title';
@@ -456,9 +491,9 @@ class NotificationService {
     );
   }
 
-  /// One-time test notification id. Kept clear of the prayer ids
-  /// ([Prayer.index]), the reminder block ([reminderIdBase] + index), the
-  /// sun–qibla reminder ([sunReminderId]) and the qada reminder (2000).
+  /// One-time test notification id. Kept clear of the at-time prayer
+  /// blocks (0–65), the reminder blocks (1000–1605), the sun–qibla
+  /// reminder ([sunReminderId]) and the qada reminder (2000).
   static const int testNotificationId = 999;
 
   /// Schedules a one-shot test notification ~5 s in the future that plays
@@ -491,12 +526,11 @@ class NotificationService {
   }
 
   /// Recomputes and reschedules notifications from the engine, using the same
-  /// adjusted times the UI shows. Notification ids are stable per prayer
-  /// ([Prayer.index] for the at-time notification, [reminderIdBase] +
-  /// [Prayer.index] for the reminder), so exactly one upcoming occurrence is
-  /// scheduled per prayer: today's time when it is still in the future,
-  /// otherwise tomorrow's. A reminder whose fire time already passed is
-  /// skipped while its at-time notification is still scheduled.
+  /// adjusted times the UI shows. A week of occurrences is armed
+  /// ([scheduleDaysAhead] days) with per-day id blocks, so delivery does not
+  /// depend on the app being opened daily. A reminder whose fire time
+  /// already passed is skipped while its at-time notification is still
+  /// scheduled.
   ///
   /// [now] is the current instant (UTC or local); it defaults to
   /// [DateTime.now] and exists so tests can use a fixed clock.
@@ -553,7 +587,6 @@ class NotificationService {
           );
     }
 
-    final tomorrowWall = todayWall.add(const Duration(days: 1));
     final prefs = await SharedPreferences.getInstance();
     // A persisted sun–qibla alignment reminder: cancelAll() wiped its
     // schedule above, so restore it while its fire time is still ahead.
@@ -570,34 +603,43 @@ class NotificationService {
       await prefs.remove(_sunReminderTitleKey);
       await prefs.remove(_sunReminderBodyKey);
     }
-    for (final prayer in Prayer.values) {
-      if (!(settings.notificationToggles[prayer] ?? false)) continue;
-      var fireUtc = prayerUtcFor(prayer, todayWall);
-      if (fireUtc == null || !fireUtc.isAfter(nowUtc)) {
-        fireUtc = prayerUtcFor(prayer, tomorrowWall);
-      }
-      if (fireUtc == null || !fireUtc.isAfter(nowUtc)) continue;
-      // The adhan announces the five prayers; sunrise is not a salat, so
-      // its notification keeps the default sound.
-      await _scheduler.schedule(
-        id: prayer.index,
-        title: texts.titleFor(prayer),
-        body: texts.bodyFor(prayer),
-        scheduledUtc: fireUtc,
-        exact: exact,
-        adhanSound: prayer != Prayer.sunrise,
-      );
-      if (reminderMinutes > 0) {
-        final reminderUtc =
-            fireUtc.subtract(Duration(minutes: reminderMinutes));
-        if (reminderUtc.isAfter(nowUtc)) {
-          await _scheduler.schedule(
-            id: reminderIdBase + prayer.index,
-            title: texts.reminderTitleFor(prayer, reminderMinutes),
-            body: texts.reminderBodyFor(prayer, reminderMinutes),
-            scheduledUtc: reminderUtc,
-            exact: exact,
-          );
+    // Arm a full week ahead: every enabled prayer's occurrence on each of
+    // the next [scheduleDaysAhead] civil days whose fire time is still in
+    // the future. (Pre-1.3.4 only the single next occurrence per prayer
+    // was armed, so a day without an app launch or reboot silently ended
+    // the chain.) Ids are per-day blocks: at-time
+    // `dayOffset * atTimeDayStride + prayer.index`, reminder
+    // `reminderIdBase + dayOffset * reminderDayStride + prayer.index`.
+    for (var dayOffset = 0; dayOffset < scheduleDaysAhead; dayOffset++) {
+      final date = todayWall.add(Duration(days: dayOffset));
+      for (final prayer in Prayer.values) {
+        if (!(settings.notificationToggles[prayer] ?? false)) continue;
+        final fireUtc = prayerUtcFor(prayer, date);
+        if (fireUtc == null || !fireUtc.isAfter(nowUtc)) continue;
+        // The adhan announces the five prayers; sunrise is not a salat, so
+        // its notification keeps the default sound.
+        await _scheduler.schedule(
+          id: dayOffset * atTimeDayStride + prayer.index,
+          title: texts.titleFor(prayer),
+          body: texts.bodyFor(prayer),
+          scheduledUtc: fireUtc,
+          exact: exact,
+          adhanSound: prayer != Prayer.sunrise,
+        );
+        if (reminderMinutes > 0) {
+          final reminderUtc =
+              fireUtc.subtract(Duration(minutes: reminderMinutes));
+          if (reminderUtc.isAfter(nowUtc)) {
+            await _scheduler.schedule(
+              id: reminderIdBase +
+                  dayOffset * reminderDayStride +
+                  prayer.index,
+              title: texts.reminderTitleFor(prayer, reminderMinutes),
+              body: texts.reminderBodyFor(prayer, reminderMinutes),
+              scheduledUtc: reminderUtc,
+              exact: exact,
+            );
+          }
         }
       }
     }

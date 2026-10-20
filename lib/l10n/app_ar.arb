@@ -374,6 +374,8 @@
     "description": "Button label that fires the test notification"
   },
   "testNotificationHint": "سيُسمَع الأذان بعد نحو 5 ثوانٍ لتتحقق من الصوت.",
+  "scheduledAlertsTitle": "التنبيهات المجدولة",
+  "scheduledAlertsBody": "تم تفعيل {count} تنبيهات على هذا الهاتف للأسبوع القادم.",
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },

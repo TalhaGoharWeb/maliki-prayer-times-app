@@ -4,12 +4,17 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- Track A: prayer-time notifications. POST_NOTIFICATIONS is the
-         Android 13+ runtime permission; SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM
-         allow exact-time alarms (when the user grants them in system
-         settings); without the grant the app schedules inexact and says so
-         in the UI. -->
+         Android 13+ runtime permission. Exact alarms come from
+         USE_EXACT_ALARM ONLY (granted at install for alarm-style apps).
+         Do NOT also declare SCHEDULE_EXACT_ALARM: on Android 14+, when
+         both are declared, the system judges exact-alarm capability by
+         the SCHEDULE_EXACT_ALARM app-op, which is DENIED by default on
+         fresh installs — canScheduleExactNotifications() then returns
+         false, every prayer alarm is scheduled inexact, and Doze/OEM
+         battery managers silently defer or drop them (the test
+         notification, seconds away on an awake phone, still fires,
+         which masked this for a full release cycle: v1.3.3). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <!-- REL-03: re-schedule prayer notifications after a device reboot —
          flutter_local_notifications schedules do not survive a restart. -->

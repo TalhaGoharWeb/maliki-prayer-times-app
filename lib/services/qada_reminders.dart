@@ -36,10 +36,11 @@ import 'package:malikiprayertimes/services/timezone_service.dart';
 /// unit-testable, mirroring [NotificationService.rescheduleAll].
 abstract final class QadaReminders {
   /// Stable notification id for the daily qada reminder. Kept clear of every
-  /// other id the app uses: at-time prayer notifications use
-  /// [Prayer.index] (0–5), pre-prayer reminders use
-  /// [reminderIdBase] + [Prayer.index] (1000–1005), and the sun–qibla
-  /// reminder uses [NotificationService.sunReminderId] (950).
+  /// other id the app uses: at-time prayer notifications use per-day blocks
+  /// (0–65), pre-prayer reminders use per-day blocks inside
+  /// [reminderIdBase] (1000–1605), the sun–qibla reminder uses
+  /// [NotificationService.sunReminderId] (950) and the test notification
+  /// uses 999.
   static const int notificationId = 2000;
 
   /// SharedPreferences key holding the reminder time as minutes since

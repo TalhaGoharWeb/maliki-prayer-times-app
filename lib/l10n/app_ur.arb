@@ -374,6 +374,8 @@
     "description": "Button label that fires the test notification"
   },
   "testNotificationHint": "تقریباً 5 سیکنڈ میں اذان بجے گی تاکہ آپ آواز چیک کر سکیں۔",
+  "scheduledAlertsTitle": "شیڈول الرٹس",
+  "scheduledAlertsBody": "اگلے ہفتے کے لیے اس فون پر {count} الرٹس فعال ہیں۔",
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },

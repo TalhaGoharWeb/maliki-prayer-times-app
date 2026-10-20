@@ -374,6 +374,8 @@
     "description": "Button label that fires the test notification"
   },
   "testNotificationHint": "L’adhan retentira dans environ 5 secondes pour vérifier le son.",
+  "scheduledAlertsTitle": "Alertes programmées",
+  "scheduledAlertsBody": "{count} alertes sont activées sur ce téléphone pour la semaine à venir.",
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },
