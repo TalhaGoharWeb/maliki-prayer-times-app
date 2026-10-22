@@ -1023,6 +1023,47 @@
       }
     }
   },
+  "nextAlertLabel": "Next alert: {prayer} · {time}",
+  "@nextAlertLabel": {
+    "description": "Delivery diagnostic: the next armed at-time prayer alert",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lastScheduledLabel": "Last scheduled: {time}",
+  "@lastScheduledLabel": {
+    "description": "Delivery diagnostic: when the last successful scheduling pass ran",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleErrorTitle": "Scheduling problem",
+  "scheduleErrorBody": "The last scheduling attempt failed: {error}",
+  "@scheduleErrorBody": {
+    "description": "Delivery diagnostic: the last recorded scheduling failure",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "batteryTitle": "Battery protection",
+  "batteryBody": "Some phones stop apps that run in the background, which also stops prayer alerts. If alerts are not arriving, allow this app unrestricted battery use, and turn on Autostart for it if your phone offers that option.",
+  "batteryAllowed": "Battery use: unrestricted",
+  "batteryRestricted": "Battery use: restricted by the phone",
+  "batteryAllowButton": "Allow unrestricted use",
+  "appSettingsButton": "App settings",
+  "probeTestTitle": "Locked-phone test",
+  "probeTestHint": "Plays the adhan in 2 minutes. Send it, lock your phone and put it down — if it plays, background delivery works.",
+  "probeTestSend": "Send (2 min)",
+  "probeTestSent": "Test adhan set for 2 minutes from now — lock your phone.",
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },

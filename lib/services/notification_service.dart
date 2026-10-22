@@ -145,6 +145,20 @@ class PluginNotificationScheduler implements NotificationScheduler {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
+  /// Bumped whenever the channel configuration (ids, sounds) changes in a
+  /// way existing installs must pick up. Channels are immutable once
+  /// created, so an upgrade deletes and recreates them — but ONLY when
+  /// this version moves. Deleting a channel on every app launch (the
+  /// pre-1.3.5 behavior) was needless churn in the delivery path: it also
+  /// cancels any notification currently posted to the channel.
+  static const channelSetupVersion = 2;
+  static const _channelSetupKey = 'notif_channel_setup_v';
+
+  /// Whether the stored channel-setup version predates
+  /// [channelSetupVersion], i.e. the delete-and-recreate pass must run.
+  static bool channelsNeedSetup(int storedVersion) =>
+      storedVersion < channelSetupVersion;
+
   @override
   Future<void> initialize() async {
     // The tz database is owned by TimezoneService (bundled latest_10y);
@@ -157,13 +171,22 @@ class PluginNotificationScheduler implements NotificationScheduler {
     await _plugin.initialize(settings: settings);
     final android = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
-    // Channels are immutable once created: delete first so an upgrade from
-    // an earlier app version picks up the adhan sound (no-op on fresh
-    // installs).
-    await android?.deleteNotificationChannel(channelId: _channel.id);
-    await android?.deleteNotificationChannel(channelId: _reminderChannel.id);
-    await android?.createNotificationChannel(_channel);
-    await android?.createNotificationChannel(_reminderChannel);
+    if (android == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getInt(_channelSetupKey) ?? 0;
+    if (channelsNeedSetup(stored)) {
+      // Channels are immutable once created: delete first so an upgrade
+      // from an earlier app version picks up the adhan sound (no-op on
+      // fresh installs).
+      await android.deleteNotificationChannel(channelId: _channel.id);
+      await android.deleteNotificationChannel(
+          channelId: _reminderChannel.id);
+      await prefs.setInt(_channelSetupKey, channelSetupVersion);
+    }
+    // Creating an existing channel is a no-op (and never resets the
+    // user's channel settings), so this simply guarantees existence.
+    await android.createNotificationChannel(_channel);
+    await android.createNotificationChannel(_reminderChannel);
   }
 
   @override
@@ -377,6 +400,38 @@ class NotificationTexts {
 Duration _deviceOffsetForDate(DateTime date) =>
     DateTime(date.year, date.month, date.day).timeZoneOffset;
 
+/// What the last [NotificationService.rescheduleAll] actually did,
+/// persisted so Settings can show it — and so a single screenshot proves
+/// it: when it ran, how many notifications ended up armed with the
+/// platform, whether exact alarms were used, and the next at-time prayer
+/// alert. This exists because the delivery failures of Oct 2026 were
+/// invisible from inside the app: scheduling either worked or vanished
+/// silently, and support had nothing concrete to look at.
+@immutable
+class ScheduleReport {
+  /// When the scheduling pass completed.
+  final DateTime scheduledAtUtc;
+
+  /// Notifications armed with the platform afterwards (read back via
+  /// [NotificationScheduler.pendingCount], not just intended).
+  final int armedCount;
+
+  /// Whether exact alarms were available and used for the pass.
+  final bool exact;
+
+  /// The next at-time prayer alert armed by the pass, if any.
+  final Prayer? nextPrayer;
+  final DateTime? nextFireUtc;
+
+  const ScheduleReport({
+    required this.scheduledAtUtc,
+    required this.armedCount,
+    required this.exact,
+    this.nextPrayer,
+    this.nextFireUtc,
+  });
+}
+
 /// Schedules prayer-time notifications from the calculation engine.
 ///
 /// ## Scheduling model
@@ -408,6 +463,13 @@ class NotificationService {
   static const _lastLonKey = 'notifications_last_lon';
   static const _lastProfileKey = 'notifications_last_profile_id';
   static const _lastOffsetMinutesKey = 'notifications_last_offset_minutes';
+  static const _reportAtKey = 'notif_report_at';
+  static const _reportArmedKey = 'notif_report_armed';
+  static const _reportExactKey = 'notif_report_exact';
+  static const _reportNextPrayerKey = 'notif_report_next_prayer';
+  static const _reportNextUtcKey = 'notif_report_next_utc';
+  static const _reportErrorKey = 'notif_report_error';
+  static const _reportErrorAtKey = 'notif_report_error_at';
 
   NotificationService({required this._scheduler});
 
@@ -496,21 +558,24 @@ class NotificationService {
   /// reminder ([sunReminderId]) and the qada reminder (2000).
   static const int testNotificationId = 999;
 
-  /// Schedules a one-shot test notification ~5 s in the future that plays
-  /// the adhan sound, so the user can verify notifications and the adhan
-  /// audio end to end without waiting for a prayer time.
+  /// Schedules a one-shot test notification in the future that plays the
+  /// adhan sound, so the user can verify notifications and the adhan audio
+  /// end to end without waiting for a prayer time. The default [delay] is
+  /// ~5 s (foreground check); the Settings locked-phone probe passes a
+  /// longer delay so the test exercises the same background delivery path
+  /// as a real prayer alert (app closed, screen off).
   Future<void> sendTestNotification({
     required String title,
     required String body,
     DateTime? now,
+    Duration delay = const Duration(seconds: 5),
   }) async {
     final exact = await _scheduler.canScheduleExactAlarms();
     await _scheduler.schedule(
       id: testNotificationId,
       title: title,
       body: body,
-      scheduledUtc:
-          (now ?? DateTime.now()).toUtc().add(const Duration(seconds: 5)),
+      scheduledUtc: (now ?? DateTime.now()).toUtc().add(delay),
       exact: exact,
       adhanSound: true,
     );
@@ -610,12 +675,18 @@ class NotificationService {
     // the chain.) Ids are per-day blocks: at-time
     // `dayOffset * atTimeDayStride + prayer.index`, reminder
     // `reminderIdBase + dayOffset * reminderDayStride + prayer.index`.
+    DateTime? nextFireUtc;
+    Prayer? nextPrayer;
     for (var dayOffset = 0; dayOffset < scheduleDaysAhead; dayOffset++) {
       final date = todayWall.add(Duration(days: dayOffset));
       for (final prayer in Prayer.values) {
         if (!(settings.notificationToggles[prayer] ?? false)) continue;
         final fireUtc = prayerUtcFor(prayer, date);
         if (fireUtc == null || !fireUtc.isAfter(nowUtc)) continue;
+        if (nextFireUtc == null || fireUtc.isBefore(nextFireUtc)) {
+          nextFireUtc = fireUtc;
+          nextPrayer = prayer;
+        }
         // The adhan announces the five prayers; sunrise is not a salat, so
         // its notification keeps the default sound.
         await _scheduler.schedule(
@@ -662,6 +733,68 @@ class NotificationService {
         exact: exact,
       );
     }
+
+    // Persist the delivery report AFTER everything is armed, reading the
+    // armed count back from the platform rather than trusting intent —
+    // Settings shows this verbatim, so what the user sees is what the
+    // phone actually holds. A successful pass clears any recorded error.
+    final armed = await _scheduler.pendingCount();
+    await prefs.setString(
+        _reportAtKey, DateTime.now().toUtc().toIso8601String());
+    await prefs.setInt(_reportArmedKey, armed);
+    await prefs.setBool(_reportExactKey, exact);
+    if (nextPrayer != null && nextFireUtc != null) {
+      await prefs.setString(_reportNextPrayerKey, nextPrayer.name);
+      await prefs.setString(
+          _reportNextUtcKey, nextFireUtc.toIso8601String());
+    } else {
+      await prefs.remove(_reportNextPrayerKey);
+      await prefs.remove(_reportNextUtcKey);
+    }
+    await prefs.remove(_reportErrorKey);
+    await prefs.remove(_reportErrorAtKey);
+  }
+
+  /// The persisted report of the last successful [rescheduleAll], or null
+  /// when no pass has completed on this install.
+  Future<ScheduleReport?> lastScheduleReport() async {
+    final prefs = await SharedPreferences.getInstance();
+    final at = DateTime.tryParse(prefs.getString(_reportAtKey) ?? '');
+    if (at == null) return null;
+    final nextName = prefs.getString(_reportNextPrayerKey);
+    Prayer? nextPrayer;
+    for (final p in Prayer.values) {
+      if (p.name == nextName) nextPrayer = p;
+    }
+    return ScheduleReport(
+      scheduledAtUtc: at,
+      armedCount: prefs.getInt(_reportArmedKey) ?? 0,
+      exact: prefs.getBool(_reportExactKey) ?? false,
+      nextPrayer: nextPrayer,
+      nextFireUtc: DateTime.tryParse(prefs.getString(_reportNextUtcKey) ?? ''),
+    );
+  }
+
+  /// The last scheduling failure recorded via [recordScheduleError], with
+  /// when it happened — or null when the last pass succeeded (a success
+  /// clears it) or nothing has been recorded.
+  Future<({String error, DateTime atUtc})?> lastScheduleError() async {
+    final prefs = await SharedPreferences.getInstance();
+    final error = prefs.getString(_reportErrorKey);
+    final at = DateTime.tryParse(prefs.getString(_reportErrorAtKey) ?? '');
+    if (error == null || at == null) return null;
+    return (error: error, atUtc: at);
+  }
+
+  /// Records a scheduling failure so Settings can show it instead of the
+  /// failure vanishing into an unhandled async error. Callers that drive
+  /// [rescheduleAll] (app bootstrap, settings screen, boot path) catch
+  /// and record; the next successful pass clears the record.
+  Future<void> recordScheduleError(Object error) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_reportErrorKey, error.toString());
+    await prefs.setString(
+        _reportErrorAtKey, DateTime.now().toUtc().toIso8601String());
   }
 
   /// Compares the persisted timezone name with the current one and, when it

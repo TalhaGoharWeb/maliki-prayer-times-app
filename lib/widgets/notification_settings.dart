@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/coordinates.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
+import 'package:malikiprayertimes/services/battery_service.dart';
 import 'package:malikiprayertimes/services/notification_service.dart';
 import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/services/timezone_service.dart';
@@ -58,6 +59,9 @@ class _NotificationSettingsSectionState
   late Future<bool> _permissionFuture;
   late Future<bool> _exactAlarmFuture;
   late Future<int> _pendingFuture;
+  late Future<ScheduleReport?> _reportFuture;
+  late Future<({String error, DateTime atUtc})?> _errorFuture;
+  late Future<bool?> _batteryFuture;
 
   @override
   void initState() {
@@ -69,6 +73,9 @@ class _NotificationSettingsSectionState
     _permissionFuture = widget.notifications.areNotificationsEnabled();
     _exactAlarmFuture = widget.notifications.canScheduleExactAlarms();
     _pendingFuture = widget.notifications.pendingScheduledCount();
+    _reportFuture = widget.notifications.lastScheduleReport();
+    _errorFuture = widget.notifications.lastScheduleError();
+    _batteryFuture = BatteryService.isIgnoringBatteryOptimizations();
   }
 
   String _prayerLabel(AppLocalizations l10n, Prayer p) => switch (p) {
@@ -105,7 +112,10 @@ class _NotificationSettingsSectionState
         elevationMeters: widget.elevationMeters,
         texts: _texts(l10n),
       );
-    } catch (_) {
+    } catch (e) {
+      // Recorded as well as shown: the delivery-status card below keeps
+      // the failure visible (with its text) after the snackbar is gone.
+      await widget.notifications.recordScheduleError(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.notificationScheduleError)),
@@ -192,29 +202,202 @@ class _NotificationSettingsSectionState
     );
   }
 
-  /// Delivery diagnostic: how many notifications are armed with the
-  /// system right now. A week of prayers is dozens; zero (or far fewer
-  /// than expected) means scheduling itself is broken, while a healthy
-  /// count with nothing arriving points at the phone's battery manager.
+  /// Delivery status: what the phone actually holds right now. The armed
+  /// count is read back from the platform (a week of prayers is dozens;
+  /// zero means scheduling itself is broken, while a healthy count with
+  /// nothing arriving points at the phone's battery manager). Below it,
+  /// the persisted report of the last scheduling pass — next alert and
+  /// when it was armed — and any recorded scheduling failure, so one
+  /// screenshot of this screen shows the whole delivery state.
   Widget _scheduledCard(AppLocalizations l10n, ThemeData theme) {
     final lang = Localizations.localeOf(context).languageCode;
+    final use24 = widget.settings.use24Hour;
+    String at(DateTime utc) => formatPrayerTime(utc.toLocal(), lang,
+        use24Hour: use24);
     return Card(
-      child: FutureBuilder<int>(
-        future: _pendingFuture,
-        builder: (context, snapshot) {
-          final count = snapshot.data;
-          return ListTile(
-            leading: const Icon(Icons.schedule),
-            title: Text(l10n.scheduledAlertsTitle),
-            subtitle: Text(
-              count == null
-                  ? '…'
-                  : l10n.scheduledAlertsBody(
-                      localizeDigits('$count', lang)),
-              style: theme.textTheme.bodySmall,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.schedule, size: 20),
+                const SizedBox(width: 8),
+                Text(l10n.scheduledAlertsTitle,
+                    style: theme.textTheme.titleSmall),
+              ],
             ),
-          );
-        },
+            const SizedBox(height: 4),
+            FutureBuilder<int>(
+              future: _pendingFuture,
+              builder: (context, snapshot) {
+                final count = snapshot.data;
+                return Text(
+                  count == null
+                      ? '…'
+                      : l10n.scheduledAlertsBody(
+                          localizeDigits('$count', lang)),
+                  style: theme.textTheme.bodySmall,
+                );
+              },
+            ),
+            FutureBuilder<ScheduleReport?>(
+              future: _reportFuture,
+              builder: (context, snapshot) {
+                final report = snapshot.data;
+                if (report == null) return const SizedBox.shrink();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (report.nextPrayer != null &&
+                        report.nextFireUtc != null)
+                      Text(
+                        l10n.nextAlertLabel(
+                          _prayerLabel(l10n, report.nextPrayer!),
+                          at(report.nextFireUtc!),
+                        ),
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    Text(
+                      l10n.lastScheduledLabel(at(report.scheduledAtUtc)),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                );
+              },
+            ),
+            FutureBuilder<({String error, DateTime atUtc})?>(
+              future: _errorFuture,
+              builder: (context, snapshot) {
+                final failure = snapshot.data;
+                if (failure == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    '${l10n.scheduleErrorTitle} — '
+                    '${l10n.scheduleErrorBody(failure.error)}',
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: theme.colorScheme.error),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Battery-protection card (Android only): the state of the app's
+  /// battery-optimization exemption plus one-tap routes to fix it. On
+  /// phones whose battery managers freeze background apps, this — not
+  /// anything in the scheduling code — is what decides whether prayer
+  /// alerts can wake the phone.
+  Widget _batteryCard(AppLocalizations l10n, ThemeData theme) {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return const SizedBox.shrink();
+    }
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.battery_saver, size: 20),
+                const SizedBox(width: 8),
+                Text(l10n.batteryTitle, style: theme.textTheme.titleSmall),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(l10n.batteryBody, style: theme.textTheme.bodySmall),
+            FutureBuilder<bool?>(
+              future: _batteryFuture,
+              builder: (context, snapshot) {
+                final ignoring = snapshot.data;
+                if (ignoring == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    ignoring ? l10n.batteryAllowed : l10n.batteryRestricted,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: ignoring ? null : theme.colorScheme.error,
+                    ),
+                  ),
+                );
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    await BatteryService.openAppSettings();
+                    setState(_refreshStatuses);
+                  },
+                  child: Text(l10n.appSettingsButton),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await BatteryService.requestIgnoreBatteryOptimizations();
+                    setState(_refreshStatuses);
+                  },
+                  child: Text(l10n.batteryAllowButton),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Locked-phone probe: a test adhan 2 minutes out, sent through the
+  /// same scheduled path as a real prayer alert. The 5-second test only
+  /// proves the foreground path; this one proves (or disproves)
+  /// background delivery on the user's actual phone.
+  Future<void> _sendProbe(AppLocalizations l10n) async {
+    final enabled = await widget.notifications.areNotificationsEnabled();
+    if (!mounted) return;
+    if (!enabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.testNotificationNoPermission)),
+      );
+      return;
+    }
+    try {
+      await widget.notifications.sendTestNotification(
+        title: l10n.testNotificationTitle,
+        body: l10n.testNotificationBody,
+        delay: const Duration(minutes: 2),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.probeTestSent)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.notificationScheduleError)),
+      );
+    }
+  }
+
+  Widget _probeCard(AppLocalizations l10n, ThemeData theme) {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.lock),
+        title: Text(l10n.probeTestTitle),
+        subtitle: Text(
+          l10n.probeTestHint,
+          style: theme.textTheme.bodySmall,
+        ),
+        trailing: TextButton(
+          onPressed: () => _sendProbe(l10n),
+          child: Text(l10n.probeTestSend),
+        ),
       ),
     );
   }
@@ -350,6 +533,9 @@ class _NotificationSettingsSectionState
             const SizedBox(height: 4),
             _testCard(l10n, theme),
             const SizedBox(height: 4),
+            _probeCard(l10n, theme),
+            const SizedBox(height: 4),
+            _batteryCard(l10n, theme),
             if (isAndroid)
               Card(
                 child: Padding(

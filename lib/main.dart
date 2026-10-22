@@ -557,10 +557,18 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
 
   Future<void> _init() async {
     if (!mounted) return;
-    final texts = _notificationTexts(
-        AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
-    await widget.notifications.init(texts: texts);
-    await _reschedule();
+    // A failure anywhere in plugin init or the first scheduling pass is
+    // recorded for the Settings delivery report instead of vanishing into
+    // an unhandled async error (which is what made the Oct 2026 delivery
+    // failures invisible from inside the app).
+    try {
+      final texts = _notificationTexts(AppLocalizations.of(context)!,
+          Localizations.localeOf(context).languageCode);
+      await widget.notifications.init(texts: texts);
+      await _reschedule();
+    } catch (e) {
+      await widget.notifications.recordScheduleError(e);
+    }
     await _maybeAskNotificationPermission();
   }
 
@@ -615,19 +623,27 @@ class _NotificationBootstrapState extends State<_NotificationBootstrap> {
     // overnight; elevation rides along so sunrise/sunset notifications match
     // the UI. A null zone id means the device wall clock.
     final zoneId = TimezoneService.effectiveZoneIdFor(loc);
-    final texts = _notificationTexts(
-        AppLocalizations.of(context)!, Localizations.localeOf(context).languageCode);
-    await widget.notifications.rescheduleAll(
-      coords: Coordinates(loc.latitude, loc.longitude),
-      profile: widget.settings.effectiveProfile,
-      settings: widget.settings,
-      timeZoneOffset: TimezoneService.offsetForLocation(loc, DateTime.now()),
-      timeZoneOffsetForDate: zoneId != null
-          ? (date) => TimezoneService.offsetFor(zoneId, date)
-          : null,
-      elevationMeters: loc.elevationMeters ?? 0.0,
-      texts: texts,
-    );
+    try {
+      final texts = _notificationTexts(AppLocalizations.of(context)!,
+          Localizations.localeOf(context).languageCode);
+      await widget.notifications.rescheduleAll(
+        coords: Coordinates(loc.latitude, loc.longitude),
+        profile: widget.settings.effectiveProfile,
+        settings: widget.settings,
+        timeZoneOffset: TimezoneService.offsetForLocation(loc, DateTime.now()),
+        timeZoneOffsetForDate: zoneId != null
+            ? (date) => TimezoneService.offsetFor(zoneId, date)
+            : null,
+        elevationMeters: loc.elevationMeters ?? 0.0,
+        texts: texts,
+      );
+    } catch (e) {
+      // This method is also a ChangeNotifier listener, where a throw
+      // would surface as an unhandled error and the previously armed
+      // schedule would already have been cancelled by the failed pass —
+      // record it for the Settings delivery report instead.
+      await widget.notifications.recordScheduleError(e);
+    }
   }
 
   @override

@@ -351,6 +351,72 @@ void main() {
       }
     });
 
+    test('reschedule persists a delivery report; errors record and clear',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      expect(await service.lastScheduleReport(), isNull);
+      expect(await service.lastScheduleError(), isNull);
+
+      final now = DateTime.utc(2026, 10, 15, 10, 0);
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+
+      final report = await service.lastScheduleReport();
+      expect(report, isNotNull);
+      // The armed count is read back from the scheduler, not intended.
+      expect(report!.armedCount, fake.scheduled.length);
+      expect(report.exact, isTrue);
+      // The next alert is the earliest armed at-time notification.
+      final atTime = fake.scheduled.where((s) => s.id < reminderIdBase);
+      final earliest =
+          atTime.reduce((a, b) => a.scheduledUtc.isBefore(b.scheduledUtc) ? a : b);
+      expect(report.nextFireUtc, earliest.scheduledUtc);
+      expect(report.nextPrayer,
+          Prayer.values[earliest.id % atTimeDayStride]);
+
+      // A recorded failure is visible until the next successful pass.
+      await service.recordScheduleError(StateError('boom'));
+      final failure = await service.lastScheduleError();
+      expect(failure, isNotNull);
+      expect(failure!.error, contains('boom'));
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: now,
+      );
+      expect(await service.lastScheduleError(), isNull);
+    });
+
+    test('channel setup gate: only outdated versions need the recreate pass',
+        () {
+      expect(PluginNotificationScheduler.channelsNeedSetup(0), isTrue);
+      expect(
+          PluginNotificationScheduler.channelsNeedSetup(
+              PluginNotificationScheduler.channelSetupVersion - 1),
+          isTrue);
+      expect(
+          PluginNotificationScheduler.channelsNeedSetup(
+              PluginNotificationScheduler.channelSetupVersion),
+          isFalse);
+      expect(
+          PluginNotificationScheduler.channelsNeedSetup(
+              PluginNotificationScheduler.channelSetupVersion + 1),
+          isFalse);
+    });
+
     test('cancelAll clears scheduled notifications', () async {
       SharedPreferences.setMockInitialValues({});
       final settings = await SettingsService.load();
@@ -570,6 +636,24 @@ void main() {
       expect(s.exact, isTrue);
       expect(s.scheduledUtc,
           now.add(const Duration(seconds: 5)));
+    });
+
+    test('sendTestNotification honors a custom delay (locked-phone probe)',
+        () async {
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      final now = DateTime.utc(2026, 10, 22, 8, 0, 0);
+      await service.sendTestNotification(
+        title: 't',
+        body: 'b',
+        now: now,
+        delay: const Duration(minutes: 2),
+      );
+
+      final s = fake.scheduled.single;
+      expect(s.id, NotificationService.testNotificationId);
+      expect(s.scheduledUtc, now.add(const Duration(minutes: 2)));
     });
 
     test('permission rationale flag starts false and persists once marked', () async {

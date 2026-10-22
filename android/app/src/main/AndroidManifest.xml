@@ -16,6 +16,19 @@
          which masked this for a full release cycle: v1.3.3). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <!-- USE_EXACT_ALARM exists only on API 33+; on Android 12 (API 31–32)
+         SCHEDULE_EXACT_ALARM is the only exact-alarm route and is granted
+         by default there. maxSdkVersion=32 keeps it off API 33+ entirely,
+         so it can never shadow the USE_EXACT_ALARM grant (see above). -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32"/>
+    <!-- Lets the user exempt the app from battery optimization from the
+         in-app delivery card (ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+         on phones whose battery managers freeze background apps, this
+         exemption is what lets prayer alarms wake the app at all. -->
+    <uses-permission
+        android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <!-- REL-03: re-schedule prayer notifications after a device reboot —
          flutter_local_notifications schedules do not survive a restart. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>

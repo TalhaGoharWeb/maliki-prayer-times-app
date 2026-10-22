@@ -41,16 +41,20 @@ void main() {
         reason: 'ScheduledNotificationReceiver must not be exported');
   });
 
-  // Regression test for the "test notification works, prayer times never
-  // fire" bug (2026-10-20, v1.3.3): the manifest declared BOTH
-  // SCHEDULE_EXACT_ALARM and USE_EXACT_ALARM. On Android 14+, with both
-  // declared, exact-alarm capability is judged by the SCHEDULE_EXACT_ALARM
-  // app-op, which is denied by default on fresh installs — so every prayer
-  // alarm was scheduled inexact and Doze/OEM battery managers deferred or
-  // dropped them, while the test notification (seconds away, awake phone)
-  // still arrived. USE_EXACT_ALARM alone is granted at install.
-  test('AndroidManifest declares USE_EXACT_ALARM and NOT '
-      'SCHEDULE_EXACT_ALARM', () {
+  // Regression tests for the "test notification works, prayer times never
+  // fire" saga (Oct 2026). v1.3.3 declared BOTH SCHEDULE_EXACT_ALARM and
+  // USE_EXACT_ALARM uncapped: on Android 14+, with both declared,
+  // exact-alarm capability is judged by the SCHEDULE_EXACT_ALARM app-op,
+  // denied by default on fresh installs — every prayer alarm was
+  // scheduled inexact and Doze/OEM battery managers deferred or dropped
+  // them. v1.3.4 removed SCHEDULE_EXACT_ALARM entirely (correct on
+  // Android 13+, where USE_EXACT_ALARM is granted at install) — but
+  // USE_EXACT_ALARM does not exist on Android 12 (API 31–32), where
+  // SCHEDULE_EXACT_ALARM is the only route and is default-granted.
+  // v1.3.5 therefore declares it capped at API 32: present exactly where
+  // it is needed and grantable, absent wherever it could shadow.
+  test('AndroidManifest: USE_EXACT_ALARM uncapped; SCHEDULE_EXACT_ALARM '
+      'capped at API 32', () {
     final manifest = File('android/app/src/main/AndroidManifest.xml');
     final xml = manifest.readAsStringSync();
     expect(
@@ -58,11 +62,22 @@ void main() {
       isTrue,
       reason: 'USE_EXACT_ALARM must be declared for exact prayer alarms',
     );
+    final tag = RegExp(r'<uses-permission[^>]*SCHEDULE_EXACT_ALARM[^>]*/?>')
+        .firstMatch(xml);
+    expect(tag, isNotNull,
+        reason:
+            'SCHEDULE_EXACT_ALARM must be declared for Android 12 (API 31–32), the only exact-alarm route there');
     expect(
-      xml.contains('android.permission.SCHEDULE_EXACT_ALARM'),
-      isFalse,
+      tag!.group(0)!.contains('android:maxSdkVersion="32"'),
+      isTrue,
       reason:
-          'SCHEDULE_EXACT_ALARM must NOT be declared alongside USE_EXACT_ALARM: on Android 14+ it shadows the install-time grant and exact alarms read as denied by default',
+          'SCHEDULE_EXACT_ALARM must be capped at API 32 so it never shadows the USE_EXACT_ALARM install-time grant on Android 13+',
+    );
+    expect(
+      xml.contains('android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS'),
+      isTrue,
+      reason:
+          'The battery-exemption request intent needs its permission declared',
     );
   });
 }
