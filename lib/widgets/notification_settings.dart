@@ -94,6 +94,7 @@ class _NotificationSettingsSectionState
             l10n.notifReminderTitle(_prayerLabel(l10n, p), '$m'),
         reminderBodyFor: (p, m) =>
             l10n.notifReminderBody(_prayerLabel(l10n, p), '$m'),
+        dismissActionLabel: l10n.notifDismissAction,
       );
 
   Future<void> _reschedule(AppLocalizations l10n) async {
@@ -372,6 +373,7 @@ class _NotificationSettingsSectionState
         title: l10n.testNotificationTitle,
         body: l10n.testNotificationBody,
         delay: const Duration(minutes: 2),
+        dismissLabel: l10n.notifDismissAction,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -415,6 +417,7 @@ class _NotificationSettingsSectionState
       await widget.notifications.sendTestNotification(
         title: l10n.testNotificationTitle,
         body: l10n.testNotificationBody,
+        dismissLabel: l10n.notifDismissAction,
       );
       if (!mounted) return;
       final exact = await widget.notifications.canScheduleExactAlarms();

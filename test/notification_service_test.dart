@@ -18,6 +18,7 @@ NotificationTexts _texts() => NotificationTexts(
       bodyFor: (p) => 'body-${p.name}',
       reminderTitleFor: (p, m) => 'rem-title-${p.name}-$m',
       reminderBodyFor: (p, m) => 'rem-body-${p.name}-$m',
+      dismissActionLabel: 'Close',
     );
 
 /// Expected fire instants (UTC) per notification id, computed straight from
@@ -654,6 +655,71 @@ void main() {
       final s = fake.scheduled.single;
       expect(s.id, NotificationService.testNotificationId);
       expect(s.scheduledUtc, now.add(const Duration(minutes: 2)));
+    });
+
+    test('adhan notifications are ongoing with a Close action; others are not',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      await settings.setReminderOffsetMinutes(15);
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: DateTime.utc(2026, 10, 15, 10, 0),
+      );
+
+      final atTime = fake.scheduled.where((s) => s.id < reminderIdBase);
+      for (final p in Prayer.values) {
+        final entries =
+            atTime.where((s) => s.id % atTimeDayStride == p.index);
+        expect(entries, isNotEmpty, reason: 'at-time for ${p.name}');
+        for (final s in entries) {
+          // Sunrise is not a salat: ordinary tap-to-dismiss, no Close.
+          expect(s.ongoing, p != Prayer.sunrise,
+              reason: 'ongoing for ${p.name}');
+          expect(s.dismissLabel, p == Prayer.sunrise ? isNull : 'Close',
+              reason: 'dismissLabel for ${p.name}');
+        }
+      }
+      for (final s in fake.scheduled.where((s) => s.id >= reminderIdBase)) {
+        expect(s.ongoing, isFalse, reason: 'reminder id ${s.id}');
+        expect(s.dismissLabel, isNull, reason: 'reminder id ${s.id}');
+      }
+    });
+
+    test('test notification is ongoing with the passed Close label', () async {
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.sendTestNotification(
+        title: 't',
+        body: 'b',
+        now: DateTime.utc(2026, 10, 19, 12, 0, 0),
+        dismissLabel: 'Close',
+      );
+
+      final s = fake.scheduled.single;
+      expect(s.adhanSound, isTrue);
+      expect(s.ongoing, isTrue);
+      expect(s.dismissLabel, 'Close');
+    });
+
+    test('adhan dismiss action id is stable (native + Dart handler agree)',
+        () {
+      expect(adhanDismissActionId, 'dismiss_adhan');
+    });
+
+    test('channel setup version moved so installs recreate the adhan channel',
+        () {
+      // v3 recreates the channel with alarm audio attributes; the gate
+      // test above still covers the general rule, this pins the bump.
+      expect(PluginNotificationScheduler.channelSetupVersion, 3);
     });
 
     test('permission rationale flag starts false and persists once marked', () async {

@@ -670,6 +670,7 @@ NotificationTexts _notificationTexts(AppLocalizations l10n, String? lang) {
         l10n.notifReminderTitle(prayerName(p), minutes(m)),
     reminderBodyFor: (p, m) =>
         l10n.notifReminderBody(prayerName(p), minutes(m)),
+    dismissActionLabel: l10n.notifDismissAction,
   );
 }
 

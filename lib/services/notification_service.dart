@@ -20,6 +20,13 @@ import 'package:timezone/timezone.dart' as tz;
 /// notification (999) and the qada reminder (2000).
 const int reminderIdBase = 1000;
 
+/// Action id for the "Close" button on an adhan notification. Tapping the
+/// notification body itself must NOT dismiss it (see the ongoing flag in
+/// [PluginNotificationScheduler.schedule]); only this action — or opening
+/// the app, whose bootstrap reschedule cancels posted notifications —
+/// clears it.
+const String adhanDismissActionId = 'dismiss_adhan';
+
 /// Days of prayer notifications kept armed ahead of time. Scheduling only
 /// the single next occurrence per prayer (the pre-1.3.4 model) meant the
 /// chain silently ended whenever the user did not open the app (or reboot)
@@ -46,6 +53,14 @@ class ScheduledNotification {
   /// default sound.
   final bool adhanSound;
 
+  /// True when the notification is ongoing (tap does not dismiss it) and
+  /// carries the Close action. Only adhan notifications are ongoing;
+  /// reminders keep the ordinary tap-to-dismiss behaviour.
+  final bool ongoing;
+
+  /// Label of the Close action, when one is attached.
+  final String? dismissLabel;
+
   const ScheduledNotification({
     required this.id,
     required this.title,
@@ -53,6 +68,8 @@ class ScheduledNotification {
     required this.scheduledUtc,
     required this.exact,
     this.adhanSound = false,
+    this.ongoing = false,
+    this.dismissLabel,
   });
 }
 
@@ -86,7 +103,9 @@ abstract class NotificationScheduler {
   /// [exact] selects an exact vs inexact Android schedule mode.
   /// [adhanSound], when true, plays the adhan recording instead of the
   /// default notification sound (Android: separate notification channel,
-  /// since the sound belongs to the channel on Android 8+).
+  /// since the sound belongs to the channel on Android 8+). Adhan
+  /// notifications are ongoing with a Close action ([dismissLabel]);
+  /// ordinary notifications keep tap-to-dismiss.
   Future<void> schedule({
     required int id,
     required String title,
@@ -94,6 +113,7 @@ abstract class NotificationScheduler {
     required DateTime scheduledUtc,
     required bool exact,
     bool adhanSound = false,
+    String? dismissLabel,
   });
 
   /// Cancels the notification with [id].
@@ -123,13 +143,22 @@ class PluginNotificationScheduler implements NotificationScheduler {
   static const _adhanSound =
       RawResourceAndroidNotificationSound(adhanSoundResource);
 
-  /// At-time prayer notifications: announced with the adhan.
+  /// At-time prayer notifications: announced with the adhan. The sound
+  /// is tagged as an alarm stream, not an ordinary notification sound:
+  /// a 122-second adhan played as a plain notification sound is the
+  /// first thing a newly arriving notification's sound replaces, so the
+  /// adhan stops the moment anything else pings. Alarm usage is the
+  /// strongest mitigation available inside the notification framework —
+  /// it is NOT a guarantee (see the v1.3.6 note in schedule()): only a
+  /// foreground-service audio player, which the plugin's scheduled
+  /// notification cannot start, could promise uninterrupted playback.
   static const _channel = AndroidNotificationChannel(
     'prayer_times',
     'Prayer times',
     description: 'Prayer-time notifications, announced with the adhan.',
     importance: Importance.high,
     sound: _adhanSound,
+    audioAttributesUsage: AudioAttributesUsage.alarm,
   );
 
   /// Pre-prayer reminders and other alerts: default notification sound.
@@ -151,7 +180,10 @@ class PluginNotificationScheduler implements NotificationScheduler {
   /// this version moves. Deleting a channel on every app launch (the
   /// pre-1.3.5 behavior) was needless churn in the delivery path: it also
   /// cancels any notification currently posted to the channel.
-  static const channelSetupVersion = 2;
+  /// v3 (1.3.6): the adhan channel's sound moves to alarm audio
+  /// attributes. Channels are immutable, so existing installs must run
+  /// the delete-and-recreate pass once to pick this up.
+  static const channelSetupVersion = 3;
   static const _channelSetupKey = 'notif_channel_setup_v';
 
   /// Whether the stored channel-setup version predates
@@ -168,7 +200,20 @@ class PluginNotificationScheduler implements NotificationScheduler {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(),
     );
-    await _plugin.initialize(settings: settings);
+    await _plugin.initialize(
+      settings: settings,
+      // Defensive second path for the Close action: the plugin's native
+      // ActionBroadcastReceiver already cancels the notification when
+      // cancelNotification is true (even with the app closed), but when
+      // the app is running the response also arrives here — cancel
+      // explicitly so the action never leaves a stale ongoing alert.
+      onDidReceiveNotificationResponse: (response) async {
+        final id = response.id;
+        if (response.actionId == adhanDismissActionId && id != null) {
+          await _plugin.cancel(id: id);
+        }
+      },
+    );
     final android = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
     if (android == null) return;
@@ -249,6 +294,7 @@ class PluginNotificationScheduler implements NotificationScheduler {
     required DateTime scheduledUtc,
     required bool exact,
     bool adhanSound = false,
+    String? dismissLabel,
   }) async {
     final when = tz.TZDateTime.from(scheduledUtc.toUtc(), tz.UTC);
     await _plugin.zonedSchedule(
@@ -264,6 +310,32 @@ class PluginNotificationScheduler implements NotificationScheduler {
           importance: Importance.high,
           priority: Priority.high,
           sound: adhanSound ? _adhanSound : null,
+          // Pre-1.3.6 the defaults applied here (autoCancel true,
+          // ongoing false, no actions): touching the notification
+          // dismissed it, and there was no way to stop it on purpose.
+          // An adhan notification is now ongoing — a tap opens the app
+          // but leaves the alert in the shade — and carries an explicit
+          // Close action, which is the only in-shade way to clear it
+          // (opening the app also clears it via the bootstrap
+          // reschedule's cancelAll). Reminders and sunrise keep the
+          // ordinary behaviour: a short ping needs no Close button.
+          autoCancel: !adhanSound,
+          ongoing: adhanSound,
+          category:
+              adhanSound ? AndroidNotificationCategory.alarm : null,
+          audioAttributesUsage: adhanSound
+              ? AudioAttributesUsage.alarm
+              : AudioAttributesUsage.notification,
+          actions: adhanSound
+              ? <AndroidNotificationAction>[
+                  AndroidNotificationAction(
+                    adhanDismissActionId,
+                    dismissLabel ?? 'Close',
+                    cancelNotification: true,
+                    showsUserInterface: false,
+                  ),
+                ]
+              : null,
         ),
         iOS: DarwinNotificationDetails(
           sound: adhanSound ? iosAdhanSoundFile : null,
@@ -329,6 +401,7 @@ class FakeNotificationScheduler implements NotificationScheduler {
     required DateTime scheduledUtc,
     required bool exact,
     bool adhanSound = false,
+    String? dismissLabel,
   }) async {
     scheduled.add(ScheduledNotification(
       id: id,
@@ -337,6 +410,8 @@ class FakeNotificationScheduler implements NotificationScheduler {
       scheduledUtc: scheduledUtc.toUtc(),
       exact: exact,
       adhanSound: adhanSound,
+      ongoing: adhanSound,
+      dismissLabel: adhanSound ? dismissLabel : null,
     ));
   }
 
@@ -365,11 +440,17 @@ class NotificationTexts {
   final String Function(Prayer prayer, int minutesBefore) reminderTitleFor;
   final String Function(Prayer prayer, int minutesBefore) reminderBodyFor;
 
+  /// Label of the Close action on adhan notifications. Default 'Close'
+  /// keeps every existing constructor (tests, boot path) working; the
+  /// UI paths pass the localized label.
+  final String dismissActionLabel;
+
   const NotificationTexts({
     required this.titleFor,
     required this.bodyFor,
     required this.reminderTitleFor,
     required this.reminderBodyFor,
+    this.dismissActionLabel = 'Close',
   });
 
   /// Plain English fallback, used only when no localizations are available
@@ -569,6 +650,7 @@ class NotificationService {
     required String body,
     DateTime? now,
     Duration delay = const Duration(seconds: 5),
+    String? dismissLabel,
   }) async {
     final exact = await _scheduler.canScheduleExactAlarms();
     await _scheduler.schedule(
@@ -578,6 +660,7 @@ class NotificationService {
       scheduledUtc: (now ?? DateTime.now()).toUtc().add(delay),
       exact: exact,
       adhanSound: true,
+      dismissLabel: dismissLabel,
     );
   }
 
@@ -696,6 +779,7 @@ class NotificationService {
           scheduledUtc: fireUtc,
           exact: exact,
           adhanSound: prayer != Prayer.sunrise,
+          dismissLabel: texts.dismissActionLabel,
         );
         if (reminderMinutes > 0) {
           final reminderUtc =

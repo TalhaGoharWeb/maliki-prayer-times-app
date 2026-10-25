@@ -1097,6 +1097,10 @@
       }
     }
   },
+  "notifDismissAction": "Close",
+  "@notifDismissAction": {
+    "description": "Close action on an adhan notification"
+  },
   "notifReminderTitle": "{prayer} in {minutes} minutes",
   "@notifReminderTitle": {
     "description": "Reminder notification title",
