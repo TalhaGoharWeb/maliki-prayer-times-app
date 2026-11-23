@@ -410,6 +410,73 @@ void main() {
       await service.refreshDeviceLocation();
       expect(service.current?.placeName, 'Kasur');
     });
+
+    test('refreshPermissionState picks up a grant made in settings '
+        '(2026-11-23 report)', () async {
+      SharedPreferences.setMockInitialValues({});
+      final gateway = FakePermissionGateway()
+        ..checked = LocationPermissionState.deniedForever
+        ..requested = LocationPermissionState.deniedForever;
+      final service = await _loadService(
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 18.0, longitude: -16.0)),
+        gateway: gateway,
+      );
+
+      await service.useDeviceLocation();
+      expect(service.permissionState, LocationPermissionState.deniedForever);
+      expect(service.errorKind, LocationErrorKind.permissionDeniedForever);
+
+      // The user grants location in system settings and returns: the
+      // cached state must not keep saying "not granted".
+      gateway.checked = LocationPermissionState.granted;
+      final state = await service.refreshPermissionState();
+      expect(state, LocationPermissionState.granted);
+      expect(service.permissionState, LocationPermissionState.granted);
+      expect(service.errorKind, LocationErrorKind.none);
+      expect(service.errorMessage, isNull);
+    });
+
+    test('refreshPermissionState reports service off, then clears it when '
+        'GPS is switched on', () async {
+      SharedPreferences.setMockInitialValues({});
+      final gateway = FakePermissionGateway()..serviceEnabled = false;
+      final service = await _loadService(gateway: gateway);
+
+      expect(await service.refreshPermissionState(),
+          LocationPermissionState.serviceDisabled);
+
+      gateway.serviceEnabled = true;
+      expect(await service.refreshPermissionState(),
+          LocationPermissionState.granted);
+    });
+
+    test('refreshDeviceLocation honours a live grant instead of the cached '
+        'denial', () async {
+      SharedPreferences.setMockInitialValues({});
+      final gateway = FakePermissionGateway()
+        ..checked = LocationPermissionState.denied
+        ..requested = LocationPermissionState.denied;
+      final service = await _loadService(
+        gpsReader: FakeGpsReader(const GpsFix(latitude: 30.44, longitude: 73.75)),
+        gateway: gateway,
+      );
+
+      await service.useDeviceLocation();
+      expect(service.permissionState, LocationPermissionState.denied);
+      // No device location exists yet, so refresh is a no-op here; drive
+      // the grant path through a device location obtained after granting.
+      gateway.checked = LocationPermissionState.granted;
+      gateway.requested = LocationPermissionState.granted;
+      await service.useDeviceLocation();
+      expect(service.current?.isDevice, isTrue);
+
+      // Now deny again in the gateway's live answer: refresh must see it
+      // instead of trusting the earlier grant.
+      gateway.checked = LocationPermissionState.denied;
+      await service.refreshDeviceLocation();
+      expect(service.permissionState, LocationPermissionState.denied);
+      expect(service.errorKind, LocationErrorKind.reauthorizeNeeded);
+    });
   });
 
   group('SavedLocation', () {

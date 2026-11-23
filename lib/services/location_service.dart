@@ -393,6 +393,33 @@ class LocationService extends ChangeNotifier {
     return (fix.latitude, fix.longitude);
   }
 
+  /// Re-reads the live permission/service state from the platform and
+  /// updates [permissionState], clearing a stale blocked state.
+  ///
+  /// This is the fix for the 2026-11-23 report ("enabled it in settings
+  /// but it still says permission not granted"): [permissionState] was
+  /// only ever written by [useDeviceLocation], and the device-location
+  /// button is disabled while it reads deniedForever/serviceDisabled —
+  /// so after granting in system settings and returning, the screen kept
+  /// showing the old state and the button stayed dead, with no path back
+  /// except killing the app. The location screen calls this on open and
+  /// whenever the app returns to the foreground, so a settings grant is
+  /// picked up on return. A fresh grant also clears the stale error.
+  Future<LocationPermissionState> refreshPermissionState() async {
+    if (!await _permissionGateway.isLocationServiceEnabled()) {
+      permissionState = LocationPermissionState.serviceDisabled;
+    } else {
+      permissionState = await _permissionGateway.checkPermission();
+      if (permissionState == LocationPermissionState.granted) {
+        errorMessage = null;
+        errorKind = LocationErrorKind.none;
+        errorDetail = null;
+      }
+    }
+    notifyListeners();
+    return permissionState;
+  }
+
   /// Runs the device-location flow: checks the location service, asks for
   /// permission when needed, then reads one GPS fix and persists it as the
   /// current location. Never throws; on any failure it records
@@ -505,7 +532,12 @@ class LocationService extends ChangeNotifier {
     errorKind = LocationErrorKind.none;
     errorDetail = null;
     try {
-      if (permissionState != LocationPermissionState.granted) {
+      // Re-check live, never trust the cached [permissionState]: a grant
+      // made in system settings after an earlier denial must be honoured
+      // here, not reported as "reauthorize needed" forever.
+      final liveState = await _permissionGateway.checkPermission();
+      permissionState = liveState;
+      if (liveState != LocationPermissionState.granted) {
         errorKind = LocationErrorKind.reauthorizeNeeded;
         errorMessage =
             'Location permission is no longer available. Use the device '

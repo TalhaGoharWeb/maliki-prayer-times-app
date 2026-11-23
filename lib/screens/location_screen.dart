@@ -67,7 +67,8 @@ final _presets = [
       (l) => l.presetNouakchottDesc),
 ];
 
-class _LocationScreenState extends State<LocationScreen> {
+class _LocationScreenState extends State<LocationScreen>
+    with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _latitudeController = TextEditingController();
@@ -94,10 +95,28 @@ class _LocationScreenState extends State<LocationScreen> {
     super.initState();
     // Null = device wall clock (see [_selectedZoneId]).
     _selectedZoneId = null;
+    WidgetsBinding.instance.addObserver(this);
+    // Re-read the live permission on open: the cached state may predate
+    // a grant made in system settings, and the device-location button is
+    // disabled while it reads deniedForever/serviceDisabled.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _service.refreshPermissionState();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Returning from system settings (e.g. after granting location
+    // there) must re-check: without this the screen kept the pre-settings
+    // state and the button stayed disabled — the reported bug.
+    if (state == AppLifecycleState.resumed) {
+      _service.refreshPermissionState();
+    }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _nameController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
