@@ -1389,6 +1389,14 @@
   "@checkForUpdates": {
     "description": "Settings/branding 2026-10-15: checkForUpdates"
   },
+  "updateViaPlayStore": "Updates come from Google Play",
+  "@updateViaPlayStore": {
+    "description": "Settings 2026-11-23: Play build update row (no self-update on Play)"
+  },
+  "openPlayStore": "Open in Google Play",
+  "@openPlayStore": {
+    "description": "Settings 2026-11-23: Play build update row action"
+  },
   "updateChecking": "Checking for updates…",
   "@updateChecking": {
     "description": "Settings/branding 2026-10-15: updateChecking"

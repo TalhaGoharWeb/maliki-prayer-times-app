@@ -8,6 +8,7 @@ import 'package:malikiprayertimes/services/settings_service.dart';
 import 'package:malikiprayertimes/services/travel_service.dart';
 import 'package:malikiprayertimes/services/update_service.dart';
 import 'package:malikiprayertimes/utils/app_info.dart';
+import 'package:malikiprayertimes/utils/build_flavor.dart';
 import 'package:malikiprayertimes/utils/digits.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
 import 'package:malikiprayertimes/utils/prayer_names.dart';
@@ -412,9 +413,16 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     const Divider(height: 1),
-                    _UpdateCheckRow(
-                      service: updateService ?? AppUpdateService(),
-                    ),
+                    // Play build: no GitHub APK check — Play forbids a
+                    // Play-distributed app from updating itself outside
+                    // Play (see lib/utils/build_flavor.dart). Sideload
+                    // builds keep the update checker.
+                    if (kIsPlayBuild)
+                      const _PlayStoreUpdateRow()
+                    else
+                      _UpdateCheckRow(
+                        service: updateService ?? AppUpdateService(),
+                      ),
                   ],
                 ),
               ),
@@ -712,6 +720,61 @@ class _AdjustmentCard extends StatelessWidget {
               tooltip: laterTooltip,
               onPressed: value < max ? () => onChanged(value + 1) : null,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Play-build update row inside the About-the-app card: no check runs
+/// (Play forbids self-updates), just a note plus a button opening the
+/// Play Store listing, where updates come from.
+class _PlayStoreUpdateRow extends StatelessWidget {
+  const _PlayStoreUpdateRow();
+
+  Future<void> _openPlayStore() async {
+    final uri = Uri.tryParse(kPlayStoreUrl);
+    if (uri == null) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: _openPlayStore,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Icon(Icons.system_update,
+                size: 20, color: scheme.secondary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.updateViaPlayStore,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.openPlayStore,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: scheme.outline),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:malikiprayertimes/utils/build_flavor.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// Outcome of an update check against the GitHub releases feed.
@@ -95,6 +96,10 @@ class AppUpdateService {
   }
 
   Future<UpdateCheckResult> check() async {
+    // Defense in depth: the Play build hides the update row, but the
+    // service itself must also refuse to fetch a GitHub APK — a
+    // Play-distributed app may not update itself outside Play.
+    if (kIsPlayBuild) return const UpdateCheckResult(UpdateCheckOutcome.unknown);
     try {
       final release = await _fetcher.fetchLatestRelease().timeout(
             GithubReleaseFetcher.timeout + const Duration(seconds: 2),

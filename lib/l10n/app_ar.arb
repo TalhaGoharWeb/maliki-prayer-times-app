@@ -706,6 +706,14 @@
   "@checkForUpdates": {
     "description": "Settings/branding 2026-10-15: checkForUpdates"
   },
+  "updateViaPlayStore": "تصل التحديثات من Google Play",
+  "@updateViaPlayStore": {
+    "description": "Settings 2026-11-23: Play build update row (no self-update on Play)"
+  },
+  "openPlayStore": "فتح في Google Play",
+  "@openPlayStore": {
+    "description": "Settings 2026-11-23: Play build update row action"
+  },
   "updateChecking": "جارٍ التحقق من التحديثات…",
   "@updateChecking": {
     "description": "Settings/branding 2026-10-15: updateChecking"

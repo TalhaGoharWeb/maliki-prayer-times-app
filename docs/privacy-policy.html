@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Maliki Prayer Times</title>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    max-width: 720px; margin: 0 auto; padding: 24px 16px 48px;
+    color: #04201a; background: #e5fff6; line-height: 1.6; }
+  h1 { color: #003527; font-size: 1.6em; }
+  h2 { color: #003527; font-size: 1.15em; margin-top: 1.6em; }
+  a { color: #003527; }
+  code { background: #d3efe2; padding: 0 4px; border-radius: 4px; }
+  .meta { color: #555; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<h1>Privacy Policy — Maliki Prayer Times</h1>
+<p class="meta">Last updated: 23 November 2026 &middot; App version 1.3.7 &middot;
+Developer: Muhammad Talha Bin Farid &middot; Contact: <a href="mailto:muhaqqiqcreates@gmail.com">muhaqqiqcreates@gmail.com</a></p>
+
+<p>Maliki Prayer Times calculates prayer times on your phone. It has no
+account, no login, no ads, no analytics, no crash reporting and no
+telemetry. This policy describes what the app collects, stores,
+transmits — and what it never touches. Anything not listed here does
+not happen.</p>
+
+<h2>Location</h2>
+<p>Location is used <strong>only when you ask for it</strong>: when you
+tap the device-location button, or refresh a device location. The app
+takes a one-shot GPS fix (medium accuracy). There is no background
+tracking, no continuous location watch, and no location access at
+startup.</p>
+<p>After a successful fix, your coordinates are sent to your phone's
+own reverse-geocoder (a platform service) to obtain a human place name
+such as a city. That lookup is bounded by a 10-second timeout; if it
+fails, the app simply shows "Device location". The place name is stored
+on your phone alongside the coordinates.</p>
+<p>You can always enter a location manually instead — latitude and
+longitude typed by you, with no permission needed.</p>
+
+<h2>What stays on your phone only</h2>
+<p>Everything the app remembers lives on your device and is never
+transmitted anywhere by the app:</p>
+<ul>
+  <li>Your chosen location (name, latitude, longitude, place name),
+  saved places, and the notification schedule's inputs;</li>
+  <li>Calculation profile, precautionary-delay (ihtiyat) setting,
+  per-prayer minute adjustments, notification and reminder settings,
+  and the app language;</li>
+  <li>Qada (missed prayer) records and Hayd/Nifas (menstruation and
+  postnatal bleeding) records. Bleeding records are kept in the
+  phone's secure storage. They are never sent anywhere, and you can
+  delete all Qada data from inside the app;</li>
+  <li>A flag recording that the notification permission prompt was
+  shown.</li>
+</ul>
+<p>There is no server-side profile and no cloud sync.</p>
+
+<h2>Network use</h2>
+<p><strong>Google Play build:</strong> the app makes no network
+request of its own. Updates come from Google Play, and the in-app
+"check for updates" feature is disabled in this build.</p>
+<p><strong>Builds installed outside Google Play:</strong> tapping
+"check for updates" in Settings fetches the latest release information
+from the project's public GitHub releases page
+(<code>api.github.com</code>). Nothing is checked at startup, in the
+background, or on a timer.</p>
+<p>Prayer-time calculation itself is pure computation on your phone and
+works fully offline.</p>
+
+<h2>Notifications</h2>
+<p>Prayer notifications are scheduled locally on your phone. No push
+service is used, and no notification content ever leaves your phone.</p>
+
+<h2>Permissions used (Android)</h2>
+<ul>
+  <li><code>ACCESS_FINE_LOCATION</code> / <code>ACCESS_COARSE_LOCATION</code> — one-shot device-location fix, only when you ask for it.</li>
+  <li><code>POST_NOTIFICATIONS</code> — prayer-time and reminder notifications (you are asked at first launch).</li>
+  <li><code>USE_EXACT_ALARM</code> / <code>SCHEDULE_EXACT_ALARM</code> — so prayer alarms can fire at the exact time when you grant them; otherwise reminders may arrive late, and the app says so honestly.</li>
+  <li><code>RECEIVE_BOOT_COMPLETED</code> — re-schedules your prayer notifications after the phone restarts.</li>
+  <li><code>INTERNET</code> — only for the manual update check in builds installed outside Google Play; unused in the Google Play build.</li>
+</ul>
+
+<h2>What the app does not do</h2>
+<ul>
+  <li>No analytics, ads, crash reporting or telemetry.</li>
+  <li>No account, no email or contact collection, no photos, no files.</li>
+  <li>No secrets: no API keys, tokens or credentials in the app.</li>
+  <li>No coordinate logging: precise coordinates are never written to logs.</li>
+  <li>No data is sold or shared with third parties for advertising.</li>
+</ul>
+
+<h2>Deleting your data</h2>
+<p>There is no account to delete. Uninstalling the app, or clearing its
+storage in your phone's settings, removes everything it stored. Qada
+data can also be deleted from inside the app.</p>
+
+<h2>Children</h2>
+<p>The app is suitable for all ages. It collects no personal
+information from anyone, including children.</p>
+
+<h2>Changes to this policy</h2>
+<p>If the app's behaviour changes, this page will be updated and the
+date above will change. The version of the app this policy describes
+is shown at the top of the page.</p>
+
+<p>Questions: <a href="mailto:muhaqqiqcreates@gmail.com">muhaqqiqcreates@gmail.com</a></p>
+</body>
+</html>

@@ -706,6 +706,14 @@
   "@checkForUpdates": {
     "description": "Settings/branding 2026-10-15: checkForUpdates"
   },
+  "updateViaPlayStore": "اپ ڈیٹس Google Play سے آئیں گی",
+  "@updateViaPlayStore": {
+    "description": "Settings 2026-11-23: Play build update row (no self-update on Play)"
+  },
+  "openPlayStore": "Google Play میں کھولیں",
+  "@openPlayStore": {
+    "description": "Settings 2026-11-23: Play build update row action"
+  },
   "updateChecking": "اپ ڈیٹس چیک ہو رہی ہیں…",
   "@updateChecking": {
     "description": "Settings/branding 2026-10-15: updateChecking"
