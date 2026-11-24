@@ -155,5 +155,44 @@ void main() {
 
       expect(() => s.adjustments[Prayer.fajr] = 5, throwsUnsupportedError);
     });
+
+    test('notification sound defaults to the adhan', () async {
+      SharedPreferences.setMockInitialValues({});
+      final s = await SettingsService.load();
+
+      expect(s.notificationSound, NotificationSound.adhan);
+    });
+
+    test('notification sound beep persists and reloads', () async {
+      SharedPreferences.setMockInitialValues({});
+      final s = await SettingsService.load();
+
+      await s.setNotificationSound(NotificationSound.beep);
+      expect(s.notificationSound, NotificationSound.beep);
+
+      final reloaded = await SettingsService.load();
+      expect(reloaded.notificationSound, NotificationSound.beep);
+    });
+
+    test('notification sound none is not a user choice, ignored', () async {
+      SharedPreferences.setMockInitialValues({});
+      final s = await SettingsService.load();
+
+      await s.setNotificationSound(NotificationSound.beep);
+      await s.setNotificationSound(NotificationSound.none);
+      expect(s.notificationSound, NotificationSound.beep);
+
+      final reloaded = await SettingsService.load();
+      expect(reloaded.notificationSound, NotificationSound.beep);
+    });
+
+    test('unknown stored notification sound falls back to the adhan',
+        () async {
+      SharedPreferences.setMockInitialValues(
+          {'notification_sound': 'trumpet'});
+      final s = await SettingsService.load();
+
+      expect(s.notificationSound, NotificationSound.adhan);
+    });
   });
 }

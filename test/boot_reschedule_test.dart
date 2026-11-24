@@ -19,7 +19,7 @@ class _ThrowingScheduler extends FakeNotificationScheduler {
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
-    bool adhanSound = false,
+    NotificationSound sound = NotificationSound.none,
     String? dismissLabel,
   }) {
     throw StateError('no platform in test');

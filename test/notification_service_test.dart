@@ -617,6 +617,89 @@ void main() {
       expect(isId3 || isFrameSync, isTrue, reason: 'valid MP3 audio');
     });
 
+    test('beep raw resource is bundled and is a valid short WAV', () {
+      expect(PluginNotificationScheduler.beepSoundResource,
+          'notification_beep');
+      final file = File(
+          'android/app/src/main/res/raw/${PluginNotificationScheduler.beepSoundResource}.wav');
+      expect(file.existsSync(), isTrue, reason: 'raw resource bundled');
+      expect(file.lengthSync(), greaterThan(10000),
+          reason: 'beep is non-trivial audio');
+      expect(file.lengthSync(), lessThan(200000),
+          reason: 'beep stays a short alert, not a recording');
+      final header = file.openSync().readSync(12);
+      // RIFF/WAVE header.
+      expect(header.sublist(0, 4), [0x52, 0x49, 0x46, 0x46]);
+      expect(header.sublist(8, 12), [0x57, 0x41, 0x56, 0x45]);
+    });
+
+    test('iOS beep file is bundled and identical to the Android copy', () {
+      expect(PluginNotificationScheduler.iosBeepSoundFile,
+          'notification_beep.wav');
+      final iosFile = File(
+          'ios/Runner/adhan/${PluginNotificationScheduler.iosBeepSoundFile}');
+      final androidFile = File(
+          'android/app/src/main/res/raw/${PluginNotificationScheduler.beepSoundResource}.wav');
+      expect(iosFile.existsSync(), isTrue, reason: 'iOS beep bundled');
+      expect(iosFile.readAsBytesSync(), androidFile.readAsBytesSync(),
+          reason: 'one beep, two platforms — never drifted apart');
+    });
+
+    test('beep setting arms at-time prayers with the beep (no Close)', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = await SettingsService.load();
+      await settings.setNotificationSound(NotificationSound.beep);
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.rescheduleAll(
+        coords: _nouakchott,
+        profile: PrayerProfiles.defaultProfile,
+        settings: settings,
+        timeZoneOffset: _offset,
+        texts: _texts(),
+        now: DateTime.utc(2026, 10, 15, 10, 0),
+      );
+
+      final atTime = fake.scheduled.where((s) => s.id < reminderIdBase);
+      for (final p in Prayer.values) {
+        final entries =
+            atTime.where((s) => s.id % atTimeDayStride == p.index);
+        expect(entries, isNotEmpty, reason: 'at-time for ${p.name}');
+        for (final s in entries) {
+          // The five prayers beep; sunrise is not a salat and keeps the
+          // platform default sound. A beep is tap-to-dismiss with no
+          // Close action — only the long adhan needs one.
+          expect(s.sound,
+              p == Prayer.sunrise ? NotificationSound.none : NotificationSound.beep,
+              reason: 'sound for ${p.name}');
+          expect(s.ongoing, isFalse, reason: 'ongoing for ${p.name}');
+          expect(s.dismissLabel, isNull, reason: 'dismissLabel for ${p.name}');
+        }
+      }
+      for (final s in fake.scheduled.where((s) => s.id >= reminderIdBase)) {
+        expect(s.sound, NotificationSound.none, reason: 'reminder id ${s.id}');
+      }
+    });
+
+    test('sendTestNotification follows the chosen sound', () async {
+      final fake = FakeNotificationScheduler();
+      final service = NotificationService(scheduler: fake);
+
+      await service.sendTestNotification(
+        title: 't',
+        body: 'b',
+        now: DateTime.utc(2026, 10, 19, 12, 0, 0),
+        sound: NotificationSound.beep,
+        dismissLabel: 'Close',
+      );
+
+      final s = fake.scheduled.single;
+      expect(s.sound, NotificationSound.beep);
+      expect(s.ongoing, isFalse);
+      expect(s.dismissLabel, isNull);
+    });
+
     test('sendTestNotification fires in ~5 s with the adhan sound', () async {
       final fake = FakeNotificationScheduler();
       final service = NotificationService(scheduler: fake);

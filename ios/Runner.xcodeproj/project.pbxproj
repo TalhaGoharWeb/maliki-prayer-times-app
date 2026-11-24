@@ -17,6 +17,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		BD1F5C2E8B3A4D6F90E12A4C /* tunisi_adhan_30s.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AD1F5C2E8B3A4D6F90E12A4B /* tunisi_adhan_30s.mp3 */; };
+		BE1F5C2E8B3A4D6F90E12A4C /* notification_beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = AE1F5C2E8B3A4D6F90E12A4B /* notification_beep.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AD1F5C2E8B3A4D6F90E12A4B /* tunisi_adhan_30s.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = adhan/tunisi_adhan_30s.mp3; sourceTree = "<group>"; };
+		AE1F5C2E8B3A4D6F90E12A4B /* notification_beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = adhan/notification_beep.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				AD1F5C2E8B3A4D6F90E12A4B /* tunisi_adhan_30s.mp3 */,
+				AE1F5C2E8B3A4D6F90E12A4B /* notification_beep.wav */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				BD1F5C2E8B3A4D6F90E12A4C /* tunisi_adhan_30s.mp3 in Resources */,
+				BE1F5C2E8B3A4D6F90E12A4C /* notification_beep.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

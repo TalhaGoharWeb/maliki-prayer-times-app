@@ -140,6 +140,16 @@ class _NotificationSettingsSectionState
     await _reschedule(l10n);
   }
 
+  /// Switches the at-time prayer sound (adhan or beep) and re-arms the
+  /// whole week, so alerts already scheduled on the phone switch sound
+  /// immediately instead of only from the next app launch.
+  Future<void> _onSoundChanged(
+      AppLocalizations l10n, NotificationSound? sound) async {
+    if (sound == null) return;
+    await widget.settings.setNotificationSound(sound);
+    await _reschedule(l10n);
+  }
+
   Widget _permissionCard(AppLocalizations l10n, ThemeData theme) {
     return Card(
       child: FutureBuilder<bool>(
@@ -373,6 +383,7 @@ class _NotificationSettingsSectionState
         title: l10n.testNotificationTitle,
         body: l10n.testNotificationBody,
         delay: const Duration(minutes: 2),
+        sound: widget.settings.notificationSound,
         dismissLabel: l10n.notifDismissAction,
       );
       if (!mounted) return;
@@ -417,6 +428,7 @@ class _NotificationSettingsSectionState
       await widget.notifications.sendTestNotification(
         title: l10n.testNotificationTitle,
         body: l10n.testNotificationBody,
+        sound: widget.settings.notificationSound,
         dismissLabel: l10n.notifDismissAction,
       );
       if (!mounted) return;
@@ -449,6 +461,38 @@ class _NotificationSettingsSectionState
         trailing: TextButton(
           onPressed: () => _sendTest(l10n),
           child: Text(l10n.testNotificationSend),
+        ),
+      ),
+    );
+  }
+
+  /// At-time prayer sound picker (adhan or the short beep). Reminders
+  /// and the sunrise marker always use the platform default sound.
+  Widget _soundPicker(
+      AppLocalizations l10n, ThemeData theme, SettingsService settings) {
+    String soundLabel(NotificationSound sound) => switch (sound) {
+          NotificationSound.adhan => l10n.notificationSoundAdhan,
+          NotificationSound.beep => l10n.notificationSoundBeep,
+          NotificationSound.none => '',
+        };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+        child: DropdownButtonFormField<NotificationSound>(
+          initialValue: settings.notificationSound,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            labelText: l10n.notificationSoundLabel,
+          ),
+          items: const [NotificationSound.adhan, NotificationSound.beep]
+              .map(
+                (s) => DropdownMenuItem<NotificationSound>(
+                  value: s,
+                  child: Text(soundLabel(s)),
+                ),
+              )
+              .toList(),
+          onChanged: (s) => _onSoundChanged(l10n, s),
         ),
       ),
     );
@@ -533,6 +577,8 @@ class _NotificationSettingsSectionState
             ),
             const SizedBox(height: 4),
             _offsetPicker(l10n, theme, settings),
+            const SizedBox(height: 4),
+            _soundPicker(l10n, theme, settings),
             const SizedBox(height: 4),
             _testCard(l10n, theme),
             const SizedBox(height: 4),

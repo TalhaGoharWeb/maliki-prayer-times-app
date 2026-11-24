@@ -361,6 +361,18 @@
   "@notificationScheduleError": {
     "description": "Error when rescheduling notifications fails"
   },
+  "notificationSoundLabel": "اطلاع کی آواز",
+  "@notificationSoundLabel": {
+    "description": "Label of the notification-sound picker (adhan or beep)"
+  },
+  "notificationSoundAdhan": "اذان",
+  "@notificationSoundAdhan": {
+    "description": "Adhan option in the notification-sound picker"
+  },
+  "notificationSoundBeep": "بیپ",
+  "@notificationSoundBeep": {
+    "description": "Beep option in the notification-sound picker"
+  },
   "testNotificationTitle": "آزمائشی اطلاع",
   "@testNotificationTitle": {
     "description": "Card/notification title for the test notification"
@@ -373,7 +385,7 @@
   "@testNotificationSend": {
     "description": "Button label that fires the test notification"
   },
-  "testNotificationHint": "تقریباً 5 سیکنڈ میں اذان بجے گی تاکہ آپ آواز چیک کر سکیں۔",
+  "testNotificationHint": "تقریباً 5 سیکنڈ میں آپ کی منتخب کردہ آواز بجے گی تاکہ آپ چیک کر سکیں۔",
   "scheduledAlertsTitle": "شیڈول الرٹس",
   "scheduledAlertsBody": "اگلے ہفتے کے لیے اس فون پر {count} الرٹس فعال ہیں۔",
   "nextAlertLabel": "اگلا الرٹ: {prayer} · {time}",
@@ -387,9 +399,9 @@
   "batteryAllowButton": "غیر محدود استعمال کی اجازت دیں",
   "appSettingsButton": "ایپ سیٹنگز",
   "probeTestTitle": "لاک شدہ فون ٹیسٹ",
-  "probeTestHint": "2 منٹ میں اذان بجے گی۔ بھیج کر فون لاک کر کے رکھ دیں — اگر اذان بجے تو پس منظر میں ترسیل ٹھیک ہے۔",
+  "probeTestHint": "2 منٹ میں آپ کی منتخب کردہ آواز بجے گی۔ بھیج کر فون لاک کر کے رکھ دیں — اگر بجے تو پس منظر میں ترسیل ٹھیک ہے۔",
   "probeTestSend": "بھیجیں (2 منٹ)",
-  "probeTestSent": "ٹیسٹ اذان 2 منٹ بعد کے لیے سیٹ ہو گئی — فون لاک کر دیں۔",
+  "probeTestSent": "آزمائشی اطلاع 2 منٹ بعد کے لیے سیٹ ہو گئی — فون لاک کر دیں۔",
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },

@@ -6,6 +6,20 @@ import 'package:malikiprayertimes/engine/prayer_profile.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Sound played for at-time prayer notifications (user choice).
+///
+/// `adhan` is the bundled adhan recording; `beep` is a short
+/// license-free tone synthesized for this app (see
+/// `android/app/src/main/res/raw/notification_beep.wav` — no third-party
+/// audio, no rights to clear). `none` is NOT a user choice: it is the
+/// platform default sound, used for reminders and the sunrise marker,
+/// which are not prayer alerts.
+enum NotificationSound {
+  adhan,
+  beep,
+  none,
+}
+
 /// User-facing settings: the active calculation profile, per-prayer minute
 /// adjustments, and the precautionary-delay (ihtiyat) switch.
 ///
@@ -22,6 +36,7 @@ class SettingsService extends ChangeNotifier {
   static const _regionSuggestionShownKey = 'region_suggestion_shown';
   static const _highLatitudeFallbackKey = 'high_latitude_fallback';
   static const _timeFormatKey = 'time_format_24h';
+  static const _notificationSoundKey = 'notification_sound';
 
   /// Language codes the app can be switched to. `null` means "system
   /// default" and is always allowed.
@@ -62,6 +77,12 @@ class SettingsService extends ChangeNotifier {
   /// Minutes before each prayer time at which a reminder notification fires.
   /// One of [allowedReminderOffsets]; 0 = no early reminder.
   int _reminderOffsetMinutes = 0;
+
+  /// Sound for at-time prayer notifications. Defaults to the adhan;
+  /// the user can switch to the short beep in notification settings.
+  /// Never [NotificationSound.none] from storage (that value is for
+  /// reminders/sunrise only); an unknown stored value falls back to adhan.
+  NotificationSound _notificationSound = NotificationSound.adhan;
 
   /// The high-latitude fallback method used when a solar event has no
   /// solution (see [HighLatitudeFallback]). Defaults to
@@ -124,6 +145,9 @@ class SettingsService extends ChangeNotifier {
   /// One of [allowedReminderOffsets]; 0 = no early reminder.
   int get reminderOffsetMinutes => _reminderOffsetMinutes;
 
+  /// Sound for at-time prayer notifications (adhan by default).
+  NotificationSound get notificationSound => _notificationSound;
+
   /// The UI language code, or `null` for the system default.
   String? get languageCode => _languageCode;
 
@@ -175,6 +199,15 @@ class SettingsService extends ChangeNotifier {
     if (storedOffset != null &&
         allowedReminderOffsets.contains(storedOffset)) {
       service._reminderOffsetMinutes = storedOffset;
+    }
+
+    final storedSound = prefs.getString(_notificationSoundKey);
+    if (storedSound == NotificationSound.beep.name) {
+      service._notificationSound = NotificationSound.beep;
+    } else {
+      // 'adhan', 'none' (never stored as a choice), or anything
+      // unknown/corrupt: the adhan is the default.
+      service._notificationSound = NotificationSound.adhan;
     }
 
     final rawToggles = prefs.getString(_notificationTogglesKey);
@@ -230,6 +263,7 @@ class SettingsService extends ChangeNotifier {
     await prefs.setBool(_timeFormatKey, _use24Hour);
     await prefs.setString(_highLatitudeFallbackKey, _highLatitudeFallback.name);
     await prefs.setInt(_reminderOffsetKey, _reminderOffsetMinutes);
+    await prefs.setString(_notificationSoundKey, _notificationSound.name);
     await prefs.setString(
       _notificationTogglesKey,
       jsonEncode({for (final p in Prayer.values) p.name: _notificationToggles[p]}),
@@ -290,6 +324,16 @@ class SettingsService extends ChangeNotifier {
     if (!allowedReminderOffsets.contains(minutes)) return;
     if (_reminderOffsetMinutes == minutes) return;
     _reminderOffsetMinutes = minutes;
+    await _persist();
+    notifyListeners();
+  }
+
+  /// Selects the at-time prayer notification sound (adhan or beep).
+  /// [NotificationSound.none] is not a user choice and is ignored.
+  Future<void> setNotificationSound(NotificationSound sound) async {
+    if (sound == NotificationSound.none) return;
+    if (_notificationSound == sound) return;
+    _notificationSound = sound;
     await _persist();
     notifyListeners();
   }

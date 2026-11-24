@@ -48,14 +48,16 @@ class ScheduledNotification {
   final DateTime scheduledUtc;
   final bool exact;
 
-  /// True when this notification was routed to the adhan-sound channel
-  /// (at-time prayer notifications). Reminders and other alerts use the
-  /// default sound.
-  final bool adhanSound;
+  /// Sound this notification was scheduled with. At-time prayer
+  /// notifications carry the user's chosen sound (adhan or beep);
+  /// reminders and other alerts use [NotificationSound.none] (the
+  /// platform default sound).
+  final NotificationSound sound;
 
   /// True when the notification is ongoing (tap does not dismiss it) and
   /// carries the Close action. Only adhan notifications are ongoing;
-  /// reminders keep the ordinary tap-to-dismiss behaviour.
+  /// beep alerts and reminders keep the ordinary tap-to-dismiss
+  /// behaviour (a sub-second beep needs no Close button).
   final bool ongoing;
 
   /// Label of the Close action, when one is attached.
@@ -67,10 +69,14 @@ class ScheduledNotification {
     required this.body,
     required this.scheduledUtc,
     required this.exact,
-    this.adhanSound = false,
+    this.sound = NotificationSound.none,
     this.ongoing = false,
     this.dismissLabel,
   });
+
+  /// True when this notification was routed to the adhan-sound channel
+  /// (at-time prayer notifications with the adhan chosen).
+  bool get adhanSound => sound == NotificationSound.adhan;
 }
 
 /// Injectable seam between [NotificationService] and the platform
@@ -101,18 +107,20 @@ abstract class NotificationScheduler {
 
   /// Schedules one notification at the UTC instant [scheduledUtc].
   /// [exact] selects an exact vs inexact Android schedule mode.
-  /// [adhanSound], when true, plays the adhan recording instead of the
-  /// default notification sound (Android: separate notification channel,
-  /// since the sound belongs to the channel on Android 8+). Adhan
-  /// notifications are ongoing with a Close action ([dismissLabel]);
-  /// ordinary notifications keep tap-to-dismiss.
+  /// [sound] selects the alert sound: [NotificationSound.adhan] plays
+  /// the adhan recording, [NotificationSound.beep] the short beep, and
+  /// [NotificationSound.none] (the default) the platform default sound
+  /// (Android: a separate notification channel per sound, since the
+  /// sound belongs to the channel on Android 8+). Adhan notifications
+  /// are ongoing with a Close action ([dismissLabel]); beep and default
+  /// notifications keep tap-to-dismiss.
   Future<void> schedule({
     required int id,
     required String title,
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
-    bool adhanSound = false,
+    NotificationSound sound = NotificationSound.none,
     String? dismissLabel,
   });
 
@@ -140,8 +148,19 @@ class PluginNotificationScheduler implements NotificationScheduler {
   /// wired into the Xcode project under `ios/Runner/adhan/`.
   static const iosAdhanSoundFile = 'tunisi_adhan_30s.mp3';
 
+  /// Raw resource name (`res/raw/<name>.wav`) of the short beep offered
+  /// as an alternative to the adhan. Synthesized for this app (two 880 Hz
+  /// tones, 0.85 s total) — no third-party audio, no rights to clear.
+  static const beepSoundResource = 'notification_beep';
+
+  /// iOS bundle file of the same beep, wired into the Xcode project
+  /// under `ios/Runner/adhan/` alongside the adhan excerpt.
+  static const iosBeepSoundFile = 'notification_beep.wav';
+
   static const _adhanSound =
       RawResourceAndroidNotificationSound(adhanSoundResource);
+  static const _beepSound =
+      RawResourceAndroidNotificationSound(beepSoundResource);
 
   /// At-time prayer notifications: announced with the adhan. The sound
   /// is tagged as an alarm stream, not an ordinary notification sound:
@@ -161,9 +180,23 @@ class PluginNotificationScheduler implements NotificationScheduler {
     audioAttributesUsage: AudioAttributesUsage.alarm,
   );
 
+  /// At-time prayer notifications when the user chose the beep: the
+  /// short tone on ordinary notification audio attributes (a sub-second
+  /// beep follows the notification volume and is over before another
+  /// notification could cut it — the alarm-attributes treatment is
+  /// only needed for the 122-second adhan).
+  static const _beepChannel = AndroidNotificationChannel(
+    'prayer_times_beep',
+    'Prayer times (beep)',
+    description: 'Prayer-time notifications, announced with a short beep.',
+    importance: Importance.high,
+    sound: _beepSound,
+    audioAttributesUsage: AudioAttributesUsage.notification,
+  );
+
   /// Pre-prayer reminders and other alerts: default notification sound.
-  /// (On Android 8+ the sound belongs to the channel, so the adhan and the
-  /// default sound need separate channels.)
+  /// (On Android 8+ the sound belongs to the channel, so each sound
+  /// needs its own channel.)
   static const _reminderChannel = AndroidNotificationChannel(
     'prayer_times_reminders',
     'Prayer reminders',
@@ -224,13 +257,18 @@ class PluginNotificationScheduler implements NotificationScheduler {
       // from an earlier app version picks up the adhan sound (no-op on
       // fresh installs).
       await android.deleteNotificationChannel(channelId: _channel.id);
+      await android.deleteNotificationChannel(channelId: _beepChannel.id);
       await android.deleteNotificationChannel(
           channelId: _reminderChannel.id);
       await prefs.setInt(_channelSetupKey, channelSetupVersion);
     }
     // Creating an existing channel is a no-op (and never resets the
     // user's channel settings), so this simply guarantees existence.
+    // The beep channel is new in 1.3.8: no channelSetupVersion bump is
+    // needed for it, since creating a channel that does not exist yet
+    // is exactly what this pass does on every launch.
     await android.createNotificationChannel(_channel);
+    await android.createNotificationChannel(_beepChannel);
     await android.createNotificationChannel(_reminderChannel);
   }
 
@@ -293,23 +331,32 @@ class PluginNotificationScheduler implements NotificationScheduler {
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
-    bool adhanSound = false,
+    NotificationSound sound = NotificationSound.none,
     String? dismissLabel,
   }) async {
     final when = tz.TZDateTime.from(scheduledUtc.toUtc(), tz.UTC);
+    final isAdhan = sound == NotificationSound.adhan;
+    final isBeep = sound == NotificationSound.beep;
+    final channel = isAdhan
+        ? _channel
+        : isBeep
+            ? _beepChannel
+            : _reminderChannel;
     await _plugin.zonedSchedule(
       id: id,
       scheduledDate: when,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          adhanSound ? _channel.id : _reminderChannel.id,
-          adhanSound ? _channel.name : _reminderChannel.name,
-          channelDescription: adhanSound
-              ? _channel.description
-              : _reminderChannel.description,
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
           importance: Importance.high,
           priority: Priority.high,
-          sound: adhanSound ? _adhanSound : null,
+          sound: isAdhan
+              ? _adhanSound
+              : isBeep
+                  ? _beepSound
+                  : null,
           // Pre-1.3.6 the defaults applied here (autoCancel true,
           // ongoing false, no actions): touching the notification
           // dismissed it, and there was no way to stop it on purpose.
@@ -317,16 +364,16 @@ class PluginNotificationScheduler implements NotificationScheduler {
           // but leaves the alert in the shade — and carries an explicit
           // Close action, which is the only in-shade way to clear it
           // (opening the app also clears it via the bootstrap
-          // reschedule's cancelAll). Reminders and sunrise keep the
-          // ordinary behaviour: a short ping needs no Close button.
-          autoCancel: !adhanSound,
-          ongoing: adhanSound,
-          category:
-              adhanSound ? AndroidNotificationCategory.alarm : null,
-          audioAttributesUsage: adhanSound
+          // reschedule's cancelAll). A beep alert, reminders and sunrise
+          // keep the ordinary behaviour: a short ping needs no Close
+          // button.
+          autoCancel: !isAdhan,
+          ongoing: isAdhan,
+          category: isAdhan ? AndroidNotificationCategory.alarm : null,
+          audioAttributesUsage: isAdhan
               ? AudioAttributesUsage.alarm
               : AudioAttributesUsage.notification,
-          actions: adhanSound
+          actions: isAdhan
               ? <AndroidNotificationAction>[
                   AndroidNotificationAction(
                     adhanDismissActionId,
@@ -338,7 +385,11 @@ class PluginNotificationScheduler implements NotificationScheduler {
               : null,
         ),
         iOS: DarwinNotificationDetails(
-          sound: adhanSound ? iosAdhanSoundFile : null,
+          sound: isAdhan
+              ? iosAdhanSoundFile
+              : isBeep
+                  ? iosBeepSoundFile
+                  : null,
         ),
       ),
       androidScheduleMode: exact
@@ -400,18 +451,19 @@ class FakeNotificationScheduler implements NotificationScheduler {
     required String body,
     required DateTime scheduledUtc,
     required bool exact,
-    bool adhanSound = false,
+    NotificationSound sound = NotificationSound.none,
     String? dismissLabel,
   }) async {
+    final isAdhan = sound == NotificationSound.adhan;
     scheduled.add(ScheduledNotification(
       id: id,
       title: title,
       body: body,
       scheduledUtc: scheduledUtc.toUtc(),
       exact: exact,
-      adhanSound: adhanSound,
-      ongoing: adhanSound,
-      dismissLabel: adhanSound ? dismissLabel : null,
+      sound: sound,
+      ongoing: isAdhan,
+      dismissLabel: isAdhan ? dismissLabel : null,
     ));
   }
 
@@ -640,16 +692,18 @@ class NotificationService {
   static const int testNotificationId = 999;
 
   /// Schedules a one-shot test notification in the future that plays the
-  /// adhan sound, so the user can verify notifications and the adhan audio
-  /// end to end without waiting for a prayer time. The default [delay] is
-  /// ~5 s (foreground check); the Settings locked-phone probe passes a
-  /// longer delay so the test exercises the same background delivery path
-  /// as a real prayer alert (app closed, screen off).
+  /// user's chosen alert sound ([sound], adhan by default), so the user
+  /// can verify notifications and the chosen audio end to end without
+  /// waiting for a prayer time. The default [delay] is ~5 s (foreground
+  /// check); the Settings locked-phone probe passes a longer delay so
+  /// the test exercises the same background delivery path as a real
+  /// prayer alert (app closed, screen off).
   Future<void> sendTestNotification({
     required String title,
     required String body,
     DateTime? now,
     Duration delay = const Duration(seconds: 5),
+    NotificationSound sound = NotificationSound.adhan,
     String? dismissLabel,
   }) async {
     final exact = await _scheduler.canScheduleExactAlarms();
@@ -659,7 +713,7 @@ class NotificationService {
       body: body,
       scheduledUtc: (now ?? DateTime.now()).toUtc().add(delay),
       exact: exact,
-      adhanSound: true,
+      sound: sound,
       dismissLabel: dismissLabel,
     );
   }
@@ -770,15 +824,17 @@ class NotificationService {
           nextFireUtc = fireUtc;
           nextPrayer = prayer;
         }
-        // The adhan announces the five prayers; sunrise is not a salat, so
-        // its notification keeps the default sound.
+        // The chosen sound announces the five prayers; sunrise is not a
+        // salat, so its notification keeps the default sound.
         await _scheduler.schedule(
           id: dayOffset * atTimeDayStride + prayer.index,
           title: texts.titleFor(prayer),
           body: texts.bodyFor(prayer),
           scheduledUtc: fireUtc,
           exact: exact,
-          adhanSound: prayer != Prayer.sunrise,
+          sound: prayer == Prayer.sunrise
+              ? NotificationSound.none
+              : settings.notificationSound,
           dismissLabel: texts.dismissActionLabel,
         );
         if (reminderMinutes > 0) {

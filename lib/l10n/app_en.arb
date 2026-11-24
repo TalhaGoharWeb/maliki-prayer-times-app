@@ -1000,6 +1000,18 @@
   "@notificationScheduleError": {
     "description": "Error when rescheduling notifications fails"
   },
+  "notificationSoundLabel": "Notification sound",
+  "@notificationSoundLabel": {
+    "description": "Label of the notification-sound picker (adhan or beep)"
+  },
+  "notificationSoundAdhan": "Adhan",
+  "@notificationSoundAdhan": {
+    "description": "Adhan option in the notification-sound picker"
+  },
+  "notificationSoundBeep": "Beep",
+  "@notificationSoundBeep": {
+    "description": "Beep option in the notification-sound picker"
+  },
   "testNotificationTitle": "Test notification",
   "@testNotificationTitle": {
     "description": "Card/notification title for the test notification"
@@ -1012,7 +1024,7 @@
   "@testNotificationSend": {
     "description": "Button label that fires the test notification"
   },
-  "testNotificationHint": "Plays the adhan in about 5 seconds so you can check the sound.",
+  "testNotificationHint": "Plays your chosen notification sound in about 5 seconds so you can check it.",
   "scheduledAlertsTitle": "Scheduled alerts",
   "scheduledAlertsBody": "{count} alerts are armed on this phone for the coming week.",
   "@scheduledAlertsBody": {
@@ -1061,9 +1073,9 @@
   "batteryAllowButton": "Allow unrestricted use",
   "appSettingsButton": "App settings",
   "probeTestTitle": "Locked-phone test",
-  "probeTestHint": "Plays the adhan in 2 minutes. Send it, lock your phone and put it down — if it plays, background delivery works.",
+  "probeTestHint": "Plays your chosen sound in 2 minutes. Send it, lock your phone and put it down — if it plays, background delivery works.",
   "probeTestSend": "Send (2 min)",
-  "probeTestSent": "Test adhan set for 2 minutes from now — lock your phone.",
+  "probeTestSent": "Test alert set for 2 minutes from now — lock your phone.",
   "@testNotificationHint": {
     "description": "Hint under the test-notification row"
   },
