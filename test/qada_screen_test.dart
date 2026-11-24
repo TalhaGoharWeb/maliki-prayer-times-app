@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -113,5 +116,64 @@ void main() {
       await openAndBack(
           'Hayd & Nifas tracker', find.text('Hayd & Nifas tracker'));
     });
+
+    testWidgets('a stalled secure store does not leave the screen spinning',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'qada_v2_state': jsonEncode({'bleeding': []}),
+      });
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('ur'),
+            Locale('ar'),
+            Locale('fr'),
+          ],
+          locale: const Locale('en'),
+          home: Scaffold(
+            body: QadaScreen(
+              secureStore: SecureStore(backend: _HangingReadBackend()),
+            ),
+          ),
+        ),
+      );
+      // Let the 5-second secure-store timeout fire, then rebuild.
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pump();
+
+      expect(find.text('Total remaining: 0'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
   });
+}
+
+/// Secure backend whose reads never complete (stalled keystore).
+class _HangingReadBackend implements SecureBackend {
+  final Map<String, String> _values = {};
+
+  @override
+  Future<void> write({required String key, required String value}) async {
+    _values[key] = value;
+  }
+
+  @override
+  Future<String?> read({required String key}) =>
+      Completer<String?>().future;
+
+  @override
+  Future<void> delete({required String key}) async {
+    _values.remove(key);
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    _values.clear();
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/l10n/app_localizations.dart';
@@ -7,6 +9,7 @@ import 'package:malikiprayertimes/screens/qada_planner_screen.dart';
 import 'package:malikiprayertimes/services/qada_service.dart';
 import 'package:malikiprayertimes/services/secure_store.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/widgets/qada_load_error_card.dart';
 
 /// Missed-prayer (qada) tracker: log prayers that were missed, mark them
 /// done as they are made up, and delete entries.
@@ -50,7 +53,13 @@ class _QadaScreenState extends State<QadaScreen> {
 
   Future<QadaService> _load() async {
     final service = QadaService(secureStore: widget.secureStore);
-    await service.load();
+    // Bound the whole load: a platform store that never answers must
+    // surface as an error with retry, never an endless spinner.
+    try {
+      await service.load().timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw StateError('qada load timeout');
+    }
     return service;
   }
 
@@ -176,6 +185,12 @@ class _QadaScreenState extends State<QadaScreen> {
     return FutureBuilder<QadaService>(
       future: _future,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return QadaLoadErrorCard(
+            message: AppLocalizations.of(context)!.qadaLoadError,
+            onRetry: () => setState(() => _future = _load()),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }

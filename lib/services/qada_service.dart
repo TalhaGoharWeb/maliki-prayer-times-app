@@ -82,31 +82,40 @@ class QadaService extends ChangeNotifier {
   /// After the v1 entries, the v2 ledger document is loaded (or migrated
   /// from v1 data, or adopted from the interim bridge key). See [_loadV2].
   Future<void> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    _entries.clear();
-    final raw = prefs.getString(storageKey);
-    if (raw != null) {
-      try {
-        final decoded = jsonDecode(raw);
-        if (decoded is Map) {
-          // Unknown (including newer) schema versions are treated as empty:
-          // never crash on data written by a future version of the app.
-          if (decoded['schema_version'] == schemaVersion) {
-            final entries = decoded['entries'];
-            if (entries is List) {
-              for (final item in entries) {
-                final entry = _decodeEntry(item);
-                if (entry != null) _entries.add(entry);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _entries.clear();
+      final raw = prefs.getString(storageKey);
+      if (raw != null) {
+        try {
+          final decoded = jsonDecode(raw);
+          if (decoded is Map) {
+            // Unknown (including newer) schema versions are treated as empty:
+            // never crash on data written by a future version of the app.
+            if (decoded['schema_version'] == schemaVersion) {
+              final entries = decoded['entries'];
+              if (entries is List) {
+                for (final item in entries) {
+                  final entry = _decodeEntry(item);
+                  if (entry != null) _entries.add(entry);
+                }
               }
             }
           }
+        } catch (_) {
+          // Corrupt JSON: keep the empty list.
+          _entries.clear();
         }
-      } catch (_) {
-        // Corrupt JSON: keep the empty list.
-        _entries.clear();
       }
+      await _loadV2(prefs);
+    } catch (_) {
+      // Any platform failure must never leave the qada screens on an
+      // endless spinner: fall back to an empty state instead. (The
+      // screens additionally bound the whole load with a timeout, so a
+      // platform call that never returns is surfaced as an error there.)
+      _entries.clear();
+      _resetV2State();
     }
-    await _loadV2(prefs);
     notifyListeners();
   }
 
@@ -1078,7 +1087,13 @@ class QadaService extends ChangeNotifier {
     if (_bleedingLoaded) return;
     _bleedingLoaded = true;
     try {
-      final doc = await _secureStore.readJson(_bleedingKey);
+      // The encrypted store can stall on some devices (keystore): bound
+      // the wait so the qada screens never hang on this read. A timeout
+      // loads empty; opening the screen again re-reads on a fresh
+      // service, once the store answers.
+      final doc = await _secureStore
+          .readJson(_bleedingKey)
+          .timeout(const Duration(seconds: 5));
       final records = doc?['records'];
       if (records is List) {
         for (final item in records) {
@@ -1093,8 +1108,9 @@ class QadaService extends ChangeNotifier {
           }
         }
       }
-    } on FormatException {
-      // Corrupt secure document: start empty rather than crashing.
+    } catch (_) {
+      // Corrupt secure document, unavailable keystore, or a read that
+      // never returned: start empty rather than crashing or hanging.
       _bleeding.clear();
     }
   }

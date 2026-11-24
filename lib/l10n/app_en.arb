@@ -1495,6 +1495,14 @@
   "@qadaTitle": {
     "description": "Qada screen title"
   },
+  "qadaLoadError": "Couldn't load the qada tracker. Please try again.",
+  "@qadaLoadError": {
+    "description": "Error shown when a qada screen fails to load its data"
+  },
+  "qadaRetry": "Try again",
+  "@qadaRetry": {
+    "description": "Button to retry loading a qada screen"
+  },
   "qadaLogMissed": "Log missed prayer",
   "@qadaLogMissed": {
     "description": "Qada: log a missed prayer button"

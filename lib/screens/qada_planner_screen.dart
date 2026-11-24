@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
@@ -6,6 +8,7 @@ import 'package:malikiprayertimes/models/qada_models.dart';
 import 'package:malikiprayertimes/services/qada_service.dart';
 import 'package:malikiprayertimes/services/secure_store.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/widgets/qada_load_error_card.dart';
 
 /// Qada planner: plan modes with daily/weekly targets, a reminder toggle
 /// (notification only — never a completion), the projected finish date,
@@ -38,7 +41,7 @@ String _dateLabel(DateTime d) =>
     '${d.day.toString().padLeft(2, '0')}';
 
 class _QadaPlannerScreenState extends State<QadaPlannerScreen> {
-  late final Future<QadaService> _future;
+  late Future<QadaService> _future;
   _PlanMode _mode = _PlanMode.custom;
   Prayer? _historyFilter;
 
@@ -50,7 +53,13 @@ class _QadaPlannerScreenState extends State<QadaPlannerScreen> {
 
   Future<QadaService> _load() async {
     final service = QadaService(secureStore: widget.secureStore);
-    await service.load();
+    // Bound the whole load: a platform store that never answers must
+    // surface as an error with retry, never an endless spinner.
+    try {
+      await service.load().timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw StateError('qada load timeout');
+    }
     return service;
   }
 
@@ -91,6 +100,12 @@ class _QadaPlannerScreenState extends State<QadaPlannerScreen> {
       body: FutureBuilder<QadaService>(
         future: _future,
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return QadaLoadErrorCard(
+              message: l10n.qadaLoadError,
+              onRetry: () => setState(() => _future = _load()),
+            );
+          }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }

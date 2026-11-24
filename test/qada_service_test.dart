@@ -1,9 +1,61 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:malikiprayertimes/engine/prayer_times.dart';
 import 'package:malikiprayertimes/services/qada_service.dart';
+import 'package:malikiprayertimes/services/secure_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Secure backend whose reads throw (unavailable keystore) while writes
+/// succeed in memory.
+class _ThrowingReadBackend implements SecureBackend {
+  final Map<String, String> _values = {};
+
+  @override
+  Future<void> write({required String key, required String value}) async {
+    _values[key] = value;
+  }
+
+  @override
+  Future<String?> read({required String key}) async {
+    throw StateError('keystore unavailable');
+  }
+
+  @override
+  Future<void> delete({required String key}) async {
+    _values.remove(key);
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    _values.clear();
+  }
+}
+
+/// Secure backend whose reads never complete (stalled keystore).
+class _HangingReadBackend implements SecureBackend {
+  final Map<String, String> _values = {};
+
+  @override
+  Future<void> write({required String key, required String value}) async {
+    _values[key] = value;
+  }
+
+  @override
+  Future<String?> read({required String key}) =>
+      Completer<String?>().future;
+
+  @override
+  Future<void> delete({required String key}) async {
+    _values.remove(key);
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    _values.clear();
+  }
+}
 
 Future<QadaService> _loaded() async {
   final service = QadaService();
@@ -201,6 +253,39 @@ void main() {
 
       expect(s.totalRemaining(), 1);
       expect(s.pending().single.id, 'good');
+    });
+  });
+
+  group('load resilience (v1.3.9)', () {
+    test('a throwing secure store does not break load', () async {
+      SharedPreferences.setMockInitialValues({
+        'qada_v2_state': jsonEncode({'bleeding': []}),
+      });
+      final service = QadaService(
+        secureStore: SecureStore(backend: _ThrowingReadBackend()),
+      );
+
+      await service.load();
+
+      expect(service.totalRemaining(), 0);
+      expect(await service.bleedingRecords(), isEmpty);
+    });
+
+    test('a stalled secure store times out instead of hanging load',
+        timeout: const Timeout(Duration(seconds: 20)), () async {
+      SharedPreferences.setMockInitialValues({
+        'qada_v2_state': jsonEncode({'bleeding': []}),
+      });
+      final service = QadaService(
+        secureStore: SecureStore(backend: _HangingReadBackend()),
+      );
+
+      final stopwatch = Stopwatch()..start();
+      await service.load();
+      stopwatch.stop();
+
+      expect(stopwatch.elapsed, lessThan(const Duration(seconds: 10)));
+      expect(service.totalRemaining(), 0);
     });
   });
 }

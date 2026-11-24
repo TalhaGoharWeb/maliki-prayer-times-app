@@ -812,6 +812,14 @@
   "@qadaTitle": {
     "description": "Qada screen title"
   },
+  "qadaLoadError": "تعذّر تحميل متتبّع القضاء. حاول مرة أخرى من فضلك.",
+  "@qadaLoadError": {
+    "description": "Error shown when a qada screen fails to load its data"
+  },
+  "qadaRetry": "إعادة المحاولة",
+  "@qadaRetry": {
+    "description": "Button to retry loading a qada screen"
+  },
   "qadaLogMissed": "تسجيل صلاة فائتة",
   "@qadaLogMissed": {
     "description": "Qada: log a missed prayer button"

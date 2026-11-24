@@ -812,6 +812,14 @@
   "@qadaTitle": {
     "description": "Qada screen title"
   },
+  "qadaLoadError": "Impossible de charger le suivi des qadas. Veuillez réessayer.",
+  "@qadaLoadError": {
+    "description": "Error shown when a qada screen fails to load its data"
+  },
+  "qadaRetry": "Réessayer",
+  "@qadaRetry": {
+    "description": "Button to retry loading a qada screen"
+  },
   "qadaLogMissed": "Noter une prière manquée",
   "@qadaLogMissed": {
     "description": "Qada: log a missed prayer button"

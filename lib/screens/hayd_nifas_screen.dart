@@ -7,6 +7,7 @@ import 'package:malikiprayertimes/models/qada_models.dart';
 import 'package:malikiprayertimes/services/qada_service.dart';
 import 'package:malikiprayertimes/services/secure_store.dart';
 import 'package:malikiprayertimes/utils/fonts.dart';
+import 'package:malikiprayertimes/widgets/qada_load_error_card.dart';
 
 /// Optional Hayd & Nifas tracker. Records are observations only: the app
 /// never classifies bleeding automatically, and uncertain cases need a
@@ -33,7 +34,7 @@ String _dateLabel(DateTime d) =>
     '${d.day.toString().padLeft(2, '0')}';
 
 class _HaydNifasScreenState extends State<HaydNifasScreen> {
-  late final Future<QadaService> _future;
+  late Future<QadaService> _future;
   BleedingType _tab = BleedingType.hayd;
   List<BleedingRecord> _records = [];
 
@@ -45,7 +46,14 @@ class _HaydNifasScreenState extends State<HaydNifasScreen> {
 
   Future<QadaService> _load() async {
     final service = QadaService(secureStore: widget.secureStore);
-    await service.load();
+    // Bound the whole load, not just the encrypted-store read below: a
+    // platform store that never answers must surface as an error with
+    // retry, never an endless spinner.
+    try {
+      await service.load().timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw StateError('qada load timeout');
+    }
     // The encrypted store must never leave this screen on an infinite
     // spinner: bound the wait and surface failures as an error state.
     try {
@@ -87,23 +95,9 @@ class _HaydNifasScreenState extends State<HaydNifasScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.error_outline,
-                        size: 48, color: scheme.error),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.hnLoadError,
-                      style: theme.textTheme.bodyLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            return QadaLoadErrorCard(
+              message: l10n.hnLoadError,
+              onRetry: () => setState(() => _future = _load()),
             );
           }
           if (!snapshot.hasData) {

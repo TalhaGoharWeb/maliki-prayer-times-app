@@ -812,6 +812,14 @@
   "@qadaTitle": {
     "description": "Qada screen title"
   },
+  "qadaLoadError": "قضا ٹریکر لوڈ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "@qadaLoadError": {
+    "description": "Error shown when a qada screen fails to load its data"
+  },
+  "qadaRetry": "دوبارہ کوشش کریں",
+  "@qadaRetry": {
+    "description": "Button to retry loading a qada screen"
+  },
   "qadaLogMissed": "چھوٹی نماز درج کریں",
   "@qadaLogMissed": {
     "description": "Qada: log a missed prayer button"
