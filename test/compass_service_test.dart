@@ -26,14 +26,23 @@ const _supportedLocales = [
 /// channels are ever touched.
 class FakeCompassService extends CompassService {
   final _controller = StreamController<double?>.broadcast();
+  final _qualityController = StreamController<CompassQuality>.broadcast();
 
   @override
   Stream<double?> get headings => _controller.stream;
 
+  @override
+  Stream<CompassQuality> get quality => _qualityController.stream;
+
   void emit(double? heading) => _controller.add(heading);
 
+  void emitQuality(CompassQuality quality) => _qualityController.add(quality);
+
   @override
-  void dispose() => _controller.close();
+  void dispose() {
+    _controller.close();
+    _qualityController.close();
+  }
 }
 
 Widget _qibla(FakeCompassService compass) {

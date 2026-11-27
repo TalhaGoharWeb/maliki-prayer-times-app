@@ -287,7 +287,13 @@ void main() {
       compass.emit(90.0);
       await tester.pump();
       expect(find.text(l10n.liveBadge), findsOneWidget);
-      compass.emit(120.0); // ≥1° change
+      // A genuine heading change still updates the UI. The dial smooths
+      // the raw sensor stream (HeadingSmoother), so feed the new heading
+      // the way a real sensor would — repeatedly — and expect the settled
+      // value rather than the first raw sample.
+      for (var i = 0; i < 15; i++) {
+        compass.emit(120.0); // ≥1° change
+      }
       await tester.pump();
       expect(find.text(l10n.liveHeading('120')), findsOneWidget);
     });
@@ -338,14 +344,23 @@ const _supportedLocales = [
 /// channels are ever touched.
 class FakeCompassService extends CompassService {
   final _controller = StreamController<double?>.broadcast();
+  final _qualityController = StreamController<CompassQuality>.broadcast();
 
   @override
   Stream<double?> get headings => _controller.stream;
 
+  @override
+  Stream<CompassQuality> get quality => _qualityController.stream;
+
   void emit(double? heading) => _controller.add(heading);
 
+  void emitQuality(CompassQuality quality) => _qualityController.add(quality);
+
   @override
-  void dispose() => _controller.close();
+  void dispose() {
+    _controller.close();
+    _qualityController.close();
+  }
 }
 
 /// Cairo (30.0444, 31.2357): its qibla bearing (136.1°) lies inside the sun's
