@@ -65,6 +65,6 @@ jobs:
           sha256sum "$APK"
           gh release create "${{ inputs.tag }}" "$APK" \
             --title "${{ inputs.tag }}" \
-            --notes "Maliki Prayer Times ${{ inputs.tag }} (test build, test-signed)."
+            --notes "Maliki Prayer Times ${{ inputs.tag }} — production-signed release build."
         env:
           GH_TOKEN: ${{ github.token }}
